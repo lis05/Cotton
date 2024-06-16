@@ -83,8 +83,6 @@ OP13: right-to-left
     | E "*=" E
     | E "/=" E
     | E "%=" E
-    | E ">>=" E
-    | E "<<=" E
 
 OP14: left-to-right
     E "," E
