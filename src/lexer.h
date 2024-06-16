@@ -18,6 +18,7 @@ public:
         CLOSE_CURLY_BRACKET,
         SEMICOLON,
         METHOD_KW,
+        FUNCTION_KW,
         COMMA,
         PLUS_PLUS_OP,
         MINUS_MINUS_OP,

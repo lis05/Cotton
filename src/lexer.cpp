@@ -89,6 +89,9 @@ void Token::identify(ErrorManager *error_manager) {
     else if (this->data == "method") {
         this->id = METHOD_KW;
     }
+    else if (this->data == "function") {
+        this->id = FUNCTION_KW;
+    }
     else if (this->data == ",") {
         this->id = COMMA;
     }
@@ -267,6 +270,7 @@ std::ostream &operator<<(std::ostream &out, const Token &token) {
     case Token::CLOSE_CURLY_BRACKET  : out << "}"; break;
     case Token::SEMICOLON            : out << ";"; break;
     case Token::METHOD_KW            : out << "method"; break;
+    case Token::FUNCTION_KW          : out << "function"; break;
     case Token::COMMA                : out << ","; break;
     case Token::PLUS_PLUS_OP         : out << "++"; break;
     case Token::MINUS_MINUS_OP       : out << "--"; break;
