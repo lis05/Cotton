@@ -3,6 +3,8 @@
 #include <cstdint>
 #include <string>
 
+#include "lexer.h"
+
 namespace Cotton {
 class ErrorManager {
 private:
@@ -28,6 +30,8 @@ public:
     void signalError();
     void signalError(const std::string &message);
     void signalError(const std::string &message, int64_t char_pos);
+
+    void signalError(const std::string &message, const Token &token);
 
     friend void __assert__(bool               value,
                            const char        *assertion,

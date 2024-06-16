@@ -1,4 +1,5 @@
 #include "errors.h"
+#include "lexer.h"
 
 namespace Cotton {
 ErrorManager::ErrorManager(void (*emergency_error_exit)()) {
@@ -44,7 +45,7 @@ void ErrorManager::signalError(const std::string &message, int64_t char_pos) {
     if (fd == NULL) {
         perror("Failed to open file where the error has occured");
         this->setErrorFilename("");
-        this->signalError(message);
+        this->signalError(message);    // will print the original message
     }
 
     int64_t lines              = 1;
@@ -67,6 +68,7 @@ void ErrorManager::signalError(const std::string &message, int64_t char_pos) {
 
     fprintf(stderr, "Error has occured in file %s\n", this->error_filename.c_str());
     if (fseek(fd, last_line_position, SEEK_SET) == -1) {
+        fprintf(stderr, "Error reading the file. Original error message: %s\n", message.c_str());
         this->emergency_error_exit();
     };
 
@@ -103,6 +105,87 @@ void ErrorManager::signalError(const std::string &message, int64_t char_pos) {
     this->emergency_error_exit();
 }
 
+void ErrorManager::signalError(const std::string &message, const Token &token) {
+    assert(token.begin_pos != -1 && token.end_pos != -1,
+           std::string("Invalid token. Original message: ") + message,
+           this);
+    if (this->error_filename.empty()) {
+        fprintf(stderr,
+                "Error has occurred at positions %ld..%ld: %s.\n",
+                token.begin_pos,
+                token.end_pos,
+                message.c_str());
+
+        this->emergency_error_exit();
+    }
+
+    FILE *fd = fopen(this->error_filename.c_str(), "r");
+    if (fd == NULL) {
+        perror("Failed to open file where the error has occured");
+        this->setErrorFilename("");
+        this->signalError(message);    // will print the original message
+    }
+
+    int64_t lines              = 1;
+    int64_t column             = 1;
+    int64_t last_line_position = 0;
+    for (int64_t pos = 0; pos < token.begin_pos; pos++) {
+        char c = fgetc(fd);
+        if (c == -1 || ferror(fd)) {
+            break;
+        }
+        if (c == '\n') {
+            last_line_position = pos + 1;
+            lines++;
+            column = 1;
+        }
+        else {
+            column++;
+        }
+    }
+
+    fprintf(stderr, "Error has occured in file %s\n", this->error_filename.c_str());
+    if (fseek(fd, last_line_position, SEEK_SET) == -1) {
+        fprintf(stderr, "Error reading the file. Original error message: %s\n", message.c_str());
+        this->emergency_error_exit();
+    };
+
+    static char buf[64];
+    int64_t prefix = sprintf(buf, "%ld:%ld..%ld | ", lines, column, column + token.end_pos - token.begin_pos - 1);
+
+    fprintf(stderr, "%s", buf);
+    int64_t pos;
+    for (pos = last_line_position;; pos++) {
+        {
+            char c = fgetc(fd);
+            if (c == '\n' || c == -1 || ferror(fd)) {
+                fprintf(stderr, "\n");
+                break;
+            }
+            fprintf(stderr, "%c", c);
+        }
+    }
+
+    int64_t spaces = std::min(pos, token.begin_pos) - last_line_position + prefix;
+    for (int64_t i = 0; i < spaces; i++) {
+        fprintf(stderr, " ");
+    }
+    for (int64_t i = 0; i < token.end_pos - token.begin_pos; i++) {
+        fprintf(stderr, "^");
+    }
+    fprintf(stderr, "\n");
+    for (int64_t i = 0; i < spaces; i++) {
+        fprintf(stderr, " ");
+    }
+    fprintf(stderr, "|\n");
+    for (int64_t i = 0; i < spaces; i++) {
+        fprintf(stderr, " ");
+    }
+    fprintf(stderr, "+-- %s.\n", message.c_str());
+
+    this->emergency_error_exit();
+}
+
 void ErrorManager::signalError() {
     this->signalError(this->error_message, this->error_char_pos);
 }
@@ -119,7 +202,12 @@ void __assert__(bool               value,
                 int                line) {
     if (!value) {
         static char buf[1024];
-        sprintf(buf, "Assertion failed: %s. Happened in %s, line %d: %s\n", message.c_str(), filename, line, assertion);
+        sprintf(buf,
+                "Assertion failed: %s. Happened in %s, line %d: %s\n",
+                message.c_str(),
+                filename,
+                line,
+                assertion);
         error_manager->signalError(std::string(buf));
     }
 }
