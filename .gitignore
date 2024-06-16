@@ -1,0 +1,8 @@
+/.vscode
+/CMakeLists.txt
+/CMakePresets.json
+/build
+/idea.txt
+/main.cpp
+/out
+/text_code.ctn

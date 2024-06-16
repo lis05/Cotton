@@ -1,0 +1,127 @@
+E:
+    FUNCTION_DEFINITION
+    | RECORD_DEFINITION
+    | OPERATOR
+    | ATOM
+    | "(" E ")"
+
+FUNCTION_DEFINITION:
+    "function" ?IDENTIFIER "(" ?IDENTIFIER_LIST ")" S
+
+RECORD_DEFINITION:
+    "record" IDENTIFIER "{" *(FIELD_DEFINITION | METHOD_DEFINITION) "}"
+
+FIELD_DEFINITION:
+    IDENTIFIER ";"
+
+METHOD_DEFINITION:
+    "method" IDENTIFIER "(" ?IDENTIFIER_LIST ")" S
+
+IDENTIFIER_LIST:
+    IDENTIFIER *("," IDENTIFIER)
+
+OPERATOR:
+    OP1 | OP2 | OP3 | OP4 | OP5 | OP6 | OP7 | OP8 | OP9 | OP10 | OP11 | OP12 | OP13 | OP14
+
+OP1: left-to-right
+    E "++"
+    | E "--"
+    | E "(" E ")"
+    | E "[" E "]"
+    | E "." "E"
+
+OP2: right-to-left
+    "++" E
+    | "--" E
+    | "+" E
+    | "-" E
+    | "!" E
+    | "~" E
+
+OP3: left-to-right
+    E "*" E
+    | E "/" E
+    | E "%" E
+
+OP4: left-to-right
+    E ">>" E
+    | E "<<" E
+
+OP5: left-to-right
+    E "+" E
+    | E "-" E
+
+OP6: left-to-right
+    E "<" E
+    | E "<=" E
+    | E ">" E
+    | E ">=" E
+
+OP7: left-to-right
+    E "==" E
+    E "!=" E
+
+OP8: left-to-right
+    E "&" E
+
+OP9: left-to-right
+    E "^" E
+
+OP10: left-to-right
+    E "|" E
+
+OP11: left-to-right
+    E "and" E
+
+OP12: left-to-right
+    E "or" E
+
+OP13: right-to-left
+    E "=" E
+    | E "+=" E
+    | E "-=" E
+    | E "*=" E
+    | E "/=" E
+    | E "%=" E
+    | E ">>=" E
+    | E "<<=" E
+
+OP14: left-to-right
+    E "," E
+
+ATOM:
+    BOOLEAN | CHARACTER | INTEGER | REAL | STRING | IDENTIFIER | "nothing"
+
+BOOLEAN:
+    "true" | "false"
+
+S:
+    *SS
+
+SS:
+    WHILE | FOR | IF | CONTINUE | BREAK | RETURN | BLOCK | SCOPED_BLOCK | E 
+
+WHILE:
+    "while" E S
+
+FOR:
+    "for" E E E S
+
+IF:
+    "if" E S ?("else" S)
+
+CONTINUE:
+    "continue"
+
+BREAK:
+    "break"
+
+RETURN:
+    "return" ?E
+
+BLOCK:
+    "{" S "}"
+
+SCOPED_BLOCK:
+    "block" BLOCK
+
