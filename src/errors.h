@@ -1,9 +1,8 @@
 #pragma once
 
+#include "lexer.h"
 #include <cstdint>
 #include <string>
-
-#include "lexer.h"
 
 namespace Cotton {
 class ErrorManager {
@@ -32,6 +31,8 @@ public:
     void signalError(const std::string &message, int64_t char_pos);
 
     void signalError(const std::string &message, const Token &token);
+
+    void signalError(const std::vector<std::pair<Token *, std::string>> errors);
 
     friend void __assert__(bool               value,
                            const char        *assertion,

@@ -194,6 +194,26 @@ void ErrorManager::signalError(const std::string &message) {
     this->signalError(message, this->error_char_pos);
 }
 
+static void foo() {}
+
+void ErrorManager::signalError(const std::vector<std::pair<Token *, std::string>> errors) {
+    // a stupid solution, but why not
+    void (*f)()                = this->emergency_error_exit;
+    this->emergency_error_exit = foo;
+
+    size_t cnt = 0;
+    for (auto &[token, message] : errors) {
+        cnt++;
+        this->signalError(message, *token);
+        if (cnt != errors.size()) {
+            fprintf(stderr, "The mentioned error happened because of the following error:\n");
+        }
+    }
+
+    this->emergency_error_exit = f;
+    this->emergency_error_exit();
+}
+
 void __assert__(bool               value,
                 const char        *assertion,
                 const std::string &message,
