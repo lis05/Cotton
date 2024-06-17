@@ -1,5 +1,6 @@
 #pragma once
 
+#include "lexer.h"
 #include <cstdint>
 #include <string>
 #include <vector>
@@ -250,4 +251,128 @@ public:
     BlockStmtNode(bool is_scoped, const std::vector<StmtNode *> list);
 };
 
+class Parser {
+    ErrorManager *error_manager;
+
+    std::vector<Token>           tokens;
+    std::vector<Token>::iterator next_token;
+
+    class OperatorInfo {
+    public:
+        OperatorNode::OperatorId id;
+        int                      priority;
+        int                      associativity;
+    };
+
+    OperatorInfo getOperatorInfo(Token *token, bool is_pref_op);
+
+    class ParserState {
+    public:
+        int    cur_priority;
+        int    cur_associativity;
+        bool   report_errors;
+        Token *token;    // for errors
+    };
+
+    ParserState                                      state;
+    std::vector<ParserState>                         saved_states;
+    // errors signaled but ignored due to !this->report_errors
+    std::vector<std::pair<ParserState, std::string>> errors_stack;
+    void                                             saveState();
+    void                                             restoreState();
+    void                                             highlight(Token *token);    // for errors
+    // is espected to signal an error. however, if the current state forbids that, the errors and the current state
+    // are stored in errors stack, and function returns
+    void                                             signalError(const std::string &message);
+
+    bool canPassThrough(OperatorNode::OperatorId operator_id);
+
+    bool           hasNext();      // returns false if tokens have ended
+    Token::TokenId checkNext();    // doesn't consume
+    bool           consume(Token::TokenId);
+    Token::TokenId consume();
+    bool           hasPrev();
+    Token::TokenId rollback();    // goes one token back
+
+    class ParsingResult {
+        bool        success;
+        std::string error_message;
+
+        enum ResultId {
+            EXPR,
+            FUNC_DEC,
+            RECORD_DEF,
+            OPERATOR,
+            ATOM,
+            PAR_EXPR,
+            IDENT_LIST,
+            METHOD_DEF,
+            STMT,
+            WHILE_STMT,
+            FOR_STMT,
+            IF_STMT,
+            CONTINUE_STMT,
+            BREAK_STMT,
+            RETURN_STMT,
+            BLOCK_STMT
+        } id;
+
+        union {
+            ExprNode       *expr;
+            FuncDefNode    *func_def;
+            RecordDefNode  *record_def;
+            OperatorNode   *op;
+            AtomNode       *atom;
+            ParExprNode    *par_expr;
+            IdentListNode  *ident_list;
+            MethodDefNode  *method_def;
+            StmtNode       *stmt;
+            WhileStmtNode  *while_stmt;
+            ForStmtNode    *for_stmt;
+            IfStmtNode     *if_stmt;
+            ReturnStmtNode *return_stmt;
+        };
+
+        ParsingResult();    // means failure
+        ParsingResult(ResultId id);
+        ParsingResult(ExprNode *expr);
+        ParsingResult(FuncDefNode *func_def);
+        ParsingResult(RecordDefNode *record_def);
+        ParsingResult(OperatorNode *op);
+        ParsingResult(AtomNode *atom);
+        ParsingResult(ParExprNode *par_expr);
+        ParsingResult(IdentListNode *ident_list);
+        ParsingResult(MethodDefNode *method_def);
+        ParsingResult(StmtNode *stmt);
+        ParsingResult(WhileStmtNode *while_stmt);
+        ParsingResult(ForStmtNode *for_stmt);
+        ParsingResult(IfStmtNode *if_stmt);
+        ParsingResult(ReturnStmtNode *return_stmt);
+
+        // returns !success || this->id != id
+        // if returns false, also adds error_message and the current state to the errors stack
+        bool verify(ResultId id, const std::string error_message);
+    };
+
+private:
+    ParsingResult parseExpr();
+    ParsingResult parseFuncDec();
+    ParsingResult parseRecordDef();
+    ParsingResult parseOperator();
+    ParsingResult parseAtom();
+    ParsingResult parseParExpr();
+    ParsingResult parseIdentList();
+    ParsingResult parseMethodDef();
+    ParsingResult parseStmt();
+    ParsingResult parseWhileStmt();
+    ParsingResult parseForStmt();
+    ParsingResult parseIfStmt();
+    ParsingResult parseContinueStmt();
+    ParsingResult parseBreakStmt();
+    ParsingResult parseReturnStmt();
+    ParsingResult parseBlockStmt();
+
+public:
+    StmtNode parse(const std::vector<Token> tokens);
+};
 }    // namespace Cotton
