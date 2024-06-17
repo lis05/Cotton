@@ -97,7 +97,7 @@ BOOLEAN:
     "true" | "false"
 
 S:
-    WHILE | FOR | IF | CONTINUE | BREAK | RETURN | BLOCK | SCOPED_BLOCK | E 
+    WHILE | FOR | IF | CONTINUE | BREAK | RETURN | BLOCK | E 
 
 WHILE:
     "while" E S
@@ -118,8 +118,5 @@ RETURN:
     "return" ?E
 
 BLOCK:
-    "{" *S "}"
-
-SCOPED_BLOCK:
-    "block" BLOCK
+    ?"block" "{" *S "}"
 
