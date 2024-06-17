@@ -3,7 +3,10 @@ E:
     | RECORD_DEFINITION
     | OPERATOR
     | ATOM
-    | "(" E ")"
+    | PARENTHESES_EXPRESSION
+
+PARENTHESES_EXPRESSION:
+    "(" E ")"
 
 FUNCTION_DEFINITION:
     "function" ?IDENTIFIER "(" ?IDENTIFIER_LIST ")" S
@@ -94,9 +97,6 @@ BOOLEAN:
     "true" | "false"
 
 S:
-    *SS
-
-SS:
     WHILE | FOR | IF | CONTINUE | BREAK | RETURN | BLOCK | SCOPED_BLOCK | E 
 
 WHILE:
@@ -118,7 +118,7 @@ RETURN:
     "return" ?E
 
 BLOCK:
-    "{" S "}"
+    "{" *S "}"
 
 SCOPED_BLOCK:
     "block" BLOCK
