@@ -280,6 +280,9 @@ void ErrorManager::signalError(const std::vector<std::pair<Token *, std::string>
 
     size_t cnt = 0;
     for (auto &[token, message] : errors) {
+        if (message.empty()) {
+            continue;    // ignore meaningless errors
+        }
         cnt++;
         if (token != NULL) {
             this->signalError(message, *token);
