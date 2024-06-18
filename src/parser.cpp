@@ -20,6 +20,7 @@
  */
 
 #include "parser.h"
+#include "errors.h"
 #include "lexer.h"
 
 namespace Cotton {
@@ -379,4 +380,282 @@ BlockStmtNode::BlockStmtNode(bool is_scoped, const std::vector<StmtNode *> list)
     this->is_scoped = is_scoped;
     this->list      = list;
 }
+
+#define passert(value, message) __passert__(value, #value, message, this, __FILE__, __LINE__);
+
+void __passert__(bool               value,
+                 const char        *assertion,
+                 const std::string &message,
+                 Parser            *parser,
+                 const char        *filename,
+                 int                line) {
+    if (!value) {
+        static char buf[1024];
+        sprintf(buf,
+                "Assertion failed: %s. Happened in %s, line %d: %s\n",
+                message.c_str(),
+                filename,
+                line,
+                assertion);
+        parser->signalError(std::string(buf));
+    }
+}
+
+#define LEFT_TO_RIGHT 1
+#define RIGHT_TO_LEFT -1
+
+Parser::Parser(ErrorManager *error_manager) {
+    this->error_manager = error_manager;
+}
+
+Parser::OperatorInfo Parser::getOperatorInfo(Token *token, bool is_pre_op, int special) {
+    passert(token != NULL, "Failed to get operator from a NULL token");
+    switch (token->id) {
+    case Token::PLUS_PLUS_OP :
+        return (is_pre_op) ? OperatorInfo {OperatorNode::PRE_PLUS_PLUS, 2, RIGHT_TO_LEFT}
+                           : OperatorInfo {OperatorNode::POST_PLUS_PLUS, 1, LEFT_TO_RIGHT};
+    case Token::MINUS_MINUS_OP :
+        return (is_pre_op) ? OperatorInfo {OperatorNode::PRE_MINUS_MINUS, 2, RIGHT_TO_LEFT}
+                           : OperatorInfo {OperatorNode::PRE_PLUS_PLUS, 1, LEFT_TO_RIGHT};
+    case Token::DOT_OP : return OperatorInfo {OperatorNode::DOT, 1, LEFT_TO_RIGHT};
+    case Token::PLUS_OP :
+        return (is_pre_op) ? OperatorInfo {OperatorNode::PRE_PLUS, 2, RIGHT_TO_LEFT}
+                           : OperatorInfo {OperatorNode::PLUS, 5, LEFT_TO_RIGHT};
+    case Token::MINUS_OP :
+        return (is_pre_op) ? OperatorInfo {OperatorNode::PRE_MINUS, 2, RIGHT_TO_LEFT}
+                           : OperatorInfo {OperatorNode::MINUS, 5, LEFT_TO_RIGHT};
+    case Token::NOT_OP              : return OperatorInfo {OperatorNode::NOT, 2, RIGHT_TO_LEFT};
+    case Token::INVERSE_OP          : return OperatorInfo {OperatorNode::INVERSE, 2, RIGHT_TO_LEFT};
+    case Token::MULT_OP             : return OperatorInfo {OperatorNode::MULT, 3, LEFT_TO_RIGHT};
+    case Token::DIV_OP              : return OperatorInfo {OperatorNode::DIV, 3, LEFT_TO_RIGHT};
+    case Token::REMAINDER_OP        : return OperatorInfo {OperatorNode::REM, 3, LEFT_TO_RIGHT};
+    case Token::RIGHT_SHIFT_OP      : return OperatorInfo {OperatorNode::RIGHT_SHIFT, 4, LEFT_TO_RIGHT};
+    case Token::LEFT_SHIFT_OP       : return OperatorInfo {OperatorNode::LEFT_SHIFT, 4, LEFT_TO_RIGHT};
+    case Token::LESS_OP             : return OperatorInfo {OperatorNode::LESS, 6, LEFT_TO_RIGHT};
+    case Token::LESS_EQUAL_OP       : return OperatorInfo {OperatorNode::LESS_EQUAL, 6, LEFT_TO_RIGHT};
+    case Token::GREATER_OP          : return OperatorInfo {OperatorNode::GREATER, 6, LEFT_TO_RIGHT};
+    case Token::GREATER_EQUAL_OP    : return OperatorInfo {OperatorNode::GREATER_EQUAL, 6, LEFT_TO_RIGHT};
+    case Token::EQUAL_OP            : return OperatorInfo {OperatorNode::EQUAL, 7, LEFT_TO_RIGHT};
+    case Token::NOT_EQUAL_OP        : return OperatorInfo {OperatorNode::NOT_EQUAL, 7, LEFT_TO_RIGHT};
+    case Token::BITAND_OP           : return OperatorInfo {OperatorNode::BITAND, 8, LEFT_TO_RIGHT};
+    case Token::BITXOR_OP           : return OperatorInfo {OperatorNode::BITXOR, 9, LEFT_TO_RIGHT};
+    case Token::BITOR_OP            : return OperatorInfo {OperatorNode::BITOR, 10, LEFT_TO_RIGHT};
+    case Token::AND_OP              : return OperatorInfo {OperatorNode::AND, 11, LEFT_TO_RIGHT};
+    case Token::OR_OP               : return OperatorInfo {OperatorNode::OR, 12, LEFT_TO_RIGHT};
+    case Token::ASSIGN_OP           : return OperatorInfo {OperatorNode::ASSIGN, 13, RIGHT_TO_LEFT};
+    case Token::ASSIGN_PLUS_OP      : return OperatorInfo {OperatorNode::PLUS_ASSIGN, 13, RIGHT_TO_LEFT};
+    case Token::ASSIGN_MINUS_OP     : return OperatorInfo {OperatorNode::MINUS_ASSIGN, 13, RIGHT_TO_LEFT};
+    case Token::ASSIGN_MULT_OP      : return OperatorInfo {OperatorNode::MULT_ASSIGN, 13, RIGHT_TO_LEFT};
+    case Token::ASSIGN_DIV_OP       : return OperatorInfo {OperatorNode::DIV_ASSIGN, 13, RIGHT_TO_LEFT};
+    case Token::ASSIGN_REMAINDER_OP : return OperatorInfo {OperatorNode::REM_ASSIGN, 13, RIGHT_TO_LEFT};
+    case Token::COMMA               : return OperatorInfo {OperatorNode::COMMA, 14, LEFT_TO_RIGHT};
+    }
+
+    if (special == 1) {
+        return OperatorInfo {OperatorNode::CALL, 1, LEFT_TO_RIGHT};
+    }
+    if (special == 2) {
+        return OperatorInfo {OperatorNode::INDEX, 1, LEFT_TO_RIGHT};
+    }
+    this->highlight(token);
+    this->signalError("Not an operator");
+    return {};
+}
+
+void Parser::saveState() {
+    this->saved_states.push_back(this->state);
+}
+
+void Parser::restoreState() {
+    if (this->saved_states.empty()) {
+        signalError("Failed to restore parser's state");
+    }
+    else {
+        this->state = this->saved_states.back(), this->saved_states.pop_back();
+    }
+}
+
+void Parser::highlight(Token *token) {
+    this->state.token = token;
+}
+
+void Parser::signalError(const std::string &message) {
+    this->errors_stack.push_back({this->state, message});
+
+    if (!this->state.report_errors) {
+        return;
+    }
+
+    std::vector<std::pair<Token *, std::string>> errors;
+    for (auto it = this->errors_stack.rbegin(); it != this->errors_stack.rend(); it++) {
+        errors.push_back({it->first.token, it->second});
+    }
+
+    this->error_manager->signalError(errors);
+}
+
+bool Parser::canPassThrough(OperatorNode::OperatorId operator_id) {
+    return false;
+}
+
+bool Parser::hasNext() {
+    return this->next_token != this->tokens.end();
+}
+
+Token::TokenId Parser::checkNext() {
+    return this->next_token->id;
+}
+
+bool Parser::consume(Token::TokenId id) {
+    if (this->next_token->id != id) {
+        return false;
+    }
+    this->next_token++;
+    return true;
+}
+
+Token::TokenId Parser::consume() {
+    return (this->next_token++)->id;
+}
+
+bool Parser::hasPrev() {
+    return this->next_token != this->tokens.begin();
+}
+
+void Parser::rollback() {
+    this->next_token--;
+}
+
+bool Parser::ParsingResult::verify(Parser *p, ResultId id, const std::string error_message) {
+    if (this->success && this->id == id) {
+        return true;
+    }
+    p->signalError(error_message);
+    return false;
+}
+
+Parser::ParsingResult Parser::parseExpr() {
+    return ParsingResult("failed");
+}
+
+Parser::ParsingResult Parser::parseStmt() {
+    return ParsingResult(std::string("failed"));
+}
+
+StmtNode *Parser::parse(const std::vector<Token> &tokens) {
+    this->tokens                  = tokens;
+    this->state.cur_associativity = LEFT_TO_RIGHT;
+    this->state.cur_priority      = 0;
+    this->state.report_errors     = true;
+
+    std::vector<StmtNode *> statements;
+    while (this->hasNext()) {
+        this->saveState();
+        this->state.report_errors = false;
+        ParsingResult res         = this->parseStmt();
+        this->restoreState();
+
+        res.verify(this, ParsingResult::STMT, "Failed to parse a statement");
+
+        statements.push_back(res.stmt);
+    }
+    auto block = new BlockStmtNode(false, statements);
+    auto res   = new StmtNode(block);
+    return res;
+}
+
+Parser::ParsingResult::ParsingResult(const std::string &error_message) {
+    this->success       = false;
+    this->error_message = error_message;
+}
+
+Parser::ParsingResult::ParsingResult(ResultId id) {
+    this->success = true;
+    this->id      = id;
+}
+
+Parser::ParsingResult::ParsingResult(ExprNode *expr) {
+    this->success = true;
+    this->id      = EXPR;
+    this->expr    = expr;
+}
+
+Parser::ParsingResult::ParsingResult(FuncDefNode *func_def) {
+    this->success = true;
+    this->id      = FUNC_DEC;
+    this->expr    = expr;
+}
+
+Parser::ParsingResult::ParsingResult(RecordDefNode *record_def) {
+    this->success = true;
+    this->id      = RECORD_DEF;
+    this->expr    = expr;
+}
+
+Parser::ParsingResult::ParsingResult(OperatorNode *op) {
+    this->success = true;
+    this->id      = OPERATOR;
+    this->expr    = expr;
+}
+
+Parser::ParsingResult::ParsingResult(AtomNode *atom) {
+    this->success = true;
+    this->id      = ATOM;
+    this->expr    = expr;
+}
+
+Parser::ParsingResult::ParsingResult(ParExprNode *par_expr) {
+    this->success = true;
+    this->id      = PAR_EXPR;
+    this->expr    = expr;
+}
+
+Parser::ParsingResult::ParsingResult(IdentListNode *ident_list) {
+    this->success = true;
+    this->id      = IDENT_LIST;
+    this->expr    = expr;
+}
+
+Parser::ParsingResult::ParsingResult(MethodDefNode *method_def) {
+    this->success = true;
+    this->id      = METHOD_DEF;
+    this->expr    = expr;
+}
+
+Parser::ParsingResult::ParsingResult(StmtNode *stmt) {
+    this->success = true;
+    this->id      = STMT;
+    this->stmt    = stmt;
+}
+
+Parser::ParsingResult::ParsingResult(WhileStmtNode *while_stmt) {
+    this->success    = true;
+    this->id         = WHILE_STMT;
+    this->while_stmt = while_stmt;
+}
+
+Parser::ParsingResult::ParsingResult(ForStmtNode *for_stmt) {
+    this->success  = true;
+    this->id       = FOR_STMT;
+    this->for_stmt = for_stmt;
+}
+
+Parser::ParsingResult::ParsingResult(IfStmtNode *if_stmt) {
+    this->success = true;
+    this->id      = IF_STMT;
+    this->if_stmt = if_stmt;
+}
+
+Parser::ParsingResult::ParsingResult(ReturnStmtNode *return_stmt) {
+    this->success     = true;
+    this->id          = RETURN_STMT;
+    this->return_stmt = return_stmt;
+}
+
+Parser::ParsingResult::ParsingResult(BlockStmtNode *block_stmt) {
+    this->success    = true;
+    this->id         = BLOCK_STMT;
+    this->block_stmt = block_stmt;
+}
+
 }    // namespace Cotton

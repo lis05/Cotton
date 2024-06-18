@@ -99,10 +99,10 @@ public:
         CALL,
         INDEX,
         DOT,
-        PREF_PLUS_PLUS,
-        PREF_MINUS_MINUS,
-        PREF_PLUS,
-        PREF_MINUS,
+        PRE_PLUS_PLUS,
+        PRE_MINUS_MINUS,
+        PRE_PLUS,
+        PRE_MINUS,
         NOT,
         INVERSE,
         MULT,
@@ -273,6 +273,12 @@ public:
 };
 
 class Parser {
+public:
+    Parser()  = delete;
+    ~Parser() = default;
+
+    Parser(ErrorManager *error_manager);
+
     ErrorManager *error_manager;
 
     std::vector<Token>           tokens;
@@ -285,7 +291,7 @@ class Parser {
         int                      associativity;
     };
 
-    OperatorInfo getOperatorInfo(Token *token, bool is_pref_op);
+    OperatorInfo getOperatorInfo(Token *token, bool is_pre_op, int special = 0);
 
     class ParserState {
     public:
@@ -310,12 +316,13 @@ class Parser {
 
     bool           hasNext();      // returns false if tokens have ended
     Token::TokenId checkNext();    // doesn't consume
-    bool           consume(Token::TokenId);
+    bool           consume(Token::TokenId id);
     Token::TokenId consume();
     bool           hasPrev();
-    Token::TokenId rollback();    // goes one token back
+    void           rollback();    // goes one token back
 
     class ParsingResult {
+    public:
         bool        success;
         std::string error_message;
 
@@ -352,9 +359,10 @@ class Parser {
             ForStmtNode    *for_stmt;
             IfStmtNode     *if_stmt;
             ReturnStmtNode *return_stmt;
+            BlockStmtNode  *block_stmt;
         };
 
-        ParsingResult();    // means failure
+        ParsingResult(const std::string &error_message);    // means failure
         ParsingResult(ResultId id);
         ParsingResult(ExprNode *expr);
         ParsingResult(FuncDefNode *func_def);
@@ -369,31 +377,18 @@ class Parser {
         ParsingResult(ForStmtNode *for_stmt);
         ParsingResult(IfStmtNode *if_stmt);
         ParsingResult(ReturnStmtNode *return_stmt);
+        ParsingResult(BlockStmtNode *block_stmt);
 
         // returns !success || this->id != id
         // if returns false, also adds error_message and the current state to the errors stack
-        bool verify(ResultId id, const std::string error_message);
+        bool verify(Parser *p, ResultId id, const std::string error_message);
     };
 
 private:
     ParsingResult parseExpr();
-    ParsingResult parseFuncDec();
-    ParsingResult parseRecordDef();
-    ParsingResult parseOperator();
-    ParsingResult parseAtom();
-    ParsingResult parseParExpr();
-    ParsingResult parseIdentList();
-    ParsingResult parseMethodDef();
     ParsingResult parseStmt();
-    ParsingResult parseWhileStmt();
-    ParsingResult parseForStmt();
-    ParsingResult parseIfStmt();
-    ParsingResult parseContinueStmt();
-    ParsingResult parseBreakStmt();
-    ParsingResult parseReturnStmt();
-    ParsingResult parseBlockStmt();
 
 public:
-    StmtNode parse(const std::vector<Token> tokens);
+    StmtNode *parse(const std::vector<Token> &tokens);
 };
 }    // namespace Cotton
