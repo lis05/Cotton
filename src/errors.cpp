@@ -55,16 +55,18 @@ void ErrorManager::signalError(const std::string &message, int64_t char_pos) {
             fprintf(stderr, "Error has occurred: %s.\n", message.c_str());
         }
         this->emergency_error_exit();
+        return;
     }
 
     if (char_pos == -1) {
         fprintf(stderr, "Error has occurred in file %s: %s.\n", this->error_filename.c_str(), message.c_str());
         this->emergency_error_exit();
+        return;
     }
 
     FILE *fd = fopen(this->error_filename.c_str(), "r");
     if (fd == NULL) {
-        perror("Failed to open file where the error has occured");
+        perror("Failed to open file where the error has occurred");
         this->setErrorFilename("");
         this->signalError(message);    // will print the original message
     }
@@ -87,10 +89,11 @@ void ErrorManager::signalError(const std::string &message, int64_t char_pos) {
         }
     }
 
-    fprintf(stderr, "Error has occured in file %s\n", this->error_filename.c_str());
+    fprintf(stderr, "Error has occurred in file %s\n", this->error_filename.c_str());
     if (fseek(fd, last_line_position, SEEK_SET) == -1) {
         fprintf(stderr, "Error reading the file. Original error message: %s\n", message.c_str());
         this->emergency_error_exit();
+        return;
     };
 
     static char buf[64];
@@ -124,6 +127,7 @@ void ErrorManager::signalError(const std::string &message, int64_t char_pos) {
     fprintf(stderr, "+-- %s.\n", message.c_str());
 
     this->emergency_error_exit();
+    return;
 }
 
 void ErrorManager::signalError(const std::string &message, const Token &token) {
@@ -138,11 +142,12 @@ void ErrorManager::signalError(const std::string &message, const Token &token) {
                 message.c_str());
 
         this->emergency_error_exit();
+        return;
     }
 
     FILE *fd = fopen(this->error_filename.c_str(), "r");
     if (fd == NULL) {
-        perror("Failed to open file where the error has occured");
+        perror("Failed to open file where the error has occurred");
         this->setErrorFilename("");
         this->signalError(message);    // will print the original message
     }
@@ -165,10 +170,11 @@ void ErrorManager::signalError(const std::string &message, const Token &token) {
         }
     }
 
-    fprintf(stderr, "Error has occured in file %s\n", this->error_filename.c_str());
+    fprintf(stderr, "Error has occurred in file %s\n", this->error_filename.c_str());
     if (fseek(fd, last_line_position, SEEK_SET) == -1) {
         fprintf(stderr, "Error reading the file. Original error message: %s\n", message.c_str());
         this->emergency_error_exit();
+        return;
     };
 
     static char buf[64];
@@ -205,6 +211,7 @@ void ErrorManager::signalError(const std::string &message, const Token &token) {
     fprintf(stderr, "+-- %s.\n", message.c_str());
 
     this->emergency_error_exit();
+    return;
 }
 
 void ErrorManager::signalError() {
@@ -225,7 +232,13 @@ void ErrorManager::signalError(const std::vector<std::pair<Token *, std::string>
     size_t cnt = 0;
     for (auto &[token, message] : errors) {
         cnt++;
-        this->signalError(message, *token);
+        if (token != NULL) {
+            this->signalError(message, *token);
+        }
+        else {
+            this->setErrorCharPos(-1);
+            this->signalError(message);
+        }
         if (cnt != errors.size()) {
             fprintf(stderr, "The mentioned error happened because of the following error:\n");
         }
@@ -233,6 +246,7 @@ void ErrorManager::signalError(const std::vector<std::pair<Token *, std::string>
 
     this->emergency_error_exit = f;
     this->emergency_error_exit();
+    return;
 }
 
 void __assert__(bool               value,
