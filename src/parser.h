@@ -308,7 +308,7 @@ public:
     void                                             saveState();
     void                                             restoreState();
     void                                             highlight(Token *token);    // for errors
-    void                                             highlightNext();                // for errors
+    void                                             highlightNext();            // for errors
     // is espected to signal an error. however, if the current state forbids that, the errors and the current state
     // are stored in errors stack, and function returns
     void                                             signalError(const std::string &message);
@@ -326,6 +326,7 @@ public:
     public:
         bool        success;
         std::string error_message;
+        ParserState state;
 
         enum ResultId {
             EXPR,
@@ -363,26 +364,26 @@ public:
             BlockStmtNode  *block_stmt;
         };
 
-        ParsingResult(const std::string &error_message);    // means failure
-        ParsingResult(ResultId id);
-        ParsingResult(ExprNode *expr);
-        ParsingResult(FuncDefNode *func_def);
-        ParsingResult(RecordDefNode *record_def);
-        ParsingResult(OperatorNode *op);
-        ParsingResult(AtomNode *atom);
-        ParsingResult(ParExprNode *par_expr);
-        ParsingResult(IdentListNode *ident_list);
-        ParsingResult(MethodDefNode *method_def);
-        ParsingResult(StmtNode *stmt);
-        ParsingResult(WhileStmtNode *while_stmt);
-        ParsingResult(ForStmtNode *for_stmt);
-        ParsingResult(IfStmtNode *if_stmt);
-        ParsingResult(ReturnStmtNode *return_stmt);
-        ParsingResult(BlockStmtNode *block_stmt);
+        ParsingResult(const std::string &error_message, Parser *p);    // means failure
+        ParsingResult(ResultId id, Parser *p);
+        ParsingResult(ExprNode *expr, Parser *p);
+        ParsingResult(FuncDefNode *func_def, Parser *p);
+        ParsingResult(RecordDefNode *record_def, Parser *p);
+        ParsingResult(OperatorNode *op, Parser *p);
+        ParsingResult(AtomNode *atom, Parser *p);
+        ParsingResult(ParExprNode *par_expr, Parser *p);
+        ParsingResult(IdentListNode *ident_list, Parser *p);
+        ParsingResult(MethodDefNode *method_def, Parser *p);
+        ParsingResult(StmtNode *stmt, Parser *p);
+        ParsingResult(WhileStmtNode *while_stmt, Parser *p);
+        ParsingResult(ForStmtNode *for_stmt, Parser *p);
+        ParsingResult(IfStmtNode *if_stmt, Parser *p);
+        ParsingResult(ReturnStmtNode *return_stmt, Parser *p);
+        ParsingResult(BlockStmtNode *block_stmt, Parser *p);
 
         // returns !success || this->id != id
         // if returns false, also adds error_message and the current state to the errors stack
-        bool verify(Parser *p, ResultId id, const std::string error_message);
+        bool verify(Parser *p, ResultId id, const std::string error_message, bool highlight_next = true);
     };
 
 private:

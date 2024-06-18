@@ -633,6 +633,9 @@ std::vector<Token> Lexer::process(std::string &input) {
     tokens                    = this->faze3SplitByOperatorsAndSeparators(tokens);
     tokens                    = this->faze4FindRealNumbers(tokens);
     this->faze5IdentifyTokens(tokens);
+    if (!tokens.empty()) {
+        tokens.push_back(Token("", tokens.back().end_pos, tokens.back().end_pos + 1));
+    }
     return tokens;
 }
 

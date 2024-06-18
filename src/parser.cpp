@@ -542,11 +542,14 @@ void Parser::rollback() {
     }
 }
 
-bool Parser::ParsingResult::verify(Parser *p, ResultId id, const std::string error_message) {
+bool Parser::ParsingResult::verify(Parser *p, ResultId id, const std::string error_message, bool highlight_next) {
     if (this->success && this->id == id) {
+        if (highlight_next) {
+            p->highlightNext();
+        }
         return true;
     }
-    p->errors_stack.push_back({p->state, this->error_message});
+    p->errors_stack.push_back({this->state, this->error_message});
     p->signalError(error_message);
     return false;
 }
@@ -565,10 +568,10 @@ Parser::ParsingResult Parser::parseExpr() {
     if (this->hasNext()) {
         if (this->next_token->id == Token::IDENTIFIER && this->next_token->data == "E") {
             this->consume();
-            return ParsingResult((ExprNode *)NULL);
+            return ParsingResult((ExprNode *)NULL, this);
         }
     }
-    return ParsingResult("");
+    return ParsingResult("", this);
 }
 
 Parser::ParsingResult Parser::parseStmt() {
@@ -578,129 +581,138 @@ Parser::ParsingResult Parser::parseStmt() {
     if (!this->hasNext()) {
         this->highlightNext();
         this->signalError("Expected a statement");
-        return ParsingResult("");
+        return ParsingResult("", this);
     }
 
     if (this->consume(Token::WHILE_KW)) {
         this->saveState();
         auto cond = this->parseExpr();
         this->restoreState();
-        this->highlightNext();
 
         if (!cond.verify(this, ParsingResult::EXPR, "While loop must have its condition")) {
-            return ParsingResult("");
+            return ParsingResult("", this);
         }
 
         this->saveState();
         auto body = this->parseStmt();
         this->restoreState();
-        this->highlightNext();
 
         if (!body.verify(this, ParsingResult::STMT, "While loop must have its body")) {
-            return ParsingResult("");
+            return ParsingResult("", this);
         }
 
         auto while_stmt = new WhileStmtNode(cond.expr, body.stmt);
         auto stmt       = new StmtNode(while_stmt);
-        return ParsingResult(stmt);
+        return ParsingResult(stmt, this);
     }
     else if (this->consume(Token::FOR_KW)) {
-        this->saveState();
-        auto init = this->parseExpr();
-        this->restoreState();
-        this->highlightNext();
-
-        if (!init.verify(this, ParsingResult::EXPR, "For loop must have its initialization")) {
-            return ParsingResult("");
-        }
+        ParsingResult init((ExprNode *)NULL, this), cond((ExprNode *)NULL, this), step((ExprNode *)NULL, this);
         if (!this->consume(Token::SEMICOLON)) {
-            this->signalError("For loop's initialization must end with a semicolon.");
-            return ParsingResult("");
-        }
+            this->saveState();
+            init = this->parseExpr();
+            this->restoreState();
 
-        this->saveState();
-        auto cond = this->parseExpr();
-        this->restoreState();
+            if (!init.verify(this, ParsingResult::EXPR, "For loop must have its initialization")) {
+                return ParsingResult("", this);
+            }
+            if (!this->consume(Token::SEMICOLON)) {
+                this->signalError("For loop's initialization must end with a semicolon.");
+                return ParsingResult("", this);
+            }
+        }
         this->highlightNext();
 
-        if (!cond.verify(this, ParsingResult::EXPR, "For loop must have its condition")) {
-            return ParsingResult("");
-        }
         if (!this->consume(Token::SEMICOLON)) {
-            this->signalError("For loop's condition must end with a semicolon.");
-            return ParsingResult("");
-        }
+            this->saveState();
+            auto cond = this->parseExpr();
+            this->restoreState();
 
-        this->saveState();
-        auto step = this->parseExpr();
-        this->restoreState();
+            if (!cond.verify(this, ParsingResult::EXPR, "For loop must have its condition")) {
+                return ParsingResult("", this);
+            }
+            if (!this->consume(Token::SEMICOLON)) {
+                this->signalError("For loop's condition must end with a semicolon.");
+                return ParsingResult("", this);
+            }
+        }
         this->highlightNext();
 
-        if (!step.verify(this, ParsingResult::EXPR, "For loop must have its step")) {
-            return ParsingResult("");
+        if (!this->consume(Token::SEMICOLON)) {
+            this->saveState();
+            auto step = this->parseExpr();
+            this->restoreState();
+
+            if (!step.verify(this, ParsingResult::EXPR, "For loop must have its step")) {
+                return ParsingResult("", this);
+            }
+            if (!this->consume(Token::SEMICOLON)) {
+                this->signalError("For loop's step must end with a semicolon.");
+                return ParsingResult("", this);
+            }
         }
+        this->highlightNext();
 
         this->saveState();
         auto body = this->parseStmt();
         this->restoreState();
-        this->highlightNext();
 
         if (!body.verify(this, ParsingResult::STMT, "For loop must have its body")) {
-            return ParsingResult("");
+            return ParsingResult("", this);
         }
 
         auto for_stmt = new ForStmtNode(init.expr, cond.expr, step.expr, body.stmt);
         auto stmt     = new StmtNode(for_stmt);
-        return ParsingResult(stmt);
+        return ParsingResult(stmt, this);
     }
     else if (this->consume(Token::IF_KW)) {
         this->saveState();
         auto cond = this->parseExpr();
         this->restoreState();
-        this->highlightNext();
 
         if (!cond.verify(this, ParsingResult::EXPR, "If statement must have its condition")) {
-            return ParsingResult("");
+            return ParsingResult("", this);
         }
 
         this->saveState();
         auto body = this->parseStmt();
         this->restoreState();
-        this->highlightNext();
 
         if (!body.verify(this, ParsingResult::STMT, "If statement must have its body")) {
-            return ParsingResult("");
+            return ParsingResult("", this);
         }
 
         if (!this->consume(Token::ELSE_KW)) {
             auto if_stmt = new IfStmtNode(cond.expr, body.stmt, NULL);
             auto stmt    = new StmtNode(if_stmt);
-            return ParsingResult(stmt);
+            return ParsingResult(stmt, this);
         }
 
         this->saveState();
         auto else_body = this->parseStmt();
         this->restoreState();
-        this->highlightNext();
 
         if (!else_body.verify(this, ParsingResult::STMT, "If-else statement must have its else body")) {
-            return ParsingResult("");
+            return ParsingResult("", this);
         }
 
         auto if_stmt = new IfStmtNode(cond.expr, body.stmt, else_body.stmt);
         auto stmt    = new StmtNode(if_stmt);
-        return ParsingResult(stmt);
+        return ParsingResult(stmt, this);
+    }
+    else if (this->consume(Token::CONTINUE_KW)) {
+        auto stmt = new StmtNode(StmtNode::CONTINUE);
+        return ParsingResult(stmt, this);
     }
 
     // temp
     if (this->hasNext()) {
         if (this->next_token->id == Token::IDENTIFIER && this->next_token->data == "S") {
             this->consume();
-            return ParsingResult((StmtNode *)NULL);
+            return ParsingResult((StmtNode *)NULL, this);
         }
     }
-
-    return ParsingResult("");
+    this->highlightNext();
+    return ParsingResult("unknown statement", this);
 }
 
 StmtNode *Parser::parse(const std::vector<Token> &tokens) {
@@ -718,7 +730,7 @@ StmtNode *Parser::parse(const std::vector<Token> &tokens) {
     }
 
     std::vector<StmtNode *> statements;
-    while (this->hasNext()) {
+    while (this->next_token != prev(this->tokens.end())) {
         this->saveState();
         this->state.report_errors = false;
         ParsingResult res         = this->parseStmt();
@@ -733,98 +745,114 @@ StmtNode *Parser::parse(const std::vector<Token> &tokens) {
     return res;
 }
 
-Parser::ParsingResult::ParsingResult(const std::string &error_message) {
+Parser::ParsingResult::ParsingResult(const std::string &error_message, Parser *p) {
     this->success       = false;
     this->error_message = error_message;
+    this->state         = p->state;
 }
 
-Parser::ParsingResult::ParsingResult(ResultId id) {
+Parser::ParsingResult::ParsingResult(ResultId id, Parser *p) {
     this->success = true;
     this->id      = id;
+    this->state   = p->state;
 }
 
-Parser::ParsingResult::ParsingResult(ExprNode *expr) {
+Parser::ParsingResult::ParsingResult(ExprNode *expr, Parser *p) {
     this->success = true;
     this->id      = EXPR;
     this->expr    = expr;
+    this->state   = p->state;
 }
 
-Parser::ParsingResult::ParsingResult(FuncDefNode *func_def) {
+Parser::ParsingResult::ParsingResult(FuncDefNode *func_def, Parser *p) {
     this->success = true;
     this->id      = FUNC_DEC;
     this->expr    = expr;
+    this->state   = p->state;
 }
 
-Parser::ParsingResult::ParsingResult(RecordDefNode *record_def) {
+Parser::ParsingResult::ParsingResult(RecordDefNode *record_def, Parser *p) {
     this->success = true;
     this->id      = RECORD_DEF;
     this->expr    = expr;
+    this->state   = p->state;
 }
 
-Parser::ParsingResult::ParsingResult(OperatorNode *op) {
+Parser::ParsingResult::ParsingResult(OperatorNode *op, Parser *p) {
     this->success = true;
     this->id      = OPERATOR;
     this->expr    = expr;
+    this->state   = p->state;
 }
 
-Parser::ParsingResult::ParsingResult(AtomNode *atom) {
+Parser::ParsingResult::ParsingResult(AtomNode *atom, Parser *p) {
     this->success = true;
     this->id      = ATOM;
     this->expr    = expr;
+    this->state   = p->state;
 }
 
-Parser::ParsingResult::ParsingResult(ParExprNode *par_expr) {
+Parser::ParsingResult::ParsingResult(ParExprNode *par_expr, Parser *p) {
     this->success = true;
     this->id      = PAR_EXPR;
     this->expr    = expr;
+    this->state   = p->state;
 }
 
-Parser::ParsingResult::ParsingResult(IdentListNode *ident_list) {
+Parser::ParsingResult::ParsingResult(IdentListNode *ident_list, Parser *p) {
     this->success = true;
     this->id      = IDENT_LIST;
     this->expr    = expr;
+    this->state   = p->state;
 }
 
-Parser::ParsingResult::ParsingResult(MethodDefNode *method_def) {
+Parser::ParsingResult::ParsingResult(MethodDefNode *method_def, Parser *p) {
     this->success = true;
     this->id      = METHOD_DEF;
     this->expr    = expr;
+    this->state   = p->state;
 }
 
-Parser::ParsingResult::ParsingResult(StmtNode *stmt) {
+Parser::ParsingResult::ParsingResult(StmtNode *stmt, Parser *p) {
     this->success = true;
     this->id      = STMT;
     this->stmt    = stmt;
+    this->state   = p->state;
 }
 
-Parser::ParsingResult::ParsingResult(WhileStmtNode *while_stmt) {
+Parser::ParsingResult::ParsingResult(WhileStmtNode *while_stmt, Parser *p) {
     this->success    = true;
     this->id         = WHILE_STMT;
     this->while_stmt = while_stmt;
+    this->state      = p->state;
 }
 
-Parser::ParsingResult::ParsingResult(ForStmtNode *for_stmt) {
+Parser::ParsingResult::ParsingResult(ForStmtNode *for_stmt, Parser *p) {
     this->success  = true;
     this->id       = FOR_STMT;
     this->for_stmt = for_stmt;
+    this->state    = p->state;
 }
 
-Parser::ParsingResult::ParsingResult(IfStmtNode *if_stmt) {
+Parser::ParsingResult::ParsingResult(IfStmtNode *if_stmt, Parser *p) {
     this->success = true;
     this->id      = IF_STMT;
     this->if_stmt = if_stmt;
+    this->state   = p->state;
 }
 
-Parser::ParsingResult::ParsingResult(ReturnStmtNode *return_stmt) {
+Parser::ParsingResult::ParsingResult(ReturnStmtNode *return_stmt, Parser *p) {
     this->success     = true;
     this->id          = RETURN_STMT;
     this->return_stmt = return_stmt;
+    this->state       = p->state;
 }
 
-Parser::ParsingResult::ParsingResult(BlockStmtNode *block_stmt) {
+Parser::ParsingResult::ParsingResult(BlockStmtNode *block_stmt, Parser *p) {
     this->success    = true;
     this->id         = BLOCK_STMT;
     this->block_stmt = block_stmt;
+    this->state      = p->state;
 }
 
 }    // namespace Cotton

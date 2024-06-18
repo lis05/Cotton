@@ -104,7 +104,7 @@ WHILE:
     "while" E S
 
 FOR:
-    "for" ?E ";" ?E ";" ?E S
+    "for" ?E ";" ?E ";" ?E ";" S
 
 IF:
     "if" E S ?("else" S)
