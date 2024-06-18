@@ -283,6 +283,9 @@ void ErrorManager::signalError(const std::vector<std::pair<Token *, std::string>
         if (message.empty()) {
             continue;    // ignore meaningless errors
         }
+        if (cnt != 0) {
+            fprintf(stderr, "The mentioned error happened because of the following error:\n");
+        }
         cnt++;
         if (token != NULL) {
             this->signalError(message, *token);
@@ -290,9 +293,6 @@ void ErrorManager::signalError(const std::vector<std::pair<Token *, std::string>
         else {
             this->setErrorCharPos(-1);
             this->signalError(message);
-        }
-        if (cnt != errors.size()) {
-            fprintf(stderr, "The mentioned error happened because of the following error:\n");
         }
     }
 

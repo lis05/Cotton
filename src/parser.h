@@ -308,6 +308,7 @@ public:
     void                                             saveState();
     void                                             restoreState();
     void                                             highlight(Token *token);    // for errors
+    void                                             highlightNext();                // for errors
     // is espected to signal an error. however, if the current state forbids that, the errors and the current state
     // are stored in errors stack, and function returns
     void                                             signalError(const std::string &message);

@@ -479,6 +479,15 @@ void Parser::highlight(Token *token) {
     this->state.token = token;
 }
 
+void Parser::highlightNext() {
+    if (this->hasNext()) {
+        this->highlight(&*this->next_token);
+    }
+    else if (this->next_token != this->tokens.begin()) {
+        this->highlight(&*prev(this->next_token));
+    }
+}
+
 void Parser::signalError(const std::string &message) {
     this->errors_stack.push_back({this->state, message});
 
@@ -510,11 +519,15 @@ bool Parser::consume(Token::TokenId id) {
     if (this->next_token->id != id) {
         return false;
     }
+    this->highlight(&*this->next_token);
     this->next_token++;
     return true;
 }
 
 Token::TokenId Parser::consume() {
+    if (this->hasNext()) {
+        this->highlight(&*this->next_token);
+    }
     return (this->next_token++)->id;
 }
 
@@ -524,29 +537,185 @@ bool Parser::hasPrev() {
 
 void Parser::rollback() {
     this->next_token--;
+    if (this->next_token != this->tokens.begin()) {
+        this->highlight(&*prev(this->next_token));
+    }
 }
 
 bool Parser::ParsingResult::verify(Parser *p, ResultId id, const std::string error_message) {
     if (this->success && this->id == id) {
         return true;
     }
+    p->errors_stack.push_back({p->state, this->error_message});
     p->signalError(error_message);
     return false;
 }
 
+static void skipSemicolons(Parser *parser, bool single = false) {
+    while (parser->hasNext() && parser->consume(Token::SEMICOLON)) {
+        if (single) {
+            break;
+        }
+        continue;
+    }
+}
+
 Parser::ParsingResult Parser::parseExpr() {
-    return ParsingResult("failed");
+    // temp
+    if (this->hasNext()) {
+        if (this->next_token->id == Token::IDENTIFIER && this->next_token->data == "E") {
+            this->consume();
+            return ParsingResult((ExprNode *)NULL);
+        }
+    }
+    return ParsingResult("");
 }
 
 Parser::ParsingResult Parser::parseStmt() {
-    return ParsingResult(std::string("failed"));
+    // skip all semicolons
+    skipSemicolons(this);
+
+    if (!this->hasNext()) {
+        this->highlightNext();
+        this->signalError("Expected a statement");
+        return ParsingResult("");
+    }
+
+    if (this->consume(Token::WHILE_KW)) {
+        this->saveState();
+        auto cond = this->parseExpr();
+        this->restoreState();
+        this->highlightNext();
+
+        if (!cond.verify(this, ParsingResult::EXPR, "While loop must have its condition")) {
+            return ParsingResult("");
+        }
+
+        this->saveState();
+        auto body = this->parseStmt();
+        this->restoreState();
+        this->highlightNext();
+
+        if (!body.verify(this, ParsingResult::STMT, "While loop must have its body")) {
+            return ParsingResult("");
+        }
+
+        auto while_stmt = new WhileStmtNode(cond.expr, body.stmt);
+        auto stmt       = new StmtNode(while_stmt);
+        return ParsingResult(stmt);
+    }
+    else if (this->consume(Token::FOR_KW)) {
+        this->saveState();
+        auto init = this->parseExpr();
+        this->restoreState();
+        this->highlightNext();
+
+        if (!init.verify(this, ParsingResult::EXPR, "For loop must have its initialization")) {
+            return ParsingResult("");
+        }
+        if (!this->consume(Token::SEMICOLON)) {
+            this->signalError("For loop's initialization must end with a semicolon.");
+            return ParsingResult("");
+        }
+
+        this->saveState();
+        auto cond = this->parseExpr();
+        this->restoreState();
+        this->highlightNext();
+
+        if (!cond.verify(this, ParsingResult::EXPR, "For loop must have its condition")) {
+            return ParsingResult("");
+        }
+        if (!this->consume(Token::SEMICOLON)) {
+            this->signalError("For loop's condition must end with a semicolon.");
+            return ParsingResult("");
+        }
+
+        this->saveState();
+        auto step = this->parseExpr();
+        this->restoreState();
+        this->highlightNext();
+
+        if (!step.verify(this, ParsingResult::EXPR, "For loop must have its step")) {
+            return ParsingResult("");
+        }
+
+        this->saveState();
+        auto body = this->parseStmt();
+        this->restoreState();
+        this->highlightNext();
+
+        if (!body.verify(this, ParsingResult::STMT, "For loop must have its body")) {
+            return ParsingResult("");
+        }
+
+        auto for_stmt = new ForStmtNode(init.expr, cond.expr, step.expr, body.stmt);
+        auto stmt     = new StmtNode(for_stmt);
+        return ParsingResult(stmt);
+    }
+    else if (this->consume(Token::IF_KW)) {
+        this->saveState();
+        auto cond = this->parseExpr();
+        this->restoreState();
+        this->highlightNext();
+
+        if (!cond.verify(this, ParsingResult::EXPR, "If statement must have its condition")) {
+            return ParsingResult("");
+        }
+
+        this->saveState();
+        auto body = this->parseStmt();
+        this->restoreState();
+        this->highlightNext();
+
+        if (!body.verify(this, ParsingResult::STMT, "If statement must have its body")) {
+            return ParsingResult("");
+        }
+
+        if (!this->consume(Token::ELSE_KW)) {
+            auto if_stmt = new IfStmtNode(cond.expr, body.stmt, NULL);
+            auto stmt    = new StmtNode(if_stmt);
+            return ParsingResult(stmt);
+        }
+
+        this->saveState();
+        auto else_body = this->parseStmt();
+        this->restoreState();
+        this->highlightNext();
+
+        if (!else_body.verify(this, ParsingResult::STMT, "If-else statement must have its else body")) {
+            return ParsingResult("");
+        }
+
+        auto if_stmt = new IfStmtNode(cond.expr, body.stmt, else_body.stmt);
+        auto stmt    = new StmtNode(if_stmt);
+        return ParsingResult(stmt);
+    }
+
+    // temp
+    if (this->hasNext()) {
+        if (this->next_token->id == Token::IDENTIFIER && this->next_token->data == "S") {
+            this->consume();
+            return ParsingResult((StmtNode *)NULL);
+        }
+    }
+
+    return ParsingResult("");
 }
 
 StmtNode *Parser::parse(const std::vector<Token> &tokens) {
     this->tokens                  = tokens;
+    this->next_token              = this->tokens.begin();
     this->state.cur_associativity = LEFT_TO_RIGHT;
     this->state.cur_priority      = 0;
     this->state.report_errors     = true;
+    this->state.token             = NULL;
+    this->error_manager->setErrorCharPos(-1);
+    this->error_manager->setErrorMessage("");
+
+    if (!tokens.empty()) {
+        this->highlight((Token *)&(tokens[0]));
+    }
 
     std::vector<StmtNode *> statements;
     while (this->hasNext()) {
