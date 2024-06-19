@@ -90,6 +90,47 @@ ExprNode::ExprNode(ParExprNode *par_expr) {
     this->par_expr = par_expr;
 }
 
+static void printPrefix(int indent, int step, bool init = true) {
+    int cnt = 0;
+    for (int i = 0; i < indent; i++) {
+        for (int ii = 0; ii < step; ii++) {
+            printf(" ");
+        }
+        if (init || (!init && i < indent - 1)) {
+            if (i % 2 == 0) {
+                printf("|");
+            }
+            else {
+                printf("?");
+            }
+        }
+    }
+}
+
+void ExprNode::print(int indent, int step) {
+    printPrefix(indent, step, false);
+    if (this == NULL) {
+        printf("NULL\n");
+        return;
+    }
+    printf("expression:\n");
+    if (this->id == ExprNode::FUNCTION_DEFINITION) {
+        this->func_def->print(indent + 1, step);
+    }
+    else if (this->id == ExprNode::RECORD_DEFINITION) {
+        this->record_def->print(indent + 1, step);
+    }
+    else if (this->id == ExprNode::OPERATOR) {
+        this->op->print(indent + 1, step);
+    }
+    else if (this->id == ExprNode::ATOM) {
+        this->atom->print(indent + 1, step);
+    }
+    else if (this->id == ExprNode::PARENTHESES_EXPRESSION) {
+        this->par_expr->print(indent + 1, step);
+    }
+}
+
 FuncDefNode::~FuncDefNode() {
     delete this->params;
     delete this->body;
@@ -103,6 +144,31 @@ FuncDefNode::FuncDefNode(Token *name, IdentListNode *params, StmtNode *body) {
     this->name   = name;
     this->params = params;
     this->body   = body;
+}
+
+void FuncDefNode::print(int indent, int step) {
+    printPrefix(indent, step, false);
+    if (this == NULL) {
+        printf("NULL\n");
+        return;
+    }
+    printf("function definition:\n");
+
+    printPrefix(indent, step);
+    if (this->name == NULL) {
+        printf("name: NULL token\n");
+    }
+    else {
+        printf("name: %s\n", this->name->data.c_str());
+    }
+
+    printPrefix(indent, step);
+    printf("params:\n");
+    this->params->print(indent + 1, step);
+
+    printPrefix(indent, step);
+    printf("body:\n");
+    this->body->print(indent + 1, step);
 }
 
 RecordDefNode::~RecordDefNode() {
@@ -123,6 +189,40 @@ RecordDefNode::RecordDefNode(Token                              *name,
     this->methods = methods;
 }
 
+void RecordDefNode::print(int indent, int step) {
+    printPrefix(indent, step, false);
+    if (this == NULL) {
+        printf("NULL\n");
+        return;
+    }
+    printf("record definition:\n");
+
+    printPrefix(indent, step);
+    if (this->name == NULL) {
+        printf("name: NULL token\n");
+    }
+    else {
+        printf("name: %s\n", this->name->data.c_str());
+    }
+
+    printPrefix(indent, step);
+    printf("fields:\n");
+    int i = 0;
+    for (auto field : this->fields) {
+        printPrefix(indent, step);
+        printf("%d: %s\n", i++, field->data.c_str());
+    }
+
+    printPrefix(indent, step);
+    printf("methods:\n");
+    i = 0;
+    for (auto method : this->methods) {
+        printPrefix(indent, step);
+        printf("%d:\n", i++);
+        method->print(indent + 1, step);
+    }
+}
+
 OperatorNode::~OperatorNode() {
     delete first;
     delete second;
@@ -137,6 +237,23 @@ OperatorNode::OperatorNode(OperatorId id, ExprNode *first, ExprNode *second, Tok
     this->first  = first;
     this->second = second;
     this->op     = op;
+}
+
+void OperatorNode::print(int indent, int step) {
+    printPrefix(indent, step, false);
+    if (this == NULL) {
+        printf("NULL\n");
+        return;
+    }
+    printf("operator %s\n", this->op->data.c_str());
+
+    printPrefix(indent, step);
+    printf("arg1:\n");
+    this->first->print(indent + 1, step);
+
+    printPrefix(indent, step);
+    printf("arg2:\n");
+    this->second->print(indent + 1, step);
 }
 
 AtomNode::~AtomNode() {
@@ -184,6 +301,37 @@ AtomNode::AtomNode(Token *token) {
     };
 }
 
+void AtomNode::print(int indent, int step) {
+    printPrefix(indent, step, false);
+    if (this == NULL) {
+        printf("NULL\n");
+        return;
+    }
+    printf("atom");
+
+    if (this->id == BOOLEAN) {
+        printf(" boolean: %s\n", this->token->data.c_str());
+    }
+    else if (this->id == CHARACTER) {
+        printf(" character: %s\n", this->token->data.c_str());
+    }
+    else if (this->id == INTEGER) {
+        printf(" integer: %s\n", this->token->data.c_str());
+    }
+    else if (this->id == REAL) {
+        printf(" real: %s\n", this->token->data.c_str());
+    }
+    else if (this->id == STRING) {
+        printf(" string: %s\n", this->token->data.c_str());
+    }
+    else if (this->id == IDENTIFIER) {
+        printf(" identifier: %s\n", this->token->data.c_str());
+    }
+    else if (this->id == NOTHING) {
+        printf(" nothing: %s\n", this->token->data.c_str());
+    }
+}
+
 ParExprNode::~ParExprNode() {
     delete this->expr;
 }
@@ -192,12 +340,38 @@ ParExprNode::ParExprNode(ExprNode *expr) {
     this->expr = expr;
 }
 
+void ParExprNode::print(int indent, int step) {
+    printPrefix(indent, step, false);
+    if (this == NULL) {
+        printf("NULL\n");
+        return;
+    }
+    printf("parentheses expression\n");
+
+    this->expr->print(indent + 1, step);
+}
+
 IdentListNode::~IdentListNode() {
     this->list.clear();
 }
 
 IdentListNode::IdentListNode(const std::vector<Token *> &list) {
     this->list = list;
+}
+
+void IdentListNode::print(int indent, int step) {
+    printPrefix(indent, step, false);
+    if (this == NULL) {
+        printf("NULL\n");
+        return;
+    }
+    printf("identifier list:\n");
+
+    int i = 0;
+    for (auto ident : this->list) {
+        printPrefix(indent, step);
+        printf("%d: %s\n", i++, ident->data.c_str());
+    }
 }
 
 MethodDefNode::~MethodDefNode() {
@@ -213,6 +387,31 @@ MethodDefNode::MethodDefNode(Token *name, IdentListNode *params, StmtNode *body)
     this->name   = name;
     this->params = params;
     this->body   = body;
+}
+
+void MethodDefNode::print(int indent, int step) {
+    printPrefix(indent, step, false);
+    if (this == NULL) {
+        printf("NULL\n");
+        return;
+    }
+    printf("method definition:\n");
+
+    printPrefix(indent, step);
+    if (this->name == NULL) {
+        printf("name: NULL token\n");
+    }
+    else {
+        printf("name: %s", this->name->data.c_str());
+    }
+
+    printPrefix(indent, step);
+    printf("params:\n");
+    this->params->print(indent + 1, step);
+
+    printPrefix(indent, step);
+    printf("body:\n");
+    this->body->print(indent + 1, step);
 }
 
 StmtNode::~StmtNode() {
@@ -310,6 +509,41 @@ StmtNode::StmtNode(ExprNode *expr) {
     this->expr = expr;
 }
 
+void StmtNode::print(int indent, int step) {
+    printPrefix(indent, step, false);
+    if (this == NULL) {
+        printf("NULL\n");
+        return;
+    }
+    printf("statement:\n");
+    if (this->id == StmtNode::WHILE) {
+        this->while_stmt->print(indent + 1, step);
+    }
+    else if (this->id == StmtNode::FOR) {
+        this->for_stmt->print(indent + 1, step);
+    }
+    else if (this->id == StmtNode::IF) {
+        this->if_stmt->print(indent + 1, step);
+    }
+    else if (this->id == StmtNode::CONTINUE) {
+        printPrefix(indent + 1, step, false);
+        printf("continue\n");
+    }
+    else if (this->id == StmtNode::BREAK) {
+        printPrefix(indent + 1, step, false);
+        printf("break\n");
+    }
+    else if (this->id == StmtNode::RETURN) {
+        this->return_stmt->print(indent + 1, step);
+    }
+    else if (this->id == StmtNode::BLOCK) {
+        this->block_stmt->print(indent + 1, step);
+    }
+    else if (this->id == StmtNode::EXPR) {
+        this->expr->print(indent + 1, step);
+    }
+}
+
 WhileStmtNode::~WhileStmtNode() {
     delete this->cond;
     delete this->body;
@@ -321,6 +555,23 @@ WhileStmtNode::~WhileStmtNode() {
 WhileStmtNode::WhileStmtNode(ExprNode *cond, StmtNode *body) {
     this->cond = cond;
     this->body = body;
+}
+
+void WhileStmtNode::print(int indent, int step) {
+    printPrefix(indent, step, false);
+    if (this == NULL) {
+        printf("NULL\n");
+        return;
+    }
+    printf("while:\n");
+
+    printPrefix(indent, step);
+    printf("condition:\n");
+    this->cond->print(indent + 1, step);
+
+    printPrefix(indent, step);
+    printf("body:\n");
+    this->body->print(indent + 1, step);
 }
 
 ForStmtNode::~ForStmtNode() {
@@ -342,6 +593,31 @@ ForStmtNode::ForStmtNode(ExprNode *init, ExprNode *cond, ExprNode *step, StmtNod
     this->body = body;
 }
 
+void ForStmtNode::print(int indent, int step) {
+    printPrefix(indent, step, false);
+    if (this == NULL) {
+        printf("NULL\n");
+        return;
+    }
+    printf("for:\n");
+
+    printPrefix(indent, step);
+    printf("initialization:\n");
+    this->init->print(indent + 1, step);
+
+    printPrefix(indent, step);
+    printf("condition:\n");
+    this->cond->print(indent + 1, step);
+
+    printPrefix(indent, step);
+    printf("step:\n");
+    this->step->print(indent + 1, step);
+
+    printPrefix(indent, step);
+    printf("body:\n");
+    this->body->print(indent + 1, step);
+}
+
 IfStmtNode::~IfStmtNode() {
     delete this->cond;
     delete this->body;
@@ -358,6 +634,27 @@ IfStmtNode::IfStmtNode(ExprNode *cond, StmtNode *body, StmtNode *else_body) {
     this->else_body = else_body;
 }
 
+void IfStmtNode::print(int indent, int step) {
+    printPrefix(indent, step, false);
+    if (this == NULL) {
+        printf("NULL\n");
+        return;
+    }
+    printf("if:\n");
+
+    printPrefix(indent, step);
+    printf("condition:\n");
+    this->cond->print(indent + 1, step);
+
+    printPrefix(indent, step);
+    printf("body:\n");
+    this->body->print(indent + 1, step);
+
+    printPrefix(indent, step);
+    printf("else-body:\n");
+    this->else_body->print(indent + 1, step);
+}
+
 ReturnStmtNode::~ReturnStmtNode() {
     delete this->value;
 
@@ -366,6 +663,18 @@ ReturnStmtNode::~ReturnStmtNode() {
 
 ReturnStmtNode::ReturnStmtNode(ExprNode *value) {
     this->value = value;
+}
+
+void ReturnStmtNode::print(int indent, int step) {
+    printPrefix(indent, step, false);
+    if (this == NULL) {
+        printf("NULL\n");
+        return;
+    }
+    printf("return:\n");
+
+    printPrefix(indent, step);
+    this->value->print(indent + 1, step);
 }
 
 BlockStmtNode::~BlockStmtNode() {
@@ -379,6 +688,22 @@ BlockStmtNode::~BlockStmtNode() {
 BlockStmtNode::BlockStmtNode(bool is_scoped, const std::vector<StmtNode *> list) {
     this->is_scoped = is_scoped;
     this->list      = list;
+}
+
+void BlockStmtNode::print(int indent, int step) {
+    printPrefix(indent, step, false);
+    if (this == NULL) {
+        printf("NULL\n");
+        return;
+    }
+    printf("%s block:\n", this->is_scoped ? "scoped" : "unscoped");
+
+    int i = 0;
+    for (auto elem : this->list) {
+        printPrefix(indent, step);
+        printf("%d:\n", i++);
+        elem->print(indent + 1, step);
+    }
 }
 
 #define passert(value, message) __passert__(value, #value, message, this, __FILE__, __LINE__);
@@ -480,7 +805,7 @@ void Parser::highlight(Token *token) {
 }
 
 void Parser::highlightNext() {
-    if (this->hasNext()) {
+    if (this->next_token != this->tokens.end()) {
         this->highlight(&*this->next_token);
     }
     else if (this->next_token != this->tokens.begin()) {
@@ -508,7 +833,7 @@ bool Parser::canPassThrough(OperatorNode::OperatorId operator_id) {
 }
 
 bool Parser::hasNext() {
-    return this->next_token != this->tokens.end();
+    return this->next_token != prev(this->tokens.end());
 }
 
 Token::TokenId Parser::checkNext() {
@@ -519,16 +844,17 @@ bool Parser::consume(Token::TokenId id) {
     if (this->next_token->id != id) {
         return false;
     }
-    this->highlight(&*this->next_token);
     this->next_token++;
+    this->highlight(&*this->next_token);
     return true;
 }
 
 Token::TokenId Parser::consume() {
+    auto res = (this->next_token++)->id;
     if (this->hasNext()) {
         this->highlight(&*this->next_token);
     }
-    return (this->next_token++)->id;
+    return res;
 }
 
 bool Parser::hasPrev() {
@@ -554,16 +880,84 @@ bool Parser::ParsingResult::verify(Parser *p, ResultId id, const std::string err
     return false;
 }
 
-static void skipSemicolons(Parser *parser, bool single = false) {
+static bool skipSemicolons(Parser *parser, bool single = false) {
+    bool res = false;
     while (parser->hasNext() && parser->consume(Token::SEMICOLON)) {
+        res = true;
         if (single) {
             break;
         }
         continue;
     }
+    return res;
 }
 
 Parser::ParsingResult Parser::parseExpr() {
+    if (this->consume(Token::OPEN_BRACKET)) {
+        this->saveState();
+        auto in_expr = this->parseExpr();
+        this->restoreState();
+
+        if (!in_expr.verify(this, ParsingResult::EXPR, "Expected an expression")) {
+            return ParsingResult("", this);
+        }
+
+        if (!this->consume(Token::CLOSE_BRACKET)) {
+            return ParsingResult("Expected a close bracket", this);
+        }
+
+        auto par_expr = new ParExprNode(in_expr.expr);
+        auto expr     = new ExprNode(par_expr);
+        return ParsingResult(expr, this);
+    }
+    else if (this->consume(Token::FUNCTION_KW)) {
+        Token *name = NULL;
+        if (this->hasNext() && this->next_token->id == Token::IDENTIFIER) {
+            name = &*this->next_token;
+            this->consume();
+        }
+
+        if (!this->consume(Token::OPEN_BRACKET)) {
+            return ParsingResult("Expected an open bracket", this);
+        }
+
+        std::vector<Token *> list;
+        if (!this->consume(Token::CLOSE_BRACKET)) {
+            while (this->hasNext()) {
+                Token *param = &*this->next_token;
+                if (!this->consume(Token::IDENTIFIER)) {
+                    return ParsingResult("Expected an identifier", this);
+                }
+                list.push_back(param);
+
+                if (this->checkNext() == Token::CLOSE_BRACKET) {
+                    break;
+                }
+
+                if (!this->consume(Token::COMMA)) {
+                    return ParsingResult("Expected a comma", this);
+                }
+            }
+
+            if (!this->consume(Token::CLOSE_BRACKET)) {
+                return ParsingResult("Expected a close bracket", this);
+            }
+        }
+
+        this->saveState();
+        auto body = this->parseStmt();
+        this->restoreState();
+
+        if (!body.verify(this, ParsingResult::STMT, "Expected a function body")) {
+            return ParsingResult("", this);
+        }
+
+        auto param_list = new IdentListNode(list);
+        auto func_def   = new FuncDefNode(name, param_list, body.stmt);
+        auto expr       = new ExprNode(func_def);
+        return ParsingResult(expr, this);
+    }
+
     // temp
     if (this->hasNext()) {
         if (this->next_token->id == Token::IDENTIFIER && this->next_token->data == "E") {
@@ -576,12 +970,24 @@ Parser::ParsingResult Parser::parseExpr() {
 
 Parser::ParsingResult Parser::parseStmt() {
     // skip all semicolons
-    skipSemicolons(this);
+    auto had_semicolons = skipSemicolons(this);
 
     if (!this->hasNext()) {
         this->highlightNext();
         this->signalError("Expected a statement");
         return ParsingResult("", this);
+    }
+    if (had_semicolons && this->consume(Token::CLOSE_BRACKET)) {
+        this->rollback();
+        return ParsingResult((StmtNode *)NULL, this);
+    }
+    if (had_semicolons && this->consume(Token::CLOSE_CURLY_BRACKET)) {
+        this->rollback();
+        return ParsingResult((StmtNode *)NULL, this);
+    }
+    if (had_semicolons && this->consume(Token::CLOSE_SQUARE_BRACKET)) {
+        this->rollback();
+        return ParsingResult((StmtNode *)NULL, this);
     }
 
     if (this->consume(Token::WHILE_KW)) {
@@ -589,7 +995,7 @@ Parser::ParsingResult Parser::parseStmt() {
         auto cond = this->parseExpr();
         this->restoreState();
 
-        if (!cond.verify(this, ParsingResult::EXPR, "While loop must have its condition")) {
+        if (!cond.verify(this, ParsingResult::EXPR, "Expected while loop condition")) {
             return ParsingResult("", this);
         }
 
@@ -597,7 +1003,7 @@ Parser::ParsingResult Parser::parseStmt() {
         auto body = this->parseStmt();
         this->restoreState();
 
-        if (!body.verify(this, ParsingResult::STMT, "While loop must have its body")) {
+        if (!body.verify(this, ParsingResult::STMT, "Expected while loop body")) {
             return ParsingResult("", this);
         }
 
@@ -612,7 +1018,7 @@ Parser::ParsingResult Parser::parseStmt() {
             init = this->parseExpr();
             this->restoreState();
 
-            if (!init.verify(this, ParsingResult::EXPR, "For loop must have its initialization")) {
+            if (!init.verify(this, ParsingResult::EXPR, "Expected for loop initialization")) {
                 return ParsingResult("", this);
             }
             if (!this->consume(Token::SEMICOLON)) {
@@ -627,7 +1033,7 @@ Parser::ParsingResult Parser::parseStmt() {
             auto cond = this->parseExpr();
             this->restoreState();
 
-            if (!cond.verify(this, ParsingResult::EXPR, "For loop must have its condition")) {
+            if (!cond.verify(this, ParsingResult::EXPR, "Expected for loop condition")) {
                 return ParsingResult("", this);
             }
             if (!this->consume(Token::SEMICOLON)) {
@@ -642,7 +1048,7 @@ Parser::ParsingResult Parser::parseStmt() {
             auto step = this->parseExpr();
             this->restoreState();
 
-            if (!step.verify(this, ParsingResult::EXPR, "For loop must have its step")) {
+            if (!step.verify(this, ParsingResult::EXPR, "Expected for loop step")) {
                 return ParsingResult("", this);
             }
             if (!this->consume(Token::SEMICOLON)) {
@@ -656,7 +1062,7 @@ Parser::ParsingResult Parser::parseStmt() {
         auto body = this->parseStmt();
         this->restoreState();
 
-        if (!body.verify(this, ParsingResult::STMT, "For loop must have its body")) {
+        if (!body.verify(this, ParsingResult::STMT, "Expected for loop body")) {
             return ParsingResult("", this);
         }
 
@@ -669,7 +1075,7 @@ Parser::ParsingResult Parser::parseStmt() {
         auto cond = this->parseExpr();
         this->restoreState();
 
-        if (!cond.verify(this, ParsingResult::EXPR, "If statement must have its condition")) {
+        if (!cond.verify(this, ParsingResult::EXPR, "Expected if statement condition")) {
             return ParsingResult("", this);
         }
 
@@ -677,7 +1083,7 @@ Parser::ParsingResult Parser::parseStmt() {
         auto body = this->parseStmt();
         this->restoreState();
 
-        if (!body.verify(this, ParsingResult::STMT, "If statement must have its body")) {
+        if (!body.verify(this, ParsingResult::STMT, "Expected if statement body")) {
             return ParsingResult("", this);
         }
 
@@ -691,7 +1097,7 @@ Parser::ParsingResult Parser::parseStmt() {
         auto else_body = this->parseStmt();
         this->restoreState();
 
-        if (!else_body.verify(this, ParsingResult::STMT, "If-else statement must have its else body")) {
+        if (!else_body.verify(this, ParsingResult::STMT, "Expected if statement else body")) {
             return ParsingResult("", this);
         }
 
@@ -703,16 +1109,90 @@ Parser::ParsingResult Parser::parseStmt() {
         auto stmt = new StmtNode(StmtNode::CONTINUE);
         return ParsingResult(stmt, this);
     }
-
-    // temp
-    if (this->hasNext()) {
-        if (this->next_token->id == Token::IDENTIFIER && this->next_token->data == "S") {
-            this->consume();
-            return ParsingResult((StmtNode *)NULL, this);
-        }
+    else if (this->consume(Token::BREAK_KW)) {
+        auto stmt = new StmtNode(StmtNode::BREAK);
+        return ParsingResult(stmt, this);
     }
-    this->highlightNext();
-    return ParsingResult("unknown statement", this);
+    else if (this->consume(Token::RETURN_KW)) {
+        if (this->consume(Token::SEMICOLON)) {
+            auto return_stmt = new ReturnStmtNode(NULL);
+            auto stmt        = new StmtNode(return_stmt);
+            return ParsingResult(stmt, this);
+        }
+
+        this->saveState();
+        auto value = this->parseExpr();
+        this->restoreState();
+
+        if (!value.verify(this, ParsingResult::EXPR, "Expected return statement value")) {
+            return ParsingResult("", this);
+        }
+
+        auto return_stmt = new ReturnStmtNode(value.expr);
+        auto stmt        = new StmtNode(return_stmt);
+        return ParsingResult(stmt, this);
+    }
+    else if (this->consume(Token::BLOCK_KW)) {
+        if (!this->consume(Token::OPEN_CURLY_BRACKET)) {
+            return ParsingResult("Block keyword must be followed by an open curly bracket", this);
+        }
+        std::vector<StmtNode *> list;
+        while (this->hasNext()) {
+            if (this->consume(Token::CLOSE_CURLY_BRACKET)) {
+                auto block_stmt = new BlockStmtNode(true, list);
+                auto stmt       = new StmtNode(block_stmt);
+                return ParsingResult(stmt, this);
+            }
+
+            this->saveState();
+            auto stmt = this->parseStmt();
+            this->restoreState();
+
+            if (!stmt.verify(this, ParsingResult::STMT, "Expected a statement")) {
+                return ParsingResult("", this);
+            }
+
+            list.push_back(stmt.stmt);
+        }
+
+        return ParsingResult("Block statement must end with a close curly bracket", this);
+    }
+    else if (this->consume(Token::OPEN_CURLY_BRACKET)) {
+        std::vector<StmtNode *> list;
+        while (this->hasNext()) {
+            if (this->consume(Token::CLOSE_CURLY_BRACKET)) {
+                auto block_stmt = new BlockStmtNode(true, list);
+                auto stmt       = new StmtNode(block_stmt);
+                return ParsingResult(stmt, this);
+            }
+
+            this->saveState();
+            auto stmt = this->parseStmt();
+            this->restoreState();
+
+            if (!stmt.verify(this, ParsingResult::STMT, "Expected a statement")) {
+                return ParsingResult("", this);
+            }
+
+            list.push_back(stmt.stmt);
+        }
+        return ParsingResult("Block statement must end with a close curly bracket", this);
+    }
+
+    // the only left case is an expression
+    this->saveState();
+    auto expr = this->parseExpr();
+    this->restoreState();
+
+    if (!expr.verify(this, ParsingResult::EXPR, "Unknown statement")) {
+        return ParsingResult("", this);
+    }
+    if (!this->consume(Token::SEMICOLON)) {
+        return ParsingResult("Expression statement must end with a semicolon", this);
+    }
+
+    auto stmt = new StmtNode(expr.expr);
+    return ParsingResult(stmt, this);
 }
 
 StmtNode *Parser::parse(const std::vector<Token> &tokens) {
@@ -730,7 +1210,12 @@ StmtNode *Parser::parse(const std::vector<Token> &tokens) {
     }
 
     std::vector<StmtNode *> statements;
-    while (this->next_token != prev(this->tokens.end())) {
+    while (this->hasNext()) {
+        skipSemicolons(this);
+        if (!this->hasNext()) {
+            break;
+        }
+
         this->saveState();
         this->state.report_errors = false;
         ParsingResult res         = this->parseStmt();

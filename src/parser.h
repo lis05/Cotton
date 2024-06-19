@@ -65,6 +65,8 @@ public:
     ExprNode(OperatorNode *op);
     ExprNode(AtomNode *atom);
     ExprNode(ParExprNode *par_expr);
+
+    void print(int indent = 0, int step = 2);
 };
 
 class FuncDefNode {
@@ -77,6 +79,8 @@ public:
     ~FuncDefNode();
 
     FuncDefNode(Token *name, IdentListNode *params, StmtNode *body);
+
+    void print(int indent = 0, int step = 2);
 };
 
 class RecordDefNode {
@@ -89,6 +93,8 @@ public:
     ~RecordDefNode();
 
     RecordDefNode(Token *name, const std::vector<Token *> &fields, const std::vector<MethodDefNode *> &methods);
+
+    void print(int indent = 0, int step = 2);
 };
 
 class OperatorNode {
@@ -139,6 +145,8 @@ public:
     ~OperatorNode();
 
     OperatorNode(OperatorId id, ExprNode *first, ExprNode *second, Token *op);
+
+    void print(int indent = 0, int step = 2);
 };
 
 class AtomNode {
@@ -158,6 +166,8 @@ public:
     ~AtomNode();
 
     AtomNode(Token *token);    // takes value from the token
+
+    void print(int indent = 0, int step = 2);
 };
 
 class ParExprNode {
@@ -168,6 +178,8 @@ public:
     ~ParExprNode();
 
     ParExprNode(ExprNode *expr);
+
+    void print(int indent = 0, int step = 2);
 };
 
 class IdentListNode {
@@ -178,6 +190,8 @@ public:
     ~IdentListNode();
 
     IdentListNode(const std::vector<Token *> &list);
+
+    void print(int indent = 0, int step = 2);
 };
 
 class MethodDefNode {
@@ -190,6 +204,8 @@ public:
     ~MethodDefNode();
 
     MethodDefNode(Token *name, IdentListNode *params, StmtNode *body);
+
+    void print(int indent = 0, int step = 2);
 };
 
 class StmtNode {
@@ -215,6 +231,8 @@ public:
     StmtNode(ReturnStmtNode *return_stmt);
     StmtNode(BlockStmtNode *block_stmt);
     StmtNode(ExprNode *expr);
+
+    void print(int indent = 0, int step = 2);
 };
 
 class WhileStmtNode {
@@ -226,6 +244,8 @@ public:
     ~WhileStmtNode();
 
     WhileStmtNode(ExprNode *cond, StmtNode *body);
+
+    void print(int indent = 0, int step = 2);
 };
 
 class ForStmtNode {
@@ -237,6 +257,8 @@ public:
     ~ForStmtNode();
 
     ForStmtNode(ExprNode *init, ExprNode *cond, ExprNode *step, StmtNode *body);
+
+    void print(int indent = 0, int step = 2);
 };
 
 class IfStmtNode {
@@ -249,6 +271,8 @@ public:
     ~IfStmtNode();
 
     IfStmtNode(ExprNode *cond, StmtNode *body, StmtNode *else_body);
+
+    void print(int indent = 0, int step = 2);
 };
 
 class ReturnStmtNode {
@@ -259,6 +283,8 @@ public:
     ~ReturnStmtNode();
 
     ReturnStmtNode(ExprNode *value);
+
+    void print(int indent = 0, int step = 2);
 };
 
 class BlockStmtNode {
@@ -270,6 +296,8 @@ public:
     ~BlockStmtNode();
 
     BlockStmtNode(bool is_scoped, const std::vector<StmtNode *> list);
+
+    void print(int indent = 0, int step = 2);
 };
 
 class Parser {
