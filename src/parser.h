@@ -320,6 +320,7 @@ public:
     };
 
     OperatorInfo getOperatorInfo(Token *token, bool is_pre_op, int special = 0);
+    void         goThrough(OperatorInfo op_info);
 
     class ParserState {
     public:
@@ -341,7 +342,7 @@ public:
     // are stored in errors stack, and function returns
     void                                             signalError(const std::string &message);
 
-    bool canPassThrough(OperatorNode::OperatorId operator_id);
+    bool canPassThrough(OperatorInfo op_info);
 
     bool           hasNext();      // returns false if tokens have ended
     Token::TokenId checkNext();    // doesn't consume

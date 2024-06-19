@@ -257,10 +257,6 @@ void OperatorNode::print(int indent, int step) {
 }
 
 AtomNode::~AtomNode() {
-    if (this->id == IDENTIFIER) {
-        delete this->ident;
-    }
-
     this->ident = NULL;
     this->token = NULL;
 }
@@ -298,7 +294,7 @@ AtomNode::AtomNode(Token *token) {
         this->ident = token;
         break;
     }
-    };
+    }
 }
 
 void AtomNode::print(int indent, int step) {
@@ -787,6 +783,11 @@ Parser::OperatorInfo Parser::getOperatorInfo(Token *token, bool is_pre_op, int s
     return {};
 }
 
+void Parser::goThrough(OperatorInfo op_info) {
+    this->state.cur_associativity = op_info.associativity;
+    this->state.cur_priority      = op_info.priority;
+}
+
 void Parser::saveState() {
     this->saved_states.push_back(this->state);
 }
@@ -828,7 +829,21 @@ void Parser::signalError(const std::string &message) {
     this->error_manager->signalError(errors);
 }
 
-bool Parser::canPassThrough(OperatorNode::OperatorId operator_id) {
+bool Parser::canPassThrough(OperatorInfo op_info) {
+    if (this->state.cur_priority > op_info.priority) {
+        // our operator is of higher priority, therefore we can go through
+        return true;
+    }
+    if (this->state.cur_priority == op_info.priority) {
+        // our operator is of the same priority, so associativity determines the result
+        //
+        // ex: associativity = LEFT_TO_RIGHT:  1 + 2 + 3 is (1 + 2) + 3, so no passing through
+        //                                           ^              ^
+        // but associativity = RIGHT_TO_LEFT: a = b = c is a = (b = c), so we pass through
+        //                                          ^             ^
+        return op_info.associativity == RIGHT_TO_LEFT;
+    }
+    // otherwise, our operator is of lower priority, so we may not go through it
     return false;
 }
 
@@ -851,7 +866,7 @@ bool Parser::consume(Token::TokenId id) {
 
 Token::TokenId Parser::consume() {
     auto res = (this->next_token++)->id;
-    if (this->hasNext()) {
+    if (this->next_token != this->tokens.end()) {
         this->highlight(&*this->next_token);
     }
     return res;
@@ -891,6 +906,10 @@ static bool skipSemicolons(Parser *parser, bool single = false) {
     }
     return res;
 }
+
+#define PRE_OP         true
+#define POST_OP        false
+#define EMPTY_PRIORITY 100
 
 Parser::ParsingResult Parser::parseExpr() {
     if (this->consume(Token::OPEN_BRACKET)) {
@@ -957,15 +976,377 @@ Parser::ParsingResult Parser::parseExpr() {
         auto expr       = new ExprNode(func_def);
         return ParsingResult(expr, this);
     }
-
-    // temp
-    if (this->hasNext()) {
-        if (this->next_token->id == Token::IDENTIFIER && this->next_token->data == "E") {
-            this->consume();
-            return ParsingResult((ExprNode *)NULL, this);
+    else if (this->consume(Token::RECORD_KW)) {
+        if (!this->hasNext() || this->checkNext() != Token::IDENTIFIER) {
+            return ParsingResult("Expected an identifier", this);
         }
+        Token *name = &*this->next_token;
+        this->consume();
+
+        if (!this->consume(Token::OPEN_CURLY_BRACKET)) {
+            return ParsingResult("Expected an open curly bracket", this);
+        }
+
+        std::vector<Token *>         fields;
+        std::vector<MethodDefNode *> methods;
+        if (!this->consume(Token::CLOSE_CURLY_BRACKET)) {
+            while (this->hasNext()) {
+                if (this->consume(Token::METHOD_KW)) {
+                    if (!this->hasNext() || this->checkNext() != Token::IDENTIFIER) {
+                        return ParsingResult("Expected an identifier", this);
+                    }
+                    Token *name = &*this->next_token;
+                    this->consume();
+
+                    if (!this->consume(Token::OPEN_BRACKET)) {
+                        return ParsingResult("Expected an open bracket", this);
+                    }
+
+                    std::vector<Token *> list;
+                    if (!this->consume(Token::CLOSE_BRACKET)) {
+                        while (this->hasNext()) {
+                            Token *param = &*this->next_token;
+                            if (!this->consume(Token::IDENTIFIER)) {
+                                return ParsingResult("Expected an identifier", this);
+                            }
+                            list.push_back(param);
+
+                            if (this->checkNext() == Token::CLOSE_BRACKET) {
+                                break;
+                            }
+
+                            if (!this->consume(Token::COMMA)) {
+                                return ParsingResult("Expected a comma", this);
+                            }
+                        }
+
+                        if (!this->consume(Token::CLOSE_BRACKET)) {
+                            return ParsingResult("Expected a close bracket", this);
+                        }
+                    }
+
+                    this->saveState();
+                    auto body = this->parseStmt();
+                    this->restoreState();
+
+                    if (!body.verify(this, ParsingResult::STMT, "Expected a method body")) {
+                        return ParsingResult("", this);
+                    }
+
+                    auto param_list = new IdentListNode(list);
+                    auto method_def = new MethodDefNode(name, param_list, body.stmt);
+                    methods.push_back(method_def);
+                }
+                else if (this->checkNext() == Token::IDENTIFIER) {
+                    Token *field = &*this->next_token;
+                    this->consume();
+                    fields.push_back(field);
+
+                    if (!this->consume(Token::SEMICOLON)) {
+                        return ParsingResult("Expected a semicolon", this);
+                    }
+                }
+                else if (this->checkNext() == Token::CLOSE_CURLY_BRACKET) {
+                    break;
+                }
+                else {
+                    return ParsingResult("Expected either an indentifier or a method definition", this);
+                }
+            }
+
+            if (!this->consume(Token::CLOSE_CURLY_BRACKET)) {
+                return ParsingResult("Expected a close curly bracket", this);
+            }
+        }
+
+        auto record_def = new RecordDefNode(name, fields, methods);
+        auto expr       = new ExprNode(record_def);
+        return ParsingResult(expr, this);
     }
-    return ParsingResult("", this);
+    else {
+        // either an operator or an atom
+        std::vector<ExprNode *> expr_stack;    // expressions that haven't been used in any operators yet
+
+        auto init_priority      = this->state.cur_priority;
+        auto init_associativity = this->state.cur_associativity;
+
+        while (this->hasNext()) {
+            this->state.cur_priority      = init_priority;
+            this->state.cur_associativity = init_associativity;
+            switch (this->checkNext()) {
+            case Token::CLOSE_BRACKET :
+            case Token::CLOSE_CURLY_BRACKET :
+            case Token::CLOSE_SQUARE_BRACKET :
+            case Token::SEMICOLON :
+            case Token::FUNCTION_KW :
+            case Token::OPEN_CURLY_BRACKET :
+            case Token::RECORD_KW :
+            case Token::METHOD_KW :
+            case Token::WHILE_KW :
+            case Token::FOR_KW :
+            case Token::IF_KW :
+            case Token::ELSE_KW :
+            case Token::CONTINUE_KW :
+            case Token::BREAK_KW :
+            case Token::RETURN_KW :
+            case Token::BLOCK_KW             : goto END_OPERATOR_LOOP;
+            }
+
+            switch (this->checkNext()) {
+            case Token::PLUS_PLUS_OP :
+            case Token::MINUS_MINUS_OP : {
+                OperatorInfo op_info;
+                if (expr_stack.empty()) {
+                    op_info = this->getOperatorInfo(&*this->next_token, PRE_OP);     // ++A
+                }
+                else {
+                    op_info = this->getOperatorInfo(&*this->next_token, POST_OP);    // A++
+                }
+
+                if (!this->canPassThrough(op_info)) {
+                    goto END_OPERATOR_LOOP;
+                }
+
+                auto operator_token = &*this->next_token;
+                this->consume();
+
+                if (expr_stack.empty()) {
+                    // ++A
+                    this->saveState();
+                    this->goThrough(op_info);
+                    auto arg = this->parseExpr();
+                    this->restoreState();
+
+                    if (!arg.verify(this, ParsingResult::EXPR, "Expected an expression")) {
+                        return ParsingResult("", this);
+                    }
+
+                    auto op   = new OperatorNode(op_info.id, arg.expr, NULL, operator_token);
+                    auto expr = new ExprNode(op);
+                    expr_stack.push_back(expr);
+                }
+                else {
+                    // A++
+                    auto op = new OperatorNode(op_info.id, expr_stack.back(), NULL, operator_token);
+                    expr_stack.pop_back();
+                    auto expr = new ExprNode(op);
+                    expr_stack.push_back(expr);
+                }
+                break;
+            }
+            case Token::OPEN_BRACKET :
+            case Token::OPEN_SQUARE_BRACKET : {
+                OperatorInfo op_info;
+                int          special = this->checkNext() == Token::OPEN_BRACKET ? 1 : 2;
+                if (expr_stack.empty()) {
+                    return ParsingResult("Expected an expression before the operator", this);
+                }
+                else {
+                    op_info = this->getOperatorInfo(&*this->next_token, POST_OP, special);    // A(A)
+                }
+
+                if (!this->canPassThrough(op_info)) {
+                    goto END_OPERATOR_LOOP;
+                }
+
+                auto operator_token = &*this->next_token;
+                this->consume();
+
+                this->saveState();
+                this->state.cur_priority      = EMPTY_PRIORITY;
+                this->state.cur_associativity = LEFT_TO_RIGHT;
+                auto arg                      = this->parseExpr();
+                this->restoreState();
+
+                if (operator_token->id == Token::OPEN_BRACKET && !this->consume(Token::CLOSE_BRACKET)) {
+                    return ParsingResult("Expected a close bracket", this);
+                }
+
+                if (operator_token->id == Token::OPEN_SQUARE_BRACKET
+                    && !this->consume(Token::CLOSE_SQUARE_BRACKET))
+                {
+                    return ParsingResult("Expected a close square bracket", this);
+                }
+
+                if (!arg.verify(this, ParsingResult::EXPR, "Expected an expression")) {
+                    return ParsingResult("", this);
+                }
+
+                auto op = new OperatorNode(op_info.id, expr_stack.back(), arg.expr, operator_token);
+                expr_stack.pop_back();
+                auto expr = new ExprNode(op);
+                expr_stack.push_back(expr);
+                break;
+            }
+            case Token::PLUS_OP :
+            case Token::MINUS_OP : {
+                OperatorInfo op_info;
+                if (expr_stack.empty()) {
+                    op_info = this->getOperatorInfo(&*this->next_token, PRE_OP);     // +A
+                }
+                else {
+                    op_info = this->getOperatorInfo(&*this->next_token, POST_OP);    // A+A
+                }
+
+                if (!this->canPassThrough(op_info)) {
+                    goto END_OPERATOR_LOOP;
+                }
+
+                auto operator_token = &*this->next_token;
+                this->consume();
+
+                if (expr_stack.empty()) {
+                    // +A
+                    this->saveState();
+                    this->goThrough(op_info);
+                    auto arg = this->parseExpr();
+                    this->restoreState();
+
+                    if (!arg.verify(this, ParsingResult::EXPR, "Expected an expression")) {
+                        return ParsingResult("", this);
+                    }
+
+                    auto op   = new OperatorNode(op_info.id, arg.expr, NULL, operator_token);
+                    auto expr = new ExprNode(op);
+                    expr_stack.push_back(expr);
+                }
+                else {
+                    // A+A
+                    this->saveState();
+                    this->goThrough(op_info);
+                    auto arg = this->parseExpr();
+                    this->restoreState();
+
+                    if (!arg.verify(this, ParsingResult::EXPR, "Expected an expression")) {
+                        return ParsingResult("", this);
+                    }
+
+                    auto op = new OperatorNode(op_info.id, expr_stack.back(), arg.expr, operator_token);
+                    expr_stack.pop_back();
+                    auto expr = new ExprNode(op);
+                    expr_stack.push_back(expr);
+                }
+                break;
+            }
+            case Token::NOT_OP :
+            case Token::INVERSE_OP : {
+                OperatorInfo op_info;
+                if (expr_stack.empty()) {
+                    return ParsingResult("Expected an expression before the operator", this);
+                }
+                else {
+                    op_info = this->getOperatorInfo(&*this->next_token, PRE_OP);    // !A
+                }
+
+                if (!this->canPassThrough(op_info)) {
+                    goto END_OPERATOR_LOOP;
+                }
+
+                auto operator_token = &*this->next_token;
+                this->consume();
+
+                // !A
+                this->saveState();
+                this->goThrough(op_info);
+                auto arg = this->parseExpr();
+                this->restoreState();
+
+                if (!arg.verify(this, ParsingResult::EXPR, "Expected an expression")) {
+                    return ParsingResult("", this);
+                }
+
+                auto op   = new OperatorNode(op_info.id, arg.expr, NULL, operator_token);
+                auto expr = new ExprNode(op);
+                expr_stack.push_back(expr);
+                break;
+            }
+            case Token::DOT_OP :
+            case Token::MULT_OP :
+            case Token::DIV_OP :
+            case Token::REMAINDER_OP :
+            case Token::RIGHT_SHIFT_OP :
+            case Token::LEFT_SHIFT_OP :
+            case Token::LESS_OP :
+            case Token::LESS_EQUAL_OP :
+            case Token::GREATER_OP :
+            case Token::GREATER_EQUAL_OP :
+            case Token::EQUAL_OP :
+            case Token::NOT_EQUAL_OP :
+            case Token::BITAND_OP :
+            case Token::BITOR_OP :
+            case Token::BITXOR_OP :
+            case Token::AND_OP :
+            case Token::OR_OP :
+            case Token::ASSIGN_OP :
+            case Token::ASSIGN_PLUS_OP :
+            case Token::ASSIGN_MINUS_OP :
+            case Token::ASSIGN_MULT_OP :
+            case Token::ASSIGN_DIV_OP :
+            case Token::ASSIGN_REMAINDER_OP :
+            case Token::COMMA               : {
+                OperatorInfo op_info;
+                if (expr_stack.empty()) {
+                    return ParsingResult("Expected an expression before the operator", this);
+                }
+                else {
+                    op_info = this->getOperatorInfo(&*this->next_token, POST_OP);    // A*A
+                }
+
+                if (!this->canPassThrough(op_info)) {
+                    goto END_OPERATOR_LOOP;
+                }
+
+                auto operator_token = &*this->next_token;
+                this->consume();
+
+                // A+A
+                this->saveState();
+                this->goThrough(op_info);
+                auto arg = this->parseExpr();
+                this->restoreState();
+
+                if (!arg.verify(this, ParsingResult::EXPR, "Expected an expression")) {
+                    return ParsingResult("", this);
+                }
+
+                auto op = new OperatorNode(op_info.id, expr_stack.back(), arg.expr, operator_token);
+                expr_stack.pop_back();
+                auto expr = new ExprNode(op);
+                expr_stack.push_back(expr);
+                break;
+            }
+            case Token::BOOLEAN_LIT :
+            case Token::CHAR_LIT :
+            case Token::INT_LIT :
+            case Token::REAL_LIT :
+            case Token::STRING_LIT :
+            case Token::IDENTIFIER :
+            case Token::NOTHING_LIT : {
+                auto atom_token = &*this->next_token;
+                if (!expr_stack.empty()) {
+                    return ParsingResult(
+                    "Invalid expression. Expected either an operator, a keyword, or a separator",
+                    this);
+                }
+                this->consume();
+
+                auto atom = new AtomNode(atom_token);
+                auto expr = new ExprNode(atom);
+                expr_stack.push_back(expr);
+                break;
+            }
+            default : return ParsingResult("Invalid expression", this);
+            }
+        }
+    END_OPERATOR_LOOP:;
+        if (expr_stack.size() != 1) {
+            this->highlightNext();
+            return ParsingResult("Expected an expression", this);
+        }
+
+        return ParsingResult(expr_stack[0], this);
+    }
+    return ParsingResult("Unknown expression", this);
 }
 
 Parser::ParsingResult Parser::parseStmt() {
@@ -1199,7 +1580,7 @@ StmtNode *Parser::parse(const std::vector<Token> &tokens) {
     this->tokens                  = tokens;
     this->next_token              = this->tokens.begin();
     this->state.cur_associativity = LEFT_TO_RIGHT;
-    this->state.cur_priority      = 0;
+    this->state.cur_priority      = EMPTY_PRIORITY;
     this->state.report_errors     = true;
     this->state.token             = NULL;
     this->error_manager->setErrorCharPos(-1);
