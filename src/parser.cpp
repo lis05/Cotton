@@ -1426,7 +1426,7 @@ Parser::ParsingResult Parser::parseStmt() {
 
         if (!this->consume(Token::SEMICOLON)) {
             this->saveState();
-            auto cond = this->parseExpr();
+            cond = this->parseExpr();
             this->restoreState();
 
             if (!cond.verify(this, ParsingResult::EXPR, "Expected for loop condition")) {
@@ -1441,7 +1441,7 @@ Parser::ParsingResult Parser::parseStmt() {
 
         if (!this->consume(Token::SEMICOLON)) {
             this->saveState();
-            auto step = this->parseExpr();
+            step = this->parseExpr();
             this->restoreState();
 
             if (!step.verify(this, ParsingResult::EXPR, "Expected for loop step")) {
