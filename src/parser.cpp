@@ -673,7 +673,6 @@ void ReturnStmtNode::print(int indent, int step) {
     }
     printf("return:\n");
 
-    printPrefix(indent, step);
     this->value->print(indent + 1, step);
 }
 
@@ -1541,7 +1540,7 @@ Parser::ParsingResult Parser::parseStmt() {
         std::vector<StmtNode *> list;
         while (this->hasNext()) {
             if (this->consume(Token::CLOSE_CURLY_BRACKET)) {
-                auto block_stmt = new BlockStmtNode(true, list);
+                auto block_stmt = new BlockStmtNode(false, list);
                 auto stmt       = new StmtNode(block_stmt);
                 return ParsingResult(stmt, this);
             }
