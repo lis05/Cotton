@@ -1,0 +1,186 @@
+// the following code must be parsed correctly
+
+(a + b);
+
+function(){};
+function(a){};
+function a(b,c,d,e){f;};
+
+record a{};
+record a{a;b;c;};
+record a{a;b;c;method d(){} a; b; c;};
+
+a++;
+a--;
+a();
+a(a);
+a[];
+a[a];
+a.a;
+
+ref a;
+++a;
+--a;
++a;
+-a;
+!a;
+~a;
+
+a*a;
+a/a;
+a%a;
+
+a>>a;
+a<<a;
+
+a+a;
+a-a;
+
+a<a;
+a<=a;
+a>a;
+a>=a;
+
+a==a;
+a!=a;
+
+a&a;
+
+a^a;
+
+a|a;
+
+a and a;
+a or a;
+
+a=a;
+a+=a;
+a-=a;
+a*=a;
+a/=a;
+a%=a;
+
+a,a;
+
+true;
+false;
+'a';
+123;
+456.789;
+"a";
+a;
+nothing;
+
+while a {}
+while a; a;
+
+for a; a; a; {}
+for ;;; {}
+for a;;; {}
+for ;;a; {}
+for ;;; a;
+
+if a; {}
+if a; a;
+if a; a; else a;
+if a; {} else {}
+
+continue
+break
+
+return;
+return a;
+
+{}
+block {}
+{a;b;c;d;}
+
+/*
+now come some simple functions
+
+note that these tests were written before the Cotton runtime has been implemented
+*/
+
+function factorial(n) {
+    res = 1;
+    for i = 1; i <= n; i++; res *= i;
+    return res;
+};
+
+function fibonacci(n) {
+    a = 0; b = 1;
+    while n-- {
+        c = a + b;
+        a = b;
+        b = c;
+    }
+    return a;
+};
+
+function isPalindrome(s) {
+    for i = 0; i < s.size() / 2; i++; {
+        if s[i] != s[s.size() - i - 1]; return false;
+    }
+    return true;
+};
+
+function sumOfDigits(n) {
+    res = 0;
+    while n > 0 {
+        res += n % 10;
+        n /= 10;
+    }
+    return res;
+};
+
+function gcd(a, b) {
+    if a < 0; a *= -1;
+    if b < 0; b *= -1;
+    while b > 0 {
+        std.swap(ref a, ref b);
+        b %= a;
+    }
+    return a;    
+};
+
+function reversed(s) {
+    std.algo = load("algo.ctn"); // note: this should not be inside of a function that is called many times
+    return std.algo.reversed(s);
+};
+
+function sort(arr) {
+    std.algo = load("algo.ctn"); // note: this should not be inside of a function that is called many times
+    std.algo.sort(ref s, function(a, b) {return a < b});
+};
+
+record Player {
+    health;
+    speed;
+    money;
+
+    // constructor
+    method __make__(this) {
+        this.health = 100;
+        this.speed = 5;
+        this.money = 100;
+    }
+
+    method eat(this) {
+        if this.money < 15; return;
+
+        this.health += 5;
+        if this.health > 100; this.health = 100;
+        this.money -= 15;
+    }
+
+    method die(this) {
+        this.health = 0;
+    }
+};
+
+player = make(Player);
+player = Player.make();
+player.die();
+player.eat();
+player.eat();
+player.eat();
