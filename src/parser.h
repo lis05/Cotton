@@ -105,6 +105,7 @@ public:
         CALL,
         INDEX,
         DOT,
+        REF,
         PRE_PLUS_PLUS,
         PRE_MINUS_MINUS,
         PRE_PLUS,

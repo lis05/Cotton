@@ -46,6 +46,7 @@ public:
         OPEN_SQUARE_BRACKET,
         CLOSE_SQUARE_BRACKET,
         DOT_OP,
+        REF_OP,
         PLUS_OP,
         MINUS_OP,
         NOT_OP,

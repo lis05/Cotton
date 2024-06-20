@@ -34,7 +34,8 @@ OP1: left-to-right
     | E "." "E"
 
 OP2: right-to-left
-    "++" E
+    "ref" E
+    | "++" E
     | "--" E
     | "+" E
     | "-" E

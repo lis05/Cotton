@@ -742,6 +742,7 @@ Parser::OperatorInfo Parser::getOperatorInfo(Token *token, bool is_pre_op, int s
         return (is_pre_op) ? OperatorInfo {OperatorNode::PRE_MINUS_MINUS, 2, RIGHT_TO_LEFT}
                            : OperatorInfo {OperatorNode::PRE_PLUS_PLUS, 1, LEFT_TO_RIGHT};
     case Token::DOT_OP : return OperatorInfo {OperatorNode::DOT, 1, LEFT_TO_RIGHT};
+    case Token::REF_OP : return OperatorInfo {OperatorNode::REF, 2, RIGHT_TO_LEFT};
     case Token::PLUS_OP :
         return (is_pre_op) ? OperatorInfo {OperatorNode::PRE_PLUS, 2, RIGHT_TO_LEFT}
                            : OperatorInfo {OperatorNode::PLUS, 5, LEFT_TO_RIGHT};
@@ -1248,6 +1249,7 @@ Parser::ParsingResult Parser::parseExpr() {
                 }
                 break;
             }
+            case Token::REF_OP :
             case Token::NOT_OP :
             case Token::INVERSE_OP : {
                 OperatorInfo op_info;

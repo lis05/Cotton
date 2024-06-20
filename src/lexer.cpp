@@ -131,6 +131,9 @@ void Token::identify(ErrorManager *error_manager) {
     else if (this->data == ".") {
         this->id = DOT_OP;
     }
+    else if (this->data == "ref") {
+        this->id = REF_OP;
+    }
     else if (this->data == "+") {
         this->id = PLUS_OP;
     }
@@ -298,6 +301,7 @@ std::ostream &operator<<(std::ostream &out, const Token &token) {
     case Token::OPEN_SQUARE_BRACKET  : out << "["; break;
     case Token::CLOSE_SQUARE_BRACKET : out << "]"; break;
     case Token::DOT_OP               : out << "."; break;
+    case Token::REF_OP               : out << "ref"; break;
     case Token::PLUS_OP              : out << "+"; break;
     case Token::MINUS_OP             : out << "-"; break;
     case Token::NOT_OP               : out << "!"; break;
