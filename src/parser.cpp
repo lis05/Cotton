@@ -402,7 +402,7 @@ void MethodDefNode::print(int indent, int step) {
         printf("name: NULL token\n");
     }
     else {
-        printf("name: %s", this->name->data.c_str());
+        printf("name: %s\n", this->name->data.c_str());
     }
 
     printPrefix(indent, step);
