@@ -294,6 +294,10 @@ AtomNode::AtomNode(Token *token) {
         this->ident = token;
         break;
     }
+    case Token::NOTHING_LIT : {
+        this->id = NOTHING;
+        break;
+    }
     }
 }
 
