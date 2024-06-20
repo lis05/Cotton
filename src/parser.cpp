@@ -1155,6 +1155,23 @@ Parser::ParsingResult Parser::parseExpr() {
                 auto operator_token = &*this->next_token;
                 this->consume();
 
+                if (operator_token->id == Token::OPEN_BRACKET && this->consume(Token::CLOSE_BRACKET)) {
+                    auto op = new OperatorNode(op_info.id, expr_stack.back(), NULL, operator_token);
+                    expr_stack.pop_back();
+                    auto expr = new ExprNode(op);
+                    expr_stack.push_back(expr);
+                    break;
+                }
+
+                if (operator_token->id == Token::OPEN_SQUARE_BRACKET && this->consume(Token::CLOSE_SQUARE_BRACKET))
+                {
+                    auto op = new OperatorNode(op_info.id, expr_stack.back(), NULL, operator_token);
+                    expr_stack.pop_back();
+                    auto expr = new ExprNode(op);
+                    expr_stack.push_back(expr);
+                    break;
+                }
+
                 this->saveState();
                 this->state.cur_priority      = EMPTY_PRIORITY;
                 this->state.cur_associativity = LEFT_TO_RIGHT;
