@@ -1231,12 +1231,7 @@ Parser::ParsingResult Parser::parseExpr() {
             case Token::NOT_OP :
             case Token::INVERSE_OP : {
                 OperatorInfo op_info;
-                if (expr_stack.empty()) {
-                    return ParsingResult("Expected an expression before the operator", this);
-                }
-                else {
-                    op_info = this->getOperatorInfo(&*this->next_token, PRE_OP);    // !A
-                }
+                op_info = this->getOperatorInfo(&*this->next_token, PRE_OP);    // !A
 
                 if (!this->canPassThrough(op_info)) {
                     goto END_OPERATOR_LOOP;
