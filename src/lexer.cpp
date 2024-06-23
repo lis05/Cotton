@@ -131,8 +131,8 @@ void Token::identify(ErrorManager *error_manager) {
     else if (this->data == ".") {
         this->id = DOT_OP;
     }
-    else if (this->data == "ref") {
-        this->id = REF_OP;
+    else if (this->data == "@") {
+        this->id = AT_OP;
     }
     else if (this->data == "+") {
         this->id = PLUS_OP;
@@ -240,8 +240,8 @@ void Token::identify(ErrorManager *error_manager) {
     else if (this->data == "return") {
         this->id = RETURN_KW;
     }
-    else if (this->data == "block") {
-        this->id = BLOCK_KW;
+    else if (this->data == "unscoped") {
+        this->id = UNSCOPED_KW;
     }
     else if (this->data.size() > 0 && this->data.front() == '\"' && this->data.back() == '\"') {
         this->id           = STRING_LIT;
@@ -301,7 +301,7 @@ std::ostream &operator<<(std::ostream &out, const Token &token) {
     case Token::OPEN_SQUARE_BRACKET  : out << "["; break;
     case Token::CLOSE_SQUARE_BRACKET : out << "]"; break;
     case Token::DOT_OP               : out << "."; break;
-    case Token::REF_OP               : out << "ref"; break;
+    case Token::AT_OP                : out << "@"; break;
     case Token::PLUS_OP              : out << "+"; break;
     case Token::MINUS_OP             : out << "-"; break;
     case Token::NOT_OP               : out << "!"; break;
@@ -337,7 +337,7 @@ std::ostream &operator<<(std::ostream &out, const Token &token) {
     case Token::CONTINUE_KW          : out << "continue"; break;
     case Token::BREAK_KW             : out << "break"; break;
     case Token::RETURN_KW            : out << "return"; break;
-    case Token::BLOCK_KW             : out << "block"; break;
+    case Token::UNSCOPED_KW          : out << "unscoped"; break;
     case Token::STRING_LIT           : out << "\"" << token.string_value << "\""; break;
     case Token::CHAR_LIT             : out << "\'" << token.char_value << "\'"; break;
     case Token::INT_LIT              : out << token.int_value; break;
@@ -522,8 +522,8 @@ std::vector<Token> Lexer::faze2FormConnectedTokens(const std::string &input) {
 
 // no dot
 static std::vector<std::string> sortedSplitters
-= {"(",  ")",  "{", "}",  ";", "++", "--", "[", "]", "+=", "-=", "!=", "~", "*=", "/=", "%=", ">>",
-   "<<", "<=", "<", ">=", ">", "==", "!",  "&", "^", "|",  "=",  "+",  "-", "*",  "/",  "%",  ","};
+= {"(",  ")",  "{", "}", "@", ";",  "++", "--", "[", "]", "+=", "-=", "!=", "~", "*=", "/=", "%=", ">>",
+   "<<", "<=", "<", ">=", ">", "==", "!",  "&",  "^", "|", "=",  "+",  "-",  "*", "/",  "%",  ","};
 
 static void splitByOperator(const Token                 &token,
                             std::string::const_iterator &split_end,

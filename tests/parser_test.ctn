@@ -18,7 +18,7 @@ a[];
 a[a];
 a.a;
 
-ref a;
+@a;
 ++a;
 --a;
 +a;
@@ -92,7 +92,7 @@ return;
 return a;
 
 {}
-block {}
+unscoped {}
 {a;b;c;d;}
 
 /*
@@ -118,7 +118,7 @@ function fibonacci(n) {
 };
 
 function isPalindrome(s) {
-    for i = 0; i < s.size() / 2; i++; {
+    for i = 0; i < s.size() / 2; i++; unscoped {
         if s[i] != s[s.size() - i - 1]; return false;
     }
     return true;
@@ -137,7 +137,7 @@ function gcd(a, b) {
     if a < 0; a *= -1;
     if b < 0; b *= -1;
     while b > 0 {
-        std.swap(ref a, ref b);
+        std.swap(@a, @b);
         b %= a;
     }
     return a;    
@@ -145,12 +145,12 @@ function gcd(a, b) {
 
 function reversed(s) {
     std.algo = load("algo.ctn"); // note: this should not be inside of a function that is called many times
-    return std.algo.reversed(s);
+    return std.algo.reversed(@s);
 };
 
 function sort(arr) {
     std.algo = load("algo.ctn"); // note: this should not be inside of a function that is called many times
-    std.algo.sort(ref s, function(a, b) {return a < b});
+    std.algo.sort(@s, function(a, b) {return a < b});
 };
 
 record Player {

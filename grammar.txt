@@ -34,7 +34,7 @@ OP1: left-to-right
     | E "." "E"
 
 OP2: right-to-left
-    "ref" E
+    "@" E
     | "++" E
     | "--" E
     | "+" E
@@ -120,5 +120,5 @@ RETURN:
     "return" ?E
 
 BLOCK:
-    ?"block" "{" *S "}"
+    ?"unscoped" "{" *S "}"
 

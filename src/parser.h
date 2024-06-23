@@ -105,7 +105,7 @@ public:
         CALL,
         INDEX,
         DOT,
-        REF,
+        AT,
         PRE_PLUS_PLUS,
         PRE_MINUS_MINUS,
         PRE_PLUS,
@@ -290,13 +290,13 @@ public:
 
 class BlockStmtNode {
 public:
-    bool                    is_scoped;
+    bool                    is_unscoped;
     std::vector<StmtNode *> list;
 
     BlockStmtNode() = delete;
     ~BlockStmtNode();
 
-    BlockStmtNode(bool is_scoped, const std::vector<StmtNode *> list);
+    BlockStmtNode(bool is_unscoped, const std::vector<StmtNode *> list);
 
     void print(int indent = 0, int step = 2);
 };

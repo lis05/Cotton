@@ -685,8 +685,8 @@ BlockStmtNode::~BlockStmtNode() {
 }
 
 BlockStmtNode::BlockStmtNode(bool is_scoped, const std::vector<StmtNode *> list) {
-    this->is_scoped = is_scoped;
-    this->list      = list;
+    this->is_unscoped = is_unscoped;
+    this->list        = list;
 }
 
 void BlockStmtNode::print(int indent, int step) {
@@ -695,7 +695,7 @@ void BlockStmtNode::print(int indent, int step) {
         printf("NULL\n");
         return;
     }
-    printf("%s block:\n", this->is_scoped ? "scoped" : "unscoped");
+    printf("%sblock:\n", this->is_unscoped ? "unscoped " : "");
 
     int i = 0;
     for (auto elem : this->list) {
@@ -742,7 +742,7 @@ Parser::OperatorInfo Parser::getOperatorInfo(Token *token, bool is_pre_op, int s
         return (is_pre_op) ? OperatorInfo {OperatorNode::PRE_MINUS_MINUS, 2, RIGHT_TO_LEFT}
                            : OperatorInfo {OperatorNode::PRE_PLUS_PLUS, 1, LEFT_TO_RIGHT};
     case Token::DOT_OP : return OperatorInfo {OperatorNode::DOT, 1, LEFT_TO_RIGHT};
-    case Token::REF_OP : return OperatorInfo {OperatorNode::REF, 2, RIGHT_TO_LEFT};
+    case Token::AT_OP  : return OperatorInfo {OperatorNode::AT, 2, RIGHT_TO_LEFT};
     case Token::PLUS_OP :
         return (is_pre_op) ? OperatorInfo {OperatorNode::PRE_PLUS, 2, RIGHT_TO_LEFT}
                            : OperatorInfo {OperatorNode::PLUS, 5, LEFT_TO_RIGHT};
@@ -1093,7 +1093,7 @@ Parser::ParsingResult Parser::parseExpr() {
             case Token::CONTINUE_KW :
             case Token::BREAK_KW :
             case Token::RETURN_KW :
-            case Token::BLOCK_KW             : goto END_OPERATOR_LOOP;
+            case Token::UNSCOPED_KW          : goto END_OPERATOR_LOOP;
             }
 
             switch (this->checkNext()) {
@@ -1249,7 +1249,7 @@ Parser::ParsingResult Parser::parseExpr() {
                 }
                 break;
             }
-            case Token::REF_OP :
+            case Token::AT_OP :
             case Token::NOT_OP :
             case Token::INVERSE_OP : {
                 OperatorInfo op_info;
@@ -1530,9 +1530,9 @@ Parser::ParsingResult Parser::parseStmt() {
         auto stmt        = new StmtNode(return_stmt);
         return ParsingResult(stmt, this);
     }
-    else if (this->consume(Token::BLOCK_KW)) {
+    else if (this->consume(Token::UNSCOPED_KW)) {
         if (!this->consume(Token::OPEN_CURLY_BRACKET)) {
-            return ParsingResult("Block keyword must be followed by an open curly bracket", this);
+            return ParsingResult("Unscoped keyword must be followed by an open curly bracket", this);
         }
         std::vector<StmtNode *> list;
         while (this->hasNext()) {
