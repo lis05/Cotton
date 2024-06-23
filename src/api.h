@@ -22,5 +22,5 @@
 #pragma once
 
 #include "errors.h"
-#include "lexer.h"
-#include "parser.h"
+#include "front/lexer.h"
+#include "front/parser.h"

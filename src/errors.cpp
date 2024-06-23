@@ -20,7 +20,6 @@
  */
 
 #include "errors.h"
-#include "lexer.h"
 
 static void printColor(FILE *fd, std::string color = "reset") {
     std::string col = "\033[0m";

@@ -21,7 +21,7 @@
 
 #pragma once
 
-#include "lexer.h"
+#include "front/lexer.h"
 #include <cstdint>
 #include <string>
 

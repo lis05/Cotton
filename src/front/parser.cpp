@@ -20,7 +20,7 @@
  */
 
 #include "parser.h"
-#include "errors.h"
+#include "../errors.h"
 #include "lexer.h"
 
 namespace Cotton {

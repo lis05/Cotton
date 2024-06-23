@@ -20,7 +20,7 @@
  */
 
 #include "lexer.h"
-#include "errors.h"
+#include "../errors.h"
 #include <cctype>
 
 namespace Cotton {
