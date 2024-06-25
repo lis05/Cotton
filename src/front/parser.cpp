@@ -27,64 +27,64 @@ namespace Cotton {
 ExprNode::~ExprNode() {
     switch (this->id) {
     case FUNCTION_DEFINITION    : delete this->func_def; break;
-    case RECORD_DEFINITION      : delete this->record_def; break;
+    case TYPE_DEFINITION        : delete this->type_def; break;
     case OPERATOR               : delete this->op; break;
     case ATOM                   : delete this->atom; break;
     case PARENTHESES_EXPRESSION : delete this->par_expr; break;
     }
 
-    this->func_def   = NULL;
-    this->record_def = NULL;
-    this->op         = NULL;
-    this->atom       = NULL;
-    this->par_expr   = NULL;
+    this->func_def = NULL;
+    this->type_def = NULL;
+    this->op       = NULL;
+    this->atom     = NULL;
+    this->par_expr = NULL;
 }
 
 ExprNode::ExprNode(FuncDefNode *func_def) {
-    this->record_def = NULL;
-    this->op         = NULL;
-    this->atom       = NULL;
-    this->par_expr   = NULL;
+    this->type_def = NULL;
+    this->op       = NULL;
+    this->atom     = NULL;
+    this->par_expr = NULL;
 
     this->id       = FUNCTION_DEFINITION;
     this->func_def = func_def;
 }
 
-ExprNode::ExprNode(RecordDefNode *record_def) {
+ExprNode::ExprNode(TypeDefNode *type_def) {
     this->func_def = NULL;
     this->op       = NULL;
     this->atom     = NULL;
     this->par_expr = NULL;
 
-    this->id         = RECORD_DEFINITION;
-    this->record_def = record_def;
+    this->id       = TYPE_DEFINITION;
+    this->type_def = type_def;
 }
 
 ExprNode::ExprNode(OperatorNode *op) {
-    this->func_def   = NULL;
-    this->record_def = NULL;
-    this->atom       = NULL;
-    this->par_expr   = NULL;
+    this->func_def = NULL;
+    this->type_def = NULL;
+    this->atom     = NULL;
+    this->par_expr = NULL;
 
     this->id = OPERATOR;
     this->op = op;
 }
 
 ExprNode::ExprNode(AtomNode *atom) {
-    this->func_def   = NULL;
-    this->record_def = NULL;
-    this->op         = NULL;
-    this->par_expr   = NULL;
+    this->func_def = NULL;
+    this->type_def = NULL;
+    this->op       = NULL;
+    this->par_expr = NULL;
 
     this->id   = ATOM;
     this->atom = atom;
 }
 
 ExprNode::ExprNode(ParExprNode *par_expr) {
-    this->func_def   = NULL;
-    this->record_def = NULL;
-    this->op         = NULL;
-    this->atom       = NULL;
+    this->func_def = NULL;
+    this->type_def = NULL;
+    this->op       = NULL;
+    this->atom     = NULL;
 
     this->id       = PARENTHESES_EXPRESSION;
     this->par_expr = par_expr;
@@ -117,8 +117,8 @@ void ExprNode::print(int indent, int step) {
     if (this->id == ExprNode::FUNCTION_DEFINITION) {
         this->func_def->print(indent + 1, step);
     }
-    else if (this->id == ExprNode::RECORD_DEFINITION) {
-        this->record_def->print(indent + 1, step);
+    else if (this->id == ExprNode::TYPE_DEFINITION) {
+        this->type_def->print(indent + 1, step);
     }
     else if (this->id == ExprNode::OPERATOR) {
         this->op->print(indent + 1, step);
@@ -171,7 +171,7 @@ void FuncDefNode::print(int indent, int step) {
     this->body->print(indent + 1, step);
 }
 
-RecordDefNode::~RecordDefNode() {
+TypeDefNode::~TypeDefNode() {
     for (auto method : this->methods) {
         delete method;
     }
@@ -181,21 +181,21 @@ RecordDefNode::~RecordDefNode() {
     this->methods.clear();
 }
 
-RecordDefNode::RecordDefNode(Token                              *name,
-                             const std::vector<Token *>         &fields,
-                             const std::vector<MethodDefNode *> &methods) {
+TypeDefNode::TypeDefNode(Token                              *name,
+                         const std::vector<Token *>         &fields,
+                         const std::vector<MethodDefNode *> &methods) {
     this->name    = name;
     this->fields  = fields;
     this->methods = methods;
 }
 
-void RecordDefNode::print(int indent, int step) {
+void TypeDefNode::print(int indent, int step) {
     printPrefix(indent, step, false);
     if (this == NULL) {
         printf("NULL\n");
         return;
     }
-    printf("record definition:\n");
+    printf("type definition:\n");
 
     printPrefix(indent, step);
     if (this->name == NULL) {
@@ -980,7 +980,7 @@ Parser::ParsingResult Parser::parseExpr() {
         auto expr       = new ExprNode(func_def);
         return ParsingResult(expr, this);
     }
-    else if (this->consume(Token::RECORD_KW)) {
+    else if (this->consume(Token::TYPE_KW)) {
         if (!this->hasNext() || this->checkNext() != Token::IDENTIFIER) {
             return ParsingResult("Expected an identifier", this);
         }
@@ -1063,8 +1063,8 @@ Parser::ParsingResult Parser::parseExpr() {
             }
         }
 
-        auto record_def = new RecordDefNode(name, fields, methods);
-        auto expr       = new ExprNode(record_def);
+        auto type_def = new TypeDefNode(name, fields, methods);
+        auto expr     = new ExprNode(type_def);
         return ParsingResult(expr, this);
     }
     else {
@@ -1084,7 +1084,7 @@ Parser::ParsingResult Parser::parseExpr() {
             case Token::SEMICOLON :
             case Token::FUNCTION_KW :
             case Token::OPEN_CURLY_BRACKET :
-            case Token::RECORD_KW :
+            case Token::TYPE_KW :
             case Token::METHOD_KW :
             case Token::WHILE_KW :
             case Token::FOR_KW :
@@ -1654,9 +1654,9 @@ Parser::ParsingResult::ParsingResult(FuncDefNode *func_def, Parser *p) {
     this->state   = p->state;
 }
 
-Parser::ParsingResult::ParsingResult(RecordDefNode *record_def, Parser *p) {
+Parser::ParsingResult::ParsingResult(TypeDefNode *type_def, Parser *p) {
     this->success = true;
-    this->id      = RECORD_DEF;
+    this->id      = TYPE_DEF;
     this->expr    = expr;
     this->state   = p->state;
 }

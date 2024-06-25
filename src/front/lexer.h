@@ -34,7 +34,7 @@ public:
     enum TokenId {
         OPEN_BRACKET,
         CLOSE_BRACKET,
-        RECORD_KW,
+        TYPE_KW,
         OPEN_CURLY_BRACKET,
         CLOSE_CURLY_BRACKET,
         SEMICOLON,

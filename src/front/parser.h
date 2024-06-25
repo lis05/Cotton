@@ -32,7 +32,7 @@ class ErrorManager;
 
 class ExprNode;
 class FuncDefNode;
-class RecordDefNode;
+class TypeDefNode;
 class OperatorNode;
 class AtomNode;
 class ParExprNode;
@@ -47,21 +47,21 @@ class BlockStmtNode;
 
 class ExprNode {
 public:
-    enum ExprNodeId { FUNCTION_DEFINITION, RECORD_DEFINITION, OPERATOR, ATOM, PARENTHESES_EXPRESSION } id;
+    enum ExprNodeId { FUNCTION_DEFINITION, TYPE_DEFINITION, OPERATOR, ATOM, PARENTHESES_EXPRESSION } id;
 
     union {
-        FuncDefNode   *func_def;
-        RecordDefNode *record_def;
-        OperatorNode  *op;
-        AtomNode      *atom;
-        ParExprNode   *par_expr;
+        FuncDefNode  *func_def;
+        TypeDefNode  *type_def;
+        OperatorNode *op;
+        AtomNode     *atom;
+        ParExprNode  *par_expr;
     };
 
     ExprNode() = delete;
     ~ExprNode();
 
     ExprNode(FuncDefNode *func_def);
-    ExprNode(RecordDefNode *record_def);
+    ExprNode(TypeDefNode *type_def);
     ExprNode(OperatorNode *op);
     ExprNode(AtomNode *atom);
     ExprNode(ParExprNode *par_expr);
@@ -83,16 +83,16 @@ public:
     void print(int indent = 0, int step = 2);
 };
 
-class RecordDefNode {
+class TypeDefNode {
 public:
     Token                       *name;
     std::vector<Token *>         fields;
     std::vector<MethodDefNode *> methods;
 
-    RecordDefNode() = delete;
-    ~RecordDefNode();
+    TypeDefNode() = delete;
+    ~TypeDefNode();
 
-    RecordDefNode(Token *name, const std::vector<Token *> &fields, const std::vector<MethodDefNode *> &methods);
+    TypeDefNode(Token *name, const std::vector<Token *> &fields, const std::vector<MethodDefNode *> &methods);
 
     void print(int indent = 0, int step = 2);
 };
@@ -136,7 +136,8 @@ public:
         MULT_ASSIGN,
         DIV_ASSIGN,
         REM_ASSIGN,
-        COMMA
+        COMMA,
+        TOTAL_OPERATORS          // not a method
     } id;
 
     ExprNode *first, *second;    // if second is NULL then it's not present, and the operator is unary
@@ -361,7 +362,7 @@ public:
         enum ResultId {
             EXPR,
             FUNC_DEC,
-            RECORD_DEF,
+            TYPE_DEF,
             OPERATOR,
             ATOM,
             PAR_EXPR,
@@ -380,7 +381,7 @@ public:
         union {
             ExprNode       *expr;
             FuncDefNode    *func_def;
-            RecordDefNode  *record_def;
+            TypeDefNode    *type_def;
             OperatorNode   *op;
             AtomNode       *atom;
             ParExprNode    *par_expr;
@@ -398,7 +399,7 @@ public:
         ParsingResult(ResultId id, Parser *p);
         ParsingResult(ExprNode *expr, Parser *p);
         ParsingResult(FuncDefNode *func_def, Parser *p);
-        ParsingResult(RecordDefNode *record_def, Parser *p);
+        ParsingResult(TypeDefNode *type_def, Parser *p);
         ParsingResult(OperatorNode *op, Parser *p);
         ParsingResult(AtomNode *atom, Parser *p);
         ParsingResult(ParExprNode *par_expr, Parser *p);

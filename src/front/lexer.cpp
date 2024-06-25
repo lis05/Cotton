@@ -69,7 +69,7 @@ static char getCharacter(std::string::const_iterator &it, const std::string &str
 }
 
 static std::string parseString(const std::string &str, ErrorManager *error_manager) {
-    assert(!str.empty(), "Empty string", error_manager);
+    eassert(!str.empty(), "Empty string", error_manager);
     std::string res;
     // string
     if (str.front() == '\"') {
@@ -77,13 +77,13 @@ static std::string parseString(const std::string &str, ErrorManager *error_manag
         while (it != str.end() && *it != '\"') {
             res += getCharacter(it, str, error_manager);
         }
-        assert(*it == '\"', "Expected a string end", error_manager);
+        eassert(*it == '\"', "Expected a string end", error_manager);
     }
     else {
         auto it = str.begin() + 1;
-        assert(it != str.end() && *it != '\'', "Expected a character", error_manager);
+        eassert(it != str.end() && *it != '\'', "Expected a character", error_manager);
         res += getCharacter(it, str, error_manager);
-        assert(*it == '\'', "Expected a character end", error_manager);
+        eassert(*it == '\'', "Expected a character end", error_manager);
     }
     return res;
 }
@@ -95,8 +95,8 @@ void Token::identify(ErrorManager *error_manager) {
     else if (this->data == ")") {
         this->id = CLOSE_BRACKET;
     }
-    else if (this->data == "record") {
-        this->id = RECORD_KW;
+    else if (this->data == "type") {
+        this->id = TYPE_KW;
     }
     else if (this->data == "{") {
         this->id = OPEN_CURLY_BRACKET;
@@ -289,7 +289,7 @@ std::ostream &operator<<(std::ostream &out, const Token &token) {
     switch (token.id) {
     case Token::OPEN_BRACKET         : out << "("; break;
     case Token::CLOSE_BRACKET        : out << ")"; break;
-    case Token::RECORD_KW            : out << "record"; break;
+    case Token::TYPE_KW            : out << "type"; break;
     case Token::OPEN_CURLY_BRACKET   : out << "{"; break;
     case Token::CLOSE_CURLY_BRACKET  : out << "}"; break;
     case Token::SEMICOLON            : out << ";"; break;
@@ -465,7 +465,7 @@ std::vector<Token> Lexer::faze2FormConnectedTokens(const std::string &input) {
                 getCharacter(it, input, this->error_manager);
             }
             this->error_manager->setErrorCharPos(it - input.begin());
-            assert(*it == '\"', "String doesn't end with a double quote", this->error_manager);
+            eassert(*it == '\"', "String doesn't end with a double quote", this->error_manager);
             it++;
             auto string_end = it;
 
@@ -488,7 +488,7 @@ std::vector<Token> Lexer::faze2FormConnectedTokens(const std::string &input) {
             // since the character has passed the first faze, it has it's ending
             getCharacter(it, input, this->error_manager);
             this->error_manager->setErrorCharPos(it - input.begin());
-            assert(*it == '\'', "Character doesn't end with a single quote", this->error_manager);
+            eassert(*it == '\'', "Character doesn't end with a single quote", this->error_manager);
             it++;
             auto char_end = it;
 

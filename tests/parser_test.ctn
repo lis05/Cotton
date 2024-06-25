@@ -6,9 +6,9 @@ function(){};
 function(a){};
 function a(b,c,d,e){f;};
 
-record a{};
-record a{a;b;c;};
-record a{a;b;c;method d(){} a; b; c;};
+type a{};
+type a{a;b;c;};
+type a{a;b;c;method d(){} a; b; c;};
 
 a++;
 a--;
@@ -153,7 +153,7 @@ function sort(arr) {
     std.algo.sort(@s, function(a, b) {return a < b});
 };
 
-record Player {
+type Player {
     health;
     speed;
     money;
