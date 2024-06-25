@@ -70,7 +70,7 @@ void __assert__(bool               value,
                 const char        *filename,
                 int                line);
 
-#define assert(value, message, error_manager)                                                                     \
+#define eassert(value, message, error_manager)                                                                     \
     __assert__(value, #value, message, error_manager, __FILE__, __LINE__);
 
 }    // namespace Cotton

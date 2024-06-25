@@ -169,7 +169,7 @@ void ErrorManager::signalError(const std::string &message, int64_t char_pos) {
 }
 
 void ErrorManager::signalError(const std::string &message, const Token &token) {
-    assert(token.begin_pos != -1 && token.end_pos != -1,
+    eassert(token.begin_pos != -1 && token.end_pos != -1,
            std::string("Invalid token. Original message: ") + message,
            this);
     if (this->error_filename.empty()) {

@@ -20,10 +20,21 @@
  */
 
 #pragma once
+#include <cstdint>
+#include <ext/pb_ds/assoc_container.hpp>
 
-#include "back/nameid.h"
-#include "back/object.h"
-#include "back/type.h"
-#include "errors.h"
-#include "front/lexer.h"
-#include "front/parser.h"
+namespace Cotton {
+
+class Object;
+
+class Instance {
+public:
+    __gnu_pbds::cc_hash_table<int64_t, Object *> fields;
+    Object                                      *selectField(int64_t id);
+
+    Instance()  = default;
+    ~Instance() = default;
+
+    virtual std::vector<Object *> getGCReachable();
+};
+}    // namespace Cotton

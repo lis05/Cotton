@@ -19,11 +19,23 @@
  CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-#pragma once
+#include "instance.h"
+#include "object.h"
 
-#include "back/nameid.h"
-#include "back/object.h"
-#include "back/type.h"
-#include "errors.h"
-#include "front/lexer.h"
-#include "front/parser.h"
+namespace Cotton {
+Object *Cotton::Instance::selectField(int64_t id) {
+    auto it = this->fields.find(id);
+    if (it != this->fields.end()) {
+        return it->second;
+    }
+    return NULL;
+}
+
+std::vector<Object *> Instance::getGCReachable() {
+    std::vector<Object *> res;
+    for (auto &elem : this->fields) {
+        res.push_back(elem.second);
+    }
+    return res;
+}
+};    // namespace Cotton

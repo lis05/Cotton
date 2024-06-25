@@ -21,9 +21,22 @@
 
 #pragma once
 
-#include "back/nameid.h"
-#include "back/object.h"
-#include "back/type.h"
-#include "errors.h"
-#include "front/lexer.h"
-#include "front/parser.h"
+namespace Cotton {
+
+class Instance;
+class Type;
+
+class Object {
+public:
+    bool is_instance : 1;    // otherwise it's type
+    bool in_stack    : 1;    // otherwise it's in heap
+    bool is_simple   : 1;    // otherwise it's complex
+    bool gc_mark     : 1;
+
+    union {
+        Instance *instance;
+        Type     *type;
+    };
+};
+
+};    // namespace Cotton

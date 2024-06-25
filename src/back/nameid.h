@@ -21,9 +21,23 @@
 
 #pragma once
 
-#include "back/nameid.h"
-#include "back/object.h"
-#include "back/type.h"
-#include "errors.h"
-#include "front/lexer.h"
-#include "front/parser.h"
+#include "../front/lexer.h"
+#include <cstdint>
+#include <ext/pb_ds/assoc_container.hpp>
+
+namespace Cotton {
+class NameId {
+private:
+    static __gnu_pbds::cc_hash_table<std::string, int64_t> map;
+
+public:
+    int64_t      id;
+    Token       *token;
+    std::string *str;
+
+    NameId();
+    NameId(Token *token);
+    NameId(std::string *str);
+    ~NameId();
+};
+}    // namespace Cotton
