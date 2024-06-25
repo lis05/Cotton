@@ -20,23 +20,23 @@
  */
 
 #pragma once
-#include <cstdint>
 #include <ext/pb_ds/assoc_container.hpp>
 
 namespace Cotton {
 
-class Runtime;
 class Object;
 
-class Instance {
+class Scope {
 public:
-    __gnu_pbds::cc_hash_table<int64_t, Object *> fields;
-    Object                                      *selectField(int64_t id);
+    Scope                                       *prev;
+    __gnu_pbds::cc_hash_table<int64_t, Object *> variables;
+    bool                                         can_access_prev;
 
-    Instance()          = default;
-    virtual ~Instance() = 0;    // for placement on stack
+    Scope(Scope *prev, bool can_access_prev);
+    ~Scope();
 
-    virtual std::vector<Object *> getGCReachable();
-    virtual Instance             *copy(Runtime *rt) = 0;
+    void    addVariable(int64_t id, Object *obj);
+    bool    queryVariable(int64_t id);
+    Object *getVariable(int64_t id);
 };
 }    // namespace Cotton

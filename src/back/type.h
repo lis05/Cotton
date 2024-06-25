@@ -57,10 +57,12 @@ public:
     UnaryOperatorAdapter  *unary_operators[num_operators];
     BinaryOperatorAdapter *binary_operators[num_operators];
     NaryOperatorAdapter   *nary_operators[num_operators];
+    bool                   is_simple;    // otherwise complex
+    // if is_simple, then its instances are placed on stack
 
     __gnu_pbds::cc_hash_table<int64_t, Object *> methods;
 
-    Type();
+    Type(bool is_simple);
     ~Type();
 
     void addOperator(OperatorNode::OperatorId id, UnaryOperatorAdapter *unary_op);
@@ -72,8 +74,9 @@ public:
     inline BinaryOperatorAdapter *getBinaryOperator(OperatorNode::OperatorId id);
     inline NaryOperatorAdapter   *getNaryOperator(OperatorNode::OperatorId id);
     inline Object                *getMethod(int64_t id);
-    
+
     virtual std::vector<Object *> getGCReachable();
+    virtual size_t                getIntanceSize() = 0;    // for placement on stack in case of is_simple
 };
 
 };    // namespace Cotton

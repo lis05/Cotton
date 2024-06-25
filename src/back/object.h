@@ -21,22 +21,31 @@
 
 #pragma once
 
+#include <vector>
+
 namespace Cotton {
 
 class Instance;
 class Type;
+class Runtime;
 
 class Object {
 public:
     bool is_instance : 1;    // otherwise it's type
-    bool in_stack    : 1;    // otherwise it's in heap
-    bool is_simple   : 1;    // otherwise it's complex
+    bool on_stack    : 1;    // otherwise it's in heap
     bool gc_mark     : 1;
 
     union {
         Instance *instance;
         Type     *type;
     };
+
+    Object(bool is_instance, bool on_stack, Instance *instance, Type *type);
+    ~Object();
+
+    std::vector<Object *> getGCReachable();
+
+    Object *copy(Runtime *rt);
 };
 
 };    // namespace Cotton

@@ -26,7 +26,7 @@ namespace Cotton {
 
 int64_t Type::total_types = 0;
 
-Type::Type() {
+Type::Type(bool is_simple) {
     this->id = ++Type::total_types;
     for (auto &op : this->unary_operators) {
         op = NULL;
@@ -37,6 +37,7 @@ Type::Type() {
     for (auto &op : this->nary_operators) {
         op = NULL;
     }
+    this->is_simple = is_simple;
 }
 
 Type::~Type() {

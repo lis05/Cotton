@@ -20,23 +20,50 @@
  */
 
 #pragma once
-#include <cstdint>
-#include <ext/pb_ds/assoc_container.hpp>
+
+#include <string>
+#include <vector>
 
 namespace Cotton {
-
-class Runtime;
+class Scope;
+class Stack;
+class GC;
 class Object;
+class Instance;
+class Type;
+class ErrorManager;
+class Token;
 
-class Instance {
+class Runtime {
 public:
-    __gnu_pbds::cc_hash_table<int64_t, Object *> fields;
-    Object                                      *selectField(int64_t id);
+    Scope *scope;
+    void   newScope();
+    void   popScope();
 
-    Instance()          = default;
-    virtual ~Instance() = 0;    // for placement on stack
+    Stack *stack;
+    GC    *gc;
 
-    virtual std::vector<Object *> getGCReachable();
-    virtual Instance             *copy(Runtime *rt) = 0;
+    ErrorManager            *error_manager;
+    std::vector<std::string> error_messages;
+    void                     highlight(Token *token);
+    void                     signalError(const std::string &message);
+
+    class State {
+    public:
+        Token *token;    // used for error logging
+    };
+
+    std::vector<State> states;
+    void               saveState();
+    void               restoreState();
+
+    class ExecutionResult {
+    public:
+        bool        success;
+        Object     *res;
+        std::string error_message;
+
+        void verify(Runtime *rt, const std::string error_message);
+    };
 };
 }    // namespace Cotton

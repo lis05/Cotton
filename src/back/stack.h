@@ -21,22 +21,36 @@
 
 #pragma once
 #include <cstdint>
-#include <ext/pb_ds/assoc_container.hpp>
+#include <cstdlib>
+#include <vector>
 
 namespace Cotton {
 
-class Runtime;
 class Object;
+class Instance;
+class Type;
 
-class Instance {
+class Stack {
 public:
-    __gnu_pbds::cc_hash_table<int64_t, Object *> fields;
-    Object                                      *selectField(int64_t id);
+    size_t mem_limit;
+    void  *base_ptr;
+    void  *cur_ptr;
 
-    Instance()          = default;
-    virtual ~Instance() = 0;    // for placement on stack
+    std::vector<void *>     frame_ptrs;
+    std::vector<Object *>   frame_objects;
+    std::vector<Instance *> frame_instances;
 
-    virtual std::vector<Object *> getGCReachable();
-    virtual Instance             *copy(Runtime *rt) = 0;
+    Stack(size_t mem_limit);
+    ~Stack();
+
+    void newFrame();
+    void popFrame();
+
+    void *alloc(size_t bytes);
+
+    template<class I>
+    I *allocAndInitInstance(size_t size);
+
+    Object *allocAndInitObject(bool is_instance, Instance *instance, Type *type);
 };
 }    // namespace Cotton
