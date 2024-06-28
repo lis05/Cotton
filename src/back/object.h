@@ -40,7 +40,7 @@ public:
         Type     *type;
     };
 
-    Object(bool is_instance, bool on_stack, Instance *instance, Type *type);
+    Object(bool is_instance, bool on_stack, Instance *instance, Type *type, Runtime *rt);
     ~Object();
 
     std::vector<Object *> getGCReachable();

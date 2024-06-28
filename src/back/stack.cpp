@@ -28,7 +28,7 @@ namespace Cotton {
 
 Stack::Stack(size_t mem_limit) {
     this->mem_limit = mem_limit;
-    this->base_ptr  = malloc(this->mem_limit);
+    this->base_ptr  = (char*)malloc(this->mem_limit);
     this->cur_ptr   = this->base_ptr;
 }
 
@@ -81,13 +81,13 @@ void *Stack::alloc(size_t size) {
     }
 }
 
-Object *Stack::allocAndInitObject(bool is_instance, Instance *instance, Type *type) {
+Object *Stack::allocAndInitObject(bool is_instance, Instance *instance, Type *type, Runtime *rt) {
     void *ptr = this->alloc(sizeof(Object));
     if (ptr == NULL) {
         return NULL;
     }
 
-    Object *res = new (ptr) Object(is_instance, true, instance, type);
+    Object *res = new (ptr) Object(is_instance, true, instance, type, rt);
     this->frame_objects.push_back(res);
     return res;
 }

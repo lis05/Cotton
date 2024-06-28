@@ -20,13 +20,15 @@
  */
 
 #include "type.h"
+#include "gc.h"
 #include "nameid.h"
+#include "runtime.h"
 
 namespace Cotton {
 
 int64_t Type::total_types = 0;
 
-Type::Type(bool is_simple) {
+Type::Type(bool is_simple, Runtime *rt) {
     this->id = ++Type::total_types;
     for (auto &op : this->unary_operators) {
         op = NULL;
@@ -38,17 +40,21 @@ Type::Type(bool is_simple) {
         op = NULL;
     }
     this->is_simple = is_simple;
+    this->gc_mark   = !rt->gc->gc_mark;
 }
 
 Type::~Type() {
     this->id = -1;
     for (auto &op : this->unary_operators) {
+        delete op;
         op = NULL;
     }
     for (auto &op : this->binary_operators) {
+        delete op;
         op = NULL;
     }
     for (auto &op : this->nary_operators) {
+        delete op;
         op = NULL;
     }
     // we don't do anything else, because the GC will take care of that

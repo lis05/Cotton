@@ -32,11 +32,13 @@ class Instance {
 public:
     __gnu_pbds::cc_hash_table<int64_t, Object *> fields;
     Object                                      *selectField(int64_t id);
+    bool                                         gc_mark : 1;
 
-    Instance()          = default;
+    Instance(Runtime *rt);
     virtual ~Instance() = 0;    // for placement on stack
 
     virtual std::vector<Object *> getGCReachable();
     virtual Instance             *copy(Runtime *rt) = 0;
+    virtual size_t                getSize()         = 0;    // in bytes
 };
 }    // namespace Cotton

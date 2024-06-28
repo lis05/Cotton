@@ -31,20 +31,21 @@ namespace Cotton {
 class Object;
 class Runtime;
 class NameId;
+class Type;
 
 class UnaryOperatorAdapter {
 public:
-    virtual Object *operator()(Object *self, Runtime *rt) = 0;
+    virtual Object *operator()(Type *type, Object *self, Runtime *rt) = 0;
 };
 
 class BinaryOperatorAdapter {
 public:
-    virtual Object *operator()(Object *self, Object *other, Runtime *rt) = 0;
+    virtual Object *operator()(Type *type, Object *self, Object *other, Runtime *rt) = 0;
 };
 
 class NaryOperatorAdapter {
 public:
-    virtual Object *operator()(Object *self, const std::vector<Object *> &others, Runtime *rt) = 0;
+    virtual Object *operator()(Type *type, Object *self, const std::vector<Object *> &others, Runtime *rt) = 0;
 };
 
 class Type {
@@ -57,12 +58,13 @@ public:
     UnaryOperatorAdapter  *unary_operators[num_operators];
     BinaryOperatorAdapter *binary_operators[num_operators];
     NaryOperatorAdapter   *nary_operators[num_operators];
-    bool                   is_simple;    // otherwise complex
+    bool                   is_simple : 1;    // otherwise complex
+    bool                   gc_mark   : 1;
     // if is_simple, then its instances are placed on stack
 
     __gnu_pbds::cc_hash_table<int64_t, Object *> methods;
 
-    Type(bool is_simple);
+    Type(bool is_simple, Runtime *rt);
     ~Type();
 
     void addOperator(OperatorNode::OperatorId id, UnaryOperatorAdapter *unary_op);

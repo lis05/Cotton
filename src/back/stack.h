@@ -29,14 +29,15 @@ namespace Cotton {
 class Object;
 class Instance;
 class Type;
+class Runtime;
 
 class Stack {
 public:
     size_t mem_limit;
-    void  *base_ptr;
-    void  *cur_ptr;
+    char  *base_ptr;
+    char  *cur_ptr;
 
-    std::vector<void *>     frame_ptrs;
+    std::vector<char *>     frame_ptrs;
     std::vector<Object *>   frame_objects;
     std::vector<Instance *> frame_instances;
 
@@ -51,6 +52,6 @@ public:
     template<class I>
     I *allocAndInitInstance(size_t size);
 
-    Object *allocAndInitObject(bool is_instance, Instance *instance, Type *type);
+    Object *allocAndInitObject(bool is_instance, Instance *instance, Type *type, Runtime *rt);
 };
 }    // namespace Cotton

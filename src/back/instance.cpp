@@ -21,6 +21,8 @@
 
 #include "instance.h"
 #include "object.h"
+#include "runtime.h"
+#include "gc.h"
 
 namespace Cotton {
 Object *Cotton::Instance::selectField(int64_t id) {
@@ -29,6 +31,10 @@ Object *Cotton::Instance::selectField(int64_t id) {
         return it->second;
     }
     return NULL;
+}
+
+Instance::Instance(Runtime *rt) {
+    this->gc_mark = !rt->gc->gc_mark;;
 }
 
 std::vector<Object *> Instance::getGCReachable() {

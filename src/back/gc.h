@@ -20,9 +20,70 @@
  */
 
 #pragma once
+#include <ext/pb_ds/assoc_container.hpp>
 
 namespace Cotton {
+class Object;
+class Instance;
+class Type;
+class Runtime;
+class GC;
+
+class GCStrategy {
+public:
+    virtual void acknowledgeTrack(Object *object, GC *gc, Runtime *rt)       = 0;
+    virtual void acknowledgeTrack(Instance *instance, GC *gc, Runtime *rt)   = 0;
+    virtual void acknowledgeTrack(Type *type, GC *gc, Runtime *rt)           = 0;
+    virtual void acknowledgeUntrack(Object *object, GC *gc, Runtime *rt)     = 0;
+    virtual void acknowledgeUntrack(Instance *instance, GC *gc, Runtime *rt) = 0;
+    virtual void acknowledgeUntrack(Type *type, GC *gc, Runtime *rt)         = 0;
+};
+
+class GCDefaultStrategy: public GCStrategy {
+public:
+    const int NUM_TRACKED_INIT = 10'000;              // prev_num_tracked is set to this at initialization
+    const int NUM_TRACKED_MULT = 2;                   // cycle runs when prev_num_tracked < num_tracked / 2;
+    int64_t   num_tracked, prev_num_tracked;
+
+    const int SIZEOF_TRACKED_INIT = 80'000;           // prev_num_tracked is set to this at initialization
+    const int SIZEOF_TRACKED_MULT = 2;                // cycle runs when prev_sizeof_tracked < num_tracked / 2;
+    int64_t   sizeof_tracked, prev_sizeof_tracked;    // in bytes
+
+    const int OPS_MOD = 10'000;                       // cycle runs when opc_cnt % OPS_MOD == 0
+    int64_t   ops_cnt;                                // number of tracks and untrackes modulo OPS_MOD
+
+    GCDefaultStrategy();
+    ~GCDefaultStrategy() = default;
+
+    virtual void acknowledgeTrack(Object *object, GC *gc, Runtime *rt);
+    virtual void acknowledgeTrack(Instance *instance, GC *gc, Runtime *rt);
+    virtual void acknowledgeTrack(Type *type, GC *gc, Runtime *rt);
+    virtual void acknowledgeUntrack(Object *object, GC *gc, Runtime *rt);
+    virtual void acknowledgeUntrack(Instance *instance, GC *gc, Runtime *rt);
+    virtual void acknowledgeUntrack(Type *type, GC *gc, Runtime *rt);
+
+    void checkConditions(GC *gc, Runtime *rt);
+};
+
 class GC {
 public:
+    __gnu_pbds::gp_hash_table<Object *, bool>   tracked_objects;
+    __gnu_pbds::gp_hash_table<Instance *, bool> tracked_instances;
+    __gnu_pbds::gp_hash_table<Type *, bool>     tracked_types;
+    int                                         gc_mark : 1;    // for the next sweep
+    GCStrategy                                 *gc_strategy;
+
+    GC(GCStrategy *gc_strategy);
+    ~GC();
+
+    void track(Object *object, Runtime *rt);
+    void track(Instance *instance, Runtime *rt);
+    void track(Type *type, Runtime *rt);
+
+    void untrack(Object *object, Runtime *rt);
+    void untrack(Instance *instance, Runtime *rt);
+    void untrack(Type *type, Runtime *rt);
+
+    void runCycle(Runtime *rt);
 };
 }    // namespace Cotton

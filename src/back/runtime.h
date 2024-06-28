@@ -46,16 +46,8 @@ public:
     ErrorManager            *error_manager;
     std::vector<std::string> error_messages;
     void                     highlight(Token *token);
-    void                     signalError(const std::string &message);
-
-    class State {
-    public:
-        Token *token;    // used for error logging
-    };
-
-    std::vector<State> states;
-    void               saveState();
-    void               restoreState();
+    void                     signalSubError(const std::string &message);    // doesn't exit
+    void                     signalError(const std::string &message);       // exits immidiately
 
     class ExecutionResult {
     public:
@@ -63,7 +55,10 @@ public:
         Object     *res;
         std::string error_message;
 
-        void verify(Runtime *rt, const std::string error_message);
+        bool directly_passed : 1;    // if passed via @A operator
+
+        ExecutionResult(bool success, Object *res, const std::string &error_message, bool directly_passed);
+        ~ExecutionResult() = default;
     };
 };
 }    // namespace Cotton
