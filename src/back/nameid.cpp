@@ -28,7 +28,7 @@ __gnu_pbds::cc_hash_table<std::string, int64_t> NameId::map;
 NameId::NameId() {
     this->id    = -1;
     this->token = NULL;
-    this->str = NULL;
+    this->str   = NULL;
 }
 
 NameId::NameId(Token *token) {
@@ -45,7 +45,7 @@ NameId::NameId(Token *token) {
         }
     }
     this->token = token;
-    this->str = &this->token->data;
+    this->str   = &this->token->data;
 }
 
 NameId::NameId(std::string *str) {
@@ -57,12 +57,12 @@ NameId::NameId(std::string *str) {
             this->id = NameId::map[*str];
         }
         else {
-            this->id                 = NameId::map.size();
+            this->id          = NameId::map.size();
             NameId::map[*str] = this->id;
         }
     }
     this->token = NULL;
-    this->str = str;
+    this->str   = str;
 }
 
 NameId::~NameId() {
@@ -71,3 +71,14 @@ NameId::~NameId() {
 }
 
 };    // namespace Cotton
+
+namespace Cotton::NameIds {
+std::string __make__ = "__make__";
+NameId      __MAKEID__(&__make__);
+// TODO
+int64_t __MAKE__() {
+    return __MAKEID__.id;
+}
+
+void init() {}
+}    // namespace Cotton::NameIds

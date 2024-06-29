@@ -40,4 +40,11 @@ public:
     NameId(std::string *str);
     ~NameId();
 };
+
+// some special nameids
+namespace NameIds {
+    int64_t __MAKE__();
+    int64_t __POSTINC_OP__();
+    // TODO
+}    // namespace NameIds
 }    // namespace Cotton

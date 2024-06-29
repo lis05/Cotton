@@ -33,17 +33,7 @@ class Runtime;
 class NameId;
 class Type;
 
-class UnaryOperatorAdapter {
-public:
-    virtual Object *operator()(Type *type, Object *self, Runtime *rt) = 0;
-};
-
-class BinaryOperatorAdapter {
-public:
-    virtual Object *operator()(Type *type, Object *self, Object *other, Runtime *rt) = 0;
-};
-
-class NaryOperatorAdapter {
+class OperatorAdapter {
 public:
     virtual Object *operator()(Type *type, Object *self, const std::vector<Object *> &others, Runtime *rt) = 0;
 };
@@ -53,13 +43,11 @@ private:
     static int64_t total_types;
 
 public:
-    static const int       num_operators = OperatorNode::TOTAL_OPERATORS;
-    int64_t                id;
-    UnaryOperatorAdapter  *unary_operators[num_operators];
-    BinaryOperatorAdapter *binary_operators[num_operators];
-    NaryOperatorAdapter   *nary_operators[num_operators];
-    bool                   is_simple : 1;    // otherwise complex
-    bool                   gc_mark   : 1;
+    static const int num_operators = OperatorNode::TOTAL_OPERATORS;
+    int64_t          id;
+    OperatorAdapter *operators[num_operators];
+    bool             is_simple : 1;    // otherwise complex
+    bool             gc_mark   : 1;
     // if is_simple, then its instances are placed on stack
 
     __gnu_pbds::cc_hash_table<int64_t, Object *> methods;
@@ -67,18 +55,16 @@ public:
     Type(bool is_simple, Runtime *rt);
     ~Type();
 
-    void addOperator(OperatorNode::OperatorId id, UnaryOperatorAdapter *unary_op);
-    void addOperator(OperatorNode::OperatorId id, BinaryOperatorAdapter *binary_op);
-    void addOperator(OperatorNode::OperatorId id, NaryOperatorAdapter *nary_op);
-    void addMethod(int64_t id, Object *method);
-
-    inline UnaryOperatorAdapter  *getUnaryOperator(OperatorNode::OperatorId id);
-    inline BinaryOperatorAdapter *getBinaryOperator(OperatorNode::OperatorId id);
-    inline NaryOperatorAdapter   *getNaryOperator(OperatorNode::OperatorId id);
-    inline Object                *getMethod(int64_t id);
+    void             addOperator(OperatorNode::OperatorId id, OperatorAdapter *op);
+    void             addMethod(int64_t id, Object *method);
+    OperatorAdapter *getOperator(OperatorNode::OperatorId id);
+    Object          *getMethod(int64_t id);
+    bool             hasMethod(int64_t id);
 
     virtual std::vector<Object *> getGCReachable();
-    virtual size_t                getIntanceSize() = 0;    // for placement on stack in case of is_simple
+    virtual size_t                getInstanceSize() = 0;    // for placement on stack in case of is_simple
+
+    virtual Object *create(Runtime *rt) = 0;                // creates an empty object
 };
 
 };    // namespace Cotton

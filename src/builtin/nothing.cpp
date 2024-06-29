@@ -1,3 +1,5 @@
+#include "nothing.h"
+
 /*
  Copyright (c) 2024 Ihor Lukianov (lis05)
 
@@ -19,34 +21,44 @@
  CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-#pragma once
+#include "../back/stack.h"
+#include "nothing.h"
 
-#include <ostream>
-#include <vector>
+namespace Cotton::Builtin {
 
-namespace Cotton {
+NothingInstance::NothingInstance(Runtime *rt)
+    : Instance(rt) {}
 
-class Instance;
-class Type;
-class Runtime;
+NothingInstance::~NothingInstance() {}
 
-class Object {
-public:
-    bool is_instance : 1;    // otherwise it's type
-    bool on_stack    : 1;    // otherwise it's in heap
-    bool gc_mark     : 1;
+Instance *NothingInstance::copy(Runtime *rt) {
+    Instance *res = rt->stack->allocAndInitInstance<NothingInstance>(sizeof(NothingInstance), rt);
+    if (res != NULL) {
+        res->on_stack = true;
+        return res;
+    }
+    res = new (std::nothrow) NothingInstance(rt);
+    if (res == NULL) {
+        return NULL;
+    }
+    res->on_stack = false;
+    return res;
+}
 
-    Instance *instance;
-    Type     *type;
+size_t NothingInstance::getSize() {
+    return sizeof(NothingInstance);
+}
 
-    Object(bool is_instance, bool on_stack, Instance *instance, Type *type, Runtime *rt);
-    ~Object();
+size_t NothingType::getInstanceSize() {
+    return sizeof(NothingInstance);
+}
 
-    std::vector<Object *> getGCReachable();
+NothingType::NothingType(Runtime *rt)
+    : Type(true, rt) {}
 
-    Object *copy(Runtime *rt);
-};
-
-std::ostream &operator<<(std::ostream &stream, Object *obj);
-
-};    // namespace Cotton
+Object *NothingType::create(Runtime *rt) {
+    auto ins = createInstance(rt, true, NothingInstance);
+    auto obj = createObject(rt, true, ins, this, true);
+    return obj;
+}
+}    // namespace Cotton::Builtin

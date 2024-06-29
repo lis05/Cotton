@@ -21,9 +21,7 @@
 
 #pragma once
 
-#include "back/nameid.h"
-#include "back/object.h"
-#include "back/type.h"
+#include "back/api.h"
+#include "builtin/api.h"
 #include "errors.h"
-#include "front/lexer.h"
-#include "front/parser.h"
+#include "front/api.h"

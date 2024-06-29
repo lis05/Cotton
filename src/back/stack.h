@@ -50,8 +50,20 @@ public:
     void *alloc(size_t bytes);
 
     template<class I>
-    I *allocAndInitInstance(size_t size);
+    Instance *allocAndInitInstance(size_t size, Runtime *rt);
 
     Object *allocAndInitObject(bool is_instance, Instance *instance, Type *type, Runtime *rt);
 };
+
+template<class I>
+inline Instance *Stack::allocAndInitInstance(size_t size, Runtime *rt) {
+    void *ptr = this->alloc(size);
+    if (ptr == NULL) {
+        return NULL;
+    }
+
+    I *res = new (ptr) I(rt);
+    this->frame_instances.push_back(res);
+    return res;
+}
 }    // namespace Cotton

@@ -49,4 +49,17 @@ Object *Object::copy(Runtime *rt) {
     }
     return new Object(this->is_instance, false, ins, type, rt);
 }
+
+std::ostream &operator<<(std::ostream &stream, Object *obj) {
+    if (obj == NULL) {
+        stream << "{NULL}";
+        return stream;
+    }
+    stream << "{" << (void*)obj << ", ";
+    stream << (obj->is_instance ? "I" : "X");
+    stream << (obj->on_stack ? "S" : "H");
+    stream << (obj->gc_mark ? "1" : "0");
+    stream << ", ins: " << obj->instance << " "  << (obj->instance->on_stack ? "S" : "H") <<  ", type: " << obj->type << "}";
+    return stream;
+}
 }    // namespace Cotton

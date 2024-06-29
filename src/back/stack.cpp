@@ -28,7 +28,7 @@ namespace Cotton {
 
 Stack::Stack(size_t mem_limit) {
     this->mem_limit = mem_limit;
-    this->base_ptr  = (char*)malloc(this->mem_limit);
+    this->base_ptr  = (char *)malloc(this->mem_limit);
     this->cur_ptr   = this->base_ptr;
 }
 
@@ -70,7 +70,7 @@ void Stack::popFrame() {
 }
 
 void *Stack::alloc(size_t size) {
-    int64_t free_space = (int64_t)this->mem_limit - (int64_t)this->cur_ptr - (int64_t)this->base_ptr;
+    int64_t free_space = (int64_t)this->mem_limit - ((int64_t)this->cur_ptr - (int64_t)this->base_ptr);
     if (size <= free_space) {
         void *res      = this->cur_ptr;
         this->cur_ptr += size;
@@ -89,18 +89,6 @@ Object *Stack::allocAndInitObject(bool is_instance, Instance *instance, Type *ty
 
     Object *res = new (ptr) Object(is_instance, true, instance, type, rt);
     this->frame_objects.push_back(res);
-    return res;
-}
-
-template<class I>
-inline I *Stack::allocAndInitInstance(size_t size) {
-    void *ptr = this->alloc(size);
-    if (ptr == NULL) {
-        return NULL;
-    }
-
-    I *res = new (ptr) I;
-    this->frame_instances.push_back(res);
     return res;
 }
 

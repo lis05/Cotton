@@ -18,35 +18,5 @@
  IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
  CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
-
 #pragma once
-
-#include <ostream>
-#include <vector>
-
-namespace Cotton {
-
-class Instance;
-class Type;
-class Runtime;
-
-class Object {
-public:
-    bool is_instance : 1;    // otherwise it's type
-    bool on_stack    : 1;    // otherwise it's in heap
-    bool gc_mark     : 1;
-
-    Instance *instance;
-    Type     *type;
-
-    Object(bool is_instance, bool on_stack, Instance *instance, Type *type, Runtime *rt);
-    ~Object();
-
-    std::vector<Object *> getGCReachable();
-
-    Object *copy(Runtime *rt);
-};
-
-std::ostream &operator<<(std::ostream &stream, Object *obj);
-
-};    // namespace Cotton
+#include "nothing.h"

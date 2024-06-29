@@ -20,33 +20,24 @@
  */
 
 #pragma once
+#include "../back/api.h"
+#include "../front/api.h"
 
-#include <ostream>
-#include <vector>
-
-namespace Cotton {
-
-class Instance;
-class Type;
-class Runtime;
-
-class Object {
+namespace Cotton::Builtin {
+class NothingInstance: public Instance {
 public:
-    bool is_instance : 1;    // otherwise it's type
-    bool on_stack    : 1;    // otherwise it's in heap
-    bool gc_mark     : 1;
+    NothingInstance(Runtime *rt);
+    ~NothingInstance();
 
-    Instance *instance;
-    Type     *type;
-
-    Object(bool is_instance, bool on_stack, Instance *instance, Type *type, Runtime *rt);
-    ~Object();
-
-    std::vector<Object *> getGCReachable();
-
-    Object *copy(Runtime *rt);
+    Instance *copy(Runtime *rt);
+    size_t    getSize();
 };
 
-std::ostream &operator<<(std::ostream &stream, Object *obj);
-
-};    // namespace Cotton
+class NothingType: public Type {
+public:
+    size_t getInstanceSize();
+    NothingType(Runtime *rt);
+    ~NothingType() = default;
+    Object *create(Runtime *rt);
+};
+}    // namespace Cotton::Builtin
