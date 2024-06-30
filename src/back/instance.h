@@ -35,7 +35,7 @@ public:
     bool                                         gc_mark  : 1;
     bool                                         on_stack : 1;    // set after creation
 
-    Instance(Runtime *rt);
+    Instance(Runtime *rt, size_t bytes, bool on_stack);
 
     virtual std::vector<Object *> getGCReachable();
     virtual Instance             *copy(Runtime *rt) = 0;

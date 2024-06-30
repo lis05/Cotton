@@ -37,6 +37,8 @@ Type::Type(bool is_simple, Runtime *rt) {
     }
     this->is_simple = is_simple;
     this->gc_mark   = !rt->gc->gc_mark;
+
+    rt->gc->track(this, rt);
 }
 
 Type::~Type() {
@@ -56,7 +58,7 @@ void Type::addMethod(int64_t id, Object *method) {
     this->methods[id] = method;
 }
 
-std::vector<int64_t> operator_names = { // TODO
+/*std::vector<int64_t> operator_names = {
     "__postinc_op__",
     "__postdecr_op__",
     "__call_op__",
@@ -95,13 +97,11 @@ std::vector<int64_t> operator_names = { // TODO
     "__rem_assign_op__",
     "__comma_op__ NOT OVERLOADABLE",
     "go heck yourself",
-};
+};*/
 
 OperatorAdapter *Type::getOperator(OperatorNode::OperatorId id) {
     auto res = this->operators[id];
-    if (res == NULL) {
-        auto method = this->getMethod(NameId(&operator_names[id])
-    }
+    return res;    // TODO
 }
 
 Object *Type::getMethod(int64_t id) {

@@ -65,20 +65,22 @@ NameId::NameId(std::string *str) {
     this->str   = str;
 }
 
+NameId::NameId(std::string str) {
+    if (NameId::map.find(str) != NameId::map.end()) {
+        this->id = NameId::map[str];
+    }
+    else {
+        this->id         = NameId::map.size();
+        NameId::map[str] = this->id;
+    }
+
+    this->token   = NULL;
+    this->val_str = str;
+}
+
 NameId::~NameId() {
     this->id    = -1;
     this->token = NULL;
 }
 
 };    // namespace Cotton
-
-namespace Cotton::NameIds {
-std::string __make__ = "__make__";
-NameId      __MAKEID__(&__make__);
-// TODO
-int64_t __MAKE__() {
-    return __MAKEID__.id;
-}
-
-void init() {}
-}    // namespace Cotton::NameIds

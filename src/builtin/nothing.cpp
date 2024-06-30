@@ -26,8 +26,8 @@
 
 namespace Cotton::Builtin {
 
-NothingInstance::NothingInstance(Runtime *rt)
-    : Instance(rt) {}
+NothingInstance::NothingInstance(Runtime *rt, bool on_stack)
+    : Instance(rt, sizeof(NothingInstance), on_stack) {}
 
 NothingInstance::~NothingInstance() {}
 
@@ -37,7 +37,7 @@ Instance *NothingInstance::copy(Runtime *rt) {
         res->on_stack = true;
         return res;
     }
-    res = new (std::nothrow) NothingInstance(rt);
+    res = new (std::nothrow) NothingInstance(rt, false);
     if (res == NULL) {
         return NULL;
     }

@@ -34,17 +34,12 @@ public:
     int64_t      id;
     Token       *token;
     std::string *str;
+    std::string val_str;
 
     NameId();
     NameId(Token *token);
     NameId(std::string *str);
+    NameId(std::string str);
     ~NameId();
-};
-
-// some special nameids
-namespace NameIds {
-    int64_t __MAKE__();
-    int64_t __POSTINC_OP__();
-    // TODO
-}    // namespace NameIds
+};   // namespace NameIds
 }    // namespace Cotton

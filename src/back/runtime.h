@@ -82,11 +82,9 @@ public:
     // if errors happen, reports them
     Object *copy(Object *obj);
 
-    // if on heap, removes from GC
-    void destroy(Object *obj);
+    enum ObjectOptions { INSTANCE_OBJECT, TYPE_OBJECT };
 
-    // crates a new object, if needed adds to the GC, and calles __make__
-    Object *make(Type *type);
+    Object *make(Type *type, ObjectOptions object_opt);
 
     Object *runOperator(OperatorNode::OperatorId id, Object *obj, std::vector<Object *> args);
     Object *runMethod(int64_t id, Object *obj, std::vector<Object *> args);
@@ -100,7 +98,7 @@ public:
         if (try_on_stack)                                                                                         \
             ins = rt->stack->allocAndInitInstance<I>(sizeof(I), rt);                                              \
         if (ins == NULL) {                                                                                        \
-            ins = new (std::nothrow) I(rt);                                                                       \
+            ins = new (std::nothrow) I(rt, false);                                                                       \
             if (ins == NULL) {                                                                                    \
                 return NULL;                                                                                      \
             }                                                                                                     \

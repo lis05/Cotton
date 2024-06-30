@@ -32,11 +32,13 @@ class GC;
 class GCStrategy {
 public:
     virtual void acknowledgeTrack(Object *object, GC *gc, Runtime *rt)       = 0;
-    virtual void acknowledgeTrack(Instance *instance, GC *gc, Runtime *rt)   = 0;
+    virtual void acknowledgeTrack(Instance *instance, size_t bytes, GC *gc, Runtime *rt)   = 0;
     virtual void acknowledgeTrack(Type *type, GC *gc, Runtime *rt)           = 0;
     virtual void acknowledgeUntrack(Object *object, GC *gc, Runtime *rt)     = 0;
     virtual void acknowledgeUntrack(Instance *instance, GC *gc, Runtime *rt) = 0;
     virtual void acknowledgeUntrack(Type *type, GC *gc, Runtime *rt)         = 0;
+    virtual void acknowledgeEndOfCycle(GC *gc, Runtime *rt)                  = 0;
+    virtual void acknowledgePing(GC *gc, Runtime *rt)                        = 0;
 };
 
 class GCDefaultStrategy: public GCStrategy {
@@ -55,35 +57,50 @@ public:
     GCDefaultStrategy();
     ~GCDefaultStrategy() = default;
 
-    virtual void acknowledgeTrack(Object *object, GC *gc, Runtime *rt);
-    virtual void acknowledgeTrack(Instance *instance, GC *gc, Runtime *rt);
-    virtual void acknowledgeTrack(Type *type, GC *gc, Runtime *rt);
-    virtual void acknowledgeUntrack(Object *object, GC *gc, Runtime *rt);
-    virtual void acknowledgeUntrack(Instance *instance, GC *gc, Runtime *rt);
-    virtual void acknowledgeUntrack(Type *type, GC *gc, Runtime *rt);
+    void acknowledgeTrack(Object *object, GC *gc, Runtime *rt);
+    void acknowledgeTrack(Instance *instance, size_t bytes, GC *gc, Runtime *rt);
+    void acknowledgeTrack(Type *type, GC *gc, Runtime *rt);
+    void acknowledgeUntrack(Object *object, GC *gc, Runtime *rt);
+    void acknowledgeUntrack(Instance *instance, GC *gc, Runtime *rt);
+    void acknowledgeUntrack(Type *type, GC *gc, Runtime *rt);
+    void acknowledgeEndOfCycle(GC *gc, Runtime *rt);
+    void acknowledgePing(GC *gc, Runtime *rt);
 
     void checkConditions(GC *gc, Runtime *rt);
 };
 
 class GC {
 public:
-    __gnu_pbds::gp_hash_table<Object *, bool>   tracked_objects;
+    __gnu_pbds::gp_hash_table<Object *, bool> tracked_objects;
+    __gnu_pbds::gp_hash_table<Object *, bool> held_objects;
+
     __gnu_pbds::gp_hash_table<Instance *, bool> tracked_instances;
     __gnu_pbds::gp_hash_table<Type *, bool>     tracked_types;
-    int                                         gc_mark : 1;    // for the next sweep
-    GCStrategy                                 *gc_strategy;
+
+    bool        gc_mark : 1;    // for the next sweep
+    GCStrategy *gc_strategy;
+    bool        enabled;
 
     GC(GCStrategy *gc_strategy);
     ~GC();
 
     void track(Object *object, Runtime *rt);
-    void track(Instance *instance, Runtime *rt);
+    void track(Instance *instance, size_t bytes, Runtime *rt);
     void track(Type *type, Runtime *rt);
 
     void untrack(Object *object, Runtime *rt);
     void untrack(Instance *instance, Runtime *rt);
     void untrack(Type *type, Runtime *rt);
 
+    void hold(Object *object);    // even if object can't be reached, it will still be preserved, as well as items
+                                  // reachable from it
+    void relsease(Object *object);
+
+    void ping(Runtime *rt);
+
     void runCycle(Runtime *rt);
+
+    void enable();
+    void disable();
 };
 }    // namespace Cotton

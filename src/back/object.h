@@ -32,9 +32,10 @@ class Runtime;
 
 class Object {
 public:
-    bool is_instance : 1;    // otherwise it's type
-    bool on_stack    : 1;    // otherwise it's in heap
-    bool gc_mark     : 1;
+    static int64_t total_objects;
+    bool           is_instance : 1;    // otherwise it's type
+    bool           on_stack    : 1;    // otherwise it's in heap
+    bool           gc_mark     : 1;
 
     Instance *instance;
     Type     *type;
@@ -48,5 +49,10 @@ public:
 };
 
 std::ostream &operator<<(std::ostream &stream, Object *obj);
+
+namespace MagicMethods {
+    int64_t __postinc_id__();
+    int64_t __postdec_id__();
+}
 
 };    // namespace Cotton

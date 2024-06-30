@@ -1,6 +1,7 @@
 #include "runtime.h"
 #include "../front/parser.h"
 #include "gc.h"
+#include "instance.h"
 #include "nameid.h"
 #include "scope.h"
 #include "stack.h"
@@ -18,23 +19,23 @@ void Runtime::signalSubError(const std::string &message) {
     this->error_messages.push_back({message, this->current_token});
 }
 
-Object *Runtime::make(Type *type) {
-    if (type == NULL) {
-        this->signalSubError("Failed to make given type because it is absent");
+Object *Runtime::make(Type *type, ObjectOptions object_opt) {
+    if (!this->validate(type)) {
         return NULL;
     }
-    auto obj = type->create(this);
+    Object *obj = NULL;
+    if (object_opt == Runtime::INSTANCE_OBJECT) {
+        obj = type->create(this);
+    }
+    else {
+        obj = new Object(false, false, NULL, type, this);
+    }
     if (obj == NULL) {
-        this->signalSubError("Failed to make an object of given type");
+        this->signalSubError("Failed to make an object");
         return NULL;
     }
-    if (!obj->on_stack) {
-        this->gc->track(obj, this);
-    }
-    if (obj->type->hasMethod(NameIds::__MAKE__())) {
-        this->runMethod(NameIds::__MAKE__(), obj, {});
-    }
-    return obj;
+    // TODO: call __make__
+    return obj;    
 }
 
 Object *Runtime::runOperator(OperatorNode::OperatorId id, Object *obj, std::vector<Object *> args) {
@@ -44,6 +45,7 @@ Object *Runtime::runOperator(OperatorNode::OperatorId id, Object *obj, std::vect
     if (!this->validate(obj->type)) {
         return NULL;
     }
+    // TODO: if operator is NULL, call magic method
     return obj->type->getOperator(id)->operator()(obj->type, obj, args, this);
 }
 
@@ -80,20 +82,5 @@ bool Runtime::validate(Type *type) {
         return false;
     }
     return true;
-}
-
-Object *Runtime::copy(Object *obj) {
-    if (!validate(obj)) {
-        return NULL;
-    }
-    auto cpy = obj->copy(this);
-    if (cpy == NULL) {
-        this->signalSubError("Failed to copy object");
-        return NULL;
-    }
-    if (cpy->on_stack) {
-        this->gc->track(cpy, this);
-    }
-    return cpy;
 }
 }    // namespace Cotton

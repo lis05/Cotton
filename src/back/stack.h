@@ -52,6 +52,7 @@ public:
     template<class I>
     Instance *allocAndInitInstance(size_t size, Runtime *rt);
 
+    // this works slow, figure out why xd
     Object *allocAndInitObject(bool is_instance, Instance *instance, Type *type, Runtime *rt);
 };
 
@@ -62,7 +63,7 @@ inline Instance *Stack::allocAndInitInstance(size_t size, Runtime *rt) {
         return NULL;
     }
 
-    I *res = new (ptr) I(rt);
+    I *res = new (ptr) I(rt, true);
     this->frame_instances.push_back(res);
     return res;
 }

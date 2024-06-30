@@ -26,7 +26,7 @@
 namespace Cotton::Builtin {
 class NothingInstance: public Instance {
 public:
-    NothingInstance(Runtime *rt);
+    NothingInstance(Runtime *rt, bool on_stack);
     ~NothingInstance();
 
     Instance *copy(Runtime *rt);

@@ -7,17 +7,25 @@
 #include <cstdint>
 
 namespace Cotton {
+int64_t Object::total_objects = 0;
+
 Object::Object(bool is_instance, bool on_stack, Instance *instance, Type *type, Runtime *rt) {
     this->is_instance = is_instance;
     this->on_stack    = on_stack;
     this->instance    = instance;
     this->type        = type;
     this->gc_mark     = !rt->gc->gc_mark;
+    total_objects++;
+
+    if (!on_stack) {
+        rt->gc->track(this, rt);
+    }
 }
 
 Object::~Object() {
     this->instance = NULL;
     this->type     = NULL;
+    total_objects--;
 }
 
 std::vector<Object *> Object::getGCReachable() {
@@ -55,11 +63,12 @@ std::ostream &operator<<(std::ostream &stream, Object *obj) {
         stream << "{NULL}";
         return stream;
     }
-    stream << "{" << (void*)obj << ", ";
-    stream << (obj->is_instance ? "I" : "X");
+    stream << "{" << (void *)obj << ", ";
+    stream << (obj->is_instance ? "I" : "T");
     stream << (obj->on_stack ? "S" : "H");
     stream << (obj->gc_mark ? "1" : "0");
-    stream << ", ins: " << obj->instance << " "  << (obj->instance->on_stack ? "S" : "H") <<  ", type: " << obj->type << "}";
+    stream << ", ins: " << obj->instance << " " << (obj->instance->on_stack ? "S" : "H") << ", type: " << obj->type
+           << "}";
     return stream;
 }
 }    // namespace Cotton
