@@ -18,7 +18,29 @@
  IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
  CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
+
 #pragma once
-#include "boolean.h"
-#include "function.h"
-#include "nothing.h"
+#include "../back/api.h"
+#include "../front/api.h"
+
+namespace Cotton::Builtin {
+
+class BooleanInstance: public Instance {
+public:
+    bool value;    // function written in Cotton
+
+    BooleanInstance(Runtime *rt, bool on_stack);
+    ~BooleanInstance();
+
+    Instance *copy(Runtime *rt);
+    size_t    getSize();
+};
+
+class BooleanType: public Type {
+public:
+    size_t getInstanceSize();
+    BooleanType(Runtime *rt);
+    ~BooleanType() = default;
+    Object *create(Runtime *rt);
+};
+}    // namespace Cotton::Builtin

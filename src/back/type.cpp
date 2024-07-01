@@ -58,50 +58,23 @@ void Type::addMethod(int64_t id, Object *method) {
     this->methods[id] = method;
 }
 
-/*std::vector<int64_t> operator_names = {
-    "__postinc_op__",
-    "__postdecr_op__",
-    "__call_op__",
-    "__index_op__",
-    "__dot_op__ NOT OVERLOADABLE",
-    "__at_op__ NOT OVERLOADABLE",
-    "__prefinc_op__",
-    "__prefdecr_op__",
-    "__positive_op__",
-    "__negative_op__",
-    "__not_op__",
-    "__bitnot_op__",
-    "__mult_op__",
-    "__div_op__",
-    "__rem_op__",
-    "__rightshift_op__",
-    "__leftshift_op__",
-    "__add_op__",
-    "__sub_op__",
-    "__lt_op__",
-    "__leq_op__",
-    "__gt_op__",
-    "__geq_op__",
-    "__eq_op__",
-    "__noteq_op__",
-    "__bitand_op__",
-    "__bitxor_op__",
-    "__bitor_op__",
-    "__and_op__",
-    "__or_op__",
-    "__assign_op__",
-    "__add_assign_op__",
-    "__sub_assign_op__",
-    "__mult_assign_op__",
-    "__div_assign_op__",
-    "__rem_assign_op__",
-    "__comma_op__ NOT OVERLOADABLE",
-    "go heck yourself",
-};*/
-
 OperatorAdapter *Type::getOperator(OperatorNode::OperatorId id) {
     auto res = this->operators[id];
-    return res;    // TODO
+    if (res == NULL) {
+        auto method_id = MagicMethods::getMagicOperator(id);
+        if (method_id == -1) {
+            return NULL;
+        }
+        auto method = this->getMethod(method_id);
+        if (method == NULL || method->type == NULL) {
+            return NULL;
+        }    
+        // all overloaded operators must be overloaded via the call operator
+        return method->type->getOperator(OperatorNode::CALL);
+    }
+    else {
+        return res;
+    }
 }
 
 Object *Type::getMethod(int64_t id) {
@@ -124,4 +97,187 @@ std::vector<Object *> Type::getGCReachable() {
     }
     return res;
 }
+
+namespace MagicMethods {
+    int64_t __make__() {
+        static NameId res("__make__");
+        return res.id;
+    }
+
+    // operators
+    int64_t __postinc__() {
+        static NameId res("__postinc__");
+        return res.id;
+    }
+
+    int64_t __postdec__() {
+        static NameId res("__postdec__");
+        return res.id;
+    }
+
+    int64_t __call__() {
+        static NameId res("__call__");
+        return res.id;
+    }
+
+    int64_t __index__() {
+        static NameId res("__index__");
+        return res.id;
+    }
+
+    int64_t __preinc__() {
+        static NameId res("__preinc__");
+        return res.id;
+    }
+
+    int64_t __predec__() {
+        static NameId res("__predec__");
+        return res.id;
+    }
+
+    int64_t __positive__() {
+        static NameId res("__positive__");
+        return res.id;
+    }
+
+    int64_t __negative__() {
+        static NameId res("__negative__");
+        return res.id;
+    }
+
+    int64_t __not__() {
+        static NameId res("__not__");
+        return res.id;
+    }
+
+    int64_t __inverse__() {
+        static NameId res("__inverse__");
+        return res.id;
+    }
+
+    int64_t __mult__() {
+        static NameId res("__mult__");
+        return res.id;
+    }
+
+    int64_t __div__() {
+        static NameId res("__div__");
+        return res.id;
+    }
+
+    int64_t __rem__() {
+        static NameId res("__rem__");
+        return res.id;
+    }
+
+    int64_t __rshift__() {
+        static NameId res("__rshift__");
+        return res.id;
+    }
+
+    int64_t __lshift__() {
+        static NameId res("__lshift__");
+        return res.id;
+    }
+
+    int64_t __add__() {
+        static NameId res("__add__");
+        return res.id;
+    }
+
+    int64_t __sub__() {
+        static NameId res("__sub__");
+        return res.id;
+    }
+
+    int64_t __lt__() {
+        static NameId res("__lt__");
+        return res.id;
+    }
+
+    int64_t __leq__() {
+        static NameId res("__leq__");
+        return res.id;
+    }
+
+    int64_t __gt__() {
+        static NameId res("__gt__");
+        return res.id;
+    }
+
+    int64_t __geq__() {
+        static NameId res("__geq__");
+        return res.id;
+    }
+
+    int64_t __eq__() {
+        static NameId res("__eq__");
+        return res.id;
+    }
+
+    int64_t __neq__() {
+        static NameId res("__neq__");
+        return res.id;
+    }
+
+    int64_t __bitand__() {
+        static NameId res("__bitand__");
+        return res.id;
+    }
+
+    int64_t __bitxor__() {
+        static NameId res("__bitxor__");
+        return res.id;
+    }
+
+    int64_t __bitor__() {
+        static NameId res("__bitor__");
+        return res.id;
+    }
+
+    int64_t __and__() {
+        static NameId res("__and__");
+        return res.id;
+    }
+
+    int64_t __or__() {
+        static NameId res("__or__");
+        return res.id;
+    }
+
+    int64_t getMagicOperator(OperatorNode::OperatorId id) {
+        switch (id) {
+        case OperatorNode::POST_PLUS_PLUS   : return __postinc__();
+        case OperatorNode::POST_MINUS_MINUS : return __postdec__();
+        case OperatorNode::CALL             : return __call__();
+        case OperatorNode::INDEX            : return __index__();
+        case OperatorNode::PRE_PLUS_PLUS    : return __preinc__();
+        case OperatorNode::PRE_MINUS_MINUS  : return __predec__();
+        case OperatorNode::PRE_PLUS         : return __positive__();
+        case OperatorNode::PRE_MINUS        : return __negative__();
+        case OperatorNode::NOT              : return __not__();
+        case OperatorNode::INVERSE          : return __inverse__();
+        case OperatorNode::MULT             : return __mult__();
+        case OperatorNode::DIV              : return __div__();
+        case OperatorNode::REM              : return __rem__();
+        case OperatorNode::RIGHT_SHIFT      : return __rshift__();
+        case OperatorNode::LEFT_SHIFT       : return __lshift__();
+        case OperatorNode::PLUS             : return __add__();
+        case OperatorNode::MINUS            : return __sub__();
+        case OperatorNode::LESS             : return __lt__();
+        case OperatorNode::LESS_EQUAL       : return __leq__();
+        case OperatorNode::GREATER          : return __gt__();
+        case OperatorNode::GREATER_EQUAL    : return __geq__();
+        case OperatorNode::EQUAL            : return __eq__();
+        case OperatorNode::NOT_EQUAL        : return __neq__();
+        case OperatorNode::BITAND           : return __bitand__();
+        case OperatorNode::BITXOR           : return __bitxor__();
+        case OperatorNode::BITOR            : return __bitor__();
+        case OperatorNode::AND              : return __and__();
+        case OperatorNode::OR               : return __or__();
+        default                             : return -1;
+        }
+    }
+}    // namespace MagicMethods
+
 };    // namespace Cotton

@@ -35,7 +35,7 @@ class Type;
 
 class OperatorAdapter {
 public:
-    virtual Object *operator()(Type *type, Object *self, const std::vector<Object *> &others, Runtime *rt) = 0;
+    virtual Object *operator()(Object *self, const std::vector<Object *> &others, Runtime *rt) = 0;
 };
 
 class Type {
@@ -66,5 +66,41 @@ public:
 
     virtual Object *create(Runtime *rt) = 0;                // creates an empty object
 };
+
+namespace MagicMethods {
+    int64_t __make__();
+
+    // operators
+    int64_t __postinc__();
+    int64_t __postdec__();
+    int64_t __call__();
+    int64_t __index__();
+    int64_t __preinc__();
+    int64_t __predec__();
+    int64_t __positive__();
+    int64_t __negative__();
+    int64_t __not__();
+    int64_t __inverse__();
+    int64_t __mult__();
+    int64_t __div__();
+    int64_t __rem__();
+    int64_t __rshift__();
+    int64_t __lshift__();
+    int64_t __add__();
+    int64_t __sub__();
+    int64_t __lt__();
+    int64_t __leq__();
+    int64_t __gt__();
+    int64_t __geq__();
+    int64_t __eq__();
+    int64_t __neq__();
+    int64_t __bitand__();
+    int64_t __bitxor__();
+    int64_t __bitor__();
+    int64_t __and__();
+    int64_t __or__();
+
+    int64_t getMagicOperator(OperatorNode::OperatorId id);
+}    // namespace MagicMethods
 
 };    // namespace Cotton

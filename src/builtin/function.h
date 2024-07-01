@@ -18,7 +18,34 @@
  IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
  CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
+
 #pragma once
-#include "boolean.h"
-#include "function.h"
-#include "nothing.h"
+#include "../back/api.h"
+#include "../front/api.h"
+
+namespace Cotton::Builtin {
+
+typedef Object *(*InternalFunction)(const std::vector<Object *> &args, Runtime *rt);
+
+class FunctionInstance: public Instance {
+public:
+    bool             is_internal;
+    InternalFunction internal_ptr;    // function written in C++
+    StmtNode        *cotton_ptr;      // function written in Cotton
+
+    FunctionInstance(Runtime *rt, bool on_stack);
+    ~FunctionInstance();
+
+    void      init(bool is_internal, InternalFunction internal_ptr, StmtNode *cotton_ptr);
+    Instance *copy(Runtime *rt);
+    size_t    getSize();
+};
+
+class FunctionType: public Type {
+public:
+    size_t getInstanceSize();
+    FunctionType(Runtime *rt);
+    ~FunctionType() = default;
+    Object *create(Runtime *rt);
+};
+}    // namespace Cotton::Builtin
