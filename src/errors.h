@@ -55,6 +55,8 @@ public:
 
     void signalError(const std::vector<std::pair<Token *, std::string>> errors);
 
+    void signalErrorWithContext(const std::vector<std::pair<std::string, Token *>> messages);
+
     friend void __assert__(bool               value,
                            const char        *assertion,
                            const std::string &message,
@@ -70,7 +72,7 @@ void __assert__(bool               value,
                 const char        *filename,
                 int                line);
 
-#define eassert(value, message, error_manager)                                                                     \
+#define eassert(value, message, error_manager)                                                                    \
     __assert__(value, #value, message, error_manager, __FILE__, __LINE__);
 
 }    // namespace Cotton

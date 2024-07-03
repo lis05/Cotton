@@ -29,17 +29,22 @@ namespace Cotton {
 class NameId {
 private:
     static __gnu_pbds::cc_hash_table<std::string, int64_t> map;
+    static __gnu_pbds::cc_hash_table<int64_t, std::string> reverse_map;
 
 public:
     int64_t      id;
     Token       *token;
     std::string *str;
-    std::string val_str;
+    std::string  val_str;
 
     NameId();
     NameId(Token *token);
     NameId(std::string *str);
     NameId(std::string str);
     ~NameId();
-};   // namespace NameIds
+
+    static std::string fromId(int64_t id);
+    static std::string shortRepr(int64_t id);
+
+};    // namespace NameIds
 }    // namespace Cotton

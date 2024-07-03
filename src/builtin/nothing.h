@@ -29,8 +29,9 @@ public:
     NothingInstance(Runtime *rt, bool on_stack);
     ~NothingInstance();
 
-    Instance *copy(Runtime *rt);
-    size_t    getSize();
+    Instance   *copy(Runtime *rt);
+    size_t      getSize();
+    std::string shortRepr();
 };
 
 class NothingType: public Type {
@@ -38,6 +39,8 @@ public:
     size_t getInstanceSize();
     NothingType(Runtime *rt);
     ~NothingType() = default;
-    Object *create(Runtime *rt);
+    Object     *create(Runtime *rt);
+    std::string shortRepr();
+    Object *copy(Object *obj, Runtime *rt);
 };
 }    // namespace Cotton::Builtin

@@ -181,11 +181,11 @@ void GC::untrack(Type *type, Runtime *rt) {
     this->tracked_types.erase(type);
 }
 
-void GC::hold(Object *object) {
+void GC::hold(Object *object, Runtime *rt) {
     this->held_objects[object] = true;
 }
 
-void GC::relsease(Object *object) {
+void GC::release(Object *object, Runtime *rt) {
     this->held_objects.erase(object);
 }
 
@@ -193,10 +193,10 @@ void GC::ping(Runtime *rt) {
     this->gc_strategy->acknowledgePing(this, rt);
 }
 
-static void mark(Instance *ins, GC *gc);
-static void mark(Type *type, GC *gc);
+static void mark(Instance *ins, GC *gc, Runtime *rt);
+static void mark(Type *type, GC *gc, Runtime *rt);
 
-static void mark(Object *obj, GC *gc) {
+static void mark(Object *obj, GC *gc, Runtime *rt) {
     if (obj == NULL) {
         return;
     }
@@ -205,14 +205,14 @@ static void mark(Object *obj, GC *gc) {
     }
 
     obj->gc_mark = gc->gc_mark;
-    for (auto &o : obj->getGCReachable()) {
-        mark(o, gc);
+    for (auto &o : obj->getGCReachable(rt)) {
+        mark(o, gc, rt);
     }
-    mark(obj->instance, gc);
-    mark(obj->type, gc);
+    mark(obj->instance, gc, rt);
+    mark(obj->type, gc, rt);
 }
 
-static void mark(Instance *ins, GC *gc) {
+static void mark(Instance *ins, GC *gc, Runtime *rt) {
     if (ins == NULL) {
         return;
     }
@@ -221,12 +221,12 @@ static void mark(Instance *ins, GC *gc) {
     }
 
     ins->gc_mark = gc->gc_mark;
-    for (auto &o : ins->getGCReachable()) {
-        mark(o, gc);
+    for (auto &o : ins->getGCReachable(rt)) {
+        mark(o, gc, rt);
     }
 }
 
-static void mark(Type *type, GC *gc) {
+static void mark(Type *type, GC *gc, Runtime *rt) {
     if (type == NULL) {
         return;
     }
@@ -235,8 +235,8 @@ static void mark(Type *type, GC *gc) {
     }
 
     type->gc_mark = gc->gc_mark;
-    for (auto &o : type->getGCReachable()) {
-        mark(o, gc);
+    for (auto &o : type->getGCReachable(rt)) {
+        mark(o, gc, rt);
     }
 }
 
@@ -248,12 +248,12 @@ void GC::runCycle(Runtime *rt) {
     auto scope = rt->scope;
     while (scope != NULL) {
         for (auto &[_, obj] : scope->variables) {
-            mark(obj, this);
+            mark(obj, this, rt);
         }
         scope = scope->prev;
     }
     for (auto &[obj, _] : this->held_objects) {
-        mark(obj, this);
+        mark(obj, this, rt);
     }
     // sweep
     std::vector<Object *> deleted_objects;
@@ -289,14 +289,13 @@ void GC::runCycle(Runtime *rt) {
 
     this->gc_mark = !this->gc_mark;
     this->gc_strategy->acknowledgeEndOfCycle(this, rt);
-    printf("GC CYCLE END!\n");
 }
 
-void GC::enable() {
+void GC::enable(Runtime *rt) {
     this->enabled = true;
 }
 
-void GC::disable() {
+void GC::disable(Runtime *rt) {
     this->enabled = false;
 }
 }    // namespace Cotton

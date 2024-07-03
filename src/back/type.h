@@ -55,16 +55,28 @@ public:
     Type(bool is_simple, Runtime *rt);
     ~Type();
 
-    void             addOperator(OperatorNode::OperatorId id, OperatorAdapter *op);
-    void             addMethod(int64_t id, Object *method);
-    OperatorAdapter *getOperator(OperatorNode::OperatorId id);
-    Object          *getMethod(int64_t id);
-    bool             hasMethod(int64_t id);
+    // adds an operator
+    void             addOperator(OperatorNode::OperatorId id, OperatorAdapter *op, Runtime *rt);
+    // adds a method
+    void             addMethod(int64_t id, Object *method, Runtime *rt);
+    // returns a valid(non-NULL) operator adapter, signals and error if it isn't present
+    OperatorAdapter *getOperator(OperatorNode::OperatorId id, Runtime *rt);
+    // returns a valid(non-NULL, instance object) method object, signals and error if it isn't present
+    Object          *getMethod(int64_t id, Runtime *rt);
+    // returns whether an operator is present or not
+    bool             hasOperator(OperatorNode::OperatorId id, Runtime *rt);
+    // returns whether a method is present or not
+    bool             hasMethod(int64_t id, Runtime *rt);
 
-    virtual std::vector<Object *> getGCReachable();
+    virtual std::vector<Object *> getGCReachable(Runtime *rt);
     virtual size_t                getInstanceSize() = 0;    // for placement on stack in case of is_simple
 
-    virtual Object *create(Runtime *rt) = 0;                // creates an empty object
+    // creates a valid (non-null) object
+    virtual Object *create(Runtime *rt)            = 0;    
+    // returns a valid (non-null) copy of the object
+    virtual Object *copy(Object *obj, Runtime *rt) = 0;
+
+    virtual std::string shortRepr() = 0;
 };
 
 namespace MagicMethods {

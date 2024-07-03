@@ -40,8 +40,9 @@ NameId::NameId(Token *token) {
             this->id = NameId::map[token->data];
         }
         else {
-            this->id                 = NameId::map.size();
-            NameId::map[token->data] = this->id;
+            this->id                      = NameId::map.size();
+            NameId::map[token->data]      = this->id;
+            NameId::reverse_map[this->id] = token->data;
         }
     }
     this->token = token;
@@ -57,8 +58,9 @@ NameId::NameId(std::string *str) {
             this->id = NameId::map[*str];
         }
         else {
-            this->id          = NameId::map.size();
-            NameId::map[*str] = this->id;
+            this->id                      = NameId::map.size();
+            NameId::map[*str]             = this->id;
+            NameId::reverse_map[this->id] = *str;
         }
     }
     this->token = NULL;
@@ -70,8 +72,9 @@ NameId::NameId(std::string str) {
         this->id = NameId::map[str];
     }
     else {
-        this->id         = NameId::map.size();
-        NameId::map[str] = this->id;
+        this->id                      = NameId::map.size();
+        NameId::map[str]              = this->id;
+        NameId::reverse_map[this->id] = str;
     }
 
     this->token   = NULL;
@@ -82,5 +85,17 @@ NameId::~NameId() {
     this->id    = -1;
     this->token = NULL;
 }
+
+std::string NameId::fromId(int64_t id) {
+    auto it = NameId::reverse_map.find(id);
+    if (it != reverse_map.end()) {
+        return it->second;
+    }
+    return "invalid name id";
+}
+
+std::string NameId::shortRepr(int64_t id) {
+    return "NameId(id = " + std::to_string(id) + ", str = \'" + NameId::fromId(id) + "\')";
+ }
 
 };    // namespace Cotton

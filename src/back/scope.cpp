@@ -1,4 +1,6 @@
 #include "scope.h"
+#include "nameid.h"
+#include "runtime.h"
 
 namespace Cotton {
 Scope::Scope(Scope *prev, bool can_access_prev) {
@@ -12,11 +14,11 @@ Scope::~Scope() {
     this->variables.clear();
 }
 
-void Scope::addVariable(int64_t id, Object *obj) {
+void Scope::addVariable(int64_t id, Object *obj, Runtime *rt) {
     this->variables[id] = obj;
 }
 
-Object *Scope::getVariable(int64_t id) {
+Object *Scope::getVariable(int64_t id, Runtime *rt) {
     Scope *s = this;
     while (s != NULL) {
         auto it = s->variables.find(id);
@@ -30,11 +32,11 @@ Object *Scope::getVariable(int64_t id) {
             break;
         }
     }
-    return NULL;
+    rt->signalError("Failed to find variable " + NameId::shortRepr(id));
 }
 
-bool Scope::queryVariable(int64_t id) {
-    return this->getVariable(id) != NULL;
+bool Scope::queryVariable(int64_t id, Runtime *rt) {
+    return this->getVariable(id, rt) != NULL;
 }
 
 }    // namespace Cotton

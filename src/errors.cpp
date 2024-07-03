@@ -170,8 +170,8 @@ void ErrorManager::signalError(const std::string &message, int64_t char_pos) {
 
 void ErrorManager::signalError(const std::string &message, const Token &token) {
     eassert(token.begin_pos != -1 && token.end_pos != -1,
-           std::string("Invalid token. Original message: ") + message,
-           this);
+            std::string("Invalid token. Original message: ") + message,
+            this);
     if (this->error_filename.empty()) {
         printColor(stderr, "red");
         fprintf(stderr,
@@ -292,6 +292,49 @@ void ErrorManager::signalError(const std::vector<std::pair<Token *, std::string>
         else {
             this->setErrorCharPos(-1);
             this->signalError(message);
+        }
+    }
+
+    this->emergency_error_exit = f;
+    this->emergency_error_exit();
+    return;
+}
+
+void ErrorManager::signalErrorWithContext(const std::vector<std::pair<std::string, Token *>> messages) {
+    fprintf(stderr, "A runtime error has occurred. Here is the context in which the error occurred:\n");
+
+    // a stupid solution, but why not
+    void (*f)()                = this->emergency_error_exit;
+    this->emergency_error_exit = foo;
+
+    size_t cnt = 0;
+    for (auto &[message, token] : messages) {
+        if (message.empty()) {
+            continue;    // ignore meaningless errors
+        }
+        cnt++;
+        if (cnt == messages.size()) {
+            break;
+        }
+        if (token != NULL) {
+            this->signalError(message, *token);
+        }
+        else {
+            this->setErrorCharPos(-1);
+            this->signalError(message);
+        }
+    }
+
+    if (!messages.empty()) {
+        auto &[error, token] = messages.back();
+
+        fprintf(stderr, "Here is the error:\n");
+        if (token != NULL) {
+            this->signalError(error, *token);
+        }
+        else {
+            this->setErrorCharPos(-1);
+            this->signalError(error);
         }
     }
 

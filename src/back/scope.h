@@ -25,6 +25,7 @@
 namespace Cotton {
 
 class Object;
+class Runtime;
 
 class Scope {
 public:
@@ -35,8 +36,9 @@ public:
     Scope(Scope *prev, bool can_access_prev);
     ~Scope();
 
-    void    addVariable(int64_t id, Object *obj);
-    bool    queryVariable(int64_t id);
-    Object *getVariable(int64_t id);
+    void    addVariable(int64_t id, Object *obj, Runtime *rt);
+    bool    queryVariable(int64_t id, Runtime *rt);
+    // returns a valid (non-null) object
+    Object *getVariable(int64_t id, Runtime *rt);
 };
 }    // namespace Cotton

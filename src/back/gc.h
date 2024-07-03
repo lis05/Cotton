@@ -31,14 +31,14 @@ class GC;
 
 class GCStrategy {
 public:
-    virtual void acknowledgeTrack(Object *object, GC *gc, Runtime *rt)       = 0;
-    virtual void acknowledgeTrack(Instance *instance, size_t bytes, GC *gc, Runtime *rt)   = 0;
-    virtual void acknowledgeTrack(Type *type, GC *gc, Runtime *rt)           = 0;
-    virtual void acknowledgeUntrack(Object *object, GC *gc, Runtime *rt)     = 0;
-    virtual void acknowledgeUntrack(Instance *instance, GC *gc, Runtime *rt) = 0;
-    virtual void acknowledgeUntrack(Type *type, GC *gc, Runtime *rt)         = 0;
-    virtual void acknowledgeEndOfCycle(GC *gc, Runtime *rt)                  = 0;
-    virtual void acknowledgePing(GC *gc, Runtime *rt)                        = 0;
+    virtual void acknowledgeTrack(Object *object, GC *gc, Runtime *rt)                   = 0;
+    virtual void acknowledgeTrack(Instance *instance, size_t bytes, GC *gc, Runtime *rt) = 0;
+    virtual void acknowledgeTrack(Type *type, GC *gc, Runtime *rt)                       = 0;
+    virtual void acknowledgeUntrack(Object *object, GC *gc, Runtime *rt)                 = 0;
+    virtual void acknowledgeUntrack(Instance *instance, GC *gc, Runtime *rt)             = 0;
+    virtual void acknowledgeUntrack(Type *type, GC *gc, Runtime *rt)                     = 0;
+    virtual void acknowledgeEndOfCycle(GC *gc, Runtime *rt)                              = 0;
+    virtual void acknowledgePing(GC *gc, Runtime *rt)                                    = 0;
 };
 
 class GCDefaultStrategy: public GCStrategy {
@@ -92,15 +92,15 @@ public:
     void untrack(Instance *instance, Runtime *rt);
     void untrack(Type *type, Runtime *rt);
 
-    void hold(Object *object);    // even if object can't be reached, it will still be preserved, as well as items
-                                  // reachable from it
-    void relsease(Object *object);
+    void hold(Object *object, Runtime *rt);    // even if object can't be reached, it will still be preserved, as
+                                               // well as items reachable from it
+    void release(Object *object, Runtime *rt);
 
     void ping(Runtime *rt);
 
     void runCycle(Runtime *rt);
 
-    void enable();
-    void disable();
+    void enable(Runtime *rt);
+    void disable(Runtime *rt);
 };
 }    // namespace Cotton

@@ -1,4 +1,5 @@
 #include "runtime.h"
+#include "../builtin/api.h"
 #include "../errors.h"
 #include "../front/parser.h"
 #include "gc.h"
@@ -14,24 +15,27 @@ Runtime::Runtime(size_t stack_size, GCStrategy *gc_strategy, ErrorManager *error
     this->stack         = new Stack(stack_size);
     this->gc            = new GC(gc_strategy);
     this->error_manager = error_manager;
+
+    this->nothing_type  = new Builtin::NothingType(this);
+    this->function_type = new Builtin::FunctionType(this);
 }
 
-void Runtime::signalSubError(const std::string &message) {
-    std::cout << "err: " << message << std::endl;    // temp
-    this->error_messages.push_back({message, this->current_token});
+void Runtime::newFrame(bool can_access_prev_scope) {
+    auto scope  = new Scope(this->scope, can_access_prev_scope);
+    this->scope = scope;
+    this->stack->newFrame();
 }
 
-void Runtime::signalError(const std::string &message) {
-    std::cout << "err: " << message << std::endl;    // temp
-    this->error_messages.push_back({message, this->current_token});
-
-    // TODO
-    this->error_manager->signalError("Complete error, exiting");
+void Runtime::popFrame() {
+    auto scope  = this->scope->prev;
+    this->scope = scope;
+    delete scope;
+    this->stack->popFrame();
 }
 
 Object *Runtime::make(Type *type, ObjectOptions object_opt) {
-    if (!this->validate(type)) {
-        return NULL;
+    if (type == NULL) {
+        this->signalError("Failed to make an object of NULL type");
     }
     Object *obj = NULL;
     if (object_opt == Runtime::INSTANCE_OBJECT) {
@@ -41,70 +45,58 @@ Object *Runtime::make(Type *type, ObjectOptions object_opt) {
         obj = new Object(false, false, NULL, type, this);
     }
     if (obj == NULL) {
-        this->signalSubError("Failed to make an object");
-        return NULL;
+        this->signalError("Failed to make an object of type " + type->shortRepr());
     }
-    // TODO: call __make__
+    this->runMethod(MagicMethods::__make__(), obj, {});
     return obj;
 }
 
-Object *Runtime::runOperator(OperatorNode::OperatorId id, Object *obj, std::vector<Object *> args) {
-    if (!this->validate(obj)) {
-        return NULL;
+Object *Runtime::copy(Object *obj) {
+    if (!this->isTypeObject(obj)) {
+        this->signalError("Failed to copy non type object " + obj->shortRepr());
     }
-    if (!this->validate(obj->type)) {
-        return NULL;
-    }
-    auto op = obj->type->getOperator(id);
-    if (op == NULL) {
-        this->signalSubError("Failed to run operator");
-        return NULL;
-    }
-    return obj->type->getOperator(id)->operator()(obj, args, this);
+    return obj->type->copy(obj, this);
 }
 
-Object *Runtime::runMethod(int64_t id, Object *obj, std::vector<Object *> args) {
-    if (!this->validate(obj)) {
-        return NULL;
+Object *Runtime::runOperator(OperatorNode::OperatorId id, Object *obj, const std::vector<Object *> &args) {
+    if (!this->isInstanceObject(obj)) {
+        this->signalError("Failed to run operator " + std::to_string(id) + " on " + obj->shortRepr());
     }
-    if (!this->validate(obj->type)) {
-        return NULL;
-    }
-    auto method = obj->type->getMethod(id);
-    return this->runOperator(OperatorNode::CALL, method, args);
+
+    auto op = obj->type->getOperator(id, this);
+    return op->operator()(obj, args, this);
 }
 
-Runtime::ExecutionResult Runtime::execute(StmtNode *stmt) {
-    return ExecutionResult(false, NULL, false);
-}
-
-bool Runtime::validate(Object *obj) {
-    if (obj == NULL) {
-        this->signalSubError("Invalid object (NULL)");
-        return false;
+Object *Runtime::runMethod(int64_t id, Object *obj, const std::vector<Object *> &args) {
+    if (!this->isInstanceObject(obj)) {
+        this->signalError("Failed to run method " + NameId::shortRepr(id) + " on " + obj->shortRepr());
     }
-    return true;
+
+    auto method = obj->type->getMethod(id, this);
+    return runMethod(OperatorNode::CALL, method, args);
 }
 
-bool Runtime::validate(Instance *ins) {
-    if (ins == NULL) {
-        this->signalSubError("Invalid instance (NULL)");
-        return false;
+bool Runtime::isInstanceObject(Object *obj) {
+    return obj != NULL && obj->instance != NULL && obj->type != NULL;
+}
+
+bool Runtime::isTypeObject(Object *obj) {
+    return obj != NULL && obj->type != NULL;
+}
+
+void Runtime::highlight(Token *token) {
+    this->current_token = token;
+}
+
+void Runtime::signalError(const std::string &message, bool include_token) {
+    if (include_token) {
+        this->error_manager->signalError(message, *this->current_token);
     }
-    return true;
-}
-
-bool Runtime::validate(Type *type) {
-    if (type == NULL) {
-        this->signalSubError("Invalid type (NULL)");
-        return false;
+    else {
+        this->error_manager->signalError(message);
     }
-    return true;
 }
 
-Runtime::ExecutionResult::ExecutionResult(bool success, Object *res, bool directly_passed) {
-    this->success         = success;
-    this->res             = res;
-    this->directly_passed = directly_passed;
-}
+Object *Runtime::execute(StmtNode *stmt) {}
+
 }    // namespace Cotton

@@ -40,54 +40,58 @@ class ExprNode;
 class StmtNode;
 class GCStrategy;
 
+namespace Builtin {
+    class NothingType;
+    class BooleanType;
+    class FunctionType;
+}    // namespace Builtin
+
 class Runtime {
 public:
     Runtime(size_t stack_size, GCStrategy *gc_strategy, ErrorManager *error_manager);
     ~Runtime() = default;
 
+    Builtin::NothingType  *nothing_type;
+    Builtin::BooleanType  *boolean_type;
+    Builtin::FunctionType *function_type;
+
     Scope *scope;
-    void   newScope();
-    void   popScope();
+    // creates a new scope, as well as a new stack frame
+    void   newFrame(bool can_access_prev_scope = true);
+    // pops the last scope, as well as clears the last stack frame
+    void   popFrame();
 
     Stack *stack;
     GC    *gc;
 
-    ErrorManager                                *error_manager;
-    std::vector<std::pair<std::string, Token *>> error_messages;
-    Token                                       *current_token;
-    void                                         highlight(Token *token);
-    void                                         signalSubError(const std::string &message);    // doesn't exit
-    void                                         signalError(const std::string &message);    // exits immidiately
+    // checks whether obj is an instance object (is non-NULL and has non-NULL type and non-NULL instance)
+    bool isInstanceObject(Object *obj);
+    // checks whether obj is a type object (is non-NULL and has non-NULL type)
+    bool isTypeObject(Object *obj);
 
-    class ExecutionResult {
-    public:
-        bool    success;
-        Object *res;
+    ErrorManager *error_manager;
+    Token        *current_token;
+    // marks token as the current token
+    void          highlight(Token *token);
+    // signals an error
+    [[noreturn]]
+    void signalError(const std::string &message, bool include_token = true);
 
-        bool directly_passed : 1;    // if passed via @A operator
-
-        ExecutionResult(bool success, Object *res, bool directly_passed);
-        ~ExecutionResult() = default;
-    };
-
-    ExecutionResult execute(ExprNode *expr);
-    ExecutionResult execute(StmtNode *stmt);
-
-    // check for null
-    bool validate(Object *obj);
-    bool validate(Instance *ins);
-    bool validate(Type *type);
-
-    // if copied on heap, adds to the GC
-    // if errors happen, reports them
-    Object *copy(Object *obj);
+    // executes statement; returns a valid object (non-NULL)
+    Object *execute(StmtNode *stmt);
 
     enum ObjectOptions { INSTANCE_OBJECT, TYPE_OBJECT };
 
+    // makes an object of given type based on object_opt; calls __make__ if object_opt is INSTANCE_OBJECT
+    // if fails, signals an error. therefore, returns a valid object (non-null, satisfies object_opt)
     Object *make(Type *type, ObjectOptions object_opt);
-
-    Object *runOperator(OperatorNode::OperatorId id, Object *obj, std::vector<Object *> args);
-    Object *runMethod(int64_t id, Object *obj, std::vector<Object *> args);
+    // returns a copy of obj (type is the same; if instance is present, it is copied)
+    // if fails, signals an error. therefore, returns a valid object (non-null, is a copy of obj)
+    Object *copy(Object *obj);
+    // runs operator on the object. returns a valid object(non-null); if fails, signals an error
+    Object *runOperator(OperatorNode::OperatorId id, Object *obj, const std::vector<Object *> &args);
+    // runs method on the object. returns a valid object(non-null); if fails, signals an error
+    Object *runMethod(int64_t id, Object *obj, const std::vector<Object *> &args);
 };
 
 // tries to create instance (on stack first if try_on_stack)
@@ -98,7 +102,7 @@ public:
         if (try_on_stack)                                                                                         \
             ins = rt->stack->allocAndInitInstance<I>(sizeof(I), rt);                                              \
         if (ins == NULL) {                                                                                        \
-            ins = new (std::nothrow) I(rt, false);                                                                       \
+            ins = new (std::nothrow) I(rt, false);                                                                \
             if (ins == NULL) {                                                                                    \
                 return NULL;                                                                                      \
             }                                                                                                     \
@@ -129,4 +133,6 @@ public:
         obj;                                                                                                      \
     })
 
+// casts instance to another instance
+#define icast(ins, type) ((type *)ins)
 }    // namespace Cotton

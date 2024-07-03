@@ -21,27 +21,31 @@
 
 #include "instance.h"
 #include "gc.h"
+#include "nameid.h"
 #include "object.h"
 #include "runtime.h"
 
 namespace Cotton {
-Object *Cotton::Instance::selectField(int64_t id) {
+int64_t Instance::total_instances = 0;
+
+Object *Cotton::Instance::selectField(int64_t id, Runtime *rt) {
     auto it = this->fields.find(id);
     if (it != this->fields.end()) {
         return it->second;
     }
-    return NULL;
+    rt->signalError(this->shortRepr() + "doesn't have field " + NameId::shortRepr(id));
 }
 
 Instance::Instance(Runtime *rt, size_t bytes, bool on_stack) {
     this->gc_mark  = !rt->gc->gc_mark;
     this->on_stack = on_stack;
+    this->id       = ++total_instances;
     if (!on_stack) {
         rt->gc->track(this, bytes, rt);
     }
 }
 
-std::vector<Object *> Instance::getGCReachable() {
+std::vector<Object *> Instance::getGCReachable(Runtime *rt) {
     std::vector<Object *> res;
     for (auto &elem : this->fields) {
         res.push_back(elem.second);

@@ -15,7 +15,7 @@ Object::Object(bool is_instance, bool on_stack, Instance *instance, Type *type, 
     this->instance    = instance;
     this->type        = type;
     this->gc_mark     = !rt->gc->gc_mark;
-    total_objects++;
+    this->id          = ++total_objects;
 
     if (!on_stack) {
         rt->gc->track(this, rt);
@@ -28,34 +28,33 @@ Object::~Object() {
     total_objects--;
 }
 
-std::vector<Object *> Object::getGCReachable() {
+std::vector<Object *> Object::getGCReachable(Runtime *rt) {
     std::vector<Object *> res;
     if (this->instance != NULL) {
-        for (auto &elem : this->instance->getGCReachable()) {
+        for (auto &elem : this->instance->getGCReachable(rt)) {
             res.push_back(elem);
         }
     }
     if (this->type != NULL) {
-        for (auto &elem : this->type->getGCReachable()) {
+        for (auto &elem : this->type->getGCReachable(rt)) {
             res.push_back(elem);
         }
     }
     return res;
 }
 
-Object *Object::copy(Runtime *rt) {
-    Instance *ins  = NULL;
-    Type     *type = this->type;
-    if (this->instance != NULL) {
-        ins = this->instance->copy(rt);
+std::string Object::shortRepr() {
+    if (this == NULL) {
+        return std::string("Object(NULL)");
     }
-    if (this->on_stack) {
-        auto res = rt->stack->allocAndInitObject(this->is_instance, ins, type, rt);
-        if (res != NULL) {
-            return res;
-        }
-    }
-    return new Object(this->is_instance, false, ins, type, rt);
+    std::string res  = "Object(id = " + std::to_string(this->id) + ", flags = ";
+    res             += (this->is_instance) ? "I" : "T";
+    res             += (this->on_stack) ? "S" : "H";
+    res             += (this->gc_mark) ? "1" : "0";
+    res             += ",instance = " + (this->instance == NULL) ? "NULL" : this->instance->shortRepr();
+    res             += ",type = " + (this->type == NULL) ? "NULL" : this->type->shortRepr();
+    res             += ")";
+    return res;
 }
 
 std::ostream &operator<<(std::ostream &stream, Object *obj) {

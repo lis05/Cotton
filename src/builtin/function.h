@@ -36,9 +36,10 @@ public:
     FunctionInstance(Runtime *rt, bool on_stack);
     ~FunctionInstance();
 
-    void      init(bool is_internal, InternalFunction internal_ptr, StmtNode *cotton_ptr);
-    Instance *copy(Runtime *rt);
-    size_t    getSize();
+    void        init(bool is_internal, InternalFunction internal_ptr, StmtNode *cotton_ptr);
+    Instance   *copy(Runtime *rt);
+    size_t      getSize();
+    std::string shortRepr();
 };
 
 class FunctionType: public Type {
@@ -47,5 +48,7 @@ public:
     FunctionType(Runtime *rt);
     ~FunctionType() = default;
     Object *create(Runtime *rt);
+    Object *copy(Object *obj, Runtime *rt);
+    std::string shortRepr();
 };
 }    // namespace Cotton::Builtin

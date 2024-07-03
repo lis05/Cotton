@@ -122,7 +122,14 @@ public:
 class BooleanNotAdapter: public OperatorAdapter {
 public:
     Object *operator()(Object *self, const std::vector<Object *> &others, Runtime *rt) {
-        auto res                                  = self->copy(rt);
+        if (!rt->validate(self, Runtime::INSTANCE_OBJECT)) {
+            return NULL;
+        }
+        auto res = self->copy(rt);
+        if (!rt->validate(res, Runtime::INSTANCE_OBJECT)) {
+            return NULL;
+        }
+
         ((BooleanInstance *)res->instance)->value = !((BooleanInstance *)self->instance)->value;
         return res;
     }
@@ -232,8 +239,15 @@ public:
             return NULL;
         }
         auto arg1 = others[0];
+        if (!rt->validate(arg1, Runtime::INSTANCE_OBJECT)) {
+            return NULL;
+        }
 
-        auto  res       = rt->make(self->type, Runtime::INSTANCE_OBJECT);
+        auto res = rt->make(self->type, Runtime::INSTANCE_OBJECT);
+        if (!rt->validate(res, Runtime::INSTANCE_OBJECT)) {
+            return NULL;
+        }
+        
         auto &res_value = ((BooleanInstance *)res->instance)->value;
         if (arg1->type->id != self->type->id) {
             res_value = false;
