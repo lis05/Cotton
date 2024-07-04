@@ -45,6 +45,9 @@ namespace Builtin {
     class BooleanType;
     class FunctionType;
     class IntegerType;
+    class RealType;
+    class CharacterType;
+    class StringType;
 }    // namespace Builtin
 
 class Runtime {
@@ -52,16 +55,19 @@ public:
     Runtime(size_t stack_size, GCStrategy *gc_strategy, ErrorManager *error_manager);
     ~Runtime() = default;
 
-    Builtin::NothingType  *nothing_type;
-    Builtin::BooleanType  *boolean_type;
-    Builtin::FunctionType *function_type;
-    Builtin::IntegerType  *integer_type;
+    Builtin::NothingType   *nothing_type;
+    Builtin::BooleanType   *boolean_type;
+    Builtin::FunctionType  *function_type;
+    Builtin::IntegerType   *integer_type;
+    Builtin::RealType      *real_type;
+    Builtin::CharacterType *character_type;
+    Builtin::StringType    *string_type;
 
-    Scope                 *scope;
+    Scope *scope;
     // creates a new scope, as well as a new stack frame
-    void                   newFrame(bool can_access_prev_scope = true);
+    void   newFrame(bool can_access_prev_scope = true);
     // pops the last scope, as well as clears the last stack frame
-    void                   popFrame();
+    void   popFrame();
 
     Stack *stack;
     GC    *gc;

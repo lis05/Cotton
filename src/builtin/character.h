@@ -18,10 +18,37 @@
  IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
  CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
+
 #pragma once
-#include "boolean.h"
-#include "function.h"
-#include "integer.h"
-#include "nothing.h"
-#include "real.h"
-#include "character.h"
+#include "../back/api.h"
+#include "../front/api.h"
+
+namespace Cotton::Builtin {
+
+class CharacterInstance: public Instance {
+public:
+    uint8_t value;
+
+    CharacterInstance(Runtime *rt, bool on_stack);
+    ~CharacterInstance();
+
+    Instance   *copy(Runtime *rt);
+    size_t      getSize();
+    std::string shortRepr();
+};
+
+class CharacterType: public Type {
+public:
+    size_t getInstanceSize();
+    CharacterType(Runtime *rt);
+    ~CharacterType() = default;
+    Object     *create(Runtime *rt);
+    Object     *copy(Object *obj, Runtime *rt);
+    std::string shortRepr();
+};
+
+Object *makeCharacterInstanceObject(uint8_t value, Runtime *rt);
+
+uint8_t &getCharacterValue(Object *obj, Runtime *rt);
+#define getCharacterValueFast(obj) (icast(obj->instance, CharacterInstance)->value)
+}    // namespace Cotton::Builtin

@@ -17,10 +17,12 @@ Runtime::Runtime(size_t stack_size, GCStrategy *gc_strategy, ErrorManager *error
     this->error_manager = error_manager;
     this->current_token = NULL;
 
-    this->nothing_type  = new Builtin::NothingType(this);
-    this->function_type = new Builtin::FunctionType(this);
-    this->boolean_type = new Builtin::BooleanType(this);
-    this->integer_type = new Builtin::IntegerType(this);
+    this->nothing_type   = new Builtin::NothingType(this);
+    this->function_type  = new Builtin::FunctionType(this);
+    this->boolean_type   = new Builtin::BooleanType(this);
+    this->integer_type   = new Builtin::IntegerType(this);
+    this->real_type      = new Builtin::RealType(this);
+    this->character_type = new Builtin::CharacterType(this);
 }
 
 void Runtime::newFrame(bool can_access_prev_scope) {
