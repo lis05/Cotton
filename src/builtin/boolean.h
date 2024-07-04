@@ -27,13 +27,14 @@ namespace Cotton::Builtin {
 
 class BooleanInstance: public Instance {
 public:
-    bool value;    // function written in Cotton
+    bool value;
 
     BooleanInstance(Runtime *rt, bool on_stack);
     ~BooleanInstance();
 
-    Instance *copy(Runtime *rt);
-    size_t    getSize();
+    Instance   *copy(Runtime *rt);
+    size_t      getSize();
+    std::string shortRepr();
 };
 
 class BooleanType: public Type {
@@ -41,6 +42,12 @@ public:
     size_t getInstanceSize();
     BooleanType(Runtime *rt);
     ~BooleanType() = default;
-    Object *create(Runtime *rt);
+    Object     *create(Runtime *rt);
+    Object     *copy(Object *obj, Runtime *rt);
+    std::string shortRepr();
 };
+
+Object *makeBooleanInstanceObject(bool value, Runtime *rt);
+
+bool &getBooleanValue(Object *obj, Runtime *rt);
 }    // namespace Cotton::Builtin

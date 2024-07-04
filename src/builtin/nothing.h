@@ -43,4 +43,6 @@ public:
     std::string shortRepr();
     Object *copy(Object *obj, Runtime *rt);
 };
+
+Object *makeNothingInstanceObject(Runtime *rt);
 }    // namespace Cotton::Builtin

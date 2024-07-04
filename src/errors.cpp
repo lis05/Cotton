@@ -83,7 +83,7 @@ void ErrorManager::signalError(const std::string &message, int64_t char_pos) {
             printColor(stderr, "reset");
         }
         this->emergency_error_exit();
-        return;
+        exit(1);
     }
 
     if (char_pos == -1) {
@@ -91,7 +91,7 @@ void ErrorManager::signalError(const std::string &message, int64_t char_pos) {
         fprintf(stderr, "Error has occurred in file %s: %s.\n", this->error_filename.c_str(), message.c_str());
         printColor(stderr, "reset");
         this->emergency_error_exit();
-        return;
+        exit(1);
     }
 
     FILE *fd = fopen(this->error_filename.c_str(), "r");
@@ -129,7 +129,7 @@ void ErrorManager::signalError(const std::string &message, int64_t char_pos) {
         fprintf(stderr, "Error reading the file. Original error message: %s\n", message.c_str());
         printColor(stderr, "reset");
         this->emergency_error_exit();
-        return;
+        exit(1);
     };
 
     static char buf[64];
@@ -165,7 +165,7 @@ void ErrorManager::signalError(const std::string &message, int64_t char_pos) {
     printColor(stderr, "reset");
 
     this->emergency_error_exit();
-    return;
+    exit(1);
 }
 
 void ErrorManager::signalError(const std::string &message, const Token &token) {
@@ -182,7 +182,7 @@ void ErrorManager::signalError(const std::string &message, const Token &token) {
         printColor(stderr, "reset");
 
         this->emergency_error_exit();
-        return;
+        exit(1);
     }
 
     FILE *fd = fopen(this->error_filename.c_str(), "r");
@@ -220,7 +220,7 @@ void ErrorManager::signalError(const std::string &message, const Token &token) {
         fprintf(stderr, "Error reading the file. Original error message: %s\n", message.c_str());
         printColor(stderr, "reset");
         this->emergency_error_exit();
-        return;
+        exit(1);
     };
 
     static char buf[64];
@@ -259,7 +259,7 @@ void ErrorManager::signalError(const std::string &message, const Token &token) {
     printColor(stderr, "reset");
 
     this->emergency_error_exit();
-    return;
+    exit(1);
 }
 
 void ErrorManager::signalError() {
@@ -297,7 +297,7 @@ void ErrorManager::signalError(const std::vector<std::pair<Token *, std::string>
 
     this->emergency_error_exit = f;
     this->emergency_error_exit();
-    return;
+    exit(1);
 }
 
 void ErrorManager::signalErrorWithContext(const std::vector<std::pair<std::string, Token *>> messages) {
@@ -340,7 +340,7 @@ void ErrorManager::signalErrorWithContext(const std::vector<std::pair<std::strin
 
     this->emergency_error_exit = f;
     this->emergency_error_exit();
-    return;
+    exit(1);
 }
 
 void __assert__(bool               value,

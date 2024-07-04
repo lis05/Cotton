@@ -56,7 +56,7 @@ size_t NothingType::getInstanceSize() {
 
 std::string NothingInstance::shortRepr() {
     if (this == NULL) {
-        return "NothingInstance(NULL)";
+        return "NULL";
     }
     return "NothingInstance(id = " + std::to_string(this->id) + ")";
 }
@@ -67,7 +67,7 @@ public:
         if (!rt->isTypeObject(self) || self->type->id != rt->nothing_type->id) {
             rt->signalError("Left-side object is invalid: " + self->shortRepr());
         }
-        rt->signalError("NothingType does not support that operator");
+        rt->signalError(self->shortRepr() + " does not support that operator");
     }
 };
 
@@ -77,7 +77,7 @@ public:
         if (!rt->isTypeObject(self) || self->type->id != rt->nothing_type->id) {
             rt->signalError("Left-side object is invalid: " + self->shortRepr());
         }
-        rt->signalError("NothingType does not support that operator");
+        rt->signalError(self->shortRepr() + " does not support that operator");
     }
 };
 
@@ -87,7 +87,7 @@ public:
         if (!rt->isTypeObject(self) || self->type->id != rt->nothing_type->id) {
             rt->signalError("Left-side object is invalid: " + self->shortRepr());
         }
-        rt->signalError("NothingType does not support that operator");
+        rt->signalError(self->shortRepr() + " does not support that operator");
     }
 };
 
@@ -97,7 +97,7 @@ public:
         if (!rt->isTypeObject(self) || self->type->id != rt->nothing_type->id) {
             rt->signalError("Left-side object is invalid: " + self->shortRepr());
         }
-        rt->signalError("NothingType does not support that operator");
+        rt->signalError(self->shortRepr() + " does not support that operator");
     }
 };
 
@@ -107,7 +107,7 @@ public:
         if (!rt->isTypeObject(self) || self->type->id != rt->nothing_type->id) {
             rt->signalError("Left-side object is invalid: " + self->shortRepr());
         }
-        rt->signalError("NothingType does not support that operator");
+        rt->signalError(self->shortRepr() + " does not support that operator");
     }
 };
 
@@ -117,7 +117,7 @@ public:
         if (!rt->isTypeObject(self) || self->type->id != rt->nothing_type->id) {
             rt->signalError("Left-side object is invalid: " + self->shortRepr());
         }
-        rt->signalError("NothingType does not support that operator");
+        rt->signalError(self->shortRepr() + " does not support that operator");
     }
 };
 
@@ -127,7 +127,7 @@ public:
         if (!rt->isTypeObject(self) || self->type->id != rt->nothing_type->id) {
             rt->signalError("Left-side object is invalid: " + self->shortRepr());
         }
-        rt->signalError("NothingType does not support that operator");
+        rt->signalError(self->shortRepr() + " does not support that operator");
     }
 };
 
@@ -137,7 +137,7 @@ public:
         if (!rt->isTypeObject(self) || self->type->id != rt->nothing_type->id) {
             rt->signalError("Left-side object is invalid: " + self->shortRepr());
         }
-        rt->signalError("NothingType does not support that operator");
+        rt->signalError(self->shortRepr() + " does not support that operator");
     }
 };
 
@@ -147,7 +147,7 @@ public:
         if (!rt->isTypeObject(self) || self->type->id != rt->nothing_type->id) {
             rt->signalError("Left-side object is invalid: " + self->shortRepr());
         }
-        rt->signalError("NothingType does not support that operator");
+        rt->signalError(self->shortRepr() + " does not support that operator");
     }
 };
 
@@ -157,7 +157,7 @@ public:
         if (!rt->isTypeObject(self) || self->type->id != rt->nothing_type->id) {
             rt->signalError("Left-side object is invalid: " + self->shortRepr());
         }
-        rt->signalError("NothingType does not support that operator");
+        rt->signalError(self->shortRepr() + " does not support that operator");
     }
 };
 
@@ -167,7 +167,7 @@ public:
         if (!rt->isTypeObject(self) || self->type->id != rt->nothing_type->id) {
             rt->signalError("Left-side object is invalid: " + self->shortRepr());
         }
-        rt->signalError("NothingType does not support that operator");
+        rt->signalError(self->shortRepr() + " does not support that operator");
     }
 };
 
@@ -177,7 +177,7 @@ public:
         if (!rt->isTypeObject(self) || self->type->id != rt->nothing_type->id) {
             rt->signalError("Left-side object is invalid: " + self->shortRepr());
         }
-        rt->signalError("NothingType does not support that operator");
+        rt->signalError(self->shortRepr() + " does not support that operator");
     }
 };
 
@@ -187,7 +187,7 @@ public:
         if (!rt->isTypeObject(self) || self->type->id != rt->nothing_type->id) {
             rt->signalError("Left-side object is invalid: " + self->shortRepr());
         }
-        rt->signalError("NothingType does not support that operator");
+        rt->signalError(self->shortRepr() + " does not support that operator");
     }
 };
 
@@ -197,7 +197,7 @@ public:
         if (!rt->isTypeObject(self) || self->type->id != rt->nothing_type->id) {
             rt->signalError("Left-side object is invalid: " + self->shortRepr());
         }
-        rt->signalError("NothingType does not support that operator");
+        rt->signalError(self->shortRepr() + " does not support that operator");
     }
 };
 
@@ -207,7 +207,7 @@ public:
         if (!rt->isTypeObject(self) || self->type->id != rt->nothing_type->id) {
             rt->signalError("Left-side object is invalid: " + self->shortRepr());
         }
-        rt->signalError("NothingType does not support that operator");
+        rt->signalError(self->shortRepr() + " does not support that operator");
     }
 };
 
@@ -217,7 +217,7 @@ public:
         if (!rt->isTypeObject(self) || self->type->id != rt->nothing_type->id) {
             rt->signalError("Left-side object is invalid: " + self->shortRepr());
         }
-        rt->signalError("NothingType does not support that operator");
+        rt->signalError(self->shortRepr() + " does not support that operator");
     }
 };
 
@@ -227,7 +227,8 @@ public:
         if (!rt->isTypeObject(self) || self->type->id != rt->nothing_type->id) {
             rt->signalError("Left-side object is invalid: " + self->shortRepr());
         }
-        rt->signalError("NothingType does not support that operator");
+
+        rt->signalError(self->shortRepr() + " does not support that operator");
     }
 };
 
@@ -237,7 +238,8 @@ public:
         if (!rt->isTypeObject(self) || self->type->id != rt->nothing_type->id) {
             rt->signalError("Left-side object is invalid: " + self->shortRepr());
         }
-        rt->signalError("NothingType does not support that operator");
+
+        rt->signalError(self->shortRepr() + " does not support that operator");
     }
 };
 
@@ -247,7 +249,8 @@ public:
         if (!rt->isTypeObject(self) || self->type->id != rt->nothing_type->id) {
             rt->signalError("Left-side object is invalid: " + self->shortRepr());
         }
-        rt->signalError("NothingType does not support that operator");
+
+        rt->signalError(self->shortRepr() + " does not support that operator");
     }
 };
 
@@ -257,7 +260,8 @@ public:
         if (!rt->isTypeObject(self) || self->type->id != rt->nothing_type->id) {
             rt->signalError("Left-side object is invalid: " + self->shortRepr());
         }
-        rt->signalError("NothingType does not support that operator");
+
+        rt->signalError(self->shortRepr() + " does not support that operator");
     }
 };
 
@@ -267,7 +271,8 @@ public:
         if (!rt->isTypeObject(self) || self->type->id != rt->nothing_type->id) {
             rt->signalError("Left-side object is invalid: " + self->shortRepr());
         }
-        rt->signalError("NothingType does not support that operator");
+
+        rt->signalError(self->shortRepr() + " does not support that operator");
     }
 };
 
@@ -279,36 +284,35 @@ public:
         }
         if (others.size() != 1) {
             rt->signalError("Expected exactly one right-side argument");
-            return NULL;
         }
         auto &arg1 = others[0];
         if (!rt->isTypeObject(arg1)) {
-            rt->signalError("Right-side argument is an invalid object");
+            rt->signalError("Right-side object is invalid: " + arg1->shortRepr());
         }
 
-        auto res                                     = rt->make(rt->boolean_type, Runtime::INSTANCE_OBJECT);
-        icast(res->instance, BooleanInstance)->value = (arg1->type->id == self->type->id);
-        return res;
+        if (rt->isInstanceObject(self) && rt->isInstanceObject(arg1)) {
+            auto res                 = rt->make(rt->boolean_type, Runtime::INSTANCE_OBJECT);
+            getBooleanValue(res, rt) = (arg1->type->id == self->type->id);
+            return res;
+        }
+        else if (!rt->isInstanceObject(self) && !rt->isInstanceObject(arg1)) {
+            auto res                 = rt->make(rt->boolean_type, Runtime::INSTANCE_OBJECT);
+            getBooleanValue(res, rt) = (arg1->type->id == self->type->id);
+            return res;
+        }
+        else {
+            auto res                 = rt->make(rt->boolean_type, Runtime::INSTANCE_OBJECT);
+            getBooleanValue(res, rt) = false;
+            return res;
+        }
     }
 };
 
-class NothingNeqAdapter: public OperatorAdapter {
+class NothingNeqAdapter: public NothingEqAdapter {
 public:
     Object *operator()(Object *self, const std::vector<Object *> &others, Runtime *rt) {
-        if (!rt->isTypeObject(self) || self->type->id != rt->nothing_type->id) {
-            rt->signalError("Left-side object is invalid: " + self->shortRepr());
-        }
-        if (others.size() != 1) {
-            rt->signalError("Expected exactly one right-side argument");
-            return NULL;
-        }
-        auto &arg1 = others[0];
-        if (!rt->isTypeObject(arg1)) {
-            rt->signalError("Right-side argument is an invalid object");
-        }
-
-        auto res                                     = rt->make(rt->boolean_type, Runtime::INSTANCE_OBJECT);
-        icast(res->instance, BooleanInstance)->value = (arg1->type->id != self->type->id);
+        auto res                                     = NothingEqAdapter::operator()(self, others, rt);
+        getBooleanValue(res, rt) = !getBooleanValue(res, rt);
         return res;
     }
 };
@@ -319,7 +323,8 @@ public:
         if (!rt->isTypeObject(self) || self->type->id != rt->nothing_type->id) {
             rt->signalError("Left-side object is invalid: " + self->shortRepr());
         }
-        rt->signalError("NothingType does not support that operator");
+
+        rt->signalError(self->shortRepr() + " does not support that operator");
     }
 };
 
@@ -329,7 +334,8 @@ public:
         if (!rt->isTypeObject(self) || self->type->id != rt->nothing_type->id) {
             rt->signalError("Left-side object is invalid: " + self->shortRepr());
         }
-        rt->signalError("NothingType does not support that operator");
+
+        rt->signalError(self->shortRepr() + " does not support that operator");
     }
 };
 
@@ -339,7 +345,8 @@ public:
         if (!rt->isTypeObject(self) || self->type->id != rt->nothing_type->id) {
             rt->signalError("Left-side object is invalid: " + self->shortRepr());
         }
-        rt->signalError("NothingType does not support that operator");
+
+        rt->signalError(self->shortRepr() + " does not support that operator");
     }
 };
 
@@ -349,7 +356,8 @@ public:
         if (!rt->isTypeObject(self) || self->type->id != rt->nothing_type->id) {
             rt->signalError("Left-side object is invalid: " + self->shortRepr());
         }
-        rt->signalError("NothingType does not support that operator");
+
+        rt->signalError(self->shortRepr() + " does not support that operator");
     }
 };
 
@@ -359,7 +367,8 @@ public:
         if (!rt->isTypeObject(self) || self->type->id != rt->nothing_type->id) {
             rt->signalError("Left-side object is invalid: " + self->shortRepr());
         }
-        rt->signalError("NothingType does not support that operator");
+
+        rt->signalError(self->shortRepr() + " does not support that operator");
     }
 };
 
@@ -404,7 +413,7 @@ Object *NothingType::create(Runtime *rt) {
 
 std::string NothingType::shortRepr() {
     if (this == NULL) {
-        return "NothingType(NULL)";
+        return "NULL";
     }
     return "NothingType(id = " + std::to_string(this->id) + ")";
 }
@@ -415,6 +424,11 @@ Object *NothingType::copy(Object *obj, Runtime *rt) {
     }
     auto ins = obj->instance->copy(rt);
     auto res = createObject(rt, true, ins, this, true);
+    return res;
+}
+
+Object *makeNothingInstanceObject(Runtime *rt) {
+    auto res = rt->make(rt->nothing_type, rt->INSTANCE_OBJECT);
     return res;
 }
 }    // namespace Cotton::Builtin

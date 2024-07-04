@@ -51,7 +51,7 @@ Instance *FunctionInstance::copy(Runtime *rt) {
 
 std::string FunctionInstance::shortRepr() {
     if (this == NULL) {
-        return "FunctionInstance(NULL)";
+        return "NULL";
     }
     return "FunctionInstance(id = " + std::to_string(this->id)
            + ", is_internal = " + (this->is_internal ? "true" : "false") + ")";
@@ -71,7 +71,8 @@ public:
         if (!rt->isTypeObject(self) || self->type->id != rt->function_type->id) {
             rt->signalError("Left-side object is invalid: " + self->shortRepr());
         }
-        rt->signalError("FunctionType does not support that operator");
+
+        rt->signalError(self->shortRepr() + " does not support that operator");
     }
 };
 
@@ -81,7 +82,8 @@ public:
         if (!rt->isTypeObject(self) || self->type->id != rt->function_type->id) {
             rt->signalError("Left-side object is invalid: " + self->shortRepr());
         }
-        rt->signalError("FunctionType does not support that operator");
+
+        rt->signalError(self->shortRepr() + " does not support that operator");
     }
 };
 
@@ -90,6 +92,9 @@ public:
     Object *operator()(Object *self, const std::vector<Object *> &others, Runtime *rt) {
         if (!rt->isTypeObject(self) || self->type->id != rt->function_type->id) {
             rt->signalError("Left-side object is invalid: " + self->shortRepr());
+        }
+        if (!rt->isInstanceObject(self)) {
+            rt->signalError(self->shortRepr() + " does not support that operator");
         }
         auto f = icast(self->instance, FunctionInstance);
         if (f->is_internal) {
@@ -121,7 +126,8 @@ public:
         if (!rt->isTypeObject(self) || self->type->id != rt->function_type->id) {
             rt->signalError("Left-side object is invalid: " + self->shortRepr());
         }
-        rt->signalError("FunctionType does not support that operator");
+
+        rt->signalError(self->shortRepr() + " does not support that operator");
     }
 };
 
@@ -131,7 +137,8 @@ public:
         if (!rt->isTypeObject(self) || self->type->id != rt->function_type->id) {
             rt->signalError("Left-side object is invalid: " + self->shortRepr());
         }
-        rt->signalError("FunctionType does not support that operator");
+
+        rt->signalError(self->shortRepr() + " does not support that operator");
     }
 };
 
@@ -141,7 +148,8 @@ public:
         if (!rt->isTypeObject(self) || self->type->id != rt->function_type->id) {
             rt->signalError("Left-side object is invalid: " + self->shortRepr());
         }
-        rt->signalError("FunctionType does not support that operator");
+
+        rt->signalError(self->shortRepr() + " does not support that operator");
     }
 };
 
@@ -151,7 +159,8 @@ public:
         if (!rt->isTypeObject(self) || self->type->id != rt->function_type->id) {
             rt->signalError("Left-side object is invalid: " + self->shortRepr());
         }
-        rt->signalError("FunctionType does not support that operator");
+
+        rt->signalError(self->shortRepr() + " does not support that operator");
     }
 };
 
@@ -161,7 +170,8 @@ public:
         if (!rt->isTypeObject(self) || self->type->id != rt->function_type->id) {
             rt->signalError("Left-side object is invalid: " + self->shortRepr());
         }
-        rt->signalError("FunctionType does not support that operator");
+
+        rt->signalError(self->shortRepr() + " does not support that operator");
     }
 };
 
@@ -171,7 +181,8 @@ public:
         if (!rt->isTypeObject(self) || self->type->id != rt->function_type->id) {
             rt->signalError("Left-side object is invalid: " + self->shortRepr());
         }
-        rt->signalError("FunctionType does not support that operator");
+
+        rt->signalError(self->shortRepr() + " does not support that operator");
     }
 };
 
@@ -181,7 +192,8 @@ public:
         if (!rt->isTypeObject(self) || self->type->id != rt->function_type->id) {
             rt->signalError("Left-side object is invalid: " + self->shortRepr());
         }
-        rt->signalError("FunctionType does not support that operator");
+
+        rt->signalError(self->shortRepr() + " does not support that operator");
     }
 };
 
@@ -191,7 +203,8 @@ public:
         if (!rt->isTypeObject(self) || self->type->id != rt->function_type->id) {
             rt->signalError("Left-side object is invalid: " + self->shortRepr());
         }
-        rt->signalError("FunctionType does not support that operator");
+
+        rt->signalError(self->shortRepr() + " does not support that operator");
     }
 };
 
@@ -201,7 +214,8 @@ public:
         if (!rt->isTypeObject(self) || self->type->id != rt->function_type->id) {
             rt->signalError("Left-side object is invalid: " + self->shortRepr());
         }
-        rt->signalError("FunctionType does not support that operator");
+
+        rt->signalError(self->shortRepr() + " does not support that operator");
     }
 };
 
@@ -211,7 +225,8 @@ public:
         if (!rt->isTypeObject(self) || self->type->id != rt->function_type->id) {
             rt->signalError("Left-side object is invalid: " + self->shortRepr());
         }
-        rt->signalError("FunctionType does not support that operator");
+
+        rt->signalError(self->shortRepr() + " does not support that operator");
     }
 };
 
@@ -221,7 +236,8 @@ public:
         if (!rt->isTypeObject(self) || self->type->id != rt->function_type->id) {
             rt->signalError("Left-side object is invalid: " + self->shortRepr());
         }
-        rt->signalError("FunctionType does not support that operator");
+
+        rt->signalError(self->shortRepr() + " does not support that operator");
     }
 };
 
@@ -231,7 +247,8 @@ public:
         if (!rt->isTypeObject(self) || self->type->id != rt->function_type->id) {
             rt->signalError("Left-side object is invalid: " + self->shortRepr());
         }
-        rt->signalError("FunctionType does not support that operator");
+
+        rt->signalError(self->shortRepr() + " does not support that operator");
     }
 };
 
@@ -241,7 +258,8 @@ public:
         if (!rt->isTypeObject(self) || self->type->id != rt->function_type->id) {
             rt->signalError("Left-side object is invalid: " + self->shortRepr());
         }
-        rt->signalError("FunctionType does not support that operator");
+
+        rt->signalError(self->shortRepr() + " does not support that operator");
     }
 };
 
@@ -251,7 +269,8 @@ public:
         if (!rt->isTypeObject(self) || self->type->id != rt->function_type->id) {
             rt->signalError("Left-side object is invalid: " + self->shortRepr());
         }
-        rt->signalError("FunctionType does not support that operator");
+
+        rt->signalError(self->shortRepr() + " does not support that operator");
     }
 };
 
@@ -261,7 +280,8 @@ public:
         if (!rt->isTypeObject(self) || self->type->id != rt->function_type->id) {
             rt->signalError("Left-side object is invalid: " + self->shortRepr());
         }
-        rt->signalError("FunctionType does not support that operator");
+
+        rt->signalError(self->shortRepr() + " does not support that operator");
     }
 };
 
@@ -271,7 +291,8 @@ public:
         if (!rt->isTypeObject(self) || self->type->id != rt->function_type->id) {
             rt->signalError("Left-side object is invalid: " + self->shortRepr());
         }
-        rt->signalError("FunctionType does not support that operator");
+
+        rt->signalError(self->shortRepr() + " does not support that operator");
     }
 };
 
@@ -281,7 +302,8 @@ public:
         if (!rt->isTypeObject(self) || self->type->id != rt->function_type->id) {
             rt->signalError("Left-side object is invalid: " + self->shortRepr());
         }
-        rt->signalError("FunctionType does not support that operator");
+
+        rt->signalError(self->shortRepr() + " does not support that operator");
     }
 };
 
@@ -291,7 +313,8 @@ public:
         if (!rt->isTypeObject(self) || self->type->id != rt->function_type->id) {
             rt->signalError("Left-side object is invalid: " + self->shortRepr());
         }
-        rt->signalError("FunctionType does not support that operator");
+
+        rt->signalError(self->shortRepr() + " does not support that operator");
     }
 };
 
@@ -307,50 +330,41 @@ public:
         }
         auto &arg1 = others[0];
         if (!rt->isTypeObject(arg1)) {
-            rt->signalError("Right-side argument is an invalid object");
+            rt->signalError("Right-side object is invalid: " + arg1->shortRepr());
         }
 
-        auto res                                     = rt->make(rt->boolean_type, Runtime::INSTANCE_OBJECT);
-        icast(res->instance, BooleanInstance)->value = false;
-        if (self->type->id == arg1->type->id) {
-            auto f1 = icast(self->instance, FunctionInstance);
-            auto f2 = icast(arg1->instance, FunctionInstance);
-            if (f1->is_internal == f2->is_internal && f1->internal_ptr == f2->internal_ptr
-                && f1->cotton_ptr == f2->cotton_ptr)
-            {
-                icast(res->instance, BooleanInstance)->value = true;
+        if (rt->isInstanceObject(self) && rt->isInstanceObject(arg1)) {
+            auto res                 = rt->make(rt->boolean_type, Runtime::INSTANCE_OBJECT);
+            getBooleanValue(res, rt) = false;
+            if (self->type->id == arg1->type->id) {
+                auto f1 = icast(self->instance, FunctionInstance);
+                auto f2 = icast(arg1->instance, FunctionInstance);
+                if (f1->is_internal == f2->is_internal && f1->internal_ptr == f2->internal_ptr
+                    && f1->cotton_ptr == f2->cotton_ptr)
+                {
+                    getBooleanValue(res, rt) = true;
+                }
             }
+            return res;
         }
-        return res;
+        else if (!rt->isInstanceObject(self) && !rt->isInstanceObject(arg1)) {
+            auto res                 = rt->make(rt->boolean_type, Runtime::INSTANCE_OBJECT);
+            getBooleanValue(res, rt) = self->type->id == arg1->type->id;
+            return res;
+        }
+        else {
+            auto res                 = rt->make(rt->boolean_type, Runtime::INSTANCE_OBJECT);
+            getBooleanValue(res, rt) = false;
+            return res;
+        }
     }
 };
 
-class FunctionNeqAdapter: public OperatorAdapter {
+class FunctionNeqAdapter: public FunctionEqAdapter {
 public:
     Object *operator()(Object *self, const std::vector<Object *> &others, Runtime *rt) {
-        if (!rt->isTypeObject(self) || self->type->id != rt->function_type->id) {
-            rt->signalError("Left-side object is invalid: " + self->shortRepr());
-        }
-        if (others.size() != 1) {
-            rt->signalError("Expected exactly one right-side argument");
-            return NULL;
-        }
-        auto &arg1 = others[0];
-        if (!rt->isTypeObject(arg1)) {
-            rt->signalError("Right-side argument is an invalid object");
-        }
-
-        auto res                                     = rt->make(rt->boolean_type, Runtime::INSTANCE_OBJECT);
-        icast(res->instance, BooleanInstance)->value = true;
-        if (self->type->id == arg1->type->id) {
-            auto f1 = icast(self->instance, FunctionInstance);
-            auto f2 = icast(arg1->instance, FunctionInstance);
-            if (f1->is_internal == f2->is_internal && f1->internal_ptr == f2->internal_ptr
-                && f1->cotton_ptr == f2->cotton_ptr)
-            {
-                icast(res->instance, BooleanInstance)->value = false;
-            }
-        }
+        auto res                 = FunctionEqAdapter::operator()(self, others, rt);
+        getBooleanValue(res, rt) = !getBooleanValue(res, rt);
         return res;
     }
 };
@@ -361,7 +375,8 @@ public:
         if (!rt->isTypeObject(self) || self->type->id != rt->function_type->id) {
             rt->signalError("Left-side object is invalid: " + self->shortRepr());
         }
-        rt->signalError("FunctionType does not support that operator");
+
+        rt->signalError(self->shortRepr() + " does not support that operator");
     }
 };
 
@@ -371,7 +386,8 @@ public:
         if (!rt->isTypeObject(self) || self->type->id != rt->function_type->id) {
             rt->signalError("Left-side object is invalid: " + self->shortRepr());
         }
-        rt->signalError("FunctionType does not support that operator");
+
+        rt->signalError(self->shortRepr() + " does not support that operator");
     }
 };
 
@@ -381,7 +397,8 @@ public:
         if (!rt->isTypeObject(self) || self->type->id != rt->function_type->id) {
             rt->signalError("Left-side object is invalid: " + self->shortRepr());
         }
-        rt->signalError("FunctionType does not support that operator");
+
+        rt->signalError(self->shortRepr() + " does not support that operator");
     }
 };
 
@@ -391,7 +408,8 @@ public:
         if (!rt->isTypeObject(self) || self->type->id != rt->function_type->id) {
             rt->signalError("Left-side object is invalid: " + self->shortRepr());
         }
-        rt->signalError("FunctionType does not support that operator");
+
+        rt->signalError(self->shortRepr() + " does not support that operator");
     }
 };
 
@@ -401,7 +419,8 @@ public:
         if (!rt->isTypeObject(self) || self->type->id != rt->function_type->id) {
             rt->signalError("Left-side object is invalid: " + self->shortRepr());
         }
-        rt->signalError("FunctionType does not support that operator");
+
+        rt->signalError(self->shortRepr() + " does not support that operator");
     }
 };
 
@@ -455,9 +474,16 @@ Object *FunctionType::copy(Object *obj, Runtime *rt) {
 
 std::string FunctionType::shortRepr() {
     if (this == NULL) {
-        return "FunctionType(NULL)";
+        return "NULL";
     }
     return "FunctionType(id = " + std::to_string(this->id) + ")";
+}
+
+Object *
+makeFunctionInstanceObject(bool is_internal, InternalFunction internal_ptr, StmtNode *cotton_ptr, Runtime *rt) {
+    auto res = rt->make(rt->function_type, rt->INSTANCE_OBJECT);
+    icast(res->instance, FunctionInstance)->init(is_internal, internal_ptr, cotton_ptr);
+    return res;
 }
 
 }    // namespace Cotton::Builtin

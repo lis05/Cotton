@@ -51,8 +51,8 @@ std::string Object::shortRepr() {
     res             += (this->is_instance) ? "I" : "T";
     res             += (this->on_stack) ? "S" : "H";
     res             += (this->gc_mark) ? "1" : "0";
-    res             += ",instance = " + (this->instance == NULL) ? "NULL" : this->instance->shortRepr();
-    res             += ",type = " + (this->type == NULL) ? "NULL" : this->type->shortRepr();
+    res             += ", instance = " + ((this->instance == NULL) ? "NULL" : this->instance->shortRepr());
+    res             += ", type = " + ((this->type == NULL) ? "NULL" : this->type->shortRepr());
     res             += ")";
     return res;
 }

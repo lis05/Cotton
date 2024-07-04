@@ -88,7 +88,7 @@ Object *Type::getMethod(int64_t id, Runtime *rt) {
         }
         return it->second;
     }
-    rt->signalError(this->shortRepr() + "doesn't have method " + NameId::shortRepr(id));
+    rt->signalError(this->shortRepr() + " doesn't have method " + NameId::shortRepr(id));
 }
 
 bool Type::hasOperator(OperatorNode::OperatorId id, Runtime *rt) {

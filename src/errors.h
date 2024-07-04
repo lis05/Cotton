@@ -47,15 +47,15 @@ public:
     void setErrorMessage(const std::string &message);
     void clearError();
 
-    void signalError();
-    void signalError(const std::string &message);
-    void signalError(const std::string &message, int64_t char_pos);
+    [[noreturn]] void signalError();
+    [[noreturn]] void signalError(const std::string &message);
+    [[noreturn]] void signalError(const std::string &message, int64_t char_pos);
 
-    void signalError(const std::string &message, const Token &token);
+    [[noreturn]] void signalError(const std::string &message, const Token &token);
 
-    void signalError(const std::vector<std::pair<Token *, std::string>> errors);
+    [[noreturn]] void signalError(const std::vector<std::pair<Token *, std::string>> errors);
 
-    void signalErrorWithContext(const std::vector<std::pair<std::string, Token *>> messages);
+    [[noreturn]] void signalErrorWithContext(const std::vector<std::pair<std::string, Token *>> messages);
 
     friend void __assert__(bool               value,
                            const char        *assertion,

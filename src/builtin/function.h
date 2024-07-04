@@ -51,4 +51,6 @@ public:
     Object *copy(Object *obj, Runtime *rt);
     std::string shortRepr();
 };
+
+Object *makeFunctionInstanceObject(bool is_internal, InternalFunction internal_ptr, StmtNode *cotton_ptr, Runtime *rt);
 }    // namespace Cotton::Builtin

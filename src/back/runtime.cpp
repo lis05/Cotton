@@ -18,6 +18,7 @@ Runtime::Runtime(size_t stack_size, GCStrategy *gc_strategy, ErrorManager *error
 
     this->nothing_type  = new Builtin::NothingType(this);
     this->function_type = new Builtin::FunctionType(this);
+    this->boolean_type = new Builtin::BooleanType(this);
 }
 
 void Runtime::newFrame(bool can_access_prev_scope) {
@@ -47,7 +48,9 @@ Object *Runtime::make(Type *type, ObjectOptions object_opt) {
     if (obj == NULL) {
         this->signalError("Failed to make an object of type " + type->shortRepr());
     }
-    this->runMethod(MagicMethods::__make__(), obj, {});
+    if (this->isInstanceObject(obj) && obj->type->hasMethod(MagicMethods::__make__(), this)) {
+        this->runMethod(MagicMethods::__make__(), obj, {});
+    }
     return obj;
 }
 
@@ -89,7 +92,7 @@ void Runtime::highlight(Token *token) {
 }
 
 void Runtime::signalError(const std::string &message, bool include_token) {
-    if (include_token) {
+    if (include_token && this->current_token != NULL) {
         this->error_manager->signalError(message, *this->current_token);
     }
     else {

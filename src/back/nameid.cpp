@@ -24,6 +24,7 @@
 
 namespace Cotton {
 __gnu_pbds::cc_hash_table<std::string, int64_t> NameId::map;
+__gnu_pbds::cc_hash_table<int64_t, std::string> NameId::reverse_map;
 
 NameId::NameId() {
     this->id    = -1;
@@ -95,7 +96,8 @@ std::string NameId::fromId(int64_t id) {
 }
 
 std::string NameId::shortRepr(int64_t id) {
-    return "NameId(id = " + std::to_string(id) + ", str = \'" + NameId::fromId(id) + "\')";
- }
+    return fromId(id);
+    //return "NameId(id = " + std::to_string(id) + ", str = \'" + NameId::fromId(id) + "\')";
+}
 
 };    // namespace Cotton
