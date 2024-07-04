@@ -21,7 +21,6 @@
 
 #include "boolean.h"
 #include "../back/type.h"
-#include "function.h"
 
 namespace Cotton::Builtin {
 BooleanInstance::BooleanInstance(Runtime *rt, bool on_stack)
@@ -69,7 +68,8 @@ public:
         if (!rt->isTypeObject(self) || self->type->id != rt->boolean_type->id) {
             rt->signalError("Left-side object is invalid: " + self->shortRepr());
         }
-        rt->signalError("BooleanType does not support that operator");
+
+        rt->signalError(self->shortRepr() + " does not support that operator");
     }
 };
 
@@ -79,7 +79,8 @@ public:
         if (!rt->isTypeObject(self) || self->type->id != rt->boolean_type->id) {
             rt->signalError("Left-side object is invalid: " + self->shortRepr());
         }
-        rt->signalError("BooleanType does not support that operator");
+
+        rt->signalError(self->shortRepr() + " does not support that operator");
     }
 };
 
@@ -89,7 +90,8 @@ public:
         if (!rt->isTypeObject(self) || self->type->id != rt->boolean_type->id) {
             rt->signalError("Left-side object is invalid: " + self->shortRepr());
         }
-        rt->signalError("BooleanType does not support that operator");
+
+        rt->signalError(self->shortRepr() + " does not support that operator");
     }
 };
 
@@ -99,7 +101,8 @@ public:
         if (!rt->isTypeObject(self) || self->type->id != rt->boolean_type->id) {
             rt->signalError("Left-side object is invalid: " + self->shortRepr());
         }
-        rt->signalError("BooleanType does not support that operator");
+
+        rt->signalError(self->shortRepr() + " does not support that operator");
     }
 };
 
@@ -109,7 +112,8 @@ public:
         if (!rt->isTypeObject(self) || self->type->id != rt->boolean_type->id) {
             rt->signalError("Left-side object is invalid: " + self->shortRepr());
         }
-        rt->signalError("BooleanType does not support that operator");
+
+        rt->signalError(self->shortRepr() + " does not support that operator");
     }
 };
 
@@ -119,7 +123,8 @@ public:
         if (!rt->isTypeObject(self) || self->type->id != rt->boolean_type->id) {
             rt->signalError("Left-side object is invalid: " + self->shortRepr());
         }
-        rt->signalError("BooleanType does not support that operator");
+
+        rt->signalError(self->shortRepr() + " does not support that operator");
     }
 };
 
@@ -129,7 +134,8 @@ public:
         if (!rt->isTypeObject(self) || self->type->id != rt->boolean_type->id) {
             rt->signalError("Left-side object is invalid: " + self->shortRepr());
         }
-        rt->signalError("BooleanType does not support that operator");
+
+        rt->signalError(self->shortRepr() + " does not support that operator");
     }
 };
 
@@ -139,7 +145,8 @@ public:
         if (!rt->isTypeObject(self) || self->type->id != rt->boolean_type->id) {
             rt->signalError("Left-side object is invalid: " + self->shortRepr());
         }
-        rt->signalError("BooleanType does not support that operator");
+
+        rt->signalError(self->shortRepr() + " does not support that operator");
     }
 };
 
@@ -161,7 +168,8 @@ public:
         if (!rt->isTypeObject(self) || self->type->id != rt->boolean_type->id) {
             rt->signalError("Left-side object is invalid: " + self->shortRepr());
         }
-        rt->signalError("BooleanType does not support that operator");
+
+        rt->signalError(self->shortRepr() + " does not support that operator");
     }
 };
 
@@ -171,7 +179,8 @@ public:
         if (!rt->isTypeObject(self) || self->type->id != rt->boolean_type->id) {
             rt->signalError("Left-side object is invalid: " + self->shortRepr());
         }
-        rt->signalError("BooleanType does not support that operator");
+
+        rt->signalError(self->shortRepr() + " does not support that operator");
     }
 };
 
@@ -181,7 +190,8 @@ public:
         if (!rt->isTypeObject(self) || self->type->id != rt->boolean_type->id) {
             rt->signalError("Left-side object is invalid: " + self->shortRepr());
         }
-        rt->signalError("BooleanType does not support that operator");
+
+        rt->signalError(self->shortRepr() + " does not support that operator");
     }
 };
 
@@ -191,7 +201,8 @@ public:
         if (!rt->isTypeObject(self) || self->type->id != rt->boolean_type->id) {
             rt->signalError("Left-side object is invalid: " + self->shortRepr());
         }
-        rt->signalError("BooleanType does not support that operator");
+
+        rt->signalError(self->shortRepr() + " does not support that operator");
     }
 };
 
@@ -201,7 +212,8 @@ public:
         if (!rt->isTypeObject(self) || self->type->id != rt->boolean_type->id) {
             rt->signalError("Left-side object is invalid: " + self->shortRepr());
         }
-        rt->signalError("BooleanType does not support that operator");
+
+        rt->signalError(self->shortRepr() + " does not support that operator");
     }
 };
 
@@ -211,7 +223,8 @@ public:
         if (!rt->isTypeObject(self) || self->type->id != rt->boolean_type->id) {
             rt->signalError("Left-side object is invalid: " + self->shortRepr());
         }
-        rt->signalError("BooleanType does not support that operator");
+
+        rt->signalError(self->shortRepr() + " does not support that operator");
     }
 };
 
@@ -221,7 +234,8 @@ public:
         if (!rt->isTypeObject(self) || self->type->id != rt->boolean_type->id) {
             rt->signalError("Left-side object is invalid: " + self->shortRepr());
         }
-        rt->signalError("BooleanType does not support that operator");
+
+        rt->signalError(self->shortRepr() + " does not support that operator");
     }
 };
 
@@ -231,7 +245,8 @@ public:
         if (!rt->isTypeObject(self) || self->type->id != rt->boolean_type->id) {
             rt->signalError("Left-side object is invalid: " + self->shortRepr());
         }
-        rt->signalError("BooleanType does not support that operator");
+
+        rt->signalError(self->shortRepr() + " does not support that operator");
     }
 };
 
@@ -241,7 +256,8 @@ public:
         if (!rt->isTypeObject(self) || self->type->id != rt->boolean_type->id) {
             rt->signalError("Left-side object is invalid: " + self->shortRepr());
         }
-        rt->signalError("BooleanType does not support that operator");
+
+        rt->signalError(self->shortRepr() + " does not support that operator");
     }
 };
 
@@ -251,7 +267,8 @@ public:
         if (!rt->isTypeObject(self) || self->type->id != rt->boolean_type->id) {
             rt->signalError("Left-side object is invalid: " + self->shortRepr());
         }
-        rt->signalError("BooleanType does not support that operator");
+
+        rt->signalError(self->shortRepr() + " does not support that operator");
     }
 };
 
@@ -261,7 +278,8 @@ public:
         if (!rt->isTypeObject(self) || self->type->id != rt->boolean_type->id) {
             rt->signalError("Left-side object is invalid: " + self->shortRepr());
         }
-        rt->signalError("BooleanType does not support that operator");
+
+        rt->signalError(self->shortRepr() + " does not support that operator");
     }
 };
 
@@ -271,7 +289,8 @@ public:
         if (!rt->isTypeObject(self) || self->type->id != rt->boolean_type->id) {
             rt->signalError("Left-side object is invalid: " + self->shortRepr());
         }
-        rt->signalError("BooleanType does not support that operator");
+
+        rt->signalError(self->shortRepr() + " does not support that operator");
     }
 };
 
@@ -290,14 +309,18 @@ public:
             rt->signalError("Right-side object is invalid: " + arg1->shortRepr());
         }
 
-        auto res                 = rt->make(rt->boolean_type, Runtime::INSTANCE_OBJECT);
-        getBooleanValue(res, rt) = false;
-        if (self->type->id == arg1->type->id) {
-            auto b1                  = getBooleanValue(self, rt);
-            auto b2                  = getBooleanValue(self, rt);
-            getBooleanValue(res, rt) = (b1 == b2);
+        if (rt->isInstanceObject(self) && rt->isInstanceObject(arg1)) {
+            if (self->type->id != arg1->type->id) {
+                return makeBooleanInstanceObject(false, rt);
+            }
+            return makeBooleanInstanceObject(getBooleanValueFast(self) == getBooleanValueFast(arg1), rt);
         }
-        return res;
+        else if (!rt->isInstanceObject(self) && !rt->isInstanceObject(arg1)) {
+            return makeBooleanInstanceObject(self->type->id == arg1->type->id, rt);
+        }
+        else {
+            return makeBooleanInstanceObject(false, rt);
+        }
     }
 };
 
@@ -316,7 +339,8 @@ public:
         if (!rt->isTypeObject(self) || self->type->id != rt->boolean_type->id) {
             rt->signalError("Left-side object is invalid: " + self->shortRepr());
         }
-        rt->signalError("BooleanType does not support that operator");
+
+        rt->signalError(self->shortRepr() + " does not support that operator");
     }
 };
 
@@ -326,7 +350,8 @@ public:
         if (!rt->isTypeObject(self) || self->type->id != rt->boolean_type->id) {
             rt->signalError("Left-side object is invalid: " + self->shortRepr());
         }
-        rt->signalError("BooleanType does not support that operator");
+
+        rt->signalError(self->shortRepr() + " does not support that operator");
     }
 };
 
@@ -336,7 +361,8 @@ public:
         if (!rt->isTypeObject(self) || self->type->id != rt->boolean_type->id) {
             rt->signalError("Left-side object is invalid: " + self->shortRepr());
         }
-        rt->signalError("BooleanType does not support that operator");
+
+        rt->signalError(self->shortRepr() + " does not support that operator");
     }
 };
 
@@ -434,7 +460,7 @@ Object *BooleanType::copy(Object *obj, Runtime *rt) {
         rt->signalError("Failed to copy an invalid object: " + obj->shortRepr());
     }
     auto ins = obj->instance->copy(rt);
-    auto res = createObject(rt, true, ins, this, false);
+    auto res = createObject(rt, true, ins, this, true);
     return res;
 }
 

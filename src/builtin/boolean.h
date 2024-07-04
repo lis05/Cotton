@@ -50,4 +50,5 @@ public:
 Object *makeBooleanInstanceObject(bool value, Runtime *rt);
 
 bool &getBooleanValue(Object *obj, Runtime *rt);
+#define getBooleanValueFast(obj) (icast(obj->instance, BooleanInstance)->value)
 }    // namespace Cotton::Builtin

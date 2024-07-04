@@ -44,6 +44,7 @@ namespace Builtin {
     class NothingType;
     class BooleanType;
     class FunctionType;
+    class IntegerType;
 }    // namespace Builtin
 
 class Runtime {
@@ -54,12 +55,13 @@ public:
     Builtin::NothingType  *nothing_type;
     Builtin::BooleanType  *boolean_type;
     Builtin::FunctionType *function_type;
+    Builtin::IntegerType  *integer_type;
 
-    Scope *scope;
+    Scope                 *scope;
     // creates a new scope, as well as a new stack frame
-    void   newFrame(bool can_access_prev_scope = true);
+    void                   newFrame(bool can_access_prev_scope = true);
     // pops the last scope, as well as clears the last stack frame
-    void   popFrame();
+    void                   popFrame();
 
     Stack *stack;
     GC    *gc;

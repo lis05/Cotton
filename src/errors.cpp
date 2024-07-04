@@ -244,7 +244,7 @@ void ErrorManager::signalError(const std::string &message, const Token &token) {
         fprintf(stderr, " ");
     }
     printColor(stderr, "red");
-    for (int64_t i = 0; i < token.end_pos - token.begin_pos; i++) {
+    for (int64_t i = 0; i < std::min((int64_t)100, token.end_pos - token.begin_pos); i++) {
         fprintf(stderr, "^");
     }
     fprintf(stderr, "\n");

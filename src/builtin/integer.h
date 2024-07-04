@@ -18,8 +18,37 @@
  IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
  CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
+
 #pragma once
-#include "boolean.h"
-#include "function.h"
-#include "nothing.h"
-#include "integer.h"
+#include "../back/api.h"
+#include "../front/api.h"
+
+namespace Cotton::Builtin {
+
+class IntegerInstance: public Instance {
+public:
+    int64_t value;
+
+    IntegerInstance(Runtime *rt, bool on_stack);
+    ~IntegerInstance();
+
+    Instance   *copy(Runtime *rt);
+    size_t      getSize();
+    std::string shortRepr();
+};
+
+class IntegerType: public Type {
+public:
+    size_t getInstanceSize();
+    IntegerType(Runtime *rt);
+    ~IntegerType() = default;
+    Object     *create(Runtime *rt);
+    Object     *copy(Object *obj, Runtime *rt);
+    std::string shortRepr();
+};
+
+Object *makeIntegerInstanceObject(int64_t value, Runtime *rt);
+
+int64_t &getIntegerValue(Object *obj, Runtime *rt);
+#define getIntegerValueFast(obj) (icast(obj->instance, IntegerInstance)->value)
+}    // namespace Cotton::Builtin
