@@ -19,9 +19,5 @@
  CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 #pragma once
-#include "boolean.h"
-#include "function.h"
-#include "integer.h"
-#include "nothing.h"
-#include "real.h"
-#include "character.h"
+#include "functions/api.h"
+#include "types/api.h"

@@ -20,26 +20,36 @@
  */
 
 #pragma once
-#include <ext/pb_ds/assoc_container.hpp>
+#include "../../back/api.h"
+#include "../../front/api.h"
 
-namespace Cotton {
+namespace Cotton::Builtin {
 
-class Object;
-class Runtime;
-
-class Scope {
+class StringInstance: public Instance {
 public:
-    Scope                                       *prev;
-    __gnu_pbds::cc_hash_table<int64_t, Object *> variables;
-    std::vector<Object *>                        arguments;
-    bool                                         can_access_prev;
+    std::vector<Object *> data;
 
-    Scope(Scope *prev, bool can_access_prev);
-    ~Scope();
+    StringInstance(Runtime *rt, bool on_stack);
+    ~StringInstance();
 
-    void    addVariable(int64_t id, Object *obj, Runtime *rt);
-    bool    queryVariable(int64_t id, Runtime *rt);
-    // returns a valid (non-null) object
-    Object *getVariable(int64_t id, Runtime *rt);
+    Instance             *copy(Runtime *rt);
+    size_t                getSize();
+    std::string           shortRepr();
+    std::vector<Object *> getGCReachable(Runtime *rt);
 };
-}    // namespace Cotton
+
+class StringType: public Type {
+public:
+    size_t getInstanceSize();
+    StringType(Runtime *rt);
+    ~StringType() = default;
+    Object     *create(Runtime *rt);
+    Object     *copy(Object *obj, Runtime *rt);
+    std::string shortRepr();
+};
+
+Object *makeStringInstanceObject(const std::string &str, Runtime *rt);
+
+std::vector<Object *> &getStringData(Object *obj, Runtime *rt);
+#define getStringDataFast(obj) (icast(obj->instance, StringInstance)->data)
+}    // namespace Cotton::Builtin

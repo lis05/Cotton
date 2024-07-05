@@ -19,53 +19,51 @@
  CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-#include "character.h"
-#include "../back/type.h"
-#include "boolean.h"
+#include "api.h"
 
 namespace Cotton::Builtin {
-CharacterInstance::CharacterInstance(Runtime *rt, bool on_stack)
-    : Instance(rt, sizeof(CharacterInstance), on_stack) {
-    this->value = '\0';
+IntegerInstance::IntegerInstance(Runtime *rt, bool on_stack)
+    : Instance(rt, sizeof(IntegerInstance), on_stack) {
+    this->value = 0;
 }
 
-CharacterInstance::~CharacterInstance() {}
+IntegerInstance::~IntegerInstance() {}
 
-Instance *CharacterInstance::copy(Runtime *rt) {
-    Instance *res = rt->stack->allocAndInitInstance<CharacterInstance>(sizeof(CharacterInstance), rt);
+Instance *IntegerInstance::copy(Runtime *rt) {
+    Instance *res = rt->stack->allocAndInitInstance<IntegerInstance>(sizeof(IntegerInstance), rt);
     if (res != NULL) {
         res->on_stack                      = true;
-        icast(res, CharacterInstance)->value = this->value;
+        icast(res, IntegerInstance)->value = this->value;
         return res;
     }
-    res = new (std::nothrow) CharacterInstance(rt, false);
+    res = new (std::nothrow) IntegerInstance(rt, false);
     if (res == NULL) {
         rt->signalError("Failed to copy " + this->shortRepr());
     }
-    icast(res, CharacterInstance)->value = this->value;
+    icast(res, IntegerInstance)->value = this->value;
     res->on_stack                      = false;
     return res;
 }
 
-std::string CharacterInstance::shortRepr() {
+std::string IntegerInstance::shortRepr() {
     if (this == NULL) {
-        return "CharacterInstance(NULL)";
+        return "IntegerInstance(NULL)";
     }
-    return "CharacterInstance(id = " + std::to_string(this->id) + ", value = " + std::to_string(this->value) + ": '" + (char)this->value + "')";
+    return "IntegerInstance(id = " + std::to_string(this->id) + ", value = " + std::to_string(this->value) + ")";
 }
 
-size_t CharacterInstance::getSize() {
-    return sizeof(CharacterInstance);
+size_t IntegerInstance::getSize() {
+    return sizeof(IntegerInstance);
 }
 
-size_t CharacterType::getInstanceSize() {
-    return sizeof(CharacterInstance);
+size_t IntegerType::getInstanceSize() {
+    return sizeof(IntegerInstance);
 }
 
-class CharacterPostincAdapter: public OperatorAdapter {
+class IntegerPostincAdapter: public OperatorAdapter {
 public:
     Object *operator()(Object *self, const std::vector<Object *> &others, Runtime *rt) {
-        if (!rt->isTypeObject(self) || self->type->id != rt->character_type->id) {
+        if (!rt->isTypeObject(self) || self->type->id != rt->integer_type->id) {
             rt->signalError("Left-side object is invalid: " + self->shortRepr());
         }
         if (!rt->isInstanceObject(self)) {
@@ -73,15 +71,15 @@ public:
         }
 
         auto res = self->type->copy(self, rt);
-        getCharacterValueFast(self)++;
+        getIntegerValueFast(self)++;
         return res;
     }
 };
 
-class CharacterPostdecAdapter: public OperatorAdapter {
+class IntegerPostdecAdapter: public OperatorAdapter {
 public:
     Object *operator()(Object *self, const std::vector<Object *> &others, Runtime *rt) {
-        if (!rt->isTypeObject(self) || self->type->id != rt->character_type->id) {
+        if (!rt->isTypeObject(self) || self->type->id != rt->integer_type->id) {
             rt->signalError("Left-side object is invalid: " + self->shortRepr());
         }
         if (!rt->isInstanceObject(self)) {
@@ -89,15 +87,15 @@ public:
         }
 
         auto res = self->type->copy(self, rt);
-        getCharacterValueFast(self)--;
+        getIntegerValueFast(self)--;
         return res;
     }
 };
 
-class CharacterCallAdapter: public OperatorAdapter {
+class IntegerCallAdapter: public OperatorAdapter {
 public:
     Object *operator()(Object *self, const std::vector<Object *> &others, Runtime *rt) {
-        if (!rt->isTypeObject(self) || self->type->id != rt->character_type->id) {
+        if (!rt->isTypeObject(self) || self->type->id != rt->integer_type->id) {
             rt->signalError("Left-side object is invalid: " + self->shortRepr());
         }
 
@@ -105,10 +103,10 @@ public:
     }
 };
 
-class CharacterIndexAdapter: public OperatorAdapter {
+class IntegerIndexAdapter: public OperatorAdapter {
 public:
     Object *operator()(Object *self, const std::vector<Object *> &others, Runtime *rt) {
-        if (!rt->isTypeObject(self) || self->type->id != rt->character_type->id) {
+        if (!rt->isTypeObject(self) || self->type->id != rt->integer_type->id) {
             rt->signalError("Left-side object is invalid: " + self->shortRepr());
         }
 
@@ -116,42 +114,42 @@ public:
     }
 };
 
-class CharacterPreincAdapter: public OperatorAdapter {
+class IntegerPreincAdapter: public OperatorAdapter {
 public:
     Object *operator()(Object *self, const std::vector<Object *> &others, Runtime *rt) {
-        if (!rt->isTypeObject(self) || self->type->id != rt->character_type->id) {
+        if (!rt->isTypeObject(self) || self->type->id != rt->integer_type->id) {
             rt->signalError("Left-side object is invalid: " + self->shortRepr());
         }
         if (!rt->isInstanceObject(self)) {
             rt->signalError(self->shortRepr() + " does not support that operator");
         }
 
-        getCharacterValueFast(self)++;
+        getIntegerValueFast(self)++;
         auto res = self->type->copy(self, rt);
         return res;
     }
 };
 
-class CharacterPredecAdapter: public OperatorAdapter {
+class IntegerPredecAdapter: public OperatorAdapter {
 public:
     Object *operator()(Object *self, const std::vector<Object *> &others, Runtime *rt) {
-        if (!rt->isTypeObject(self) || self->type->id != rt->character_type->id) {
+        if (!rt->isTypeObject(self) || self->type->id != rt->integer_type->id) {
             rt->signalError("Left-side object is invalid: " + self->shortRepr());
         }
         if (!rt->isInstanceObject(self)) {
             rt->signalError(self->shortRepr() + " does not support that operator");
         }
 
-        getCharacterValueFast(self)--;
+        getIntegerValueFast(self)--;
         auto res = self->type->copy(self, rt);
         return res;
     }
 };
 
-class CharacterPositiveAdapter: public OperatorAdapter {
+class IntegerPositiveAdapter: public OperatorAdapter {
 public:
     Object *operator()(Object *self, const std::vector<Object *> &others, Runtime *rt) {
-        if (!rt->isTypeObject(self) || self->type->id != rt->character_type->id) {
+        if (!rt->isTypeObject(self) || self->type->id != rt->integer_type->id) {
             rt->signalError("Left-side object is invalid: " + self->shortRepr());
         }
         if (!rt->isInstanceObject(self)) {
@@ -163,10 +161,10 @@ public:
     }
 };
 
-class CharacterNegativeAdapter: public OperatorAdapter {
+class IntegerNegativeAdapter: public OperatorAdapter {
 public:
     Object *operator()(Object *self, const std::vector<Object *> &others, Runtime *rt) {
-        if (!rt->isTypeObject(self) || self->type->id != rt->character_type->id) {
+        if (!rt->isTypeObject(self) || self->type->id != rt->integer_type->id) {
             rt->signalError("Left-side object is invalid: " + self->shortRepr());
         }
         if (!rt->isInstanceObject(self)) {
@@ -174,25 +172,25 @@ public:
         }
 
         auto res                  = self->type->copy(self, rt);
-        getCharacterValueFast(res) *= -1;
+        getIntegerValueFast(res) *= -1;
         return res;
     }
 };
 
-class CharacterNotAdapter: public OperatorAdapter {
+class IntegerNotAdapter: public OperatorAdapter {
 public:
     Object *operator()(Object *self, const std::vector<Object *> &others, Runtime *rt) {
-        if (!rt->isTypeObject(self) || self->type->id != rt->character_type->id) {
+        if (!rt->isTypeObject(self) || self->type->id != rt->integer_type->id) {
             rt->signalError("Left-side object is invalid: " + self->shortRepr());
         }
         rt->signalError(self->shortRepr() + " does not support that operator");
     }
 };
 
-class CharacterInverseAdapter: public OperatorAdapter {
+class IntegerInverseAdapter: public OperatorAdapter {
 public:
     Object *operator()(Object *self, const std::vector<Object *> &others, Runtime *rt) {
-        if (!rt->isTypeObject(self) || self->type->id != rt->character_type->id) {
+        if (!rt->isTypeObject(self) || self->type->id != rt->integer_type->id) {
             rt->signalError("Left-side object is invalid: " + self->shortRepr());
         }
         if (!rt->isInstanceObject(self)) {
@@ -200,15 +198,15 @@ public:
         }
 
         auto res                 = self->type->copy(self, rt);
-        getCharacterValueFast(res) = ~getCharacterValueFast(res);
+        getIntegerValueFast(res) = ~getIntegerValueFast(res);
         return res;
     }
 };
 
-class CharacterMultAdapter: public OperatorAdapter {
+class IntegerMultAdapter: public OperatorAdapter {
 public:
     Object *operator()(Object *self, const std::vector<Object *> &others, Runtime *rt) {
-        if (!rt->isTypeObject(self) || self->type->id != rt->character_type->id) {
+        if (!rt->isTypeObject(self) || self->type->id != rt->integer_type->id) {
             rt->signalError("Left-side object is invalid: " + self->shortRepr());
         }
         if (!rt->isInstanceObject(self)) {
@@ -222,19 +220,19 @@ public:
         if (!rt->isTypeObject(arg1)) {
             rt->signalError("Right-side object is invalid: " + arg1->shortRepr());
         }
-        if (!rt->isInstanceObject(arg1) || arg1->type->id != rt->character_type->id) {
-            rt->signalError("Right-side object " + arg1->shortRepr() + " must be a Character instance object");
+        if (!rt->isInstanceObject(arg1) || arg1->type->id != rt->integer_type->id) {
+            rt->signalError("Right-side object " + arg1->shortRepr() + " must be an integer instance object");
         }
 
-        auto res = makeCharacterInstanceObject(getCharacterValueFast(self) * getCharacterValueFast(arg1), rt);
+        auto res = makeIntegerInstanceObject(getIntegerValueFast(self) * getIntegerValueFast(arg1), rt);
         return res;
     }
 };
 
-class CharacterDivAdapter: public OperatorAdapter {
+class IntegerDivAdapter: public OperatorAdapter {
 public:
     Object *operator()(Object *self, const std::vector<Object *> &others, Runtime *rt) {
-        if (!rt->isTypeObject(self) || self->type->id != rt->character_type->id) {
+        if (!rt->isTypeObject(self) || self->type->id != rt->integer_type->id) {
             rt->signalError("Left-side object is invalid: " + self->shortRepr());
         }
         if (!rt->isInstanceObject(self)) {
@@ -248,19 +246,19 @@ public:
         if (!rt->isTypeObject(arg1)) {
             rt->signalError("Right-side object is invalid: " + arg1->shortRepr());
         }
-        if (!rt->isInstanceObject(arg1) || arg1->type->id != rt->character_type->id) {
-            rt->signalError("Right-side object " + arg1->shortRepr() + " must be a Character instance object");
+        if (!rt->isInstanceObject(arg1) || arg1->type->id != rt->integer_type->id) {
+            rt->signalError("Right-side object " + arg1->shortRepr() + " must be an integer instance object");
         }
 
-        auto res = makeCharacterInstanceObject(getCharacterValueFast(self) / getCharacterValueFast(arg1), rt);
+        auto res = makeIntegerInstanceObject(getIntegerValueFast(self) / getIntegerValueFast(arg1), rt);
         return res;
     }
 };
 
-class CharacterRemAdapter: public OperatorAdapter {
+class IntegerRemAdapter: public OperatorAdapter {
 public:
     Object *operator()(Object *self, const std::vector<Object *> &others, Runtime *rt) {
-        if (!rt->isTypeObject(self) || self->type->id != rt->character_type->id) {
+        if (!rt->isTypeObject(self) || self->type->id != rt->integer_type->id) {
             rt->signalError("Left-side object is invalid: " + self->shortRepr());
         }
         if (!rt->isInstanceObject(self)) {
@@ -274,19 +272,19 @@ public:
         if (!rt->isTypeObject(arg1)) {
             rt->signalError("Right-side object is invalid: " + arg1->shortRepr());
         }
-        if (!rt->isInstanceObject(arg1) || arg1->type->id != rt->character_type->id) {
-            rt->signalError("Right-side object " + arg1->shortRepr() + " must be a Character instance object");
+        if (!rt->isInstanceObject(arg1) || arg1->type->id != rt->integer_type->id) {
+            rt->signalError("Right-side object " + arg1->shortRepr() + " must be an integer instance object");
         }
 
-        auto res = makeCharacterInstanceObject(getCharacterValueFast(self) % getCharacterValueFast(arg1), rt);
+        auto res = makeIntegerInstanceObject(getIntegerValueFast(self) % getIntegerValueFast(arg1), rt);
         return res;
     }
 };
 
-class CharacterRshiftAdapter: public OperatorAdapter {
+class IntegerRshiftAdapter: public OperatorAdapter {
 public:
     Object *operator()(Object *self, const std::vector<Object *> &others, Runtime *rt) {
-        if (!rt->isTypeObject(self) || self->type->id != rt->character_type->id) {
+        if (!rt->isTypeObject(self) || self->type->id != rt->integer_type->id) {
             rt->signalError("Left-side object is invalid: " + self->shortRepr());
         }
         if (!rt->isInstanceObject(self)) {
@@ -300,19 +298,19 @@ public:
         if (!rt->isTypeObject(arg1)) {
             rt->signalError("Right-side object is invalid: " + arg1->shortRepr());
         }
-        if (!rt->isInstanceObject(arg1) || arg1->type->id != rt->character_type->id) {
-            rt->signalError("Right-side object " + arg1->shortRepr() + " must be a Character instance object");
+        if (!rt->isInstanceObject(arg1) || arg1->type->id != rt->integer_type->id) {
+            rt->signalError("Right-side object " + arg1->shortRepr() + " must be an integer instance object");
         }
 
-        auto res = makeCharacterInstanceObject(getCharacterValueFast(self) >> getCharacterValueFast(arg1), rt);
+        auto res = makeIntegerInstanceObject(getIntegerValueFast(self) >> getIntegerValueFast(arg1), rt);
         return res;
     }
 };
 
-class CharacterLshiftAdapter: public OperatorAdapter {
+class IntegerLshiftAdapter: public OperatorAdapter {
 public:
     Object *operator()(Object *self, const std::vector<Object *> &others, Runtime *rt) {
-        if (!rt->isTypeObject(self) || self->type->id != rt->character_type->id) {
+        if (!rt->isTypeObject(self) || self->type->id != rt->integer_type->id) {
             rt->signalError("Left-side object is invalid: " + self->shortRepr());
         }
         if (!rt->isInstanceObject(self)) {
@@ -326,19 +324,19 @@ public:
         if (!rt->isTypeObject(arg1)) {
             rt->signalError("Right-side object is invalid: " + arg1->shortRepr());
         }
-        if (!rt->isInstanceObject(arg1) || arg1->type->id != rt->character_type->id) {
-            rt->signalError("Right-side object " + arg1->shortRepr() + " must be a Character instance object");
+        if (!rt->isInstanceObject(arg1) || arg1->type->id != rt->integer_type->id) {
+            rt->signalError("Right-side object " + arg1->shortRepr() + " must be an integer instance object");
         }
 
-        auto res = makeCharacterInstanceObject(getCharacterValueFast(self) << getCharacterValueFast(arg1), rt);
+        auto res = makeIntegerInstanceObject(getIntegerValueFast(self) << getIntegerValueFast(arg1), rt);
         return res;
     }
 };
 
-class CharacterAddAdapter: public OperatorAdapter {
+class IntegerAddAdapter: public OperatorAdapter {
 public:
     Object *operator()(Object *self, const std::vector<Object *> &others, Runtime *rt) {
-        if (!rt->isTypeObject(self) || self->type->id != rt->character_type->id) {
+        if (!rt->isTypeObject(self) || self->type->id != rt->integer_type->id) {
             rt->signalError("Left-side object is invalid: " + self->shortRepr());
         }
         if (!rt->isInstanceObject(self)) {
@@ -352,19 +350,19 @@ public:
         if (!rt->isTypeObject(arg1)) {
             rt->signalError("Right-side object is invalid: " + arg1->shortRepr());
         }
-        if (!rt->isInstanceObject(arg1) || arg1->type->id != rt->character_type->id) {
-            rt->signalError("Right-side object " + arg1->shortRepr() + " must be a Character instance object");
+        if (!rt->isInstanceObject(arg1) || arg1->type->id != rt->integer_type->id) {
+            rt->signalError("Right-side object " + arg1->shortRepr() + " must be an integer instance object");
         }
 
-        auto res = makeCharacterInstanceObject(getCharacterValueFast(self) + getCharacterValueFast(arg1), rt);
+        auto res = makeIntegerInstanceObject(getIntegerValueFast(self) + getIntegerValueFast(arg1), rt);
         return res;
     }
 };
 
-class CharacterSubAdapter: public OperatorAdapter {
+class IntegerSubAdapter: public OperatorAdapter {
 public:
     Object *operator()(Object *self, const std::vector<Object *> &others, Runtime *rt) {
-        if (!rt->isTypeObject(self) || self->type->id != rt->character_type->id) {
+        if (!rt->isTypeObject(self) || self->type->id != rt->integer_type->id) {
             rt->signalError("Left-side object is invalid: " + self->shortRepr());
         }
         if (!rt->isInstanceObject(self)) {
@@ -378,19 +376,19 @@ public:
         if (!rt->isTypeObject(arg1)) {
             rt->signalError("Right-side object is invalid: " + arg1->shortRepr());
         }
-        if (!rt->isInstanceObject(arg1) || arg1->type->id != rt->character_type->id) {
-            rt->signalError("Right-side object " + arg1->shortRepr() + " must be a Character instance object");
+        if (!rt->isInstanceObject(arg1) || arg1->type->id != rt->integer_type->id) {
+            rt->signalError("Right-side object " + arg1->shortRepr() + " must be an integer instance object");
         }
 
-        auto res = makeCharacterInstanceObject(getCharacterValueFast(self) - getCharacterValueFast(arg1), rt);
+        auto res = makeIntegerInstanceObject(getIntegerValueFast(self) - getIntegerValueFast(arg1), rt);
         return res;
     }
 };
 
-class CharacterLtAdapter: public OperatorAdapter {
+class IntegerLtAdapter: public OperatorAdapter {
 public:
     Object *operator()(Object *self, const std::vector<Object *> &others, Runtime *rt) {
-        if (!rt->isTypeObject(self) || self->type->id != rt->character_type->id) {
+        if (!rt->isTypeObject(self) || self->type->id != rt->integer_type->id) {
             rt->signalError("Left-side object is invalid: " + self->shortRepr());
         }
         if (!rt->isInstanceObject(self)) {
@@ -404,19 +402,19 @@ public:
         if (!rt->isTypeObject(arg1)) {
             rt->signalError("Right-side object is invalid: " + arg1->shortRepr());
         }
-        if (!rt->isInstanceObject(arg1) || arg1->type->id != rt->character_type->id) {
-            rt->signalError("Right-side object " + arg1->shortRepr() + " must be a Character instance object");
+        if (!rt->isInstanceObject(arg1) || arg1->type->id != rt->integer_type->id) {
+            rt->signalError("Right-side object " + arg1->shortRepr() + " must be an integer instance object");
         }
 
-        auto res = makeBooleanInstanceObject(getCharacterValueFast(self) < getCharacterValueFast(arg1), rt);
+        auto res = makeBooleanInstanceObject(getIntegerValueFast(self) < getIntegerValueFast(arg1), rt);
         return res;
     }
 };
 
-class CharacterLeqAdapter: public OperatorAdapter {
+class IntegerLeqAdapter: public OperatorAdapter {
 public:
     Object *operator()(Object *self, const std::vector<Object *> &others, Runtime *rt) {
-        if (!rt->isTypeObject(self) || self->type->id != rt->character_type->id) {
+        if (!rt->isTypeObject(self) || self->type->id != rt->integer_type->id) {
             rt->signalError("Left-side object is invalid: " + self->shortRepr());
         }
         if (!rt->isInstanceObject(self)) {
@@ -430,19 +428,19 @@ public:
         if (!rt->isTypeObject(arg1)) {
             rt->signalError("Right-side object is invalid: " + arg1->shortRepr());
         }
-        if (!rt->isInstanceObject(arg1) || arg1->type->id != rt->character_type->id) {
-            rt->signalError("Right-side object " + arg1->shortRepr() + " must be a Character instance object");
+        if (!rt->isInstanceObject(arg1) || arg1->type->id != rt->integer_type->id) {
+            rt->signalError("Right-side object " + arg1->shortRepr() + " must be an integer instance object");
         }
 
-        auto res = makeBooleanInstanceObject(getCharacterValueFast(self) <= getCharacterValueFast(arg1), rt);
+        auto res = makeBooleanInstanceObject(getIntegerValueFast(self) <= getIntegerValueFast(arg1), rt);
         return res;
     }
 };
 
-class CharacterGtAdapter: public OperatorAdapter {
+class IntegerGtAdapter: public OperatorAdapter {
 public:
     Object *operator()(Object *self, const std::vector<Object *> &others, Runtime *rt) {
-        if (!rt->isTypeObject(self) || self->type->id != rt->character_type->id) {
+        if (!rt->isTypeObject(self) || self->type->id != rt->integer_type->id) {
             rt->signalError("Left-side object is invalid: " + self->shortRepr());
         }
         if (!rt->isInstanceObject(self)) {
@@ -456,19 +454,19 @@ public:
         if (!rt->isTypeObject(arg1)) {
             rt->signalError("Right-side object is invalid: " + arg1->shortRepr());
         }
-        if (!rt->isInstanceObject(arg1) || arg1->type->id != rt->character_type->id) {
-            rt->signalError("Right-side object " + arg1->shortRepr() + " must be a Character instance object");
+        if (!rt->isInstanceObject(arg1) || arg1->type->id != rt->integer_type->id) {
+            rt->signalError("Right-side object " + arg1->shortRepr() + " must be an integer instance object");
         }
 
-        auto res = makeBooleanInstanceObject(getCharacterValueFast(self) > getCharacterValueFast(arg1), rt);
+        auto res = makeBooleanInstanceObject(getIntegerValueFast(self) > getIntegerValueFast(arg1), rt);
         return res;
     }
 };
 
-class CharacterGeqAdapter: public OperatorAdapter {
+class IntegerGeqAdapter: public OperatorAdapter {
 public:
     Object *operator()(Object *self, const std::vector<Object *> &others, Runtime *rt) {
-        if (!rt->isTypeObject(self) || self->type->id != rt->character_type->id) {
+        if (!rt->isTypeObject(self) || self->type->id != rt->integer_type->id) {
             rt->signalError("Left-side object is invalid: " + self->shortRepr());
         }
         if (!rt->isInstanceObject(self)) {
@@ -482,16 +480,16 @@ public:
         if (!rt->isTypeObject(arg1)) {
             rt->signalError("Right-side object is invalid: " + arg1->shortRepr());
         }
-        if (!rt->isInstanceObject(arg1) || arg1->type->id != rt->character_type->id) {
-            rt->signalError("Right-side object " + arg1->shortRepr() + " must be a Character instance object");
+        if (!rt->isInstanceObject(arg1) || arg1->type->id != rt->integer_type->id) {
+            rt->signalError("Right-side object " + arg1->shortRepr() + " must be an integer instance object");
         }
 
-        auto res = makeBooleanInstanceObject(getCharacterValueFast(self) >= getCharacterValueFast(arg1), rt);
+        auto res = makeBooleanInstanceObject(getIntegerValueFast(self) >= getIntegerValueFast(arg1), rt);
         return res;
     }
 };
 
-class CharacterEqAdapter: public OperatorAdapter {
+class IntegerEqAdapter: public OperatorAdapter {
 public:
     Object *operator()(Object *self, const std::vector<Object *> &others, Runtime *rt) {
         if (!rt->isTypeObject(self) || self->type->id != rt->boolean_type->id) {
@@ -510,7 +508,7 @@ public:
             if (self->type->id != arg1->type->id) {
                 return makeBooleanInstanceObject(false, rt);
             }
-            return makeBooleanInstanceObject(getCharacterValueFast(self) == getCharacterValueFast(arg1), rt);
+            return makeBooleanInstanceObject(getIntegerValueFast(self) == getIntegerValueFast(arg1), rt);
         }
         else if (!rt->isInstanceObject(self) && !rt->isInstanceObject(arg1)) {
             return makeBooleanInstanceObject(self->type->id == arg1->type->id, rt);
@@ -521,19 +519,19 @@ public:
     }
 };
 
-class CharacterNeqAdapter: public CharacterEqAdapter {
+class IntegerNeqAdapter: public IntegerEqAdapter {
 public:
     Object *operator()(Object *self, const std::vector<Object *> &others, Runtime *rt) {
-        auto res                 = CharacterEqAdapter::operator()(self, others, rt);
-        getCharacterValueFast(res) = !getCharacterValueFast(res);
+        auto res                 = IntegerEqAdapter::operator()(self, others, rt);
+        getIntegerValueFast(res) = !getIntegerValueFast(res);
         return res;
     }
 };
 
-class CharacterBitandAdapter: public OperatorAdapter {
+class IntegerBitandAdapter: public OperatorAdapter {
 public:
     Object *operator()(Object *self, const std::vector<Object *> &others, Runtime *rt) {
-        if (!rt->isTypeObject(self) || self->type->id != rt->character_type->id) {
+        if (!rt->isTypeObject(self) || self->type->id != rt->integer_type->id) {
             rt->signalError("Left-side object is invalid: " + self->shortRepr());
         }
         if (!rt->isInstanceObject(self)) {
@@ -547,19 +545,19 @@ public:
         if (!rt->isTypeObject(arg1)) {
             rt->signalError("Right-side object is invalid: " + arg1->shortRepr());
         }
-        if (!rt->isInstanceObject(arg1) || arg1->type->id != rt->character_type->id) {
-            rt->signalError("Right-side object " + arg1->shortRepr() + " must be a Character instance object");
+        if (!rt->isInstanceObject(arg1) || arg1->type->id != rt->integer_type->id) {
+            rt->signalError("Right-side object " + arg1->shortRepr() + " must be an integer instance object");
         }
 
-        auto res = makeCharacterInstanceObject(getCharacterValueFast(self) & getCharacterValueFast(arg1), rt);
+        auto res = makeIntegerInstanceObject(getIntegerValueFast(self) & getIntegerValueFast(arg1), rt);
         return res;
     }
 };
 
-class CharacterBitxorAdapter: public OperatorAdapter {
+class IntegerBitxorAdapter: public OperatorAdapter {
 public:
     Object *operator()(Object *self, const std::vector<Object *> &others, Runtime *rt) {
-        if (!rt->isTypeObject(self) || self->type->id != rt->character_type->id) {
+        if (!rt->isTypeObject(self) || self->type->id != rt->integer_type->id) {
             rt->signalError("Left-side object is invalid: " + self->shortRepr());
         }
         if (!rt->isInstanceObject(self)) {
@@ -573,19 +571,19 @@ public:
         if (!rt->isTypeObject(arg1)) {
             rt->signalError("Right-side object is invalid: " + arg1->shortRepr());
         }
-        if (!rt->isInstanceObject(arg1) || arg1->type->id != rt->character_type->id) {
-            rt->signalError("Right-side object " + arg1->shortRepr() + " must be a Character instance object");
+        if (!rt->isInstanceObject(arg1) || arg1->type->id != rt->integer_type->id) {
+            rt->signalError("Right-side object " + arg1->shortRepr() + " must be an integer instance object");
         }
 
-        auto res = makeCharacterInstanceObject(getCharacterValueFast(self) ^ getCharacterValueFast(arg1), rt);
+        auto res = makeIntegerInstanceObject(getIntegerValueFast(self) ^ getIntegerValueFast(arg1), rt);
         return res;
     }
 };
 
-class CharacterBitorAdapter: public OperatorAdapter {
+class IntegerBitorAdapter: public OperatorAdapter {
 public:
     Object *operator()(Object *self, const std::vector<Object *> &others, Runtime *rt) {
-        if (!rt->isTypeObject(self) || self->type->id != rt->character_type->id) {
+        if (!rt->isTypeObject(self) || self->type->id != rt->integer_type->id) {
             rt->signalError("Left-side object is invalid: " + self->shortRepr());
         }
         if (!rt->isInstanceObject(self)) {
@@ -599,29 +597,29 @@ public:
         if (!rt->isTypeObject(arg1)) {
             rt->signalError("Right-side object is invalid: " + arg1->shortRepr());
         }
-        if (!rt->isInstanceObject(arg1) || arg1->type->id != rt->character_type->id) {
-            rt->signalError("Right-side object " + arg1->shortRepr() + " must be a Character instance object");
+        if (!rt->isInstanceObject(arg1) || arg1->type->id != rt->integer_type->id) {
+            rt->signalError("Right-side object " + arg1->shortRepr() + " must be an integer instance object");
         }
 
-        auto res = makeCharacterInstanceObject(getCharacterValueFast(self) | getCharacterValueFast(arg1), rt);
+        auto res = makeIntegerInstanceObject(getIntegerValueFast(self) | getIntegerValueFast(arg1), rt);
         return res;
     }
 };
 
-class CharacterAndAdapter: public OperatorAdapter {
+class IntegerAndAdapter: public OperatorAdapter {
 public:
     Object *operator()(Object *self, const std::vector<Object *> &others, Runtime *rt) {
-        if (!rt->isTypeObject(self) || self->type->id != rt->character_type->id) {
+        if (!rt->isTypeObject(self) || self->type->id != rt->integer_type->id) {
             rt->signalError("Left-side object is invalid: " + self->shortRepr());
         }
         rt->signalError(self->shortRepr() + " does not support that operator");
     }
 };
 
-class CharacterOrAdapter: public OperatorAdapter {
+class IntegerOrAdapter: public OperatorAdapter {
 public:
     Object *operator()(Object *self, const std::vector<Object *> &others, Runtime *rt) {
-        if (!rt->isTypeObject(self) || self->type->id != rt->character_type->id) {
+        if (!rt->isTypeObject(self) || self->type->id != rt->integer_type->id) {
             rt->signalError("Left-side object is invalid: " + self->shortRepr());
         }
         rt->signalError(self->shortRepr() + " does not support that operator");
@@ -629,46 +627,46 @@ public:
 };
 
 // TODO: add all operators to function and nothing
-CharacterType::CharacterType(Runtime *rt)
+IntegerType::IntegerType(Runtime *rt)
     : Type(true, rt) {
-    this->addOperator(OperatorNode::POST_PLUS_PLUS, new CharacterPostincAdapter(), rt);
-    this->addOperator(OperatorNode::POST_MINUS_MINUS, new CharacterPostdecAdapter(), rt);
-    this->addOperator(OperatorNode::CALL, new CharacterCallAdapter(), rt);
-    this->addOperator(OperatorNode::INDEX, new CharacterIndexAdapter(), rt);
-    this->addOperator(OperatorNode::PRE_PLUS_PLUS, new CharacterPreincAdapter(), rt);
-    this->addOperator(OperatorNode::PRE_MINUS_MINUS, new CharacterPredecAdapter(), rt);
-    this->addOperator(OperatorNode::PRE_PLUS, new CharacterPositiveAdapter(), rt);
-    this->addOperator(OperatorNode::PRE_MINUS, new CharacterNegativeAdapter(), rt);
-    this->addOperator(OperatorNode::NOT, new CharacterNotAdapter(), rt);
-    this->addOperator(OperatorNode::INVERSE, new CharacterInverseAdapter(), rt);
-    this->addOperator(OperatorNode::MULT, new CharacterMultAdapter(), rt);
-    this->addOperator(OperatorNode::DIV, new CharacterDivAdapter(), rt);
-    this->addOperator(OperatorNode::REM, new CharacterRemAdapter(), rt);
-    this->addOperator(OperatorNode::RIGHT_SHIFT, new CharacterRshiftAdapter(), rt);
-    this->addOperator(OperatorNode::LEFT_SHIFT, new CharacterLshiftAdapter(), rt);
-    this->addOperator(OperatorNode::PLUS, new CharacterAddAdapter(), rt);
-    this->addOperator(OperatorNode::MINUS, new CharacterSubAdapter(), rt);
-    this->addOperator(OperatorNode::LESS, new CharacterLtAdapter(), rt);
-    this->addOperator(OperatorNode::LESS_EQUAL, new CharacterLeqAdapter(), rt);
-    this->addOperator(OperatorNode::GREATER, new CharacterGtAdapter(), rt);
-    this->addOperator(OperatorNode::GREATER_EQUAL, new CharacterGeqAdapter(), rt);
-    this->addOperator(OperatorNode::EQUAL, new CharacterEqAdapter(), rt);
-    this->addOperator(OperatorNode::NOT_EQUAL, new CharacterNeqAdapter(), rt);
-    this->addOperator(OperatorNode::BITAND, new CharacterBitandAdapter(), rt);
-    this->addOperator(OperatorNode::BITXOR, new CharacterBitxorAdapter(), rt);
-    this->addOperator(OperatorNode::BITOR, new CharacterBitorAdapter(), rt);
-    this->addOperator(OperatorNode::AND, new CharacterAndAdapter(), rt);
-    this->addOperator(OperatorNode::OR, new CharacterOrAdapter(), rt);
+    this->addOperator(OperatorNode::POST_PLUS_PLUS, new IntegerPostincAdapter(), rt);
+    this->addOperator(OperatorNode::POST_MINUS_MINUS, new IntegerPostdecAdapter(), rt);
+    this->addOperator(OperatorNode::CALL, new IntegerCallAdapter(), rt);
+    this->addOperator(OperatorNode::INDEX, new IntegerIndexAdapter(), rt);
+    this->addOperator(OperatorNode::PRE_PLUS_PLUS, new IntegerPreincAdapter(), rt);
+    this->addOperator(OperatorNode::PRE_MINUS_MINUS, new IntegerPredecAdapter(), rt);
+    this->addOperator(OperatorNode::PRE_PLUS, new IntegerPositiveAdapter(), rt);
+    this->addOperator(OperatorNode::PRE_MINUS, new IntegerNegativeAdapter(), rt);
+    this->addOperator(OperatorNode::NOT, new IntegerNotAdapter(), rt);
+    this->addOperator(OperatorNode::INVERSE, new IntegerInverseAdapter(), rt);
+    this->addOperator(OperatorNode::MULT, new IntegerMultAdapter(), rt);
+    this->addOperator(OperatorNode::DIV, new IntegerDivAdapter(), rt);
+    this->addOperator(OperatorNode::REM, new IntegerRemAdapter(), rt);
+    this->addOperator(OperatorNode::RIGHT_SHIFT, new IntegerRshiftAdapter(), rt);
+    this->addOperator(OperatorNode::LEFT_SHIFT, new IntegerLshiftAdapter(), rt);
+    this->addOperator(OperatorNode::PLUS, new IntegerAddAdapter(), rt);
+    this->addOperator(OperatorNode::MINUS, new IntegerSubAdapter(), rt);
+    this->addOperator(OperatorNode::LESS, new IntegerLtAdapter(), rt);
+    this->addOperator(OperatorNode::LESS_EQUAL, new IntegerLeqAdapter(), rt);
+    this->addOperator(OperatorNode::GREATER, new IntegerGtAdapter(), rt);
+    this->addOperator(OperatorNode::GREATER_EQUAL, new IntegerGeqAdapter(), rt);
+    this->addOperator(OperatorNode::EQUAL, new IntegerEqAdapter(), rt);
+    this->addOperator(OperatorNode::NOT_EQUAL, new IntegerNeqAdapter(), rt);
+    this->addOperator(OperatorNode::BITAND, new IntegerBitandAdapter(), rt);
+    this->addOperator(OperatorNode::BITXOR, new IntegerBitxorAdapter(), rt);
+    this->addOperator(OperatorNode::BITOR, new IntegerBitorAdapter(), rt);
+    this->addOperator(OperatorNode::AND, new IntegerAndAdapter(), rt);
+    this->addOperator(OperatorNode::OR, new IntegerOrAdapter(), rt);
 }
 
-Object *CharacterType::create(Runtime *rt) {
-    auto ins = createInstance(rt, true, CharacterInstance);
+Object *IntegerType::create(Runtime *rt) {
+    auto ins = createInstance(rt, true, IntegerInstance);
     auto obj = createObject(rt, true, ins, this, true);
     return obj;
 }
 
-Object *CharacterType::copy(Object *obj, Runtime *rt) {
-    if (!rt->isTypeObject(obj) || obj->type->id != rt->character_type->id) {
+Object *IntegerType::copy(Object *obj, Runtime *rt) {
+    if (!rt->isTypeObject(obj) || obj->type->id != rt->integer_type->id) {
         rt->signalError("Failed to copy an invalid object: " + obj->shortRepr());
     }
     auto ins = obj->instance->copy(rt);
@@ -676,26 +674,26 @@ Object *CharacterType::copy(Object *obj, Runtime *rt) {
     return res;
 }
 
-std::string CharacterType::shortRepr() {
+std::string IntegerType::shortRepr() {
     if (this == NULL) {
-        return "CharacterType(NULL)";
+        return "IntegerType(NULL)";
     }
-    return "CharacterType(id = " + std::to_string(this->id) + ")";
+    return "IntegerType(id = " + std::to_string(this->id) + ")";
 }
 
-uint8_t &getCharacterValue(Object *obj, Runtime *rt) {
+int64_t &getIntegerValue(Object *obj, Runtime *rt) {
     if (!rt->isInstanceObject(obj)) {
         rt->signalError(obj->shortRepr() + " is not an instance object");
     }
-    if (obj->type->id != rt->character_type->id) {
-        rt->signalError(obj->shortRepr() + " is not Character");
+    if (obj->type->id != rt->integer_type->id) {
+        rt->signalError(obj->shortRepr() + " is not Integer");
     }
-    return icast(obj->instance, CharacterInstance)->value;
+    return icast(obj->instance, IntegerInstance)->value;
 }
 
-Object *makeCharacterInstanceObject(uint8_t value, Runtime *rt) {
-    auto res                                     = rt->make(rt->character_type, Runtime::INSTANCE_OBJECT);
-    icast(res->instance, CharacterInstance)->value = value;
+Object *makeIntegerInstanceObject(int64_t value, Runtime *rt) {
+    auto res                                     = rt->make(rt->integer_type, Runtime::INSTANCE_OBJECT);
+    icast(res->instance, IntegerInstance)->value = value;
     return res;
 }
 

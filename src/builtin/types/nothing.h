@@ -20,37 +20,29 @@
  */
 
 #pragma once
-#include "../back/api.h"
-#include "../front/api.h"
+#include "../../back/api.h"
+#include "../../front/api.h"
 
 namespace Cotton::Builtin {
-
-typedef Object *(*InternalFunction)(const std::vector<Object *> &args, Runtime *rt);
-
-class FunctionInstance: public Instance {
+class NothingInstance: public Instance {
 public:
-    bool             is_internal;
-    InternalFunction internal_ptr;    // function written in C++
-    StmtNode        *cotton_ptr;      // function written in Cotton
+    NothingInstance(Runtime *rt, bool on_stack);
+    ~NothingInstance();
 
-    FunctionInstance(Runtime *rt, bool on_stack);
-    ~FunctionInstance();
-
-    void        init(bool is_internal, InternalFunction internal_ptr, StmtNode *cotton_ptr);
     Instance   *copy(Runtime *rt);
     size_t      getSize();
     std::string shortRepr();
 };
 
-class FunctionType: public Type {
+class NothingType: public Type {
 public:
     size_t getInstanceSize();
-    FunctionType(Runtime *rt);
-    ~FunctionType() = default;
-    Object *create(Runtime *rt);
-    Object *copy(Object *obj, Runtime *rt);
+    NothingType(Runtime *rt);
+    ~NothingType() = default;
+    Object     *create(Runtime *rt);
     std::string shortRepr();
+    Object *copy(Object *obj, Runtime *rt);
 };
 
-Object *makeFunctionInstanceObject(bool is_internal, InternalFunction internal_ptr, StmtNode *cotton_ptr, Runtime *rt);
+Object *makeNothingInstanceObject(Runtime *rt);
 }    // namespace Cotton::Builtin

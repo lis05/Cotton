@@ -37,7 +37,6 @@ class OperatorNode;
 class AtomNode;
 class ParExprNode;
 class IdentListNode;
-class MethodDefNode;
 class StmtNode;
 class WhileStmtNode;
 class ForStmtNode;
@@ -71,6 +70,8 @@ public:
 
 class FuncDefNode {
 public:
+    Token *function_token;
+
     Token         *name;      // NULL means not present
     IdentListNode *params;    // NULL means not present
     StmtNode      *body;
@@ -85,14 +86,16 @@ public:
 
 class TypeDefNode {
 public:
+    Token *type_token;
+
     Token                       *name;
     std::vector<Token *>         fields;
-    std::vector<MethodDefNode *> methods;
+    std::vector<FuncDefNode *> methods;
 
     TypeDefNode() = delete;
     ~TypeDefNode();
 
-    TypeDefNode(Token *name, const std::vector<Token *> &fields, const std::vector<MethodDefNode *> &methods);
+    TypeDefNode(Token *name, const std::vector<Token *> &fields, const std::vector<FuncDefNode *> &methods);
 
     void print(int indent = 0, int step = 2);
 };
@@ -196,20 +199,6 @@ public:
     void print(int indent = 0, int step = 2);
 };
 
-class MethodDefNode {
-public:
-    Token         *name;
-    IdentListNode *params;    // NULL means not present
-    StmtNode      *body;
-
-    MethodDefNode() = delete;
-    ~MethodDefNode();
-
-    MethodDefNode(Token *name, IdentListNode *params, StmtNode *body);
-
-    void print(int indent = 0, int step = 2);
-};
-
 class StmtNode {
 public:
     enum StmtId { WHILE, FOR, IF, CONTINUE, BREAK, RETURN, BLOCK, EXPR } id;
@@ -239,6 +228,8 @@ public:
 
 class WhileStmtNode {
 public:
+    Token *while_token;
+
     ExprNode *cond;
     StmtNode *body;
 
@@ -252,6 +243,8 @@ public:
 
 class ForStmtNode {
 public:
+    Token *for_token;
+
     ExprNode *init, *cond, *step;
     StmtNode *body;
 
@@ -265,6 +258,8 @@ public:
 
 class IfStmtNode {
 public:
+    Token *if_token;
+
     ExprNode *cond;
     StmtNode *body;
     StmtNode *else_body;    // if NULL then not present
@@ -279,6 +274,8 @@ public:
 
 class ReturnStmtNode {
 public:
+    Token *return_token;
+
     ExprNode *value;
 
     ReturnStmtNode() = delete;
@@ -291,6 +288,8 @@ public:
 
 class BlockStmtNode {
 public:
+    Token *block_token;
+
     bool                    is_unscoped;
     std::vector<StmtNode *> list;
 
@@ -386,7 +385,7 @@ public:
             AtomNode       *atom;
             ParExprNode    *par_expr;
             IdentListNode  *ident_list;
-            MethodDefNode  *method_def;
+            FuncDefNode  *method_def;
             StmtNode       *stmt;
             WhileStmtNode  *while_stmt;
             ForStmtNode    *for_stmt;
@@ -404,7 +403,6 @@ public:
         ParsingResult(AtomNode *atom, Parser *p);
         ParsingResult(ParExprNode *par_expr, Parser *p);
         ParsingResult(IdentListNode *ident_list, Parser *p);
-        ParsingResult(MethodDefNode *method_def, Parser *p);
         ParsingResult(StmtNode *stmt, Parser *p);
         ParsingResult(WhileStmtNode *while_stmt, Parser *p);
         ParsingResult(ForStmtNode *for_stmt, Parser *p);

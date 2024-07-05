@@ -70,7 +70,7 @@ void ErrorManager::clearError() {
     this->error_message  = "";
 }
 
-void ErrorManager::signalError(const std::string &message, int64_t char_pos) {
+void ErrorManager::signalError(const std::string &message, int64_t char_pos, bool eee) {
     if (this->error_filename.empty()) {
         if (char_pos != -1) {
             printColor(stderr, "red");
@@ -82,16 +82,24 @@ void ErrorManager::signalError(const std::string &message, int64_t char_pos) {
             fprintf(stderr, "Error has occurred: %s.\n", message.c_str());
             printColor(stderr, "reset");
         }
-        this->emergency_error_exit();
-        exit(1);
+        if (eee) {
+            this->emergency_error_exit();
+        }
+        else {
+            return;
+        }
     }
 
     if (char_pos == -1) {
         printColor(stderr, "red");
         fprintf(stderr, "Error has occurred in file %s: %s.\n", this->error_filename.c_str(), message.c_str());
         printColor(stderr, "reset");
-        this->emergency_error_exit();
-        exit(1);
+        if (eee) {
+            this->emergency_error_exit();
+        }
+        else {
+            return;
+        }
     }
 
     FILE *fd = fopen(this->error_filename.c_str(), "r");
@@ -128,8 +136,12 @@ void ErrorManager::signalError(const std::string &message, int64_t char_pos) {
         printColor(stderr, "red");
         fprintf(stderr, "Error reading the file. Original error message: %s\n", message.c_str());
         printColor(stderr, "reset");
-        this->emergency_error_exit();
-        exit(1);
+        if (eee) {
+            this->emergency_error_exit();
+        }
+        else {
+            return;
+        }
     };
 
     static char buf[64];
@@ -164,11 +176,15 @@ void ErrorManager::signalError(const std::string &message, int64_t char_pos) {
     fprintf(stderr, "+-- %s.\n", message.c_str());
     printColor(stderr, "reset");
 
-    this->emergency_error_exit();
-    exit(1);
+    if (eee) {
+        this->emergency_error_exit();
+    }
+    else {
+        return;
+    }
 }
 
-void ErrorManager::signalError(const std::string &message, const Token &token) {
+void ErrorManager::signalError(const std::string &message, const Token &token, bool eee) {
     eassert(token.begin_pos != -1 && token.end_pos != -1,
             std::string("Invalid token. Original message: ") + message,
             this);
@@ -181,8 +197,12 @@ void ErrorManager::signalError(const std::string &message, const Token &token) {
                 message.c_str());
         printColor(stderr, "reset");
 
-        this->emergency_error_exit();
-        exit(1);
+        if (eee) {
+            this->emergency_error_exit();
+        }
+        else {
+            return;
+        }
     }
 
     FILE *fd = fopen(this->error_filename.c_str(), "r");
@@ -219,8 +239,12 @@ void ErrorManager::signalError(const std::string &message, const Token &token) {
         printColor(stderr, "red");
         fprintf(stderr, "Error reading the file. Original error message: %s\n", message.c_str());
         printColor(stderr, "reset");
-        this->emergency_error_exit();
-        exit(1);
+        if (eee) {
+            this->emergency_error_exit();
+        }
+        else {
+            return;
+        }
     };
 
     static char buf[64];
@@ -258,25 +282,23 @@ void ErrorManager::signalError(const std::string &message, const Token &token) {
     fprintf(stderr, "+-- %s.\n", message.c_str());
     printColor(stderr, "reset");
 
-    this->emergency_error_exit();
-    exit(1);
+    if (eee) {
+        this->emergency_error_exit();
+    }
+    else {
+        return;
+    }
 }
 
-void ErrorManager::signalError() {
-    this->signalError(this->error_message, this->error_char_pos);
+void ErrorManager::signalError(bool eee) {
+    this->signalError(this->error_message, this->error_char_pos, eee);
 }
 
-void ErrorManager::signalError(const std::string &message) {
-    this->signalError(message, this->error_char_pos);
+void ErrorManager::signalError(const std::string &message, bool eee) {
+    this->signalError(message, this->error_char_pos, eee);
 }
 
-static void foo() {}
-
-void ErrorManager::signalError(const std::vector<std::pair<Token *, std::string>> errors) {
-    // a stupid solution, but why not
-    void (*f)()                = this->emergency_error_exit;
-    this->emergency_error_exit = foo;
-
+void ErrorManager::signalError(const std::vector<std::pair<Token *, std::string>> errors, bool eee) {
     size_t cnt = 0;
     for (auto &[token, message] : errors) {
         if (message.empty()) {
@@ -287,25 +309,24 @@ void ErrorManager::signalError(const std::vector<std::pair<Token *, std::string>
         }
         cnt++;
         if (token != NULL) {
-            this->signalError(message, *token);
+            this->signalError(message, *token, false);
         }
         else {
             this->setErrorCharPos(-1);
-            this->signalError(message);
+            this->signalError(message, false);
         }
     }
 
-    this->emergency_error_exit = f;
-    this->emergency_error_exit();
-    exit(1);
+    if (eee) {
+        this->emergency_error_exit();
+    }
+    else {
+        return;
+    }
 }
 
-void ErrorManager::signalErrorWithContext(const std::vector<std::pair<std::string, Token *>> messages) {
+void ErrorManager::signalErrorWithContext(const std::vector<std::pair<std::string, Token *>> messages, bool eee) {
     fprintf(stderr, "A runtime error has occurred. Here is the context in which the error occurred:\n");
-
-    // a stupid solution, but why not
-    void (*f)()                = this->emergency_error_exit;
-    this->emergency_error_exit = foo;
 
     size_t cnt = 0;
     for (auto &[message, token] : messages) {
@@ -317,11 +338,11 @@ void ErrorManager::signalErrorWithContext(const std::vector<std::pair<std::strin
             break;
         }
         if (token != NULL) {
-            this->signalError(message, *token);
+            this->signalError(message, *token, false);
         }
         else {
             this->setErrorCharPos(-1);
-            this->signalError(message);
+            this->signalError(message, false);
         }
     }
 
@@ -330,17 +351,20 @@ void ErrorManager::signalErrorWithContext(const std::vector<std::pair<std::strin
 
         fprintf(stderr, "Here is the error:\n");
         if (token != NULL) {
-            this->signalError(error, *token);
+            this->signalError(error, *token, false);
         }
         else {
             this->setErrorCharPos(-1);
-            this->signalError(error);
+            this->signalError(error, false);
         }
     }
 
-    this->emergency_error_exit = f;
-    this->emergency_error_exit();
-    exit(1);
+    if (eee) {
+        this->emergency_error_exit();
+    }
+    else {
+        return;
+    }
 }
 
 void __assert__(bool               value,

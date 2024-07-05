@@ -1,6 +1,7 @@
 #include "object.h"
 #include "gc.h"
 #include "instance.h"
+#include "nameid.h"
 #include "runtime.h"
 #include "stack.h"
 #include "type.h"
@@ -70,4 +71,5 @@ std::ostream &operator<<(std::ostream &stream, Object *obj) {
            << "}";
     return stream;
 }
+
 }    // namespace Cotton

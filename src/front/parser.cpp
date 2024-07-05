@@ -181,9 +181,9 @@ TypeDefNode::~TypeDefNode() {
     this->methods.clear();
 }
 
-TypeDefNode::TypeDefNode(Token                              *name,
-                         const std::vector<Token *>         &fields,
-                         const std::vector<MethodDefNode *> &methods) {
+TypeDefNode::TypeDefNode(Token                            *name,
+                         const std::vector<Token *>       &fields,
+                         const std::vector<FuncDefNode *> &methods) {
     this->name    = name;
     this->fields  = fields;
     this->methods = methods;
@@ -372,46 +372,6 @@ void IdentListNode::print(int indent, int step) {
         printPrefix(indent, step);
         printf("%d: %s\n", i++, ident->data.c_str());
     }
-}
-
-MethodDefNode::~MethodDefNode() {
-    delete this->params;
-    delete this->body;
-
-    this->name   = NULL;
-    this->params = NULL;
-    this->body   = NULL;
-}
-
-MethodDefNode::MethodDefNode(Token *name, IdentListNode *params, StmtNode *body) {
-    this->name   = name;
-    this->params = params;
-    this->body   = body;
-}
-
-void MethodDefNode::print(int indent, int step) {
-    printPrefix(indent, step, false);
-    if (this == NULL) {
-        printf("NULL\n");
-        return;
-    }
-    printf("method definition:\n");
-
-    printPrefix(indent, step);
-    if (this->name == NULL) {
-        printf("name: NULL token\n");
-    }
-    else {
-        printf("name: %s\n", this->name->data.c_str());
-    }
-
-    printPrefix(indent, step);
-    printf("params:\n");
-    this->params->print(indent + 1, step);
-
-    printPrefix(indent, step);
-    printf("body:\n");
-    this->body->print(indent + 1, step);
 }
 
 StmtNode::~StmtNode() {
@@ -916,25 +876,9 @@ static bool skipSemicolons(Parser *parser, bool single = false) {
 #define EMPTY_PRIORITY 100
 
 Parser::ParsingResult Parser::parseExpr() {
-    if (this->consume(Token::OPEN_BRACKET)) {
-        this->saveState();
-        auto in_expr = this->parseExpr();
-        this->restoreState();
-
-        if (!in_expr.verify(this, ParsingResult::EXPR, "Expected an expression")) {
-            return ParsingResult("", this);
-        }
-
-        if (!this->consume(Token::CLOSE_BRACKET)) {
-            return ParsingResult("Expected a close bracket", this);
-        }
-
-        auto par_expr = new ParExprNode(in_expr.expr);
-        auto expr     = new ExprNode(par_expr);
-        return ParsingResult(expr, this);
-    }
-    else if (this->consume(Token::FUNCTION_KW)) {
-        Token *name = NULL;
+    if (this->consume(Token::FUNCTION_KW)) {
+        Token *function_token = &*prev(this->next_token);
+        Token *name           = NULL;
         if (this->hasNext() && this->next_token->id == Token::IDENTIFIER) {
             name = &*this->next_token;
             this->consume();
@@ -975,12 +919,14 @@ Parser::ParsingResult Parser::parseExpr() {
             return ParsingResult("", this);
         }
 
-        auto param_list = new IdentListNode(list);
-        auto func_def   = new FuncDefNode(name, param_list, body.stmt);
-        auto expr       = new ExprNode(func_def);
+        auto param_list          = new IdentListNode(list);
+        auto func_def            = new FuncDefNode(name, param_list, body.stmt);
+        func_def->function_token = function_token;
+        auto expr                = new ExprNode(func_def);
         return ParsingResult(expr, this);
     }
     else if (this->consume(Token::TYPE_KW)) {
+        Token *type_token = &*prev(this->next_token);
         if (!this->hasNext() || this->checkNext() != Token::IDENTIFIER) {
             return ParsingResult("Expected an identifier", this);
         }
@@ -991,11 +937,12 @@ Parser::ParsingResult Parser::parseExpr() {
             return ParsingResult("Expected an open curly bracket", this);
         }
 
-        std::vector<Token *>         fields;
-        std::vector<MethodDefNode *> methods;
+        std::vector<Token *>       fields;
+        std::vector<FuncDefNode *> methods;
         if (!this->consume(Token::CLOSE_CURLY_BRACKET)) {
             while (this->hasNext()) {
                 if (this->consume(Token::METHOD_KW)) {
+                    Token *method_token = &*prev(this->next_token);
                     if (!this->hasNext() || this->checkNext() != Token::IDENTIFIER) {
                         return ParsingResult("Expected an identifier", this);
                     }
@@ -1037,8 +984,9 @@ Parser::ParsingResult Parser::parseExpr() {
                         return ParsingResult("", this);
                     }
 
-                    auto param_list = new IdentListNode(list);
-                    auto method_def = new MethodDefNode(name, param_list, body.stmt);
+                    auto param_list            = new IdentListNode(list);
+                    auto method_def            = new FuncDefNode(name, param_list, body.stmt);
+                    method_def->function_token = method_token;
                     methods.push_back(method_def);
                 }
                 else if (this->checkNext() == Token::IDENTIFIER) {
@@ -1063,8 +1011,9 @@ Parser::ParsingResult Parser::parseExpr() {
             }
         }
 
-        auto type_def = new TypeDefNode(name, fields, methods);
-        auto expr     = new ExprNode(type_def);
+        auto type_def        = new TypeDefNode(name, fields, methods);
+        type_def->type_token = type_token;
+        auto expr            = new ExprNode(type_def);
         return ParsingResult(expr, this);
     }
     else {
@@ -1143,7 +1092,28 @@ Parser::ParsingResult Parser::parseExpr() {
                 OperatorInfo op_info;
                 int          special = this->checkNext() == Token::OPEN_BRACKET ? 1 : 2;
                 if (expr_stack.empty()) {
-                    return ParsingResult("Expected an expression before the operator", this);
+                    // expression in parentheses
+                    if (this->consume(Token::OPEN_BRACKET)) {
+                        this->saveState();
+                        auto in_expr = this->parseExpr();
+                        this->restoreState();
+
+                        if (!in_expr.verify(this, ParsingResult::EXPR, "Expected an expression")) {
+                            return ParsingResult("", this);
+                        }
+
+                        if (!this->consume(Token::CLOSE_BRACKET)) {
+                            return ParsingResult("Expected a close bracket", this);
+                        }
+
+                        auto par_expr = new ParExprNode(in_expr.expr);
+                        auto expr     = new ExprNode(par_expr);
+                        expr_stack.push_back(expr);
+                        break;
+                    }
+                    else {
+                        return ParsingResult("Expected an expression before the operator", this);
+                    }
                 }
                 else {
                     op_info = this->getOperatorInfo(&*this->next_token, POST_OP, special);    // A(A)
@@ -1389,6 +1359,7 @@ Parser::ParsingResult Parser::parseStmt() {
     }
 
     if (this->consume(Token::WHILE_KW)) {
+        Token *while_token = &*prev(this->next_token);
         this->saveState();
         auto cond = this->parseExpr();
         this->restoreState();
@@ -1405,11 +1376,13 @@ Parser::ParsingResult Parser::parseStmt() {
             return ParsingResult("", this);
         }
 
-        auto while_stmt = new WhileStmtNode(cond.expr, body.stmt);
-        auto stmt       = new StmtNode(while_stmt);
+        auto while_stmt         = new WhileStmtNode(cond.expr, body.stmt);
+        while_stmt->while_token = while_token;
+        auto stmt               = new StmtNode(while_stmt);
         return ParsingResult(stmt, this);
     }
     else if (this->consume(Token::FOR_KW)) {
+        Token        *for_token = &*prev(this->next_token);
         ParsingResult init((ExprNode *)NULL, this), cond((ExprNode *)NULL, this), step((ExprNode *)NULL, this);
         if (!this->consume(Token::SEMICOLON)) {
             this->saveState();
@@ -1464,11 +1437,13 @@ Parser::ParsingResult Parser::parseStmt() {
             return ParsingResult("", this);
         }
 
-        auto for_stmt = new ForStmtNode(init.expr, cond.expr, step.expr, body.stmt);
-        auto stmt     = new StmtNode(for_stmt);
+        auto for_stmt       = new ForStmtNode(init.expr, cond.expr, step.expr, body.stmt);
+        for_stmt->for_token = for_token;
+        auto stmt           = new StmtNode(for_stmt);
         return ParsingResult(stmt, this);
     }
     else if (this->consume(Token::IF_KW)) {
+        Token *if_token = &*prev(this->next_token);
         this->saveState();
         auto cond = this->parseExpr();
         this->restoreState();
@@ -1486,8 +1461,9 @@ Parser::ParsingResult Parser::parseStmt() {
         }
 
         if (!this->consume(Token::ELSE_KW)) {
-            auto if_stmt = new IfStmtNode(cond.expr, body.stmt, NULL);
-            auto stmt    = new StmtNode(if_stmt);
+            auto if_stmt      = new IfStmtNode(cond.expr, body.stmt, NULL);
+            if_stmt->if_token = if_token;
+            auto stmt         = new StmtNode(if_stmt);
             return ParsingResult(stmt, this);
         }
 
@@ -1499,8 +1475,9 @@ Parser::ParsingResult Parser::parseStmt() {
             return ParsingResult("", this);
         }
 
-        auto if_stmt = new IfStmtNode(cond.expr, body.stmt, else_body.stmt);
-        auto stmt    = new StmtNode(if_stmt);
+        auto if_stmt      = new IfStmtNode(cond.expr, body.stmt, else_body.stmt);
+        if_stmt->if_token = if_token;
+        auto stmt         = new StmtNode(if_stmt);
         return ParsingResult(stmt, this);
     }
     else if (this->consume(Token::CONTINUE_KW)) {
@@ -1512,9 +1489,11 @@ Parser::ParsingResult Parser::parseStmt() {
         return ParsingResult(stmt, this);
     }
     else if (this->consume(Token::RETURN_KW)) {
+        Token *return_token = &*prev(this->next_token);
         if (this->consume(Token::SEMICOLON)) {
-            auto return_stmt = new ReturnStmtNode(NULL);
-            auto stmt        = new StmtNode(return_stmt);
+            auto return_stmt          = new ReturnStmtNode(NULL);
+            return_stmt->return_token = return_token;
+            auto stmt                 = new StmtNode(return_stmt);
             return ParsingResult(stmt, this);
         }
 
@@ -1534,11 +1513,13 @@ Parser::ParsingResult Parser::parseStmt() {
         if (!this->consume(Token::OPEN_CURLY_BRACKET)) {
             return ParsingResult("Unscoped keyword must be followed by an open curly bracket", this);
         }
+        Token                  *block_token = &*prev(this->next_token);
         std::vector<StmtNode *> list;
         while (this->hasNext()) {
             if (this->consume(Token::CLOSE_CURLY_BRACKET)) {
-                auto block_stmt = new BlockStmtNode(true, list);
-                auto stmt       = new StmtNode(block_stmt);
+                auto block_stmt         = new BlockStmtNode(true, list);
+                block_stmt->block_token = block_token;
+                auto stmt               = new StmtNode(block_stmt);
                 return ParsingResult(stmt, this);
             }
 
@@ -1556,11 +1537,13 @@ Parser::ParsingResult Parser::parseStmt() {
         return ParsingResult("Block statement must end with a close curly bracket", this);
     }
     else if (this->consume(Token::OPEN_CURLY_BRACKET)) {
+        Token                  *block_token = &*prev(this->next_token);
         std::vector<StmtNode *> list;
         while (this->hasNext()) {
             if (this->consume(Token::CLOSE_CURLY_BRACKET)) {
-                auto block_stmt = new BlockStmtNode(false, list);
-                auto stmt       = new StmtNode(block_stmt);
+                auto block_stmt         = new BlockStmtNode(false, list);
+                block_stmt->block_token = block_token;
+                auto stmt               = new StmtNode(block_stmt);
                 return ParsingResult(stmt, this);
             }
 
@@ -1685,13 +1668,6 @@ Parser::ParsingResult::ParsingResult(ParExprNode *par_expr, Parser *p) {
 Parser::ParsingResult::ParsingResult(IdentListNode *ident_list, Parser *p) {
     this->success = true;
     this->id      = IDENT_LIST;
-    this->expr    = expr;
-    this->state   = p->state;
-}
-
-Parser::ParsingResult::ParsingResult(MethodDefNode *method_def, Parser *p) {
-    this->success = true;
-    this->id      = METHOD_DEF;
     this->expr    = expr;
     this->state   = p->state;
 }

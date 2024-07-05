@@ -19,8 +19,7 @@
  CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-#include "boolean.h"
-#include "../back/type.h"
+#include "api.h"
 
 namespace Cotton::Builtin {
 BooleanInstance::BooleanInstance(Runtime *rt, bool on_stack)

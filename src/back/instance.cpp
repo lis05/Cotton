@@ -36,6 +36,14 @@ Object *Cotton::Instance::selectField(int64_t id, Runtime *rt) {
     rt->signalError(this->shortRepr() + "doesn't have field " + NameId::shortRepr(id));
 }
 
+bool Instance::hasField(int64_t id, Runtime *rt) {
+    return this->fields.find(id) != this->fields.end();
+}
+
+void Instance::addField(int64_t id, Object *obj, Runtime *rt) {
+    this->fields[id] = obj;
+}
+
 Instance::Instance(Runtime *rt, size_t bytes, bool on_stack) {
     this->gc_mark  = !rt->gc->gc_mark;
     this->on_stack = on_stack;

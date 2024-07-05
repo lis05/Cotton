@@ -81,7 +81,8 @@ public:
 
 namespace MagicMethods {
     int64_t __make__();
-
+    int64_t __iprint__();
+    int64_t __tprint__();
     // operators
     int64_t __postinc__();
     int64_t __postdec__();

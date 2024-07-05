@@ -93,6 +93,8 @@ public:
     TokenId     id;
     std::string data;
 
+    int64_t nameid;
+
     bool        bool_value;
     int64_t     int_value;
     char        char_value;

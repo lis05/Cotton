@@ -74,6 +74,7 @@ public:
 
     // checks whether obj is an instance object (is non-NULL and has non-NULL type and non-NULL instance)
     bool isInstanceObject(Object *obj);
+    bool isInstanceObject(Object *obj, Type *type);
     // checks whether obj is a type object (is non-NULL and has non-NULL type)
     bool isTypeObject(Object *obj);
 
@@ -85,8 +86,31 @@ public:
     [[noreturn]]
     void signalError(const std::string &message, bool include_token = true);
 
-    // executes statement; returns a valid object (non-NULL)
-    Object *execute(StmtNode *stmt);
+    class ExecutionResult {
+    public:
+        static uint8_t CONTINUE;
+        static uint8_t BREAK;
+        static uint8_t RETURN;
+        static uint8_t DIRECT_PASS;
+        uint8_t        flags;
+        Object        *result;
+        Object *caller;
+
+        ExecutionResult(uint8_t flags, Object *result, Object *caller = NULL);
+    };
+
+    ExecutionResult execute(ExprNode *node);
+    ExecutionResult execute(FuncDefNode *node);
+    ExecutionResult execute(TypeDefNode *node);
+    ExecutionResult execute(OperatorNode *node);
+    ExecutionResult execute(AtomNode *node);
+    ExecutionResult execute(ParExprNode *node);
+    ExecutionResult execute(StmtNode *node);
+    ExecutionResult execute(WhileStmtNode *node);
+    ExecutionResult execute(ForStmtNode *node);
+    ExecutionResult execute(IfStmtNode *node);
+    ExecutionResult execute(ReturnStmtNode *node);
+    ExecutionResult execute(BlockStmtNode *node);
 
     enum ObjectOptions { INSTANCE_OBJECT, TYPE_OBJECT };
 

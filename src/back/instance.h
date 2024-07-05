@@ -30,12 +30,13 @@ class Object;
 
 class Instance {
 public:
-    static int64_t                                      total_instances;
+    static int64_t                               total_instances;
     int64_t                                      id;
     __gnu_pbds::cc_hash_table<int64_t, Object *> fields;
     // returns a valid object (non-null)
     Object                                      *selectField(int64_t id, Runtime *rt);
     bool                                         hasField(int64_t id, Runtime *rt);
+    void                                         addField(int64_t id, Object *obj, Runtime *rt);
     bool                                         gc_mark  : 1;
     bool                                         on_stack : 1;    // set after creation
 

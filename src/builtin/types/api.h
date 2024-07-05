@@ -20,29 +20,12 @@
  */
 
 #pragma once
-#include "../back/api.h"
-#include "../front/api.h"
 
-namespace Cotton::Builtin {
-class NothingInstance: public Instance {
-public:
-    NothingInstance(Runtime *rt, bool on_stack);
-    ~NothingInstance();
-
-    Instance   *copy(Runtime *rt);
-    size_t      getSize();
-    std::string shortRepr();
-};
-
-class NothingType: public Type {
-public:
-    size_t getInstanceSize();
-    NothingType(Runtime *rt);
-    ~NothingType() = default;
-    Object     *create(Runtime *rt);
-    std::string shortRepr();
-    Object *copy(Object *obj, Runtime *rt);
-};
-
-Object *makeNothingInstanceObject(Runtime *rt);
-}    // namespace Cotton::Builtin
+#include "boolean.h"
+#include "character.h"
+#include "function.h"
+#include "integer.h"
+#include "nothing.h"
+#include "real.h"
+#include "string.h"
+#include "user_defined.h"

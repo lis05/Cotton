@@ -127,6 +127,14 @@ namespace MagicMethods {
         static NameId res("__make__");
         return res.id;
     }
+    int64_t __iprint__() {
+        static NameId res("__iprint__");
+        return res.id;
+    }
+    int64_t __tprint__() {
+        static NameId res("__tprint__");
+        return res.id;
+    }
 
     // operators
     int64_t __postinc__() {

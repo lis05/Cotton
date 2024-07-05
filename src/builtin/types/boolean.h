@@ -20,35 +20,35 @@
  */
 
 #pragma once
-#include "../back/api.h"
-#include "../front/api.h"
+#include "../../back/api.h"
+#include "../../front/api.h"
 
 namespace Cotton::Builtin {
 
-class RealInstance: public Instance {
+class BooleanInstance: public Instance {
 public:
-    double value;
+    bool value;
 
-    RealInstance(Runtime *rt, bool on_stack);
-    ~RealInstance();
+    BooleanInstance(Runtime *rt, bool on_stack);
+    ~BooleanInstance();
 
     Instance   *copy(Runtime *rt);
     size_t      getSize();
     std::string shortRepr();
 };
 
-class RealType: public Type {
+class BooleanType: public Type {
 public:
     size_t getInstanceSize();
-    RealType(Runtime *rt);
-    ~RealType() = default;
+    BooleanType(Runtime *rt);
+    ~BooleanType() = default;
     Object     *create(Runtime *rt);
     Object     *copy(Object *obj, Runtime *rt);
     std::string shortRepr();
 };
 
-Object *makeRealInstanceObject(double value, Runtime *rt);
+Object *makeBooleanInstanceObject(bool value, Runtime *rt);
 
-double &getRealValue(Object *obj, Runtime *rt);
-#define getRealValueFast(obj) (icast(obj->instance, RealInstance)->value)
+bool &getBooleanValue(Object *obj, Runtime *rt);
+#define getBooleanValueFast(obj) (icast(obj->instance, BooleanInstance)->value)
 }    // namespace Cotton::Builtin

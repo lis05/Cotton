@@ -19,9 +19,7 @@
  CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-#include "real.h"
-#include "../back/type.h"
-#include "boolean.h"
+#include "api.h"
 
 namespace Cotton::Builtin {
 RealInstance::RealInstance(Runtime *rt, bool on_stack)

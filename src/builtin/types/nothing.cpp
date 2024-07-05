@@ -1,3 +1,5 @@
+#include "nothing.h"
+
 /*
  Copyright (c) 2024 Ihor Lukianov (lis05)
 
@@ -19,56 +21,208 @@
  CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-#include "function.h"
-#include "../back/type.h"
-#include "boolean.h"
+#include "api.h"
 
 namespace Cotton::Builtin {
-FunctionInstance::FunctionInstance(Runtime *rt, bool on_stack)
-    : Instance(rt, sizeof(FunctionInstance), on_stack) {
-    this->is_internal  = true;
-    this->internal_ptr = NULL;
-    this->cotton_ptr   = NULL;
-}
 
-FunctionInstance::~FunctionInstance() {}
+NothingInstance::NothingInstance(Runtime *rt, bool on_stack)
+    : Instance(rt, sizeof(NothingInstance), on_stack) {}
 
-void FunctionInstance::init(bool is_internal, InternalFunction internal_ptr, StmtNode *cotton_ptr) {
-    this->is_internal  = is_internal;
-    this->internal_ptr = internal_ptr;
-    this->cotton_ptr   = cotton_ptr;
-}
+NothingInstance::~NothingInstance() {}
 
-Instance *FunctionInstance::copy(Runtime *rt) {
-    auto res = new (std::nothrow) FunctionInstance(rt, false);
+Instance *NothingInstance::copy(Runtime *rt) {
+    Instance *res = rt->stack->allocAndInitInstance<NothingInstance>(sizeof(NothingInstance), rt);
+    if (res != NULL) {
+        res->on_stack = true;
+        return res;
+    }
+    res = new (std::nothrow) NothingInstance(rt, false);
     if (res == NULL) {
         rt->signalError("Failed to copy " + this->shortRepr());
     }
     res->on_stack = false;
-    res->init(this->is_internal, this->internal_ptr, this->cotton_ptr);
     return res;
 }
 
-std::string FunctionInstance::shortRepr() {
+size_t NothingInstance::getSize() {
+    return sizeof(NothingInstance);
+}
+
+size_t NothingType::getInstanceSize() {
+    return sizeof(NothingInstance);
+}
+
+std::string NothingInstance::shortRepr() {
     if (this == NULL) {
         return "NULL";
     }
-    return "FunctionInstance(id = " + std::to_string(this->id)
-           + ", is_internal = " + (this->is_internal ? "true" : "false") + ")";
+    return "NothingInstance(id = " + std::to_string(this->id) + ")";
 }
 
-size_t FunctionInstance::getSize() {
-    return sizeof(FunctionInstance);
-}
-
-size_t FunctionType::getInstanceSize() {
-    return sizeof(FunctionInstance);
-}
-
-class FunctionPostincAdapter: public OperatorAdapter {
+class NothingPostincAdapter: public OperatorAdapter {
 public:
     Object *operator()(Object *self, const std::vector<Object *> &others, Runtime *rt) {
-        if (!rt->isTypeObject(self) || self->type->id != rt->function_type->id) {
+        if (!rt->isTypeObject(self) || self->type->id != rt->nothing_type->id) {
+            rt->signalError("Left-side object is invalid: " + self->shortRepr());
+        }
+        rt->signalError(self->shortRepr() + " does not support that operator");
+    }
+};
+
+class NothingPostdecAdapter: public OperatorAdapter {
+public:
+    Object *operator()(Object *self, const std::vector<Object *> &others, Runtime *rt) {
+        if (!rt->isTypeObject(self) || self->type->id != rt->nothing_type->id) {
+            rt->signalError("Left-side object is invalid: " + self->shortRepr());
+        }
+        rt->signalError(self->shortRepr() + " does not support that operator");
+    }
+};
+
+class NothingCallAdapter: public OperatorAdapter {
+public:
+    Object *operator()(Object *self, const std::vector<Object *> &others, Runtime *rt) {
+        if (!rt->isTypeObject(self) || self->type->id != rt->nothing_type->id) {
+            rt->signalError("Left-side object is invalid: " + self->shortRepr());
+        }
+        rt->signalError(self->shortRepr() + " does not support that operator");
+    }
+};
+
+class NothingIndexAdapter: public OperatorAdapter {
+public:
+    Object *operator()(Object *self, const std::vector<Object *> &others, Runtime *rt) {
+        if (!rt->isTypeObject(self) || self->type->id != rt->nothing_type->id) {
+            rt->signalError("Left-side object is invalid: " + self->shortRepr());
+        }
+        rt->signalError(self->shortRepr() + " does not support that operator");
+    }
+};
+
+class NothingPreincAdapter: public OperatorAdapter {
+public:
+    Object *operator()(Object *self, const std::vector<Object *> &others, Runtime *rt) {
+        if (!rt->isTypeObject(self) || self->type->id != rt->nothing_type->id) {
+            rt->signalError("Left-side object is invalid: " + self->shortRepr());
+        }
+        rt->signalError(self->shortRepr() + " does not support that operator");
+    }
+};
+
+class NothingPredecAdapter: public OperatorAdapter {
+public:
+    Object *operator()(Object *self, const std::vector<Object *> &others, Runtime *rt) {
+        if (!rt->isTypeObject(self) || self->type->id != rt->nothing_type->id) {
+            rt->signalError("Left-side object is invalid: " + self->shortRepr());
+        }
+        rt->signalError(self->shortRepr() + " does not support that operator");
+    }
+};
+
+class NothingPositiveAdapter: public OperatorAdapter {
+public:
+    Object *operator()(Object *self, const std::vector<Object *> &others, Runtime *rt) {
+        if (!rt->isTypeObject(self) || self->type->id != rt->nothing_type->id) {
+            rt->signalError("Left-side object is invalid: " + self->shortRepr());
+        }
+        rt->signalError(self->shortRepr() + " does not support that operator");
+    }
+};
+
+class NothingNegativeAdapter: public OperatorAdapter {
+public:
+    Object *operator()(Object *self, const std::vector<Object *> &others, Runtime *rt) {
+        if (!rt->isTypeObject(self) || self->type->id != rt->nothing_type->id) {
+            rt->signalError("Left-side object is invalid: " + self->shortRepr());
+        }
+        rt->signalError(self->shortRepr() + " does not support that operator");
+    }
+};
+
+class NothingNotAdapter: public OperatorAdapter {
+public:
+    Object *operator()(Object *self, const std::vector<Object *> &others, Runtime *rt) {
+        if (!rt->isTypeObject(self) || self->type->id != rt->nothing_type->id) {
+            rt->signalError("Left-side object is invalid: " + self->shortRepr());
+        }
+        rt->signalError(self->shortRepr() + " does not support that operator");
+    }
+};
+
+class NothingInverseAdapter: public OperatorAdapter {
+public:
+    Object *operator()(Object *self, const std::vector<Object *> &others, Runtime *rt) {
+        if (!rt->isTypeObject(self) || self->type->id != rt->nothing_type->id) {
+            rt->signalError("Left-side object is invalid: " + self->shortRepr());
+        }
+        rt->signalError(self->shortRepr() + " does not support that operator");
+    }
+};
+
+class NothingMultAdapter: public OperatorAdapter {
+public:
+    Object *operator()(Object *self, const std::vector<Object *> &others, Runtime *rt) {
+        if (!rt->isTypeObject(self) || self->type->id != rt->nothing_type->id) {
+            rt->signalError("Left-side object is invalid: " + self->shortRepr());
+        }
+        rt->signalError(self->shortRepr() + " does not support that operator");
+    }
+};
+
+class NothingDivAdapter: public OperatorAdapter {
+public:
+    Object *operator()(Object *self, const std::vector<Object *> &others, Runtime *rt) {
+        if (!rt->isTypeObject(self) || self->type->id != rt->nothing_type->id) {
+            rt->signalError("Left-side object is invalid: " + self->shortRepr());
+        }
+        rt->signalError(self->shortRepr() + " does not support that operator");
+    }
+};
+
+class NothingRemAdapter: public OperatorAdapter {
+public:
+    Object *operator()(Object *self, const std::vector<Object *> &others, Runtime *rt) {
+        if (!rt->isTypeObject(self) || self->type->id != rt->nothing_type->id) {
+            rt->signalError("Left-side object is invalid: " + self->shortRepr());
+        }
+        rt->signalError(self->shortRepr() + " does not support that operator");
+    }
+};
+
+class NothingRshiftAdapter: public OperatorAdapter {
+public:
+    Object *operator()(Object *self, const std::vector<Object *> &others, Runtime *rt) {
+        if (!rt->isTypeObject(self) || self->type->id != rt->nothing_type->id) {
+            rt->signalError("Left-side object is invalid: " + self->shortRepr());
+        }
+        rt->signalError(self->shortRepr() + " does not support that operator");
+    }
+};
+
+class NothingLshiftAdapter: public OperatorAdapter {
+public:
+    Object *operator()(Object *self, const std::vector<Object *> &others, Runtime *rt) {
+        if (!rt->isTypeObject(self) || self->type->id != rt->nothing_type->id) {
+            rt->signalError("Left-side object is invalid: " + self->shortRepr());
+        }
+        rt->signalError(self->shortRepr() + " does not support that operator");
+    }
+};
+
+class NothingAddAdapter: public OperatorAdapter {
+public:
+    Object *operator()(Object *self, const std::vector<Object *> &others, Runtime *rt) {
+        if (!rt->isTypeObject(self) || self->type->id != rt->nothing_type->id) {
+            rt->signalError("Left-side object is invalid: " + self->shortRepr());
+        }
+        rt->signalError(self->shortRepr() + " does not support that operator");
+    }
+};
+
+class NothingSubAdapter: public OperatorAdapter {
+public:
+    Object *operator()(Object *self, const std::vector<Object *> &others, Runtime *rt) {
+        if (!rt->isTypeObject(self) || self->type->id != rt->nothing_type->id) {
             rt->signalError("Left-side object is invalid: " + self->shortRepr());
         }
 
@@ -76,10 +230,10 @@ public:
     }
 };
 
-class FunctionPostdecAdapter: public OperatorAdapter {
+class NothingLtAdapter: public OperatorAdapter {
 public:
     Object *operator()(Object *self, const std::vector<Object *> &others, Runtime *rt) {
-        if (!rt->isTypeObject(self) || self->type->id != rt->function_type->id) {
+        if (!rt->isTypeObject(self) || self->type->id != rt->nothing_type->id) {
             rt->signalError("Left-side object is invalid: " + self->shortRepr());
         }
 
@@ -87,43 +241,10 @@ public:
     }
 };
 
-class FunctionCallAdapter: public OperatorAdapter {
+class NothingLeqAdapter: public OperatorAdapter {
 public:
     Object *operator()(Object *self, const std::vector<Object *> &others, Runtime *rt) {
-        if (!rt->isTypeObject(self) || self->type->id != rt->function_type->id) {
-            rt->signalError("Left-side object is invalid: " + self->shortRepr());
-        }
-        if (!rt->isInstanceObject(self)) {
-            rt->signalError(self->shortRepr() + " does not support that operator");
-        }
-        auto f = icast(self->instance, FunctionInstance);
-        if (f->is_internal) {
-            if (f->internal_ptr == NULL) {
-                rt->signalError("Failed to execute NULL internal function " + self->shortRepr());
-            }
-            auto res = f->internal_ptr(others, rt);
-            if (res == NULL) {
-                rt->signalError("Execution of internal function " + self->shortRepr() + " has failed");
-            }
-            return res;
-        }
-        else {
-            if (f->cotton_ptr == NULL) {
-                rt->signalError("Failed to execute NULL function " + self->shortRepr());
-            }
-            auto res = rt->execute(f->cotton_ptr);
-            if (res == NULL) {
-                rt->signalError("Execution of function " + self->shortRepr() + " has failed");
-            }
-            return res;
-        }
-    }
-};
-
-class FunctionIndexAdapter: public OperatorAdapter {
-public:
-    Object *operator()(Object *self, const std::vector<Object *> &others, Runtime *rt) {
-        if (!rt->isTypeObject(self) || self->type->id != rt->function_type->id) {
+        if (!rt->isTypeObject(self) || self->type->id != rt->nothing_type->id) {
             rt->signalError("Left-side object is invalid: " + self->shortRepr());
         }
 
@@ -131,10 +252,10 @@ public:
     }
 };
 
-class FunctionPreincAdapter: public OperatorAdapter {
+class NothingGtAdapter: public OperatorAdapter {
 public:
     Object *operator()(Object *self, const std::vector<Object *> &others, Runtime *rt) {
-        if (!rt->isTypeObject(self) || self->type->id != rt->function_type->id) {
+        if (!rt->isTypeObject(self) || self->type->id != rt->nothing_type->id) {
             rt->signalError("Left-side object is invalid: " + self->shortRepr());
         }
 
@@ -142,10 +263,10 @@ public:
     }
 };
 
-class FunctionPredecAdapter: public OperatorAdapter {
+class NothingGeqAdapter: public OperatorAdapter {
 public:
     Object *operator()(Object *self, const std::vector<Object *> &others, Runtime *rt) {
-        if (!rt->isTypeObject(self) || self->type->id != rt->function_type->id) {
+        if (!rt->isTypeObject(self) || self->type->id != rt->nothing_type->id) {
             rt->signalError("Left-side object is invalid: " + self->shortRepr());
         }
 
@@ -153,180 +274,14 @@ public:
     }
 };
 
-class FunctionPositiveAdapter: public OperatorAdapter {
+class NothingEqAdapter: public OperatorAdapter {
 public:
     Object *operator()(Object *self, const std::vector<Object *> &others, Runtime *rt) {
-        if (!rt->isTypeObject(self) || self->type->id != rt->function_type->id) {
-            rt->signalError("Left-side object is invalid: " + self->shortRepr());
-        }
-
-        rt->signalError(self->shortRepr() + " does not support that operator");
-    }
-};
-
-class FunctionNegativeAdapter: public OperatorAdapter {
-public:
-    Object *operator()(Object *self, const std::vector<Object *> &others, Runtime *rt) {
-        if (!rt->isTypeObject(self) || self->type->id != rt->function_type->id) {
-            rt->signalError("Left-side object is invalid: " + self->shortRepr());
-        }
-
-        rt->signalError(self->shortRepr() + " does not support that operator");
-    }
-};
-
-class FunctionNotAdapter: public OperatorAdapter {
-public:
-    Object *operator()(Object *self, const std::vector<Object *> &others, Runtime *rt) {
-        if (!rt->isTypeObject(self) || self->type->id != rt->function_type->id) {
-            rt->signalError("Left-side object is invalid: " + self->shortRepr());
-        }
-
-        rt->signalError(self->shortRepr() + " does not support that operator");
-    }
-};
-
-class FunctionInverseAdapter: public OperatorAdapter {
-public:
-    Object *operator()(Object *self, const std::vector<Object *> &others, Runtime *rt) {
-        if (!rt->isTypeObject(self) || self->type->id != rt->function_type->id) {
-            rt->signalError("Left-side object is invalid: " + self->shortRepr());
-        }
-
-        rt->signalError(self->shortRepr() + " does not support that operator");
-    }
-};
-
-class FunctionMultAdapter: public OperatorAdapter {
-public:
-    Object *operator()(Object *self, const std::vector<Object *> &others, Runtime *rt) {
-        if (!rt->isTypeObject(self) || self->type->id != rt->function_type->id) {
-            rt->signalError("Left-side object is invalid: " + self->shortRepr());
-        }
-
-        rt->signalError(self->shortRepr() + " does not support that operator");
-    }
-};
-
-class FunctionDivAdapter: public OperatorAdapter {
-public:
-    Object *operator()(Object *self, const std::vector<Object *> &others, Runtime *rt) {
-        if (!rt->isTypeObject(self) || self->type->id != rt->function_type->id) {
-            rt->signalError("Left-side object is invalid: " + self->shortRepr());
-        }
-
-        rt->signalError(self->shortRepr() + " does not support that operator");
-    }
-};
-
-class FunctionRemAdapter: public OperatorAdapter {
-public:
-    Object *operator()(Object *self, const std::vector<Object *> &others, Runtime *rt) {
-        if (!rt->isTypeObject(self) || self->type->id != rt->function_type->id) {
-            rt->signalError("Left-side object is invalid: " + self->shortRepr());
-        }
-
-        rt->signalError(self->shortRepr() + " does not support that operator");
-    }
-};
-
-class FunctionRshiftAdapter: public OperatorAdapter {
-public:
-    Object *operator()(Object *self, const std::vector<Object *> &others, Runtime *rt) {
-        if (!rt->isTypeObject(self) || self->type->id != rt->function_type->id) {
-            rt->signalError("Left-side object is invalid: " + self->shortRepr());
-        }
-
-        rt->signalError(self->shortRepr() + " does not support that operator");
-    }
-};
-
-class FunctionLshiftAdapter: public OperatorAdapter {
-public:
-    Object *operator()(Object *self, const std::vector<Object *> &others, Runtime *rt) {
-        if (!rt->isTypeObject(self) || self->type->id != rt->function_type->id) {
-            rt->signalError("Left-side object is invalid: " + self->shortRepr());
-        }
-
-        rt->signalError(self->shortRepr() + " does not support that operator");
-    }
-};
-
-class FunctionAddAdapter: public OperatorAdapter {
-public:
-    Object *operator()(Object *self, const std::vector<Object *> &others, Runtime *rt) {
-        if (!rt->isTypeObject(self) || self->type->id != rt->function_type->id) {
-            rt->signalError("Left-side object is invalid: " + self->shortRepr());
-        }
-
-        rt->signalError(self->shortRepr() + " does not support that operator");
-    }
-};
-
-class FunctionSubAdapter: public OperatorAdapter {
-public:
-    Object *operator()(Object *self, const std::vector<Object *> &others, Runtime *rt) {
-        if (!rt->isTypeObject(self) || self->type->id != rt->function_type->id) {
-            rt->signalError("Left-side object is invalid: " + self->shortRepr());
-        }
-
-        rt->signalError(self->shortRepr() + " does not support that operator");
-    }
-};
-
-class FunctionLtAdapter: public OperatorAdapter {
-public:
-    Object *operator()(Object *self, const std::vector<Object *> &others, Runtime *rt) {
-        if (!rt->isTypeObject(self) || self->type->id != rt->function_type->id) {
-            rt->signalError("Left-side object is invalid: " + self->shortRepr());
-        }
-
-        rt->signalError(self->shortRepr() + " does not support that operator");
-    }
-};
-
-class FunctionLeqAdapter: public OperatorAdapter {
-public:
-    Object *operator()(Object *self, const std::vector<Object *> &others, Runtime *rt) {
-        if (!rt->isTypeObject(self) || self->type->id != rt->function_type->id) {
-            rt->signalError("Left-side object is invalid: " + self->shortRepr());
-        }
-
-        rt->signalError(self->shortRepr() + " does not support that operator");
-    }
-};
-
-class FunctionGtAdapter: public OperatorAdapter {
-public:
-    Object *operator()(Object *self, const std::vector<Object *> &others, Runtime *rt) {
-        if (!rt->isTypeObject(self) || self->type->id != rt->function_type->id) {
-            rt->signalError("Left-side object is invalid: " + self->shortRepr());
-        }
-
-        rt->signalError(self->shortRepr() + " does not support that operator");
-    }
-};
-
-class FunctionGeqAdapter: public OperatorAdapter {
-public:
-    Object *operator()(Object *self, const std::vector<Object *> &others, Runtime *rt) {
-        if (!rt->isTypeObject(self) || self->type->id != rt->function_type->id) {
-            rt->signalError("Left-side object is invalid: " + self->shortRepr());
-        }
-
-        rt->signalError(self->shortRepr() + " does not support that operator");
-    }
-};
-
-class FunctionEqAdapter: public OperatorAdapter {
-public:
-    Object *operator()(Object *self, const std::vector<Object *> &others, Runtime *rt) {
-        if (!rt->isTypeObject(self) || self->type->id != rt->function_type->id) {
+        if (!rt->isTypeObject(self) || self->type->id != rt->nothing_type->id) {
             rt->signalError("Left-side object is invalid: " + self->shortRepr());
         }
         if (others.size() != 1) {
             rt->signalError("Expected exactly one right-side argument");
-            return NULL;
         }
         auto &arg1 = others[0];
         if (!rt->isTypeObject(arg1)) {
@@ -335,21 +290,12 @@ public:
 
         if (rt->isInstanceObject(self) && rt->isInstanceObject(arg1)) {
             auto res                 = rt->make(rt->boolean_type, Runtime::INSTANCE_OBJECT);
-            getBooleanValue(res, rt) = false;
-            if (self->type->id == arg1->type->id) {
-                auto f1 = icast(self->instance, FunctionInstance);
-                auto f2 = icast(arg1->instance, FunctionInstance);
-                if (f1->is_internal == f2->is_internal && f1->internal_ptr == f2->internal_ptr
-                    && f1->cotton_ptr == f2->cotton_ptr)
-                {
-                    getBooleanValue(res, rt) = true;
-                }
-            }
+            getBooleanValue(res, rt) = (arg1->type->id == self->type->id);
             return res;
         }
         else if (!rt->isInstanceObject(self) && !rt->isInstanceObject(arg1)) {
             auto res                 = rt->make(rt->boolean_type, Runtime::INSTANCE_OBJECT);
-            getBooleanValue(res, rt) = self->type->id == arg1->type->id;
+            getBooleanValue(res, rt) = (arg1->type->id == self->type->id);
             return res;
         }
         else {
@@ -360,19 +306,19 @@ public:
     }
 };
 
-class FunctionNeqAdapter: public FunctionEqAdapter {
+class NothingNeqAdapter: public NothingEqAdapter {
 public:
     Object *operator()(Object *self, const std::vector<Object *> &others, Runtime *rt) {
-        auto res                 = FunctionEqAdapter::operator()(self, others, rt);
+        auto res                                     = NothingEqAdapter::operator()(self, others, rt);
         getBooleanValue(res, rt) = !getBooleanValue(res, rt);
         return res;
     }
 };
 
-class FunctionBitandAdapter: public OperatorAdapter {
+class NothingBitandAdapter: public OperatorAdapter {
 public:
     Object *operator()(Object *self, const std::vector<Object *> &others, Runtime *rt) {
-        if (!rt->isTypeObject(self) || self->type->id != rt->function_type->id) {
+        if (!rt->isTypeObject(self) || self->type->id != rt->nothing_type->id) {
             rt->signalError("Left-side object is invalid: " + self->shortRepr());
         }
 
@@ -380,10 +326,10 @@ public:
     }
 };
 
-class FunctionBitxorAdapter: public OperatorAdapter {
+class NothingBitxorAdapter: public OperatorAdapter {
 public:
     Object *operator()(Object *self, const std::vector<Object *> &others, Runtime *rt) {
-        if (!rt->isTypeObject(self) || self->type->id != rt->function_type->id) {
+        if (!rt->isTypeObject(self) || self->type->id != rt->nothing_type->id) {
             rt->signalError("Left-side object is invalid: " + self->shortRepr());
         }
 
@@ -391,10 +337,10 @@ public:
     }
 };
 
-class FunctionBitorAdapter: public OperatorAdapter {
+class NothingBitorAdapter: public OperatorAdapter {
 public:
     Object *operator()(Object *self, const std::vector<Object *> &others, Runtime *rt) {
-        if (!rt->isTypeObject(self) || self->type->id != rt->function_type->id) {
+        if (!rt->isTypeObject(self) || self->type->id != rt->nothing_type->id) {
             rt->signalError("Left-side object is invalid: " + self->shortRepr());
         }
 
@@ -402,10 +348,10 @@ public:
     }
 };
 
-class FunctionAndAdapter: public OperatorAdapter {
+class NothingAndAdapter: public OperatorAdapter {
 public:
     Object *operator()(Object *self, const std::vector<Object *> &others, Runtime *rt) {
-        if (!rt->isTypeObject(self) || self->type->id != rt->function_type->id) {
+        if (!rt->isTypeObject(self) || self->type->id != rt->nothing_type->id) {
             rt->signalError("Left-side object is invalid: " + self->shortRepr());
         }
 
@@ -413,10 +359,10 @@ public:
     }
 };
 
-class FunctionOrAdapter: public OperatorAdapter {
+class NothingOrAdapter: public OperatorAdapter {
 public:
     Object *operator()(Object *self, const std::vector<Object *> &others, Runtime *rt) {
-        if (!rt->isTypeObject(self) || self->type->id != rt->function_type->id) {
+        if (!rt->isTypeObject(self) || self->type->id != rt->nothing_type->id) {
             rt->signalError("Left-side object is invalid: " + self->shortRepr());
         }
 
@@ -425,65 +371,62 @@ public:
 };
 
 // TODO: add all operators to function and nothing
-FunctionType::FunctionType(Runtime *rt)
+NothingType::NothingType(Runtime *rt)
     : Type(true, rt) {
-    this->addOperator(OperatorNode::POST_PLUS_PLUS, new FunctionPostincAdapter(), rt);
-    this->addOperator(OperatorNode::POST_MINUS_MINUS, new FunctionPostdecAdapter(), rt);
-    this->addOperator(OperatorNode::CALL, new FunctionCallAdapter(), rt);
-    this->addOperator(OperatorNode::INDEX, new FunctionIndexAdapter(), rt);
-    this->addOperator(OperatorNode::PRE_PLUS_PLUS, new FunctionPreincAdapter(), rt);
-    this->addOperator(OperatorNode::PRE_MINUS_MINUS, new FunctionPredecAdapter(), rt);
-    this->addOperator(OperatorNode::PRE_PLUS, new FunctionPositiveAdapter(), rt);
-    this->addOperator(OperatorNode::PRE_MINUS, new FunctionNegativeAdapter(), rt);
-    this->addOperator(OperatorNode::NOT, new FunctionNotAdapter(), rt);
-    this->addOperator(OperatorNode::INVERSE, new FunctionInverseAdapter(), rt);
-    this->addOperator(OperatorNode::MULT, new FunctionMultAdapter(), rt);
-    this->addOperator(OperatorNode::DIV, new FunctionDivAdapter(), rt);
-    this->addOperator(OperatorNode::REM, new FunctionRemAdapter(), rt);
-    this->addOperator(OperatorNode::RIGHT_SHIFT, new FunctionRshiftAdapter(), rt);
-    this->addOperator(OperatorNode::LEFT_SHIFT, new FunctionLshiftAdapter(), rt);
-    this->addOperator(OperatorNode::PLUS, new FunctionAddAdapter(), rt);
-    this->addOperator(OperatorNode::MINUS, new FunctionSubAdapter(), rt);
-    this->addOperator(OperatorNode::LESS, new FunctionLtAdapter(), rt);
-    this->addOperator(OperatorNode::LESS_EQUAL, new FunctionLeqAdapter(), rt);
-    this->addOperator(OperatorNode::GREATER, new FunctionGtAdapter(), rt);
-    this->addOperator(OperatorNode::GREATER_EQUAL, new FunctionGeqAdapter(), rt);
-    this->addOperator(OperatorNode::EQUAL, new FunctionEqAdapter(), rt);
-    this->addOperator(OperatorNode::NOT_EQUAL, new FunctionNeqAdapter(), rt);
-    this->addOperator(OperatorNode::BITAND, new FunctionBitandAdapter(), rt);
-    this->addOperator(OperatorNode::BITXOR, new FunctionBitxorAdapter(), rt);
-    this->addOperator(OperatorNode::BITOR, new FunctionBitorAdapter(), rt);
-    this->addOperator(OperatorNode::AND, new FunctionAndAdapter(), rt);
-    this->addOperator(OperatorNode::OR, new FunctionOrAdapter(), rt);
+    this->addOperator(OperatorNode::POST_PLUS_PLUS, new NothingPostincAdapter(), rt);
+    this->addOperator(OperatorNode::POST_MINUS_MINUS, new NothingPostdecAdapter(), rt);
+    this->addOperator(OperatorNode::CALL, new NothingCallAdapter(), rt);
+    this->addOperator(OperatorNode::INDEX, new NothingIndexAdapter(), rt);
+    this->addOperator(OperatorNode::PRE_PLUS_PLUS, new NothingPreincAdapter(), rt);
+    this->addOperator(OperatorNode::PRE_MINUS_MINUS, new NothingPredecAdapter(), rt);
+    this->addOperator(OperatorNode::PRE_PLUS, new NothingPositiveAdapter(), rt);
+    this->addOperator(OperatorNode::PRE_MINUS, new NothingNegativeAdapter(), rt);
+    this->addOperator(OperatorNode::NOT, new NothingNotAdapter(), rt);
+    this->addOperator(OperatorNode::INVERSE, new NothingInverseAdapter(), rt);
+    this->addOperator(OperatorNode::MULT, new NothingMultAdapter(), rt);
+    this->addOperator(OperatorNode::DIV, new NothingDivAdapter(), rt);
+    this->addOperator(OperatorNode::REM, new NothingRemAdapter(), rt);
+    this->addOperator(OperatorNode::RIGHT_SHIFT, new NothingRshiftAdapter(), rt);
+    this->addOperator(OperatorNode::LEFT_SHIFT, new NothingLshiftAdapter(), rt);
+    this->addOperator(OperatorNode::PLUS, new NothingAddAdapter(), rt);
+    this->addOperator(OperatorNode::MINUS, new NothingSubAdapter(), rt);
+    this->addOperator(OperatorNode::LESS, new NothingLtAdapter(), rt);
+    this->addOperator(OperatorNode::LESS_EQUAL, new NothingLeqAdapter(), rt);
+    this->addOperator(OperatorNode::GREATER, new NothingGtAdapter(), rt);
+    this->addOperator(OperatorNode::GREATER_EQUAL, new NothingGeqAdapter(), rt);
+    this->addOperator(OperatorNode::EQUAL, new NothingEqAdapter(), rt);
+    this->addOperator(OperatorNode::NOT_EQUAL, new NothingNeqAdapter(), rt);
+    this->addOperator(OperatorNode::BITAND, new NothingBitandAdapter(), rt);
+    this->addOperator(OperatorNode::BITXOR, new NothingBitxorAdapter(), rt);
+    this->addOperator(OperatorNode::BITOR, new NothingBitorAdapter(), rt);
+    this->addOperator(OperatorNode::AND, new NothingAndAdapter(), rt);
+    this->addOperator(OperatorNode::OR, new NothingOrAdapter(), rt);
 }
 
-Object *FunctionType::create(Runtime *rt) {
-    auto ins = createInstance(rt, false, FunctionInstance);
-    auto obj = createObject(rt, true, ins, this, false);
+Object *NothingType::create(Runtime *rt) {
+    auto ins = createInstance(rt, true, NothingInstance);
+    auto obj = createObject(rt, true, ins, this, true);
     return obj;
 }
 
-Object *FunctionType::copy(Object *obj, Runtime *rt) {
-    if (!rt->isTypeObject(obj) || obj->type->id != rt->function_type->id) {
-        rt->signalError("Failed to copy an invalid object: " + obj->shortRepr());
-    }
-    auto ins = obj->instance->copy(rt);
-    auto res = createObject(rt, true, ins, this, false);
-    return res;
-}
-
-std::string FunctionType::shortRepr() {
+std::string NothingType::shortRepr() {
     if (this == NULL) {
         return "NULL";
     }
-    return "FunctionType(id = " + std::to_string(this->id) + ")";
+    return "NothingType(id = " + std::to_string(this->id) + ")";
 }
 
-Object *
-makeFunctionInstanceObject(bool is_internal, InternalFunction internal_ptr, StmtNode *cotton_ptr, Runtime *rt) {
-    auto res = rt->make(rt->function_type, rt->INSTANCE_OBJECT);
-    icast(res->instance, FunctionInstance)->init(is_internal, internal_ptr, cotton_ptr);
+Object *NothingType::copy(Object *obj, Runtime *rt) {
+    if (!rt->isTypeObject(obj) || obj->type->id != rt->nothing_type->id) {
+        rt->signalError("Failed to copy an invalid object: " + obj->shortRepr());
+    }
+    auto ins = obj->instance->copy(rt);
+    auto res = createObject(rt, true, ins, this, true);
     return res;
 }
 
+Object *makeNothingInstanceObject(Runtime *rt) {
+    auto res = rt->make(rt->nothing_type, rt->INSTANCE_OBJECT);
+    return res;
+}
 }    // namespace Cotton::Builtin

@@ -289,7 +289,7 @@ std::ostream &operator<<(std::ostream &out, const Token &token) {
     switch (token.id) {
     case Token::OPEN_BRACKET         : out << "("; break;
     case Token::CLOSE_BRACKET        : out << ")"; break;
-    case Token::TYPE_KW            : out << "type"; break;
+    case Token::TYPE_KW              : out << "type"; break;
     case Token::OPEN_CURLY_BRACKET   : out << "{"; break;
     case Token::CLOSE_CURLY_BRACKET  : out << "}"; break;
     case Token::SEMICOLON            : out << ";"; break;
@@ -476,6 +476,7 @@ std::vector<Token> Lexer::faze2FormConnectedTokens(const std::string &input) {
             }
 
             tokens.push_back(Token(buf, it - input.begin() - buf.size(), it - input.begin()));
+            tokens.back().id = Token::STRING_LIT;
             buf.clear();
         }
         else if (*it == '\'') {
@@ -499,6 +500,7 @@ std::vector<Token> Lexer::faze2FormConnectedTokens(const std::string &input) {
             }
 
             tokens.push_back(Token(buf, it - input.begin() - buf.size(), it - input.begin()));
+            tokens.back().id = Token::CHAR_LIT;
             buf.clear();
         }
         else if (isspace(*it)) {
@@ -522,7 +524,7 @@ std::vector<Token> Lexer::faze2FormConnectedTokens(const std::string &input) {
 
 // no dot
 static std::vector<std::string> sortedSplitters
-= {"(",  ")",  "{", "}", "@", ";",  "++", "--", "[", "]", "+=", "-=", "!=", "~", "*=", "/=", "%=", ">>",
+= {"(",  ")",  "{", "}",  "@", ";",  "++", "--", "[", "]", "+=", "-=", "!=", "~", "*=", "/=", "%=", ">>",
    "<<", "<=", "<", ">=", ">", "==", "!",  "&",  "^", "|", "=",  "+",  "-",  "*", "/",  "%",  ","};
 
 static void splitByOperator(const Token                 &token,
@@ -555,7 +557,7 @@ std::vector<Token> Lexer::faze3SplitByOperatorsAndSeparators(const std::vector<T
         while (it != token.data.end()) {
             bool f = false;
             for (auto &splitter : sortedSplitters) {
-                if (token.data.substr(it - token.data.begin(), splitter.size()) == splitter) {
+                if (token.id != Token::STRING_LIT && token.id != Token::CHAR_LIT && token.data.substr(it - token.data.begin(), splitter.size()) == splitter) {
                     f = true;
                     splitByOperator(token, split_end, it, res, splitter);
                     break;
@@ -648,7 +650,7 @@ std::vector<Token> Lexer::processFile(const std::string &filename) {
 
     FILE *fd = fopen(filename.c_str(), "r");
     if (fd == NULL) {
-        this->error_manager->signalError("Could not open file", 0);
+        this->error_manager->signalError("Could not open file", 0, true);
     }
 
     std::string data;

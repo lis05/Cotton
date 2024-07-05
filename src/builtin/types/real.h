@@ -20,26 +20,35 @@
  */
 
 #pragma once
-#include <ext/pb_ds/assoc_container.hpp>
+#include "../../back/api.h"
+#include "../../front/api.h"
 
-namespace Cotton {
+namespace Cotton::Builtin {
 
-class Object;
-class Runtime;
-
-class Scope {
+class RealInstance: public Instance {
 public:
-    Scope                                       *prev;
-    __gnu_pbds::cc_hash_table<int64_t, Object *> variables;
-    std::vector<Object *>                        arguments;
-    bool                                         can_access_prev;
+    double value;
 
-    Scope(Scope *prev, bool can_access_prev);
-    ~Scope();
+    RealInstance(Runtime *rt, bool on_stack);
+    ~RealInstance();
 
-    void    addVariable(int64_t id, Object *obj, Runtime *rt);
-    bool    queryVariable(int64_t id, Runtime *rt);
-    // returns a valid (non-null) object
-    Object *getVariable(int64_t id, Runtime *rt);
+    Instance   *copy(Runtime *rt);
+    size_t      getSize();
+    std::string shortRepr();
 };
-}    // namespace Cotton
+
+class RealType: public Type {
+public:
+    size_t getInstanceSize();
+    RealType(Runtime *rt);
+    ~RealType() = default;
+    Object     *create(Runtime *rt);
+    Object     *copy(Object *obj, Runtime *rt);
+    std::string shortRepr();
+};
+
+Object *makeRealInstanceObject(double value, Runtime *rt);
+
+double &getRealValue(Object *obj, Runtime *rt);
+#define getRealValueFast(obj) (icast(obj->instance, RealInstance)->value)
+}    // namespace Cotton::Builtin

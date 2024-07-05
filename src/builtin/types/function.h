@@ -20,35 +20,38 @@
  */
 
 #pragma once
-#include "../back/api.h"
-#include "../front/api.h"
+#include "../../back/api.h"
+#include "../../front/api.h"
 
 namespace Cotton::Builtin {
 
-class BooleanInstance: public Instance {
+typedef Object *(*InternalFunction)(const std::vector<Object *> &args, Runtime *rt);
+
+class FunctionInstance: public Instance {
 public:
-    bool value;
+    bool             is_internal;
+    InternalFunction internal_ptr;    // function written in C++
+    FuncDefNode     *cotton_ptr;      // function written in Cotton
 
-    BooleanInstance(Runtime *rt, bool on_stack);
-    ~BooleanInstance();
+    FunctionInstance(Runtime *rt, bool on_stack);
+    ~FunctionInstance();
 
+    void        init(bool is_internal, InternalFunction internal_ptr, FuncDefNode *cotton_ptr);
     Instance   *copy(Runtime *rt);
     size_t      getSize();
     std::string shortRepr();
 };
 
-class BooleanType: public Type {
+class FunctionType: public Type {
 public:
     size_t getInstanceSize();
-    BooleanType(Runtime *rt);
-    ~BooleanType() = default;
+    FunctionType(Runtime *rt);
+    ~FunctionType() = default;
     Object     *create(Runtime *rt);
     Object     *copy(Object *obj, Runtime *rt);
     std::string shortRepr();
 };
 
-Object *makeBooleanInstanceObject(bool value, Runtime *rt);
-
-bool &getBooleanValue(Object *obj, Runtime *rt);
-#define getBooleanValueFast(obj) (icast(obj->instance, BooleanInstance)->value)
+Object *
+makeFunctionInstanceObject(bool is_internal, InternalFunction internal_ptr, FuncDefNode *cotton_ptr, Runtime *rt);
 }    // namespace Cotton::Builtin
