@@ -29,21 +29,24 @@ StringInstance::StringInstance(Runtime *rt, bool on_stack)
 
 StringInstance::~StringInstance() {}
 
-Instance *StringInstance::copy(Runtime *rt) {
-    Instance *res = rt->stack->allocAndInitInstance<StringInstance>(sizeof(StringInstance), rt);
-    if (res != NULL) {
-        res->on_stack = true;
-        for (auto obj : this->data) {
-            ((StringInstance *)res)->data.push_back(rt->copy(obj));
+Instance *StringInstance::copy(Runtime *rt, bool force_heap) {
+    Instance *res = NULL;
+    if (!force_heap) {
+        res = rt->stack->allocAndInitInstance<StringInstance>(sizeof(StringInstance), rt);
+        if (res != NULL) {
+            res->on_stack = true;
+            for (auto obj : this->data) {
+                ((StringInstance *)res)->data.push_back(rt->copy(obj, force_heap));
+            }
+            return res;
         }
-        return res;
     }
     res = new (std::nothrow) StringInstance(rt, false);
     if (res == NULL) {
         rt->signalError("Failed to copy " + this->shortRepr());
     }
     for (auto obj : this->data) {
-        ((StringInstance *)res)->data.push_back(rt->copy(obj));
+        ((StringInstance *)res)->data.push_back(rt->copy(obj, force_heap));
     }
     res->on_stack = false;
     return res;
@@ -475,12 +478,15 @@ Object *StringType::create(Runtime *rt) {
     return obj;
 }
 
-Object *StringType::copy(Object *obj, Runtime *rt) {
+Object *StringType::copy(Object *obj, Runtime *rt, bool force_heap) {
     if (!rt->isTypeObject(obj) || obj->type->id != rt->string_type->id) {
         rt->signalError("Failed to copy an invalid object: " + obj->shortRepr());
     }
-    auto ins = obj->instance->copy(rt);
-    auto res = createObject(rt, true, ins, this, false);
+    if (!rt->isInstanceObject(obj)) {
+        return createObject(rt, false, NULL, this, !force_heap);
+    }
+    auto ins = obj->instance->copy(rt, force_heap);
+    auto res = createObject(rt, true, ins, this, !force_heap);
     return res;
 }
 

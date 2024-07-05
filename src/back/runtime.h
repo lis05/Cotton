@@ -119,7 +119,7 @@ public:
     Object *make(Type *type, ObjectOptions object_opt);
     // returns a copy of obj (type is the same; if instance is present, it is copied)
     // if fails, signals an error. therefore, returns a valid object (non-null, is a copy of obj)
-    Object *copy(Object *obj);
+    Object *copy(Object *obj, bool force_heap = false);
     // runs operator on the object. returns a valid object(non-null); if fails, signals an error
     Object *runOperator(OperatorNode::OperatorId id, Object *obj, const std::vector<Object *> &args);
     // runs method on the object. returns a valid object(non-null); if fails, signals an error

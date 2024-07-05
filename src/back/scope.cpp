@@ -3,13 +3,15 @@
 #include "runtime.h"
 
 namespace Cotton {
-Scope::Scope(Scope *prev, bool can_access_prev) {
+Scope::Scope(Scope *prev, Scope *master, bool can_access_prev) {
     this->prev            = prev;
+    this->master          = master;
     this->can_access_prev = can_access_prev;
 }
 
 Scope::~Scope() {
     this->prev            = NULL;
+    this->master          = NULL;
     this->can_access_prev = false;
     this->variables.clear();
     this->arguments.clear();
@@ -30,9 +32,15 @@ Object *Scope::getVariable(int64_t id, Runtime *rt) {
             s = s->prev;
         }
         else {
-            break;
+            if (s == s->master) {
+                break;
+            }
+            else {
+                s = s->master;
+            }
         }
     }
+
     rt->signalError("Failed to find variable " + NameId::shortRepr(id));
 }
 
@@ -47,7 +55,12 @@ bool Scope::queryVariable(int64_t id, Runtime *rt) {
             s = s->prev;
         }
         else {
-            break;
+            if (s == s->master) {
+                break;
+            }
+            else {
+                s = s->master;
+            }
         }
     }
     return false;

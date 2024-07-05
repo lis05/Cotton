@@ -23,6 +23,18 @@
 
 namespace Cotton::Builtin {
 
+static Object *make(const std::vector<Object *> &args, Runtime *rt) {
+    if (args.size() != 1) {
+        rt->signalError("Expected exactly one argument");
+    }
+    auto arg = args[0];
+    if (!rt->isTypeObject(arg) || rt->isInstanceObject(arg)) {
+        rt->signalError("Expected a type object but got " + arg->shortRepr());
+    }
+
+    return rt->make(arg->type, Runtime::INSTANCE_OBJECT);
+}
+
 static Object *print(const std::vector<Object *> &args, Runtime *rt) {
     for (auto arg : args) {
         if (rt->isInstanceObject(arg)) {
@@ -50,37 +62,11 @@ static Object *print(const std::vector<Object *> &args, Runtime *rt) {
                 }
             }
             else {
-                rt->runMethod(MagicMethods::__iprint__(), arg, {});
-            }
-        }
-        else if (rt->isTypeObject(arg)) {
-            if (arg->type->id == rt->boolean_type->id) {
-                std::cout << "Boolean";
-            }
-            else if (arg->type->id == rt->character_type->id) {
-                std::cout << "Character";
-            }
-            else if (arg->type->id == rt->function_type->id) {
-                std::cout << "Function";
-            }
-            else if (arg->type->id == rt->integer_type->id) {
-                std::cout << "Integer";
-            }
-            else if (arg->type->id == rt->nothing_type->id) {
-                std::cout << "Nothing";
-            }
-            else if (arg->type->id == rt->real_type->id) {
-                std::cout << "Real";
-            }
-            else if (arg->type->id == rt->string_type->id) {
-                std::cout << "String";
-            }
-            else {
-                rt->runMethod(MagicMethods::__tprint__(), arg, {});
+                rt->runMethod(MagicMethods::__print__(), arg, {});
             }
         }
         else {
-            rt->signalError("Invalid object " + arg->shortRepr());
+            rt->signalError("Cannot print " + arg->shortRepr());
         }
     }
     return makeNothingInstanceObject(rt);
@@ -88,5 +74,6 @@ static Object *print(const std::vector<Object *> &args, Runtime *rt) {
 
 void installBuiltinFunctions(Runtime *rt) {
     rt->scope->addVariable(NameId("print").id, makeFunctionInstanceObject(true, print, NULL, rt), rt);
+    rt->scope->addVariable(NameId("make").id, makeFunctionInstanceObject(true, make, NULL, rt), rt);
 }
 }    // namespace Cotton::Builtin

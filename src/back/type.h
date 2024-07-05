@@ -74,15 +74,14 @@ public:
     // creates a valid (non-null) object
     virtual Object *create(Runtime *rt)            = 0;    
     // returns a valid (non-null) copy of the object
-    virtual Object *copy(Object *obj, Runtime *rt) = 0;
+    virtual Object *copy(Object *obj, Runtime *rt, bool force_heap = false) = 0;
 
     virtual std::string shortRepr() = 0;
 };
 
 namespace MagicMethods {
     int64_t __make__();
-    int64_t __iprint__();
-    int64_t __tprint__();
+    int64_t __print__();
     // operators
     int64_t __postinc__();
     int64_t __postdec__();

@@ -29,19 +29,22 @@ CharacterInstance::CharacterInstance(Runtime *rt, bool on_stack)
 
 CharacterInstance::~CharacterInstance() {}
 
-Instance *CharacterInstance::copy(Runtime *rt) {
-    Instance *res = rt->stack->allocAndInitInstance<CharacterInstance>(sizeof(CharacterInstance), rt);
-    if (res != NULL) {
-        res->on_stack                      = true;
-        icast(res, CharacterInstance)->value = this->value;
-        return res;
+Instance *CharacterInstance::copy(Runtime *rt, bool force_heap) {
+    Instance *res = NULL;
+    if (!force_heap) {
+        res = rt->stack->allocAndInitInstance<CharacterInstance>(sizeof(CharacterInstance), rt);
+        if (res != NULL) {
+            res->on_stack                        = true;
+            icast(res, CharacterInstance)->value = this->value;
+            return res;
+        }
     }
     res = new (std::nothrow) CharacterInstance(rt, false);
     if (res == NULL) {
         rt->signalError("Failed to copy " + this->shortRepr());
     }
     icast(res, CharacterInstance)->value = this->value;
-    res->on_stack                      = false;
+    res->on_stack                        = false;
     return res;
 }
 
@@ -49,7 +52,8 @@ std::string CharacterInstance::shortRepr() {
     if (this == NULL) {
         return "CharacterInstance(NULL)";
     }
-    return "CharacterInstance(id = " + std::to_string(this->id) + ", value = " + std::to_string(this->value) + ": '" + (char)this->value + "')";
+    return "CharacterInstance(id = " + std::to_string(this->id) + ", value = " + std::to_string(this->value)
+           + ": '" + (char)this->value + "')";
 }
 
 size_t CharacterInstance::getSize() {
@@ -171,7 +175,7 @@ public:
             rt->signalError(self->shortRepr() + " does not support that operator");
         }
 
-        auto res                  = self->type->copy(self, rt);
+        auto res                    = self->type->copy(self, rt);
         getCharacterValueFast(res) *= -1;
         return res;
     }
@@ -197,7 +201,7 @@ public:
             rt->signalError(self->shortRepr() + " does not support that operator");
         }
 
-        auto res                 = self->type->copy(self, rt);
+        auto res                   = self->type->copy(self, rt);
         getCharacterValueFast(res) = ~getCharacterValueFast(res);
         return res;
     }
@@ -522,7 +526,7 @@ public:
 class CharacterNeqAdapter: public CharacterEqAdapter {
 public:
     Object *operator()(Object *self, const std::vector<Object *> &others, Runtime *rt) {
-        auto res                 = CharacterEqAdapter::operator()(self, others, rt);
+        auto res                   = CharacterEqAdapter::operator()(self, others, rt);
         getCharacterValueFast(res) = !getCharacterValueFast(res);
         return res;
     }
@@ -665,12 +669,15 @@ Object *CharacterType::create(Runtime *rt) {
     return obj;
 }
 
-Object *CharacterType::copy(Object *obj, Runtime *rt) {
+Object *CharacterType::copy(Object *obj, Runtime *rt, bool force_heap) {
     if (!rt->isTypeObject(obj) || obj->type->id != rt->character_type->id) {
         rt->signalError("Failed to copy an invalid object: " + obj->shortRepr());
     }
-    auto ins = obj->instance->copy(rt);
-    auto res = createObject(rt, true, ins, this, true);
+    if (!rt->isInstanceObject(obj)) {
+        return createObject(rt, false, NULL, this, !force_heap);
+    }
+    auto ins = obj->instance->copy(rt, force_heap);
+    auto res = createObject(rt, true, ins, this, !force_heap);
     return res;
 }
 
@@ -692,7 +699,7 @@ uint8_t &getCharacterValue(Object *obj, Runtime *rt) {
 }
 
 Object *makeCharacterInstanceObject(uint8_t value, Runtime *rt) {
-    auto res                                     = rt->make(rt->character_type, Runtime::INSTANCE_OBJECT);
+    auto res                                       = rt->make(rt->character_type, Runtime::INSTANCE_OBJECT);
     icast(res->instance, CharacterInstance)->value = value;
     return res;
 }

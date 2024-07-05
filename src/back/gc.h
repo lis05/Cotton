@@ -44,14 +44,14 @@ public:
 class GCDefaultStrategy: public GCStrategy {
 public:
     const int NUM_TRACKED_INIT = 10'000;              // prev_num_tracked is set to this at initialization
-    const int NUM_TRACKED_MULT = 2;                   // cycle runs when prev_num_tracked < num_tracked / 2;
+    const int NUM_TRACKED_MULT = 6;                   // cycle runs when prev_num_tracked < num_tracked / 2;
     int64_t   num_tracked, prev_num_tracked;
 
     const int SIZEOF_TRACKED_INIT = 80'000;           // prev_num_tracked is set to this at initialization
-    const int SIZEOF_TRACKED_MULT = 2;                // cycle runs when prev_sizeof_tracked < num_tracked / 2;
+    const int SIZEOF_TRACKED_MULT = 6;                // cycle runs when prev_sizeof_tracked < num_tracked / 2;
     int64_t   sizeof_tracked, prev_sizeof_tracked;    // in bytes
 
-    const int OPS_MOD = 10'000;                       // cycle runs when opc_cnt % OPS_MOD == 0
+    const int OPS_MOD = 100'000;                       // cycle runs when opc_cnt % OPS_MOD == 0
     int64_t   ops_cnt;                                // number of tracks and untrackes modulo OPS_MOD
 
     GCDefaultStrategy();

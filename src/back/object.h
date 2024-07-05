@@ -47,6 +47,8 @@ public:
     std::vector<Object *> getGCReachable(Runtime *rt);
     // short representation of the object
     std::string           shortRepr();
+
+    void assignTo(Object *obj);
 };
 
 std::ostream &operator<<(std::ostream &stream, Object *obj);

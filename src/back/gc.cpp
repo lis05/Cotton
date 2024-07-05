@@ -289,6 +289,7 @@ void GC::runCycle(Runtime *rt) {
 
     this->gc_mark = !this->gc_mark;
     this->gc_strategy->acknowledgeEndOfCycle(this, rt);
+    //fprintf(stderr, "GC CYCLE END\n");
 }
 
 void GC::enable(Runtime *rt) {

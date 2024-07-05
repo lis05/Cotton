@@ -644,7 +644,7 @@ BlockStmtNode::~BlockStmtNode() {
     this->list.clear();
 }
 
-BlockStmtNode::BlockStmtNode(bool is_scoped, const std::vector<StmtNode *> list) {
+BlockStmtNode::BlockStmtNode(bool is_unscoped, const std::vector<StmtNode *> list) {
     this->is_unscoped = is_unscoped;
     this->list        = list;
 }

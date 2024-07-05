@@ -30,11 +30,14 @@ NothingInstance::NothingInstance(Runtime *rt, bool on_stack)
 
 NothingInstance::~NothingInstance() {}
 
-Instance *NothingInstance::copy(Runtime *rt) {
-    Instance *res = rt->stack->allocAndInitInstance<NothingInstance>(sizeof(NothingInstance), rt);
-    if (res != NULL) {
-        res->on_stack = true;
-        return res;
+Instance *NothingInstance::copy(Runtime *rt, bool force_heap) {
+    Instance *res = NULL;
+    if (!force_heap) {
+        res = rt->stack->allocAndInitInstance<NothingInstance>(sizeof(NothingInstance), rt);
+        if (res != NULL) {
+            res->on_stack = true;
+            return res;
+        }
     }
     res = new (std::nothrow) NothingInstance(rt, false);
     if (res == NULL) {
@@ -309,7 +312,7 @@ public:
 class NothingNeqAdapter: public NothingEqAdapter {
 public:
     Object *operator()(Object *self, const std::vector<Object *> &others, Runtime *rt) {
-        auto res                                     = NothingEqAdapter::operator()(self, others, rt);
+        auto res                 = NothingEqAdapter::operator()(self, others, rt);
         getBooleanValue(res, rt) = !getBooleanValue(res, rt);
         return res;
     }
@@ -416,12 +419,15 @@ std::string NothingType::shortRepr() {
     return "NothingType(id = " + std::to_string(this->id) + ")";
 }
 
-Object *NothingType::copy(Object *obj, Runtime *rt) {
+Object *NothingType::copy(Object *obj, Runtime *rt, bool force_heap) {
     if (!rt->isTypeObject(obj) || obj->type->id != rt->nothing_type->id) {
         rt->signalError("Failed to copy an invalid object: " + obj->shortRepr());
     }
-    auto ins = obj->instance->copy(rt);
-    auto res = createObject(rt, true, ins, this, true);
+    if (!rt->isInstanceObject(obj)) {
+        return createObject(rt, false, NULL, this, !force_heap);
+    }
+    auto ins = obj->instance->copy(rt, force_heap);
+    auto res = createObject(rt, true, ins, this, !force_heap);
     return res;
 }
 

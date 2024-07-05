@@ -29,7 +29,7 @@ public:
     NothingInstance(Runtime *rt, bool on_stack);
     ~NothingInstance();
 
-    Instance   *copy(Runtime *rt);
+    Instance   *copy(Runtime *rt, bool force_heap = false);
     size_t      getSize();
     std::string shortRepr();
 };
@@ -41,7 +41,7 @@ public:
     ~NothingType() = default;
     Object     *create(Runtime *rt);
     std::string shortRepr();
-    Object *copy(Object *obj, Runtime *rt);
+    Object *copy(Object *obj, Runtime *rt, bool force_heap = false);
 };
 
 Object *makeNothingInstanceObject(Runtime *rt);

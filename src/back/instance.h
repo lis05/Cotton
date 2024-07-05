@@ -41,9 +41,10 @@ public:
     bool                                         on_stack : 1;    // set after creation
 
     Instance(Runtime *rt, size_t bytes, bool on_stack);
+    virtual ~Instance() = default;
 
     virtual std::vector<Object *> getGCReachable(Runtime *rt);
-    virtual Instance             *copy(Runtime *rt) = 0;
+    virtual Instance             *copy(Runtime *rt, bool force_heap = false) = 0;
     virtual size_t                getSize()         = 0;    // in bytes
     virtual std::string           shortRepr()       = 0;
 };

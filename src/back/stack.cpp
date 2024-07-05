@@ -55,18 +55,20 @@ void Stack::popFrame() {
         this->cur_ptr = NULL;
         return;
     }
-    for (auto &obj : this->frame_objects) {
+    for (auto &obj : this->frame_objects.back()) {
         if (obj != NULL) {
             obj->~Object();
         }
     }
-    for (auto &ins : this->frame_instances) {
+    for (auto &ins : this->frame_instances.back()) {
         if (ins != NULL) {
             ins->~Instance();
         }
     }
     this->cur_ptr = this->frame_ptrs.back();
     this->frame_ptrs.pop_back();
+    this->frame_objects.pop_back();
+    this->frame_instances.pop_back();
 }
 
 void *Stack::alloc(size_t size) {
@@ -88,7 +90,7 @@ Object *Stack::allocAndInitObject(bool is_instance, Instance *instance, Type *ty
     }
 
     Object *res = new (ptr) Object(is_instance, true, instance, type, rt);
-    this->frame_objects.push_back(res);
+    this->frame_objects.back().push_back(res);
     return res;
 }
 

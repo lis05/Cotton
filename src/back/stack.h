@@ -37,9 +37,9 @@ public:
     char  *base_ptr;
     char  *cur_ptr;
 
-    std::vector<char *>     frame_ptrs;
-    std::vector<Object *>   frame_objects;
-    std::vector<Instance *> frame_instances;
+    std::vector<char *>                  frame_ptrs;
+    std::vector<std::vector<Object *>>   frame_objects;
+    std::vector<std::vector<Instance *>> frame_instances;
 
     Stack(size_t mem_limit);
     ~Stack();
@@ -64,7 +64,7 @@ inline Instance *Stack::allocAndInitInstance(size_t size, Runtime *rt) {
     }
 
     I *res = new (ptr) I(rt, true);
-    this->frame_instances.push_back(res);
+    this->frame_instances.back().push_back(res);
     return res;
 }
 }    // namespace Cotton

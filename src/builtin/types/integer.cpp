@@ -29,12 +29,15 @@ IntegerInstance::IntegerInstance(Runtime *rt, bool on_stack)
 
 IntegerInstance::~IntegerInstance() {}
 
-Instance *IntegerInstance::copy(Runtime *rt) {
-    Instance *res = rt->stack->allocAndInitInstance<IntegerInstance>(sizeof(IntegerInstance), rt);
-    if (res != NULL) {
-        res->on_stack                      = true;
-        icast(res, IntegerInstance)->value = this->value;
-        return res;
+Instance *IntegerInstance::copy(Runtime *rt, bool force_heap) {
+    Instance *res = NULL;
+    if (!force_heap) {
+        res = rt->stack->allocAndInitInstance<IntegerInstance>(sizeof(IntegerInstance), rt);
+        if (res != NULL) {
+            res->on_stack                      = true;
+            icast(res, IntegerInstance)->value = this->value;
+            return res;
+        }
     }
     res = new (std::nothrow) IntegerInstance(rt, false);
     if (res == NULL) {
@@ -492,7 +495,7 @@ public:
 class IntegerEqAdapter: public OperatorAdapter {
 public:
     Object *operator()(Object *self, const std::vector<Object *> &others, Runtime *rt) {
-        if (!rt->isTypeObject(self) || self->type->id != rt->boolean_type->id) {
+        if (!rt->isTypeObject(self) || self->type->id != rt->integer_type->id) {
             rt->signalError("Left-side object is invalid: " + self->shortRepr());
         }
         if (others.size() != 1) {
@@ -665,12 +668,15 @@ Object *IntegerType::create(Runtime *rt) {
     return obj;
 }
 
-Object *IntegerType::copy(Object *obj, Runtime *rt) {
+Object *IntegerType::copy(Object *obj, Runtime *rt, bool force_heap) {
     if (!rt->isTypeObject(obj) || obj->type->id != rt->integer_type->id) {
         rt->signalError("Failed to copy an invalid object: " + obj->shortRepr());
     }
-    auto ins = obj->instance->copy(rt);
-    auto res = createObject(rt, true, ins, this, true);
+    if (!rt->isInstanceObject(obj)) {
+        return createObject(rt, false, NULL, this, !force_heap);
+    }
+    auto ins = obj->instance->copy(rt, force_heap);
+    auto res = createObject(rt, true, ins, this, !force_heap);
     return res;
 }
 

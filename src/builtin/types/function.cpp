@@ -37,7 +37,7 @@ void FunctionInstance::init(bool is_internal, InternalFunction internal_ptr, Fun
     this->cotton_ptr   = cotton_ptr;
 }
 
-Instance *FunctionInstance::copy(Runtime *rt) {
+Instance *FunctionInstance::copy(Runtime *rt, bool force_heap) {
     auto res = new (std::nothrow) FunctionInstance(rt, false);
     if (res == NULL) {
         rt->signalError("Failed to copy " + this->shortRepr());
@@ -124,7 +124,7 @@ public:
                     i++;
                 }
             }
-            auto res = rt->execute(f->cotton_ptr);
+            auto res = rt->execute(f->cotton_ptr->body);
             rt->popFrame();
             if (res.result == NULL) {
                 rt->signalError("Execution of function " + self->shortRepr() + " has failed");
@@ -477,9 +477,12 @@ Object *FunctionType::create(Runtime *rt) {
     return obj;
 }
 
-Object *FunctionType::copy(Object *obj, Runtime *rt) {
+Object *FunctionType::copy(Object *obj, Runtime *rt, bool force_heap) {
     if (!rt->isTypeObject(obj) || obj->type->id != rt->function_type->id) {
         rt->signalError("Failed to copy an invalid object: " + obj->shortRepr());
+    }
+    if (!rt->isInstanceObject(obj)) {
+        return createObject(rt, false, NULL, this, false);
     }
     auto ins = obj->instance->copy(rt);
     auto res = createObject(rt, true, ins, this, false);

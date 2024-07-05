@@ -58,6 +58,10 @@ std::string Object::shortRepr() {
     return res;
 }
 
+void Object::assignTo(Object *obj) {
+    *this = *obj;
+}
+
 std::ostream &operator<<(std::ostream &stream, Object *obj) {
     if (obj == NULL) {
         stream << "{NULL}";

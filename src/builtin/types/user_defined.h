@@ -30,7 +30,7 @@ public:
     UserDefinedInstance(Runtime *rt, bool on_stack);
     ~UserDefinedInstance();
 
-    Instance   *copy(Runtime *rt);
+    Instance   *copy(Runtime *rt, bool force_heap = true);
     size_t      getSize();
     std::string shortRepr();
 };
@@ -45,6 +45,6 @@ public:
     ~UserDefinedType() = default;
     Object     *create(Runtime *rt);
     std::string shortRepr();
-    Object     *copy(Object *obj, Runtime *rt);
+    Object     *copy(Object *obj, Runtime *rt, bool force_heap = true);
 };
 }    // namespace Cotton::Builtin

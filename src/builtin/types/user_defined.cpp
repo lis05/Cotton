@@ -30,7 +30,7 @@ UserDefinedInstance::UserDefinedInstance(Runtime *rt, bool on_stack)
 
 UserDefinedInstance::~UserDefinedInstance() {}
 
-Instance *UserDefinedInstance::copy(Runtime *rt) {
+Instance *UserDefinedInstance::copy(Runtime *rt, bool force_heap) {
     return this;    // because record is a complex data type
 }
 
@@ -52,24 +52,9 @@ std::string UserDefinedInstance::shortRepr() {
 class UserDefinedDefaultAdapter: public OperatorAdapter {
 public:
     Object *operator()(Object *self, const std::vector<Object *> &others, Runtime *rt) {
-        if (!rt->isTypeObject(self) || self->type->id != rt->nothing_type->id) {
-            rt->signalError("Left-side object is invalid: " + self->shortRepr());
-        }
         rt->signalError(self->shortRepr() + " does not support that operator");
     }
 };
-
-static Object *userDefinedTPrint(const std::vector<Object *> &args, Runtime *rt) {
-    if (args.size() < 1) {
-        rt->signalError("Expected a caller object");
-    }
-    auto self = args[0];
-    if (!rt->isTypeObject(self)) {
-        rt->signalError("Caller is invalid: " + self->shortRepr());
-    }
-    std::cout << NameId::shortRepr(((UserDefinedType *)self->type)->nameid);
-    return makeNothingInstanceObject(rt);
-}
 
 UserDefinedType::UserDefinedType(Runtime *rt)
     : Type(true, rt) {
@@ -101,8 +86,6 @@ UserDefinedType::UserDefinedType(Runtime *rt)
     this->addOperator(OperatorNode::BITOR, new UserDefinedDefaultAdapter(), rt);
     this->addOperator(OperatorNode::AND, new UserDefinedDefaultAdapter(), rt);
     this->addOperator(OperatorNode::OR, new UserDefinedDefaultAdapter(), rt);
-
-    this->addMethod(MagicMethods::__tprint__(), makeFunctionInstanceObject(true, userDefinedTPrint, NULL, rt), rt);
 }
 
 Object *UserDefinedType::create(Runtime *rt) {
@@ -122,12 +105,15 @@ std::string UserDefinedType::shortRepr() {
            + ")";
 }
 
-Object *UserDefinedType::copy(Object *obj, Runtime *rt) {
-    if (!rt->isTypeObject(obj) || obj->type->id != rt->nothing_type->id) {
+Object *UserDefinedType::copy(Object *obj, Runtime *rt, bool force_heap) {
+    if (!rt->isTypeObject(obj)) {
         rt->signalError("Failed to copy an invalid object: " + obj->shortRepr());
     }
-    auto ins = obj->instance->copy(rt);
-    auto res = createObject(rt, true, ins, this, true);
+    if (!rt->isInstanceObject(obj)) {
+        return createObject(rt, false, NULL, this, !force_heap);
+    }
+    auto ins = obj->instance->copy(rt, force_heap);
+    auto res = createObject(rt, true, ins, this, !force_heap);
     return res;
 }
 

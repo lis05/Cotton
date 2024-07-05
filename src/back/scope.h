@@ -29,12 +29,12 @@ class Runtime;
 
 class Scope {
 public:
-    Scope                                       *prev;
+    Scope                                       *prev, *master;
     __gnu_pbds::cc_hash_table<int64_t, Object *> variables;
     std::vector<Object *>                        arguments;
     bool                                         can_access_prev;
 
-    Scope(Scope *prev, bool can_access_prev);
+    Scope(Scope *prev, Scope *master, bool can_access_prev);
     ~Scope();
 
     void    addVariable(int64_t id, Object *obj, Runtime *rt);

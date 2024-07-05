@@ -32,7 +32,7 @@ public:
     StringInstance(Runtime *rt, bool on_stack);
     ~StringInstance();
 
-    Instance             *copy(Runtime *rt);
+    Instance             *copy(Runtime *rt, bool force_heap = false);
     size_t                getSize();
     std::string           shortRepr();
     std::vector<Object *> getGCReachable(Runtime *rt);
@@ -44,7 +44,7 @@ public:
     StringType(Runtime *rt);
     ~StringType() = default;
     Object     *create(Runtime *rt);
-    Object     *copy(Object *obj, Runtime *rt);
+    Object     *copy(Object *obj, Runtime *rt, bool force_heap = false);
     std::string shortRepr();
 };
 

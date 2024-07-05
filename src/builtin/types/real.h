@@ -32,7 +32,7 @@ public:
     RealInstance(Runtime *rt, bool on_stack);
     ~RealInstance();
 
-    Instance   *copy(Runtime *rt);
+    Instance   *copy(Runtime *rt, bool force_heap = false);
     size_t      getSize();
     std::string shortRepr();
 };
@@ -43,7 +43,7 @@ public:
     RealType(Runtime *rt);
     ~RealType() = default;
     Object     *create(Runtime *rt);
-    Object     *copy(Object *obj, Runtime *rt);
+    Object     *copy(Object *obj, Runtime *rt, bool force_heap = false);
     std::string shortRepr();
 };
 

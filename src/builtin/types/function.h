@@ -37,7 +37,7 @@ public:
     ~FunctionInstance();
 
     void        init(bool is_internal, InternalFunction internal_ptr, FuncDefNode *cotton_ptr);
-    Instance   *copy(Runtime *rt);
+    Instance   *copy(Runtime *rt, bool force_heap = true);
     size_t      getSize();
     std::string shortRepr();
 };
@@ -48,7 +48,7 @@ public:
     FunctionType(Runtime *rt);
     ~FunctionType() = default;
     Object     *create(Runtime *rt);
-    Object     *copy(Object *obj, Runtime *rt);
+    Object     *copy(Object *obj, Runtime *rt, bool force_heap = true);
     std::string shortRepr();
 };
 

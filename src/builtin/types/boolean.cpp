@@ -29,12 +29,15 @@ BooleanInstance::BooleanInstance(Runtime *rt, bool on_stack)
 
 BooleanInstance::~BooleanInstance() {}
 
-Instance *BooleanInstance::copy(Runtime *rt) {
-    Instance *res = rt->stack->allocAndInitInstance<BooleanInstance>(sizeof(BooleanInstance), rt);
-    if (res != NULL) {
-        res->on_stack                      = true;
-        icast(res, BooleanInstance)->value = this->value;
-        return res;
+Instance *BooleanInstance::copy(Runtime *rt, bool force_heap) {
+    Instance *res = NULL;
+    if (!force_heap) {
+        res = rt->stack->allocAndInitInstance<BooleanInstance>(sizeof(BooleanInstance), rt);
+        if (res != NULL) {
+            res->on_stack                      = true;
+            icast(res, BooleanInstance)->value = this->value;
+            return res;
+        }
     }
     res = new (std::nothrow) BooleanInstance(rt, false);
     if (res == NULL) {
@@ -454,12 +457,15 @@ Object *BooleanType::create(Runtime *rt) {
     return obj;
 }
 
-Object *BooleanType::copy(Object *obj, Runtime *rt) {
+Object *BooleanType::copy(Object *obj, Runtime *rt, bool force_heap) {
     if (!rt->isTypeObject(obj) || obj->type->id != rt->boolean_type->id) {
         rt->signalError("Failed to copy an invalid object: " + obj->shortRepr());
     }
-    auto ins = obj->instance->copy(rt);
-    auto res = createObject(rt, true, ins, this, true);
+    if (!rt->isInstanceObject(obj)) {
+        return createObject(rt, false, NULL, this, !force_heap);
+    }
+    auto ins = obj->instance->copy(rt, force_heap);
+    auto res = createObject(rt, true, ins, this, !force_heap);
     return res;
 }
 
