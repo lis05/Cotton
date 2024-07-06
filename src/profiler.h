@@ -28,7 +28,7 @@ void printResult();
 }    // namespace Cotton::Profiler
 
 #if defined COTTON_ENABLE_PROFILER
-    #define ProfilerCAPTURE() ProfilerCAPTURE(__PRETTY_FUNCTION__);
+    #define ProfilerCAPTURE() Cotton::Profiler::capture(__PRETTY_FUNCTION__);
 #else
     #define ProfilerCAPTURE() ;
 #endif
