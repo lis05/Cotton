@@ -33,11 +33,11 @@ public:
     InternalFunction internal_ptr;    // function written in C++
     FuncDefNode     *cotton_ptr;      // function written in Cotton
 
-    FunctionInstance(Runtime *rt, bool on_stack);
+    FunctionInstance(Runtime *rt);
     ~FunctionInstance();
 
     void        init(bool is_internal, InternalFunction internal_ptr, FuncDefNode *cotton_ptr);
-    Instance   *copy(Runtime *rt, bool force_heap = true);
+    Instance   *copy();
     size_t      getSize();
     std::string shortRepr();
 };
@@ -47,8 +47,8 @@ public:
     size_t getInstanceSize();
     FunctionType(Runtime *rt);
     ~FunctionType() = default;
-    Object     *create(Runtime *rt);
-    Object     *copy(Object *obj, Runtime *rt, bool force_heap = true);
+    Object     *create();
+    Object     *copy(Object *obj);
     std::string shortRepr();
 };
 

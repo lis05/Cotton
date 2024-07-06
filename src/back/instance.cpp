@@ -44,16 +44,14 @@ void Instance::addField(int64_t id, Object *obj, Runtime *rt) {
     this->fields[id] = obj;
 }
 
-Instance::Instance(Runtime *rt, size_t bytes, bool on_stack) {
+Instance::Instance(Runtime *rt, size_t bytes) {
+    this->rt = rt;
     this->gc_mark  = !rt->gc->gc_mark;
-    this->on_stack = on_stack;
     this->id       = ++total_instances;
-    if (!on_stack) {
-        rt->gc->track(this, bytes, rt);
-    }
+    rt->gc->track(this, bytes);
 }
 
-std::vector<Object *> Instance::getGCReachable(Runtime *rt) {
+std::vector<Object *> Instance::getGCReachable() {
     std::vector<Object *> res;
     for (auto &elem : this->fields) {
         res.push_back(elem.second);

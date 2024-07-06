@@ -29,10 +29,10 @@ class BooleanInstance: public Instance {
 public:
     bool value;
 
-    BooleanInstance(Runtime *rt, bool on_stack);
+    BooleanInstance(Runtime *rt);
     ~BooleanInstance();
 
-    Instance   *copy(Runtime *rt, bool force_heap = false);
+    Instance   *copy();
     size_t      getSize();
     std::string shortRepr();
 };
@@ -42,8 +42,8 @@ public:
     size_t getInstanceSize();
     BooleanType(Runtime *rt);
     ~BooleanType() = default;
-    Object     *create(Runtime *rt);
-    Object     *copy(Object *obj, Runtime *rt, bool force_heap = false);
+    Object     *create();
+    Object     *copy(Object *obj);
     std::string shortRepr();
 };
 

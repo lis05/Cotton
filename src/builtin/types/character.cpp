@@ -22,29 +22,19 @@
 #include "api.h"
 
 namespace Cotton::Builtin {
-CharacterInstance::CharacterInstance(Runtime *rt, bool on_stack)
-    : Instance(rt, sizeof(CharacterInstance), on_stack) {
+CharacterInstance::CharacterInstance(Runtime *rt)
+    : Instance(rt, sizeof(CharacterInstance)) {
     this->value = '\0';
 }
 
 CharacterInstance::~CharacterInstance() {}
 
-Instance *CharacterInstance::copy(Runtime *rt, bool force_heap) {
-    Instance *res = NULL;
-    if (!force_heap) {
-        res = rt->stack->allocAndInitInstance<CharacterInstance>(sizeof(CharacterInstance), rt);
-        if (res != NULL) {
-            res->on_stack                        = true;
-            icast(res, CharacterInstance)->value = this->value;
-            return res;
-        }
-    }
-    res = new (std::nothrow) CharacterInstance(rt, false);
+Instance *CharacterInstance::copy() {
+    Instance *res = new (std::nothrow) CharacterInstance(rt);
     if (res == NULL) {
         rt->signalError("Failed to copy " + this->shortRepr());
     }
     icast(res, CharacterInstance)->value = this->value;
-    res->on_stack                        = false;
     return res;
 }
 
@@ -66,7 +56,10 @@ size_t CharacterType::getInstanceSize() {
 
 class CharacterPostincAdapter: public OperatorAdapter {
 public:
-    Object *operator()(Object *self, const std::vector<Object *> &others, Runtime *rt) {
+    CharacterPostincAdapter(Runtime *rt)
+        : OperatorAdapter(rt) {}
+
+    Object *operator()(Object *self, const std::vector<Object *> &others) {
         if (!rt->isTypeObject(self) || self->type->id != rt->character_type->id) {
             rt->signalError("Left-side object is invalid: " + self->shortRepr());
         }
@@ -74,7 +67,7 @@ public:
             rt->signalError(self->shortRepr() + " does not support that operator");
         }
 
-        auto res = self->type->copy(self, rt);
+        auto res = self->type->copy(self);
         getCharacterValueFast(self)++;
         return res;
     }
@@ -82,7 +75,10 @@ public:
 
 class CharacterPostdecAdapter: public OperatorAdapter {
 public:
-    Object *operator()(Object *self, const std::vector<Object *> &others, Runtime *rt) {
+    CharacterPostdecAdapter(Runtime *rt)
+        : OperatorAdapter(rt) {}
+
+    Object *operator()(Object *self, const std::vector<Object *> &others) {
         if (!rt->isTypeObject(self) || self->type->id != rt->character_type->id) {
             rt->signalError("Left-side object is invalid: " + self->shortRepr());
         }
@@ -90,37 +86,28 @@ public:
             rt->signalError(self->shortRepr() + " does not support that operator");
         }
 
-        auto res = self->type->copy(self, rt);
+        auto res = self->type->copy(self);
         getCharacterValueFast(self)--;
         return res;
     }
 };
 
-class CharacterCallAdapter: public OperatorAdapter {
+class CharacterUnsupportedAdapter: public OperatorAdapter {
 public:
-    Object *operator()(Object *self, const std::vector<Object *> &others, Runtime *rt) {
-        if (!rt->isTypeObject(self) || self->type->id != rt->character_type->id) {
-            rt->signalError("Left-side object is invalid: " + self->shortRepr());
-        }
+    CharacterUnsupportedAdapter(Runtime *rt)
+        : OperatorAdapter(rt) {}
 
-        rt->signalError(self->shortRepr() + " does not support that operator");
-    }
-};
-
-class CharacterIndexAdapter: public OperatorAdapter {
-public:
-    Object *operator()(Object *self, const std::vector<Object *> &others, Runtime *rt) {
-        if (!rt->isTypeObject(self) || self->type->id != rt->character_type->id) {
-            rt->signalError("Left-side object is invalid: " + self->shortRepr());
-        }
-
+    Object *operator()(Object *self, const std::vector<Object *> &others) {
         rt->signalError(self->shortRepr() + " does not support that operator");
     }
 };
 
 class CharacterPreincAdapter: public OperatorAdapter {
 public:
-    Object *operator()(Object *self, const std::vector<Object *> &others, Runtime *rt) {
+    CharacterPreincAdapter(Runtime *rt)
+        : OperatorAdapter(rt) {}
+
+    Object *operator()(Object *self, const std::vector<Object *> &others) {
         if (!rt->isTypeObject(self) || self->type->id != rt->character_type->id) {
             rt->signalError("Left-side object is invalid: " + self->shortRepr());
         }
@@ -129,14 +116,17 @@ public:
         }
 
         getCharacterValueFast(self)++;
-        auto res = self->type->copy(self, rt);
+        auto res = self->type->copy(self);
         return res;
     }
 };
 
 class CharacterPredecAdapter: public OperatorAdapter {
 public:
-    Object *operator()(Object *self, const std::vector<Object *> &others, Runtime *rt) {
+    CharacterPredecAdapter(Runtime *rt)
+        : OperatorAdapter(rt) {}
+
+    Object *operator()(Object *self, const std::vector<Object *> &others) {
         if (!rt->isTypeObject(self) || self->type->id != rt->character_type->id) {
             rt->signalError("Left-side object is invalid: " + self->shortRepr());
         }
@@ -145,14 +135,17 @@ public:
         }
 
         getCharacterValueFast(self)--;
-        auto res = self->type->copy(self, rt);
+        auto res = self->type->copy(self);
         return res;
     }
 };
 
 class CharacterPositiveAdapter: public OperatorAdapter {
 public:
-    Object *operator()(Object *self, const std::vector<Object *> &others, Runtime *rt) {
+    CharacterPositiveAdapter(Runtime *rt)
+        : OperatorAdapter(rt) {}
+
+    Object *operator()(Object *self, const std::vector<Object *> &others) {
         if (!rt->isTypeObject(self) || self->type->id != rt->character_type->id) {
             rt->signalError("Left-side object is invalid: " + self->shortRepr());
         }
@@ -160,14 +153,17 @@ public:
             rt->signalError(self->shortRepr() + " does not support that operator");
         }
 
-        auto res = self->type->copy(self, rt);
+        auto res = self->type->copy(self);
         return res;
     }
 };
 
 class CharacterNegativeAdapter: public OperatorAdapter {
 public:
-    Object *operator()(Object *self, const std::vector<Object *> &others, Runtime *rt) {
+    CharacterNegativeAdapter(Runtime *rt)
+        : OperatorAdapter(rt) {}
+
+    Object *operator()(Object *self, const std::vector<Object *> &others) {
         if (!rt->isTypeObject(self) || self->type->id != rt->character_type->id) {
             rt->signalError("Left-side object is invalid: " + self->shortRepr());
         }
@@ -175,25 +171,18 @@ public:
             rt->signalError(self->shortRepr() + " does not support that operator");
         }
 
-        auto res                    = self->type->copy(self, rt);
+        auto res                    = self->type->copy(self);
         getCharacterValueFast(res) *= -1;
         return res;
     }
 };
 
-class CharacterNotAdapter: public OperatorAdapter {
-public:
-    Object *operator()(Object *self, const std::vector<Object *> &others, Runtime *rt) {
-        if (!rt->isTypeObject(self) || self->type->id != rt->character_type->id) {
-            rt->signalError("Left-side object is invalid: " + self->shortRepr());
-        }
-        rt->signalError(self->shortRepr() + " does not support that operator");
-    }
-};
-
 class CharacterInverseAdapter: public OperatorAdapter {
 public:
-    Object *operator()(Object *self, const std::vector<Object *> &others, Runtime *rt) {
+    CharacterInverseAdapter(Runtime *rt)
+        : OperatorAdapter(rt) {}
+
+    Object *operator()(Object *self, const std::vector<Object *> &others) {
         if (!rt->isTypeObject(self) || self->type->id != rt->character_type->id) {
             rt->signalError("Left-side object is invalid: " + self->shortRepr());
         }
@@ -201,7 +190,7 @@ public:
             rt->signalError(self->shortRepr() + " does not support that operator");
         }
 
-        auto res                   = self->type->copy(self, rt);
+        auto res                   = self->type->copy(self);
         getCharacterValueFast(res) = ~getCharacterValueFast(res);
         return res;
     }
@@ -209,7 +198,10 @@ public:
 
 class CharacterMultAdapter: public OperatorAdapter {
 public:
-    Object *operator()(Object *self, const std::vector<Object *> &others, Runtime *rt) {
+    CharacterMultAdapter(Runtime *rt)
+        : OperatorAdapter(rt) {}
+
+    Object *operator()(Object *self, const std::vector<Object *> &others) {
         if (!rt->isTypeObject(self) || self->type->id != rt->character_type->id) {
             rt->signalError("Left-side object is invalid: " + self->shortRepr());
         }
@@ -235,7 +227,10 @@ public:
 
 class CharacterDivAdapter: public OperatorAdapter {
 public:
-    Object *operator()(Object *self, const std::vector<Object *> &others, Runtime *rt) {
+    CharacterDivAdapter(Runtime *rt)
+        : OperatorAdapter(rt) {}
+
+    Object *operator()(Object *self, const std::vector<Object *> &others) {
         if (!rt->isTypeObject(self) || self->type->id != rt->character_type->id) {
             rt->signalError("Left-side object is invalid: " + self->shortRepr());
         }
@@ -261,7 +256,10 @@ public:
 
 class CharacterRemAdapter: public OperatorAdapter {
 public:
-    Object *operator()(Object *self, const std::vector<Object *> &others, Runtime *rt) {
+    CharacterRemAdapter(Runtime *rt)
+        : OperatorAdapter(rt) {}
+
+    Object *operator()(Object *self, const std::vector<Object *> &others) {
         if (!rt->isTypeObject(self) || self->type->id != rt->character_type->id) {
             rt->signalError("Left-side object is invalid: " + self->shortRepr());
         }
@@ -287,7 +285,10 @@ public:
 
 class CharacterRshiftAdapter: public OperatorAdapter {
 public:
-    Object *operator()(Object *self, const std::vector<Object *> &others, Runtime *rt) {
+    CharacterRshiftAdapter(Runtime *rt)
+        : OperatorAdapter(rt) {}
+
+    Object *operator()(Object *self, const std::vector<Object *> &others) {
         if (!rt->isTypeObject(self) || self->type->id != rt->character_type->id) {
             rt->signalError("Left-side object is invalid: " + self->shortRepr());
         }
@@ -313,7 +314,10 @@ public:
 
 class CharacterLshiftAdapter: public OperatorAdapter {
 public:
-    Object *operator()(Object *self, const std::vector<Object *> &others, Runtime *rt) {
+    CharacterLshiftAdapter(Runtime *rt)
+        : OperatorAdapter(rt) {}
+
+    Object *operator()(Object *self, const std::vector<Object *> &others) {
         if (!rt->isTypeObject(self) || self->type->id != rt->character_type->id) {
             rt->signalError("Left-side object is invalid: " + self->shortRepr());
         }
@@ -339,7 +343,10 @@ public:
 
 class CharacterAddAdapter: public OperatorAdapter {
 public:
-    Object *operator()(Object *self, const std::vector<Object *> &others, Runtime *rt) {
+    CharacterAddAdapter(Runtime *rt)
+        : OperatorAdapter(rt) {}
+
+    Object *operator()(Object *self, const std::vector<Object *> &others) {
         if (!rt->isTypeObject(self) || self->type->id != rt->character_type->id) {
             rt->signalError("Left-side object is invalid: " + self->shortRepr());
         }
@@ -365,7 +372,10 @@ public:
 
 class CharacterSubAdapter: public OperatorAdapter {
 public:
-    Object *operator()(Object *self, const std::vector<Object *> &others, Runtime *rt) {
+    CharacterSubAdapter(Runtime *rt)
+        : OperatorAdapter(rt) {}
+
+    Object *operator()(Object *self, const std::vector<Object *> &others) {
         if (!rt->isTypeObject(self) || self->type->id != rt->character_type->id) {
             rt->signalError("Left-side object is invalid: " + self->shortRepr());
         }
@@ -391,7 +401,10 @@ public:
 
 class CharacterLtAdapter: public OperatorAdapter {
 public:
-    Object *operator()(Object *self, const std::vector<Object *> &others, Runtime *rt) {
+    CharacterLtAdapter(Runtime *rt)
+        : OperatorAdapter(rt) {}
+
+    Object *operator()(Object *self, const std::vector<Object *> &others) {
         if (!rt->isTypeObject(self) || self->type->id != rt->character_type->id) {
             rt->signalError("Left-side object is invalid: " + self->shortRepr());
         }
@@ -417,7 +430,10 @@ public:
 
 class CharacterLeqAdapter: public OperatorAdapter {
 public:
-    Object *operator()(Object *self, const std::vector<Object *> &others, Runtime *rt) {
+    CharacterLeqAdapter(Runtime *rt)
+        : OperatorAdapter(rt) {}
+
+    Object *operator()(Object *self, const std::vector<Object *> &others) {
         if (!rt->isTypeObject(self) || self->type->id != rt->character_type->id) {
             rt->signalError("Left-side object is invalid: " + self->shortRepr());
         }
@@ -443,7 +459,10 @@ public:
 
 class CharacterGtAdapter: public OperatorAdapter {
 public:
-    Object *operator()(Object *self, const std::vector<Object *> &others, Runtime *rt) {
+    CharacterGtAdapter(Runtime *rt)
+        : OperatorAdapter(rt) {}
+
+    Object *operator()(Object *self, const std::vector<Object *> &others) {
         if (!rt->isTypeObject(self) || self->type->id != rt->character_type->id) {
             rt->signalError("Left-side object is invalid: " + self->shortRepr());
         }
@@ -469,7 +488,10 @@ public:
 
 class CharacterGeqAdapter: public OperatorAdapter {
 public:
-    Object *operator()(Object *self, const std::vector<Object *> &others, Runtime *rt) {
+    CharacterGeqAdapter(Runtime *rt)
+        : OperatorAdapter(rt) {}
+
+    Object *operator()(Object *self, const std::vector<Object *> &others) {
         if (!rt->isTypeObject(self) || self->type->id != rt->character_type->id) {
             rt->signalError("Left-side object is invalid: " + self->shortRepr());
         }
@@ -495,8 +517,11 @@ public:
 
 class CharacterEqAdapter: public OperatorAdapter {
 public:
-    Object *operator()(Object *self, const std::vector<Object *> &others, Runtime *rt) {
-        if (!rt->isTypeObject(self) || self->type->id != rt->boolean_type->id) {
+    CharacterEqAdapter(Runtime *rt)
+        : OperatorAdapter(rt) {}
+
+    Object *operator()(Object *self, const std::vector<Object *> &others) {
+        if (!rt->isTypeObject(self) || self->type->id != rt->character_type->id) {
             rt->signalError("Left-side object is invalid: " + self->shortRepr());
         }
         if (others.size() != 1) {
@@ -525,8 +550,11 @@ public:
 
 class CharacterNeqAdapter: public CharacterEqAdapter {
 public:
-    Object *operator()(Object *self, const std::vector<Object *> &others, Runtime *rt) {
-        auto res                   = CharacterEqAdapter::operator()(self, others, rt);
+    CharacterNeqAdapter(Runtime *rt)
+        : CharacterEqAdapter(rt) {}
+
+    Object *operator()(Object *self, const std::vector<Object *> &others) {
+        auto res                   = CharacterEqAdapter::operator()(self, others);
         getCharacterValueFast(res) = !getCharacterValueFast(res);
         return res;
     }
@@ -534,7 +562,10 @@ public:
 
 class CharacterBitandAdapter: public OperatorAdapter {
 public:
-    Object *operator()(Object *self, const std::vector<Object *> &others, Runtime *rt) {
+    CharacterBitandAdapter(Runtime *rt)
+        : OperatorAdapter(rt) {}
+
+    Object *operator()(Object *self, const std::vector<Object *> &others) {
         if (!rt->isTypeObject(self) || self->type->id != rt->character_type->id) {
             rt->signalError("Left-side object is invalid: " + self->shortRepr());
         }
@@ -560,7 +591,10 @@ public:
 
 class CharacterBitxorAdapter: public OperatorAdapter {
 public:
-    Object *operator()(Object *self, const std::vector<Object *> &others, Runtime *rt) {
+    CharacterBitxorAdapter(Runtime *rt)
+        : OperatorAdapter(rt) {}
+
+    Object *operator()(Object *self, const std::vector<Object *> &others) {
         if (!rt->isTypeObject(self) || self->type->id != rt->character_type->id) {
             rt->signalError("Left-side object is invalid: " + self->shortRepr());
         }
@@ -586,7 +620,10 @@ public:
 
 class CharacterBitorAdapter: public OperatorAdapter {
 public:
-    Object *operator()(Object *self, const std::vector<Object *> &others, Runtime *rt) {
+    CharacterBitorAdapter(Runtime *rt)
+        : OperatorAdapter(rt) {}
+
+    Object *operator()(Object *self, const std::vector<Object *> &others) {
         if (!rt->isTypeObject(self) || self->type->id != rt->character_type->id) {
             rt->signalError("Left-side object is invalid: " + self->shortRepr());
         }
@@ -610,74 +647,54 @@ public:
     }
 };
 
-class CharacterAndAdapter: public OperatorAdapter {
-public:
-    Object *operator()(Object *self, const std::vector<Object *> &others, Runtime *rt) {
-        if (!rt->isTypeObject(self) || self->type->id != rt->character_type->id) {
-            rt->signalError("Left-side object is invalid: " + self->shortRepr());
-        }
-        rt->signalError(self->shortRepr() + " does not support that operator");
-    }
-};
-
-class CharacterOrAdapter: public OperatorAdapter {
-public:
-    Object *operator()(Object *self, const std::vector<Object *> &others, Runtime *rt) {
-        if (!rt->isTypeObject(self) || self->type->id != rt->character_type->id) {
-            rt->signalError("Left-side object is invalid: " + self->shortRepr());
-        }
-        rt->signalError(self->shortRepr() + " does not support that operator");
-    }
-};
-
 // TODO: add all operators to function and nothing
 CharacterType::CharacterType(Runtime *rt)
-    : Type(true, rt) {
-    this->addOperator(OperatorNode::POST_PLUS_PLUS, new CharacterPostincAdapter(), rt);
-    this->addOperator(OperatorNode::POST_MINUS_MINUS, new CharacterPostdecAdapter(), rt);
-    this->addOperator(OperatorNode::CALL, new CharacterCallAdapter(), rt);
-    this->addOperator(OperatorNode::INDEX, new CharacterIndexAdapter(), rt);
-    this->addOperator(OperatorNode::PRE_PLUS_PLUS, new CharacterPreincAdapter(), rt);
-    this->addOperator(OperatorNode::PRE_MINUS_MINUS, new CharacterPredecAdapter(), rt);
-    this->addOperator(OperatorNode::PRE_PLUS, new CharacterPositiveAdapter(), rt);
-    this->addOperator(OperatorNode::PRE_MINUS, new CharacterNegativeAdapter(), rt);
-    this->addOperator(OperatorNode::NOT, new CharacterNotAdapter(), rt);
-    this->addOperator(OperatorNode::INVERSE, new CharacterInverseAdapter(), rt);
-    this->addOperator(OperatorNode::MULT, new CharacterMultAdapter(), rt);
-    this->addOperator(OperatorNode::DIV, new CharacterDivAdapter(), rt);
-    this->addOperator(OperatorNode::REM, new CharacterRemAdapter(), rt);
-    this->addOperator(OperatorNode::RIGHT_SHIFT, new CharacterRshiftAdapter(), rt);
-    this->addOperator(OperatorNode::LEFT_SHIFT, new CharacterLshiftAdapter(), rt);
-    this->addOperator(OperatorNode::PLUS, new CharacterAddAdapter(), rt);
-    this->addOperator(OperatorNode::MINUS, new CharacterSubAdapter(), rt);
-    this->addOperator(OperatorNode::LESS, new CharacterLtAdapter(), rt);
-    this->addOperator(OperatorNode::LESS_EQUAL, new CharacterLeqAdapter(), rt);
-    this->addOperator(OperatorNode::GREATER, new CharacterGtAdapter(), rt);
-    this->addOperator(OperatorNode::GREATER_EQUAL, new CharacterGeqAdapter(), rt);
-    this->addOperator(OperatorNode::EQUAL, new CharacterEqAdapter(), rt);
-    this->addOperator(OperatorNode::NOT_EQUAL, new CharacterNeqAdapter(), rt);
-    this->addOperator(OperatorNode::BITAND, new CharacterBitandAdapter(), rt);
-    this->addOperator(OperatorNode::BITXOR, new CharacterBitxorAdapter(), rt);
-    this->addOperator(OperatorNode::BITOR, new CharacterBitorAdapter(), rt);
-    this->addOperator(OperatorNode::AND, new CharacterAndAdapter(), rt);
-    this->addOperator(OperatorNode::OR, new CharacterOrAdapter(), rt);
+    : Type(rt) {
+    this->addOperator(OperatorNode::POST_PLUS_PLUS, new CharacterPostincAdapter(rt));
+    this->addOperator(OperatorNode::POST_MINUS_MINUS, new CharacterPostdecAdapter(rt));
+    this->addOperator(OperatorNode::CALL, new CharacterUnsupportedAdapter(rt));
+    this->addOperator(OperatorNode::INDEX, new CharacterUnsupportedAdapter(rt));
+    this->addOperator(OperatorNode::PRE_PLUS_PLUS, new CharacterPreincAdapter(rt));
+    this->addOperator(OperatorNode::PRE_MINUS_MINUS, new CharacterPredecAdapter(rt));
+    this->addOperator(OperatorNode::PRE_PLUS, new CharacterPositiveAdapter(rt));
+    this->addOperator(OperatorNode::PRE_MINUS, new CharacterNegativeAdapter(rt));
+    this->addOperator(OperatorNode::NOT, new CharacterUnsupportedAdapter(rt));
+    this->addOperator(OperatorNode::INVERSE, new CharacterInverseAdapter(rt));
+    this->addOperator(OperatorNode::MULT, new CharacterMultAdapter(rt));
+    this->addOperator(OperatorNode::DIV, new CharacterDivAdapter(rt));
+    this->addOperator(OperatorNode::REM, new CharacterRemAdapter(rt));
+    this->addOperator(OperatorNode::RIGHT_SHIFT, new CharacterRshiftAdapter(rt));
+    this->addOperator(OperatorNode::LEFT_SHIFT, new CharacterLshiftAdapter(rt));
+    this->addOperator(OperatorNode::PLUS, new CharacterAddAdapter(rt));
+    this->addOperator(OperatorNode::MINUS, new CharacterSubAdapter(rt));
+    this->addOperator(OperatorNode::LESS, new CharacterLtAdapter(rt));
+    this->addOperator(OperatorNode::LESS_EQUAL, new CharacterLeqAdapter(rt));
+    this->addOperator(OperatorNode::GREATER, new CharacterGtAdapter(rt));
+    this->addOperator(OperatorNode::GREATER_EQUAL, new CharacterGeqAdapter(rt));
+    this->addOperator(OperatorNode::EQUAL, new CharacterEqAdapter(rt));
+    this->addOperator(OperatorNode::NOT_EQUAL, new CharacterNeqAdapter(rt));
+    this->addOperator(OperatorNode::BITAND, new CharacterBitandAdapter(rt));
+    this->addOperator(OperatorNode::BITXOR, new CharacterBitxorAdapter(rt));
+    this->addOperator(OperatorNode::BITOR, new CharacterBitorAdapter(rt));
+    this->addOperator(OperatorNode::AND, new CharacterUnsupportedAdapter(rt));
+    this->addOperator(OperatorNode::OR, new CharacterUnsupportedAdapter(rt));
 }
 
-Object *CharacterType::create(Runtime *rt) {
-    auto ins = createInstance(rt, true, CharacterInstance);
-    auto obj = createObject(rt, true, ins, this, true);
+Object *CharacterType::create() {
+    auto ins = createInstance(rt, CharacterInstance);
+    auto obj = createObject(rt, true, ins, this);
     return obj;
 }
 
-Object *CharacterType::copy(Object *obj, Runtime *rt, bool force_heap) {
+Object *CharacterType::copy(Object *obj) {
     if (!rt->isTypeObject(obj) || obj->type->id != rt->character_type->id) {
         rt->signalError("Failed to copy an invalid object: " + obj->shortRepr());
     }
     if (!rt->isInstanceObject(obj)) {
-        return createObject(rt, false, NULL, this, !force_heap);
+        return createObject(rt, false, NULL, this);
     }
-    auto ins = obj->instance->copy(rt, force_heap);
-    auto res = createObject(rt, true, ins, this, !force_heap);
+    auto ins = obj->instance->copy();
+    auto res = createObject(rt, true, ins, this);
     return res;
 }
 

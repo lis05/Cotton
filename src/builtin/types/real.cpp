@@ -22,29 +22,19 @@
 #include "api.h"
 
 namespace Cotton::Builtin {
-RealInstance::RealInstance(Runtime *rt, bool on_stack)
-    : Instance(rt, sizeof(RealInstance), on_stack) {
+RealInstance::RealInstance(Runtime *rt)
+    : Instance(rt, sizeof(RealInstance)) {
     this->value = 0;
 }
 
 RealInstance::~RealInstance() {}
 
-Instance *RealInstance::copy(Runtime *rt, bool force_heap) {
-    Instance *res = NULL;
-    if (!force_heap) {
-        res = rt->stack->allocAndInitInstance<RealInstance>(sizeof(RealInstance), rt);
-        if (res != NULL) {
-            res->on_stack                   = true;
-            icast(res, RealInstance)->value = this->value;
-            return res;
-        }
-    }
-    res = new (std::nothrow) RealInstance(rt, false);
+Instance *RealInstance::copy() {
+    Instance *res = new (std::nothrow) RealInstance(rt);
     if (res == NULL) {
         rt->signalError("Failed to copy " + this->shortRepr());
     }
     icast(res, RealInstance)->value = this->value;
-    res->on_stack                   = false;
     return res;
 }
 
@@ -63,69 +53,22 @@ size_t RealType::getInstanceSize() {
     return sizeof(RealInstance);
 }
 
-class RealPostincAdapter: public OperatorAdapter {
+class RealUnsupportedAdapter: public OperatorAdapter {
 public:
-    Object *operator()(Object *self, const std::vector<Object *> &others, Runtime *rt) {
-        if (!rt->isTypeObject(self) || self->type->id != rt->real_type->id) {
-            rt->signalError("Left-side object is invalid: " + self->shortRepr());
-        }
-        rt->signalError(self->shortRepr() + " does not support that operator");
-    }
-};
+    RealUnsupportedAdapter(Runtime *rt)
+        : OperatorAdapter(rt) {}
 
-class RealPostdecAdapter: public OperatorAdapter {
-public:
-    Object *operator()(Object *self, const std::vector<Object *> &others, Runtime *rt) {
-        if (!rt->isTypeObject(self) || self->type->id != rt->real_type->id) {
-            rt->signalError("Left-side object is invalid: " + self->shortRepr());
-        }
-        rt->signalError(self->shortRepr() + " does not support that operator");
-    }
-};
-
-class RealCallAdapter: public OperatorAdapter {
-public:
-    Object *operator()(Object *self, const std::vector<Object *> &others, Runtime *rt) {
-        if (!rt->isTypeObject(self) || self->type->id != rt->real_type->id) {
-            rt->signalError("Left-side object is invalid: " + self->shortRepr());
-        }
-        rt->signalError(self->shortRepr() + " does not support that operator");
-    }
-};
-
-class RealIndexAdapter: public OperatorAdapter {
-public:
-    Object *operator()(Object *self, const std::vector<Object *> &others, Runtime *rt) {
-        if (!rt->isTypeObject(self) || self->type->id != rt->real_type->id) {
-            rt->signalError("Left-side object is invalid: " + self->shortRepr());
-        }
-        rt->signalError(self->shortRepr() + " does not support that operator");
-    }
-};
-
-class RealPreincAdapter: public OperatorAdapter {
-public:
-    Object *operator()(Object *self, const std::vector<Object *> &others, Runtime *rt) {
-        if (!rt->isTypeObject(self) || self->type->id != rt->real_type->id) {
-            rt->signalError("Left-side object is invalid: " + self->shortRepr());
-        }
-        rt->signalError(self->shortRepr() + " does not support that operator");
-    }
-};
-
-class RealPredecAdapter: public OperatorAdapter {
-public:
-    Object *operator()(Object *self, const std::vector<Object *> &others, Runtime *rt) {
-        if (!rt->isTypeObject(self) || self->type->id != rt->real_type->id) {
-            rt->signalError("Left-side object is invalid: " + self->shortRepr());
-        }
+    Object *operator()(Object *self, const std::vector<Object *> &others) {
         rt->signalError(self->shortRepr() + " does not support that operator");
     }
 };
 
 class RealPositiveAdapter: public OperatorAdapter {
 public:
-    Object *operator()(Object *self, const std::vector<Object *> &others, Runtime *rt) {
+    RealPositiveAdapter(Runtime *rt)
+        : OperatorAdapter(rt) {}
+
+    Object *operator()(Object *self, const std::vector<Object *> &others) {
         if (!rt->isTypeObject(self) || self->type->id != rt->real_type->id) {
             rt->signalError("Left-side object is invalid: " + self->shortRepr());
         }
@@ -133,14 +76,17 @@ public:
             rt->signalError(self->shortRepr() + " does not support that operator");
         }
 
-        auto res = self->type->copy(self, rt);
+        auto res = self->type->copy(self);
         return res;
     }
 };
 
 class RealNegativeAdapter: public OperatorAdapter {
 public:
-    Object *operator()(Object *self, const std::vector<Object *> &others, Runtime *rt) {
+    RealNegativeAdapter(Runtime *rt)
+        : OperatorAdapter(rt) {}
+
+    Object *operator()(Object *self, const std::vector<Object *> &others) {
         if (!rt->isTypeObject(self) || self->type->id != rt->real_type->id) {
             rt->signalError("Left-side object is invalid: " + self->shortRepr());
         }
@@ -148,35 +94,18 @@ public:
             rt->signalError(self->shortRepr() + " does not support that operator");
         }
 
-        auto res               = self->type->copy(self, rt);
+        auto res               = self->type->copy(self);
         getRealValueFast(res) *= -1;
         return res;
     }
 };
 
-class RealNotAdapter: public OperatorAdapter {
-public:
-    Object *operator()(Object *self, const std::vector<Object *> &others, Runtime *rt) {
-        if (!rt->isTypeObject(self) || self->type->id != rt->real_type->id) {
-            rt->signalError("Left-side object is invalid: " + self->shortRepr());
-        }
-        rt->signalError(self->shortRepr() + " does not support that operator");
-    }
-};
-
-class RealInverseAdapter: public OperatorAdapter {
-public:
-    Object *operator()(Object *self, const std::vector<Object *> &others, Runtime *rt) {
-        if (!rt->isTypeObject(self) || self->type->id != rt->real_type->id) {
-            rt->signalError("Left-side object is invalid: " + self->shortRepr());
-        }
-        rt->signalError(self->shortRepr() + " does not support that operator");
-    }
-};
-
 class RealMultAdapter: public OperatorAdapter {
 public:
-    Object *operator()(Object *self, const std::vector<Object *> &others, Runtime *rt) {
+    RealMultAdapter(Runtime *rt)
+        : OperatorAdapter(rt) {}
+
+    Object *operator()(Object *self, const std::vector<Object *> &others) {
         if (!rt->isTypeObject(self) || self->type->id != rt->real_type->id) {
             rt->signalError("Left-side object is invalid: " + self->shortRepr());
         }
@@ -202,7 +131,10 @@ public:
 
 class RealDivAdapter: public OperatorAdapter {
 public:
-    Object *operator()(Object *self, const std::vector<Object *> &others, Runtime *rt) {
+    RealDivAdapter(Runtime *rt)
+        : OperatorAdapter(rt) {}
+
+    Object *operator()(Object *self, const std::vector<Object *> &others) {
         if (!rt->isTypeObject(self) || self->type->id != rt->real_type->id) {
             rt->signalError("Left-side object is invalid: " + self->shortRepr());
         }
@@ -226,39 +158,12 @@ public:
     }
 };
 
-class RealRemAdapter: public OperatorAdapter {
-public:
-    Object *operator()(Object *self, const std::vector<Object *> &others, Runtime *rt) {
-        if (!rt->isTypeObject(self) || self->type->id != rt->real_type->id) {
-            rt->signalError("Left-side object is invalid: " + self->shortRepr());
-        }
-        rt->signalError(self->shortRepr() + " does not support that operator");
-    }
-};
-
-class RealRshiftAdapter: public OperatorAdapter {
-public:
-    Object *operator()(Object *self, const std::vector<Object *> &others, Runtime *rt) {
-        if (!rt->isTypeObject(self) || self->type->id != rt->real_type->id) {
-            rt->signalError("Left-side object is invalid: " + self->shortRepr());
-        }
-        rt->signalError(self->shortRepr() + " does not support that operator");
-    }
-};
-
-class RealLshiftAdapter: public OperatorAdapter {
-public:
-    Object *operator()(Object *self, const std::vector<Object *> &others, Runtime *rt) {
-        if (!rt->isTypeObject(self) || self->type->id != rt->real_type->id) {
-            rt->signalError("Left-side object is invalid: " + self->shortRepr());
-        }
-        rt->signalError(self->shortRepr() + " does not support that operator");
-    }
-};
-
 class RealAddAdapter: public OperatorAdapter {
 public:
-    Object *operator()(Object *self, const std::vector<Object *> &others, Runtime *rt) {
+    RealAddAdapter(Runtime *rt)
+        : OperatorAdapter(rt) {}
+
+    Object *operator()(Object *self, const std::vector<Object *> &others) {
         if (!rt->isTypeObject(self) || self->type->id != rt->real_type->id) {
             rt->signalError("Left-side object is invalid: " + self->shortRepr());
         }
@@ -284,7 +189,10 @@ public:
 
 class RealSubAdapter: public OperatorAdapter {
 public:
-    Object *operator()(Object *self, const std::vector<Object *> &others, Runtime *rt) {
+    RealSubAdapter(Runtime *rt)
+        : OperatorAdapter(rt) {}
+
+    Object *operator()(Object *self, const std::vector<Object *> &others) {
         if (!rt->isTypeObject(self) || self->type->id != rt->real_type->id) {
             rt->signalError("Left-side object is invalid: " + self->shortRepr());
         }
@@ -310,7 +218,10 @@ public:
 
 class RealLtAdapter: public OperatorAdapter {
 public:
-    Object *operator()(Object *self, const std::vector<Object *> &others, Runtime *rt) {
+    RealLtAdapter(Runtime *rt)
+        : OperatorAdapter(rt) {}
+
+    Object *operator()(Object *self, const std::vector<Object *> &others) {
         if (!rt->isTypeObject(self) || self->type->id != rt->real_type->id) {
             rt->signalError("Left-side object is invalid: " + self->shortRepr());
         }
@@ -336,7 +247,10 @@ public:
 
 class RealLeqAdapter: public OperatorAdapter {
 public:
-    Object *operator()(Object *self, const std::vector<Object *> &others, Runtime *rt) {
+    RealLeqAdapter(Runtime *rt)
+        : OperatorAdapter(rt) {}
+
+    Object *operator()(Object *self, const std::vector<Object *> &others) {
         if (!rt->isTypeObject(self) || self->type->id != rt->real_type->id) {
             rt->signalError("Left-side object is invalid: " + self->shortRepr());
         }
@@ -362,7 +276,10 @@ public:
 
 class RealGtAdapter: public OperatorAdapter {
 public:
-    Object *operator()(Object *self, const std::vector<Object *> &others, Runtime *rt) {
+    RealGtAdapter(Runtime *rt)
+        : OperatorAdapter(rt) {}
+
+    Object *operator()(Object *self, const std::vector<Object *> &others) {
         if (!rt->isTypeObject(self) || self->type->id != rt->real_type->id) {
             rt->signalError("Left-side object is invalid: " + self->shortRepr());
         }
@@ -388,7 +305,10 @@ public:
 
 class RealGeqAdapter: public OperatorAdapter {
 public:
-    Object *operator()(Object *self, const std::vector<Object *> &others, Runtime *rt) {
+    RealGeqAdapter(Runtime *rt)
+        : OperatorAdapter(rt) {}
+
+    Object *operator()(Object *self, const std::vector<Object *> &others) {
         if (!rt->isTypeObject(self) || self->type->id != rt->real_type->id) {
             rt->signalError("Left-side object is invalid: " + self->shortRepr());
         }
@@ -414,7 +334,10 @@ public:
 
 class RealEqAdapter: public OperatorAdapter {
 public:
-    Object *operator()(Object *self, const std::vector<Object *> &others, Runtime *rt) {
+    RealEqAdapter(Runtime *rt)
+        : OperatorAdapter(rt) {}
+
+    Object *operator()(Object *self, const std::vector<Object *> &others) {
         if (!rt->isTypeObject(self) || self->type->id != rt->boolean_type->id) {
             rt->signalError("Left-side object is invalid: " + self->shortRepr());
         }
@@ -444,111 +367,64 @@ public:
 
 class RealNeqAdapter: public RealEqAdapter {
 public:
-    Object *operator()(Object *self, const std::vector<Object *> &others, Runtime *rt) {
-        auto res              = RealEqAdapter::operator()(self, others, rt);
+    RealNeqAdapter(Runtime *rt)
+        : RealEqAdapter(rt) {}
+
+    Object *operator()(Object *self, const std::vector<Object *> &others) {
+        auto res              = RealEqAdapter::operator()(self, others);
         getRealValueFast(res) = !getRealValueFast(res);
         return res;
     }
 };
 
-class RealBitandAdapter: public OperatorAdapter {
-public:
-    Object *operator()(Object *self, const std::vector<Object *> &others, Runtime *rt) {
-        if (!rt->isTypeObject(self) || self->type->id != rt->real_type->id) {
-            rt->signalError("Left-side object is invalid: " + self->shortRepr());
-        }
-        rt->signalError(self->shortRepr() + " does not support that operator");
-    }
-};
-
-class RealBitxorAdapter: public OperatorAdapter {
-public:
-    Object *operator()(Object *self, const std::vector<Object *> &others, Runtime *rt) {
-        if (!rt->isTypeObject(self) || self->type->id != rt->real_type->id) {
-            rt->signalError("Left-side object is invalid: " + self->shortRepr());
-        }
-        rt->signalError(self->shortRepr() + " does not support that operator");
-    }
-};
-
-class RealBitorAdapter: public OperatorAdapter {
-public:
-    Object *operator()(Object *self, const std::vector<Object *> &others, Runtime *rt) {
-        if (!rt->isTypeObject(self) || self->type->id != rt->real_type->id) {
-            rt->signalError("Left-side object is invalid: " + self->shortRepr());
-        }
-        rt->signalError(self->shortRepr() + " does not support that operator");
-    }
-};
-
-class RealAndAdapter: public OperatorAdapter {
-public:
-    Object *operator()(Object *self, const std::vector<Object *> &others, Runtime *rt) {
-        if (!rt->isTypeObject(self) || self->type->id != rt->real_type->id) {
-            rt->signalError("Left-side object is invalid: " + self->shortRepr());
-        }
-        rt->signalError(self->shortRepr() + " does not support that operator");
-    }
-};
-
-class RealOrAdapter: public OperatorAdapter {
-public:
-    Object *operator()(Object *self, const std::vector<Object *> &others, Runtime *rt) {
-        if (!rt->isTypeObject(self) || self->type->id != rt->real_type->id) {
-            rt->signalError("Left-side object is invalid: " + self->shortRepr());
-        }
-        rt->signalError(self->shortRepr() + " does not support that operator");
-    }
-};
-
 // TODO: add all operators to function and nothing
 RealType::RealType(Runtime *rt)
-    : Type(true, rt) {
-    this->addOperator(OperatorNode::POST_PLUS_PLUS, new RealPostincAdapter(), rt);
-    this->addOperator(OperatorNode::POST_MINUS_MINUS, new RealPostdecAdapter(), rt);
-    this->addOperator(OperatorNode::CALL, new RealCallAdapter(), rt);
-    this->addOperator(OperatorNode::INDEX, new RealIndexAdapter(), rt);
-    this->addOperator(OperatorNode::PRE_PLUS_PLUS, new RealPreincAdapter(), rt);
-    this->addOperator(OperatorNode::PRE_MINUS_MINUS, new RealPredecAdapter(), rt);
-    this->addOperator(OperatorNode::PRE_PLUS, new RealPositiveAdapter(), rt);
-    this->addOperator(OperatorNode::PRE_MINUS, new RealNegativeAdapter(), rt);
-    this->addOperator(OperatorNode::NOT, new RealNotAdapter(), rt);
-    this->addOperator(OperatorNode::INVERSE, new RealInverseAdapter(), rt);
-    this->addOperator(OperatorNode::MULT, new RealMultAdapter(), rt);
-    this->addOperator(OperatorNode::DIV, new RealDivAdapter(), rt);
-    this->addOperator(OperatorNode::REM, new RealRemAdapter(), rt);
-    this->addOperator(OperatorNode::RIGHT_SHIFT, new RealRshiftAdapter(), rt);
-    this->addOperator(OperatorNode::LEFT_SHIFT, new RealLshiftAdapter(), rt);
-    this->addOperator(OperatorNode::PLUS, new RealAddAdapter(), rt);
-    this->addOperator(OperatorNode::MINUS, new RealSubAdapter(), rt);
-    this->addOperator(OperatorNode::LESS, new RealLtAdapter(), rt);
-    this->addOperator(OperatorNode::LESS_EQUAL, new RealLeqAdapter(), rt);
-    this->addOperator(OperatorNode::GREATER, new RealGtAdapter(), rt);
-    this->addOperator(OperatorNode::GREATER_EQUAL, new RealGeqAdapter(), rt);
-    this->addOperator(OperatorNode::EQUAL, new RealEqAdapter(), rt);
-    this->addOperator(OperatorNode::NOT_EQUAL, new RealNeqAdapter(), rt);
-    this->addOperator(OperatorNode::BITAND, new RealBitandAdapter(), rt);
-    this->addOperator(OperatorNode::BITXOR, new RealBitxorAdapter(), rt);
-    this->addOperator(OperatorNode::BITOR, new RealBitorAdapter(), rt);
-    this->addOperator(OperatorNode::AND, new RealAndAdapter(), rt);
-    this->addOperator(OperatorNode::OR, new RealOrAdapter(), rt);
+    : Type(rt) {
+    this->addOperator(OperatorNode::POST_PLUS_PLUS, new RealUnsupportedAdapter(rt));
+    this->addOperator(OperatorNode::POST_MINUS_MINUS, new RealUnsupportedAdapter(rt));
+    this->addOperator(OperatorNode::CALL, new RealUnsupportedAdapter(rt));
+    this->addOperator(OperatorNode::INDEX, new RealUnsupportedAdapter(rt));
+    this->addOperator(OperatorNode::PRE_PLUS_PLUS, new RealUnsupportedAdapter(rt));
+    this->addOperator(OperatorNode::PRE_MINUS_MINUS, new RealUnsupportedAdapter(rt));
+    this->addOperator(OperatorNode::PRE_PLUS, new RealPositiveAdapter(rt));
+    this->addOperator(OperatorNode::PRE_MINUS, new RealNegativeAdapter(rt));
+    this->addOperator(OperatorNode::NOT, new RealUnsupportedAdapter(rt));
+    this->addOperator(OperatorNode::INVERSE, new RealUnsupportedAdapter(rt));
+    this->addOperator(OperatorNode::MULT, new RealMultAdapter(rt));
+    this->addOperator(OperatorNode::DIV, new RealDivAdapter(rt));
+    this->addOperator(OperatorNode::REM, new RealUnsupportedAdapter(rt));
+    this->addOperator(OperatorNode::RIGHT_SHIFT, new RealUnsupportedAdapter(rt));
+    this->addOperator(OperatorNode::LEFT_SHIFT, new RealUnsupportedAdapter(rt));
+    this->addOperator(OperatorNode::PLUS, new RealAddAdapter(rt));
+    this->addOperator(OperatorNode::MINUS, new RealSubAdapter(rt));
+    this->addOperator(OperatorNode::LESS, new RealLtAdapter(rt));
+    this->addOperator(OperatorNode::LESS_EQUAL, new RealLeqAdapter(rt));
+    this->addOperator(OperatorNode::GREATER, new RealGtAdapter(rt));
+    this->addOperator(OperatorNode::GREATER_EQUAL, new RealGeqAdapter(rt));
+    this->addOperator(OperatorNode::EQUAL, new RealEqAdapter(rt));
+    this->addOperator(OperatorNode::NOT_EQUAL, new RealNeqAdapter(rt));
+    this->addOperator(OperatorNode::BITAND, new RealUnsupportedAdapter(rt));
+    this->addOperator(OperatorNode::BITXOR, new RealUnsupportedAdapter(rt));
+    this->addOperator(OperatorNode::BITOR, new RealUnsupportedAdapter(rt));
+    this->addOperator(OperatorNode::AND, new RealUnsupportedAdapter(rt));
+    this->addOperator(OperatorNode::OR, new RealUnsupportedAdapter(rt));
 }
 
-Object *RealType::create(Runtime *rt) {
-    auto ins = createInstance(rt, true, RealInstance);
-    auto obj = createObject(rt, true, ins, this, true);
+Object *RealType::create() {
+    auto ins = createInstance(rt, RealInstance);
+    auto obj = createObject(rt, true, ins, this);
     return obj;
 }
 
-Object *RealType::copy(Object *obj, Runtime *rt, bool force_heap) {
+Object *RealType::copy(Object *obj) {
     if (!rt->isTypeObject(obj) || obj->type->id != rt->real_type->id) {
         rt->signalError("Failed to copy an invalid object: " + obj->shortRepr());
     }
     if (!rt->isInstanceObject(obj)) {
-        return createObject(rt, false, NULL, this, !force_heap);
+        return createObject(rt, false, NULL, this);
     }
-    auto ins = obj->instance->copy(rt, force_heap);
-    auto res = createObject(rt, true, ins, this, !force_heap);
+    auto ins = obj->instance->copy();
+    auto res = createObject(rt, true, ins, this);
     return res;
 }
 

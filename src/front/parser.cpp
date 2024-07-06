@@ -700,7 +700,7 @@ Parser::OperatorInfo Parser::getOperatorInfo(Token *token, bool is_pre_op, int s
                            : OperatorInfo {OperatorNode::POST_PLUS_PLUS, 1, LEFT_TO_RIGHT};
     case Token::MINUS_MINUS_OP :
         return (is_pre_op) ? OperatorInfo {OperatorNode::PRE_MINUS_MINUS, 2, RIGHT_TO_LEFT}
-                           : OperatorInfo {OperatorNode::PRE_PLUS_PLUS, 1, LEFT_TO_RIGHT};
+                           : OperatorInfo {OperatorNode::POST_MINUS_MINUS, 1, LEFT_TO_RIGHT};
     case Token::DOT_OP : return OperatorInfo {OperatorNode::DOT, 1, LEFT_TO_RIGHT};
     case Token::AT_OP  : return OperatorInfo {OperatorNode::AT, 2, RIGHT_TO_LEFT};
     case Token::PLUS_OP :
@@ -733,7 +733,7 @@ Parser::OperatorInfo Parser::getOperatorInfo(Token *token, bool is_pre_op, int s
     case Token::ASSIGN_MULT_OP      : return OperatorInfo {OperatorNode::MULT_ASSIGN, 13, RIGHT_TO_LEFT};
     case Token::ASSIGN_DIV_OP       : return OperatorInfo {OperatorNode::DIV_ASSIGN, 13, RIGHT_TO_LEFT};
     case Token::ASSIGN_REMAINDER_OP : return OperatorInfo {OperatorNode::REM_ASSIGN, 13, RIGHT_TO_LEFT};
-    case Token::COMMA               : return OperatorInfo {OperatorNode::COMMA, 14, LEFT_TO_RIGHT};
+    case Token::COMMA               : return OperatorInfo {OperatorNode::COMMA, 14, RIGHT_TO_LEFT};
     }
 
     if (special == 1) {

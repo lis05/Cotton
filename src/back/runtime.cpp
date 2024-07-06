@@ -6,18 +6,18 @@
 #include "instance.h"
 #include "nameid.h"
 #include "scope.h"
-#include "stack.h"
 #include "type.h"
 
 namespace Cotton {
-Runtime::Runtime(size_t stack_size, GCStrategy *gc_strategy, ErrorManager *error_manager) {
+Runtime::Runtime(GCStrategy *gc_strategy, ErrorManager *error_manager) {
     this->scope         = new Scope(NULL, NULL, true);
     this->scope->master = this->scope;
-    this->stack         = new Stack(stack_size);
-    this->stack->newFrame();
     this->gc            = new GC(gc_strategy);
     this->error_manager = error_manager;
     this->current_token = NULL;
+
+    this->gc->rt    = this;
+    gc_strategy->rt = this;
 
     this->nothing_type   = new Builtin::NothingType(this);
     this->function_type  = new Builtin::FunctionType(this);
@@ -41,14 +41,12 @@ Runtime::Runtime(size_t stack_size, GCStrategy *gc_strategy, ErrorManager *error
 void Runtime::newFrame(bool can_access_prev_scope) {
     auto scope  = new Scope(this->scope, this->scope->master, can_access_prev_scope);
     this->scope = scope;
-    this->stack->newFrame();
 }
 
 void Runtime::popFrame() {
     auto scope = this->scope->prev;
     delete this->scope;
     this->scope = scope;
-    this->stack->popFrame();
 }
 
 Object *Runtime::make(Type *type, ObjectOptions object_opt) {
@@ -57,25 +55,25 @@ Object *Runtime::make(Type *type, ObjectOptions object_opt) {
     }
     Object *obj = NULL;
     if (object_opt == Runtime::INSTANCE_OBJECT) {
-        obj = type->create(this);
+        obj = type->create();
     }
     else {
-        obj = new Object(false, false, NULL, type, this);
+        obj = new Object(false, NULL, type, this);
     }
     if (obj == NULL) {
         this->signalError("Failed to make an object of type " + type->shortRepr());
     }
-    if (this->isInstanceObject(obj) && obj->type->hasMethod(MagicMethods::__make__(), this)) {
-        this->runMethod(MagicMethods::__make__(), obj, {});
+    if (this->isInstanceObject(obj) && obj->type->hasMethod(MagicMethods::__make__())) {
+        this->runMethod(MagicMethods::__make__(), obj, {obj});
     }
     return obj;
 }
 
-Object *Runtime::copy(Object *obj, bool force_heap) {
+Object *Runtime::copy(Object *obj) {
     if (!this->isTypeObject(obj)) {
         this->signalError("Failed to copy non type object " + obj->shortRepr());
     }
-    return obj->type->copy(obj, this, force_heap);
+    return obj->type->copy(obj);
 }
 
 Object *Runtime::runOperator(OperatorNode::OperatorId id, Object *obj, const std::vector<Object *> &args) {
@@ -83,8 +81,8 @@ Object *Runtime::runOperator(OperatorNode::OperatorId id, Object *obj, const std
         this->signalError("Failed to run operator " + std::to_string(id) + " on " + obj->shortRepr());
     }
 
-    auto op = obj->type->getOperator(id, this);
-    return op->operator()(obj, args, this);
+    auto op = obj->type->getOperator(id);
+    return op->operator()(obj, args);
 }
 
 Object *Runtime::runMethod(int64_t id, Object *obj, const std::vector<Object *> &args) {
@@ -92,7 +90,7 @@ Object *Runtime::runMethod(int64_t id, Object *obj, const std::vector<Object *> 
         this->signalError("Failed to run method " + NameId::shortRepr(id) + " on " + obj->shortRepr());
     }
 
-    auto method = obj->type->getMethod(id, this);
+    auto method = obj->type->getMethod(id);
     return runOperator(OperatorNode::CALL, method, args);
 }
 
@@ -181,7 +179,7 @@ Runtime::ExecutionResult Runtime::execute(TypeDefNode *node) {
     for (auto method : node->methods) {
         this->highlight(method->function_token);
         auto f = Builtin::makeFunctionInstanceObject(false, NULL, method, this);
-        type->addMethod(method->name->nameid, f, this);
+        type->addMethod(method->name->nameid, f);
     }
 
     this->highlight(node->type_token);
@@ -191,25 +189,62 @@ Runtime::ExecutionResult Runtime::execute(TypeDefNode *node) {
     return ExecutionResult(0, res);
 }
 
-static std::vector<Runtime::ExecutionResult> getList(ExprNode *expr, Runtime *rt) {
-    std::vector<Runtime::ExecutionResult> res;
+static std::vector<Object *> getList(ExprNode *expr, Runtime *rt) {
+    std::vector<Object *> res;
     while (expr != NULL) {
         if (expr->id == ExprNode::OPERATOR && expr->op->id == OperatorNode::COMMA) {
-            res.push_back(rt->execute(expr->op->second));
-            expr = expr->op->first;
+            auto r = rt->execute(expr->op->first);
+
+            if (r.flags & Runtime::ExecutionResult::DIRECT_PASS) {
+                res.push_back(r.result);
+            }
+            else {
+                res.push_back(rt->copy(r.result));
+            }
+            expr = expr->op->second;
         }
         else {
-            res.push_back(rt->execute(expr));
+            auto r = rt->execute(expr);
+            if (r.flags & Runtime::ExecutionResult::DIRECT_PASS) {
+                res.push_back(r.result);
+            }
+            else {
+                res.push_back(rt->copy(r.result));
+            }
             break;
         }
     }
-    std::reverse(res.begin(), res.end());
     return res;
 }
 
 Runtime::ExecutionResult Runtime::execute(OperatorNode *node) {
     if (node == NULL) {
         this->signalError("Failed to execute NULL AST node");
+    }
+
+    if (node->id == OperatorNode::ASSIGN) {
+        if (node->first->id == ExprNode::ATOM && node->first->atom->id == AtomNode::IDENTIFIER) {
+            if (!this->scope->queryVariable(node->first->atom->ident->nameid, this)) {
+                this->scope->addVariable(node->first->atom->ident->nameid,
+                                         Builtin::makeNothingInstanceObject(this),
+                                         this);
+            }
+        }
+    }
+    if (node->id == OperatorNode::COMMA) {
+        ExecutionResult res  = this->execute(node->first);
+        auto            expr = node->second;
+        while (expr != NULL) {
+            if (expr->id == ExprNode::OPERATOR && expr->op->id == OperatorNode::COMMA) {
+                auto r = this->execute(expr->op->first);
+                expr   = expr->op->second;
+            }
+            else {
+                auto r = this->execute(expr);
+                break;
+            }
+        }
+        return res;
     }
 
     auto            caller = this->execute(node->first);
@@ -232,8 +267,8 @@ Runtime::ExecutionResult Runtime::execute(OperatorNode *node) {
             auto res = self->instance->selectField(selector, this);
             return ExecutionResult(0, res, self);
         }
-        else if (self->type->hasMethod(selector, this)) {
-            auto res = self->type->getMethod(selector, this);
+        else if (self->type->hasMethod(selector)) {
+            auto res = self->type->getMethod(selector);
             return ExecutionResult(0, res, self);
         }
         else {
@@ -242,9 +277,6 @@ Runtime::ExecutionResult Runtime::execute(OperatorNode *node) {
     }
     case OperatorNode::AT : {
         return ExecutionResult(ExecutionResult::DIRECT_PASS, self);
-    }
-    case OperatorNode::COMMA : {
-        return ExecutionResult(0, self);
     }
     case OperatorNode::ASSIGN : {
         other = this->execute(node->second);
@@ -285,7 +317,7 @@ Runtime::ExecutionResult Runtime::execute(OperatorNode *node) {
     case OperatorNode::REM_ASSIGN : {
         other = this->execute(node->second);
         this->highlight(node->op);
-        self->assignTo(this->copy(this->runOperator(OperatorNode::REM_ASSIGN, self, {other.result})));
+        self->assignTo(this->copy(this->runOperator(OperatorNode::REM, self, {other.result})));
         return ExecutionResult(0, self);
     }
     }
@@ -296,12 +328,7 @@ Runtime::ExecutionResult Runtime::execute(OperatorNode *node) {
     }
 
     for (auto r : getList(node->second, this)) {
-        if (r.flags & ExecutionResult::DIRECT_PASS) {
-            args.push_back(r.result);
-        }
-        else {
-            args.push_back(this->copy(r.result));
-        }
+        args.push_back(r);
     }
 
     auto res = this->runOperator(node->id, self, args);
@@ -333,9 +360,6 @@ Runtime::ExecutionResult Runtime::execute(AtomNode *node) {
         return ExecutionResult(0, Builtin::makeNothingInstanceObject(this));
     }
     case AtomNode::IDENTIFIER : {
-        if (!this->scope->queryVariable(node->token->nameid, this)) {
-            this->scope->addVariable(node->token->nameid, Builtin::makeNothingInstanceObject(this), this);
-        }
         return ExecutionResult(0, this->scope->getVariable(node->token->nameid, this));
     }
     default : this->signalError("Unknown atom");
@@ -353,7 +377,7 @@ Runtime::ExecutionResult Runtime::execute(StmtNode *node) {
     if (node == NULL) {
         this->signalError("Failed to execute NULL AST node");
     }
-    this->gc->ping(this);
+    this->gc->ping();
     switch (node->id) {
     case StmtNode::WHILE : {
         return this->execute(node->while_stmt);
@@ -400,6 +424,7 @@ Runtime::ExecutionResult Runtime::execute(WhileStmtNode *node) {
             }
 
             if (!Builtin::getBooleanValue(cond, this)) {
+                this->popFrame();
                 break;
             }
         }
@@ -407,6 +432,7 @@ Runtime::ExecutionResult Runtime::execute(WhileStmtNode *node) {
         if (node->body != NULL) {
             auto body = this->execute(node->body);
             if (body.flags & ExecutionResult::BREAK) {
+                this->popFrame();
                 break;
             }
             if (body.flags & ExecutionResult::CONTINUE) {
@@ -414,22 +440,17 @@ Runtime::ExecutionResult Runtime::execute(WhileStmtNode *node) {
             }
             if (body.flags & ExecutionResult::RETURN) {
                 if (body.flags & ExecutionResult::DIRECT_PASS) {
-                    if (body.result->on_stack) {
-                        this->signalError("Returning object on stack " + body.result->shortRepr()
-                                          + " via @ operator is forbidden");
-                    }
-
                     auto res = ExecutionResult(ExecutionResult::RETURN, body.result);
                     this->popFrame();
                     return res;
                 }
-                auto res = ExecutionResult(ExecutionResult::RETURN, this->copy(body.result, true));
+                auto res = ExecutionResult(ExecutionResult::RETURN, this->copy(body.result));
                 this->popFrame();
                 return res;
             };
         }
+        this->popFrame();
     }
-    this->popFrame();
     return ExecutionResult(0, Builtin::makeNothingInstanceObject(this));
 }
 
@@ -454,6 +475,7 @@ Runtime::ExecutionResult Runtime::execute(ForStmtNode *node) {
             }
 
             if (!Builtin::getBooleanValue(cond, this)) {
+                this->popFrame();
                 break;
             }
         }
@@ -461,6 +483,7 @@ Runtime::ExecutionResult Runtime::execute(ForStmtNode *node) {
         if (node->body != NULL) {
             auto body = this->execute(node->body);
             if (body.flags & ExecutionResult::BREAK) {
+                this->popFrame();
                 break;
             }
             if (body.flags & ExecutionResult::CONTINUE) {
@@ -468,16 +491,11 @@ Runtime::ExecutionResult Runtime::execute(ForStmtNode *node) {
             }
             if (body.flags & ExecutionResult::RETURN) {
                 if (body.flags & ExecutionResult::DIRECT_PASS) {
-                    if (body.result->on_stack) {
-                        this->signalError("Returning object on stack " + body.result->shortRepr()
-                                          + " via @ operator is forbidden");
-                    }
-
                     auto res = ExecutionResult(ExecutionResult::RETURN, body.result);
                     this->popFrame();
                     return res;
                 }
-                auto res = ExecutionResult(ExecutionResult::RETURN, this->copy(body.result, true));
+                auto res = ExecutionResult(ExecutionResult::RETURN, this->copy(body.result));
                 this->popFrame();
                 return res;
             };
@@ -497,7 +515,6 @@ Runtime::ExecutionResult Runtime::execute(IfStmtNode *node) {
     }
     this->highlight(node->if_token);
 
-    this->newFrame();
     auto cond = this->execute(node->cond).result;
     this->highlight(node->if_token);
     if (!this->isInstanceObject(cond, this->boolean_type)) {
@@ -505,12 +522,11 @@ Runtime::ExecutionResult Runtime::execute(IfStmtNode *node) {
     }
 
     if (Builtin::getBooleanValue(cond, this)) {
-        this->execute(node->body);
+        return this->execute(node->body);
     }
     else if (node->else_body != NULL) {
-        this->execute(node->else_body);
+        return this->execute(node->else_body);
     }
-    this->popFrame();
     return ExecutionResult(0, Builtin::makeNothingInstanceObject(this));
 }
 
@@ -521,14 +537,9 @@ Runtime::ExecutionResult Runtime::execute(ReturnStmtNode *node) {
     this->highlight(node->return_token);
     auto res = this->execute(node->value);
     if (res.flags & ExecutionResult::DIRECT_PASS) {
-        if (res.result->on_stack) {
-            this->signalError("Returning object on stack " + res.result->shortRepr()
-                              + " via @ operator is forbidden");
-        }
-
         return ExecutionResult(ExecutionResult::RETURN, res.result);
     }
-    return ExecutionResult(ExecutionResult::RETURN, this->copy(res.result, true));
+    return ExecutionResult(ExecutionResult::RETURN, this->copy(res.result));
 }
 
 Runtime::ExecutionResult Runtime::execute(BlockStmtNode *node) {
@@ -539,6 +550,9 @@ Runtime::ExecutionResult Runtime::execute(BlockStmtNode *node) {
         this->newFrame(true);
     }
     for (auto stmt : node->list) {
+        if (stmt == NULL) {
+            continue;
+        }
         auto res = this->execute(stmt);
         if (res.flags & ExecutionResult::CONTINUE) {
             if (!node->is_unscoped) {
@@ -557,14 +571,9 @@ Runtime::ExecutionResult Runtime::execute(BlockStmtNode *node) {
                 this->popFrame();
             }
             if (res.flags & ExecutionResult::DIRECT_PASS) {
-                if (res.result->on_stack) {
-                    this->signalError("Returning object on stack " + res.result->shortRepr()
-                                      + " via @ operator is forbidden");
-                }
-
                 return ExecutionResult(ExecutionResult::RETURN, res.result);
             }
-            return ExecutionResult(ExecutionResult::RETURN, this->copy(res.result, true));
+            return ExecutionResult(ExecutionResult::RETURN, this->copy(res.result));
         }
     }
     if (!node->is_unscoped) {

@@ -29,10 +29,10 @@ class CharacterInstance: public Instance {
 public:
     uint8_t value;
 
-    CharacterInstance(Runtime *rt, bool on_stack);
+    CharacterInstance(Runtime *rt);
     ~CharacterInstance();
 
-    Instance   *copy(Runtime *rt, bool force_heap = false);
+    Instance   *copy();
     size_t      getSize();
     std::string shortRepr();
 };
@@ -42,8 +42,8 @@ public:
     size_t getInstanceSize();
     CharacterType(Runtime *rt);
     ~CharacterType() = default;
-    Object     *create(Runtime *rt);
-    Object     *copy(Object *obj, Runtime *rt, bool force_heap = false);
+    Object     *create();
+    Object     *copy(Object *obj);
     std::string shortRepr();
 };
 

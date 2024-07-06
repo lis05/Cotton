@@ -25,5 +25,4 @@
 #include "object.h"
 #include "runtime.h"
 #include "scope.h"
-#include "stack.h"
 #include "type.h"

@@ -23,13 +23,11 @@
 
 #include "../front/parser.h"
 #include "object.h"
-#include "stack.h"
 #include <string>
 #include <vector>
 
 namespace Cotton {
 class Scope;
-class Stack;
 class GC;
 class Object;
 class Instance;
@@ -52,7 +50,7 @@ namespace Builtin {
 
 class Runtime {
 public:
-    Runtime(size_t stack_size, GCStrategy *gc_strategy, ErrorManager *error_manager);
+    Runtime(GCStrategy *gc_strategy, ErrorManager *error_manager);
     ~Runtime() = default;
 
     Builtin::NothingType   *nothing_type;
@@ -64,13 +62,12 @@ public:
     Builtin::StringType    *string_type;
 
     Scope *scope;
-    // creates a new scope, as well as a new stack frame
+    // creates a new scope
     void   newFrame(bool can_access_prev_scope = true);
-    // pops the last scope, as well as clears the last stack frame
+    // pops the last scope
     void   popFrame();
 
-    Stack *stack;
-    GC    *gc;
+    GC *gc;
 
     // checks whether obj is an instance object (is non-NULL and has non-NULL type and non-NULL instance)
     bool isInstanceObject(Object *obj);
@@ -94,7 +91,7 @@ public:
         static uint8_t DIRECT_PASS;
         uint8_t        flags;
         Object        *result;
-        Object *caller;
+        Object        *caller;
 
         ExecutionResult(uint8_t flags, Object *result, Object *caller = NULL);
     };
@@ -119,48 +116,30 @@ public:
     Object *make(Type *type, ObjectOptions object_opt);
     // returns a copy of obj (type is the same; if instance is present, it is copied)
     // if fails, signals an error. therefore, returns a valid object (non-null, is a copy of obj)
-    Object *copy(Object *obj, bool force_heap = false);
+    Object *copy(Object *obj);
     // runs operator on the object. returns a valid object(non-null); if fails, signals an error
     Object *runOperator(OperatorNode::OperatorId id, Object *obj, const std::vector<Object *> &args);
     // runs method on the object. returns a valid object(non-null); if fails, signals an error
     Object *runMethod(int64_t id, Object *obj, const std::vector<Object *> &args);
 };
 
-// tries to create instance (on stack first if try_on_stack)
+// tries to create instanc
 
-#define createInstance(rt, try_on_stack, I)                                                                       \
+#define createInstance(rt, I)                                                                                     \
     ({                                                                                                            \
-        Instance *ins = NULL;                                                                                     \
-        if (try_on_stack)                                                                                         \
-            ins = rt->stack->allocAndInitInstance<I>(sizeof(I), rt);                                              \
+        Instance *ins = new (std::nothrow) I(rt);                                                                 \
         if (ins == NULL) {                                                                                        \
-            ins = new (std::nothrow) I(rt, false);                                                                \
-            if (ins == NULL) {                                                                                    \
-                return NULL;                                                                                      \
-            }                                                                                                     \
-            ins->on_stack = false;                                                                                \
-        }                                                                                                         \
-        else {                                                                                                    \
-            ins->on_stack = true;                                                                                 \
+            return NULL;                                                                                          \
         }                                                                                                         \
         ins;                                                                                                      \
     })
 
-// tries to create object (on stack first if try_on_stack)
-#define createObject(rt, is_instance, ins, type, try_on_stack)                                                    \
+// tries to create object
+#define createObject(rt, is_instance, ins, type)                                                                  \
     ({                                                                                                            \
-        Object *obj = NULL;                                                                                       \
-        if (try_on_stack)                                                                                         \
-            obj = rt->stack->allocAndInitObject(is_instance, ins, type, rt);                                      \
+        Object *obj = new (std::nothrow) Object(is_instance, ins, type, rt);                                      \
         if (obj == NULL) {                                                                                        \
-            obj = new (std::nothrow) Object(is_instance, false, ins, type, rt);                                   \
-            if (ins == NULL) {                                                                                    \
-                return NULL;                                                                                      \
-            }                                                                                                     \
-            obj->on_stack = false;                                                                                \
-        }                                                                                                         \
-        else {                                                                                                    \
-            obj->on_stack = true;                                                                                 \
+            return NULL;                                                                                          \
         }                                                                                                         \
         obj;                                                                                                      \
     })

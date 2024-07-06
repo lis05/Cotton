@@ -28,6 +28,7 @@
 
 namespace Cotton {
 GCDefaultStrategy::GCDefaultStrategy() {
+    this->rt                  = NULL;
     this->num_tracked         = 0;
     this->prev_num_tracked    = NUM_TRACKED_INIT;
     this->sizeof_tracked      = 0;
@@ -35,7 +36,7 @@ GCDefaultStrategy::GCDefaultStrategy() {
     this->ops_cnt             = 0;
 }
 
-void GCDefaultStrategy::acknowledgeTrack(Object *object, GC *gc, Runtime *rt) {
+void GCDefaultStrategy::acknowledgeTrack(Object *object) {
     if (object == NULL) {
         return;
     }
@@ -44,7 +45,7 @@ void GCDefaultStrategy::acknowledgeTrack(Object *object, GC *gc, Runtime *rt) {
     this->ops_cnt++;
 }
 
-void GCDefaultStrategy::acknowledgeTrack(Instance *instance, size_t bytes, GC *gc, Runtime *rt) {
+void GCDefaultStrategy::acknowledgeTrack(Instance *instance, size_t bytes) {
     if (instance == NULL) {
         return;
     }
@@ -53,7 +54,7 @@ void GCDefaultStrategy::acknowledgeTrack(Instance *instance, size_t bytes, GC *g
     this->ops_cnt++;
 }
 
-void GCDefaultStrategy::acknowledgeTrack(Type *type, GC *gc, Runtime *rt) {
+void GCDefaultStrategy::acknowledgeTrack(Type *type) {
     if (type == NULL) {
         return;
     }
@@ -62,7 +63,7 @@ void GCDefaultStrategy::acknowledgeTrack(Type *type, GC *gc, Runtime *rt) {
     this->ops_cnt++;
 }
 
-void GCDefaultStrategy::acknowledgeUntrack(Object *object, GC *gc, Runtime *rt) {
+void GCDefaultStrategy::acknowledgeUntrack(Object *object) {
     if (object == NULL) {
         return;
     }
@@ -70,7 +71,7 @@ void GCDefaultStrategy::acknowledgeUntrack(Object *object, GC *gc, Runtime *rt) 
     this->sizeof_tracked -= sizeof(Object);
 }
 
-void GCDefaultStrategy::acknowledgeUntrack(Instance *instance, GC *gc, Runtime *rt) {
+void GCDefaultStrategy::acknowledgeUntrack(Instance *instance) {
     if (instance == NULL) {
         return;
     }
@@ -78,7 +79,7 @@ void GCDefaultStrategy::acknowledgeUntrack(Instance *instance, GC *gc, Runtime *
     this->sizeof_tracked -= instance->getSize();
 }
 
-void GCDefaultStrategy::acknowledgeUntrack(Type *type, GC *gc, Runtime *rt) {
+void GCDefaultStrategy::acknowledgeUntrack(Type *type) {
     if (type == NULL) {
         return;
     }
@@ -86,32 +87,35 @@ void GCDefaultStrategy::acknowledgeUntrack(Type *type, GC *gc, Runtime *rt) {
     this->sizeof_tracked -= sizeof(Type);
 }
 
-void GCDefaultStrategy::acknowledgeEndOfCycle(GC *gc, Runtime *rt) {
-    this->prev_num_tracked = gc->tracked_instances.size() + gc->tracked_objects.size() + gc->tracked_types.size();
+void GCDefaultStrategy::acknowledgeEndOfCycle() {
+    this->prev_num_tracked = this->rt->gc->tracked_instances.size() + this->rt->gc->tracked_objects.size()
+                             + this->rt->gc->tracked_types.size();
     this->prev_sizeof_tracked = 0;
-    for (auto &[obj, _] : gc->tracked_objects) {
+    for (auto &[obj, _] : this->rt->gc->tracked_objects) {
         this->prev_sizeof_tracked += sizeof(obj);
     }
-    for (auto &[ins, _] : gc->tracked_instances) {
+    for (auto &[ins, _] : this->rt->gc->tracked_instances) {
         this->prev_sizeof_tracked += ins->getSize();
     }
-    for (auto &[type, _] : gc->tracked_types) {
+    for (auto &[type, _] : this->rt->gc->tracked_types) {
         this->prev_sizeof_tracked += sizeof(type);
     }
     this->num_tracked    = this->prev_num_tracked;
     this->sizeof_tracked = this->prev_sizeof_tracked;
 }
 
-void GCDefaultStrategy::acknowledgePing(GC *gc, Runtime *rt) {
-    this->checkConditions(gc, rt);
+void GCDefaultStrategy::acknowledgePing() {
+    this->checkConditions();
 }
 
-void GCDefaultStrategy::checkConditions(GC *gc, Runtime *rt) {
-    if ((this->prev_num_tracked < this->num_tracked / NUM_TRACKED_MULT)
-        || (this->prev_sizeof_tracked < this->sizeof_tracked / SIZEOF_TRACKED_MULT) || (this->ops_cnt == OPS_MOD))
+void GCDefaultStrategy::checkConditions() {
+    if (this->sizeof_tracked >= MIN_CYCLE_SIZE
+        && ((this->prev_num_tracked < this->num_tracked / NUM_TRACKED_MULT)
+            || (this->prev_sizeof_tracked < this->sizeof_tracked / SIZEOF_TRACKED_MULT)
+            || (this->ops_cnt >= OPS_MOD)))
     {
         this->ops_cnt %= OPS_MOD;
-        gc->runCycle(rt);
+        this->rt->gc->runCycle();
     }
 }
 
@@ -133,31 +137,31 @@ GC::~GC() {
     }
 }
 
-void GC::track(Object *object, Runtime *rt) {
+void GC::track(Object *object) {
     if (this->tracked_objects.find(object) != this->tracked_objects.end()) {
         return;
     }
     this->tracked_objects[object] = true;
-    this->gc_strategy->acknowledgeTrack(object, this, rt);
+    this->gc_strategy->acknowledgeTrack(object);
 }
 
-void GC::track(Instance *instance, size_t bytes, Runtime *rt) {
+void GC::track(Instance *instance, size_t bytes) {
     if (this->tracked_instances.find(instance) != this->tracked_instances.end()) {
         return;
     }
     this->tracked_instances[instance] = true;
-    this->gc_strategy->acknowledgeTrack(instance, bytes, this, rt);
+    this->gc_strategy->acknowledgeTrack(instance, bytes);
 }
 
-void GC::track(Type *type, Runtime *rt) {
+void GC::track(Type *type) {
     if (this->tracked_types.find(type) != this->tracked_types.end()) {
         return;
     }
     this->tracked_types[type] = true;
-    this->gc_strategy->acknowledgeTrack(type, this, rt);
+    this->gc_strategy->acknowledgeTrack(type);
 }
 
-void GC::untrack(Object *object, Runtime *rt) {
+void GC::untrack(Object *object) {
     auto it = this->tracked_objects.find(object);
     if (it == this->tracked_objects.end()) {
         return;
@@ -165,7 +169,7 @@ void GC::untrack(Object *object, Runtime *rt) {
     this->tracked_objects.erase(object);
 }
 
-void GC::untrack(Instance *instance, Runtime *rt) {
+void GC::untrack(Instance *instance) {
     auto it = this->tracked_instances.find(instance);
     if (it == this->tracked_instances.end()) {
         return;
@@ -173,7 +177,7 @@ void GC::untrack(Instance *instance, Runtime *rt) {
     this->tracked_instances.erase(instance);
 }
 
-void GC::untrack(Type *type, Runtime *rt) {
+void GC::untrack(Type *type) {
     auto it = this->tracked_types.find(type);
     if (it == this->tracked_types.end()) {
         return;
@@ -181,66 +185,66 @@ void GC::untrack(Type *type, Runtime *rt) {
     this->tracked_types.erase(type);
 }
 
-void GC::hold(Object *object, Runtime *rt) {
+void GC::hold(Object *object) {
     this->held_objects[object] = true;
 }
 
-void GC::release(Object *object, Runtime *rt) {
+void GC::release(Object *object) {
     this->held_objects.erase(object);
 }
 
-void GC::ping(Runtime *rt) {
-    this->gc_strategy->acknowledgePing(this, rt);
+void GC::ping() {
+    this->gc_strategy->acknowledgePing();
 }
 
-static void mark(Instance *ins, GC *gc, Runtime *rt);
-static void mark(Type *type, GC *gc, Runtime *rt);
+static void mark(Instance *ins, Runtime *rt);
+static void mark(Type *type, Runtime *rt);
 
-static void mark(Object *obj, GC *gc, Runtime *rt) {
+static void mark(Object *obj, Runtime *rt) {
     if (obj == NULL) {
         return;
     }
-    if (obj->gc_mark == gc->gc_mark) {
+    if (obj->gc_mark == rt->gc->gc_mark) {
         return;
     }
 
-    obj->gc_mark = gc->gc_mark;
-    for (auto &o : obj->getGCReachable(rt)) {
-        mark(o, gc, rt);
+    obj->gc_mark = rt->gc->gc_mark;
+    for (auto &o : obj->getGCReachable()) {
+        mark(o, rt);
     }
-    mark(obj->instance, gc, rt);
-    mark(obj->type, gc, rt);
+    mark(obj->instance, rt);
+    mark(obj->type, rt);
 }
 
-static void mark(Instance *ins, GC *gc, Runtime *rt) {
+static void mark(Instance *ins, Runtime *rt) {
     if (ins == NULL) {
         return;
     }
-    if (ins->gc_mark == gc->gc_mark) {
+    if (ins->gc_mark == rt->gc->gc_mark) {
         return;
     }
 
-    ins->gc_mark = gc->gc_mark;
-    for (auto &o : ins->getGCReachable(rt)) {
-        mark(o, gc, rt);
+    ins->gc_mark = rt->gc->gc_mark;
+    for (auto &o : ins->getGCReachable()) {
+        mark(o, rt);
     }
 }
 
-static void mark(Type *type, GC *gc, Runtime *rt) {
+static void mark(Type *type, Runtime *rt) {
     if (type == NULL) {
         return;
     }
-    if (type->gc_mark == gc->gc_mark) {
+    if (type->gc_mark == rt->gc->gc_mark) {
         return;
     }
 
-    type->gc_mark = gc->gc_mark;
-    for (auto &o : type->getGCReachable(rt)) {
-        mark(o, gc, rt);
+    type->gc_mark = rt->gc->gc_mark;
+    for (auto &o : type->getGCReachable()) {
+        mark(o, rt);
     }
 }
 
-void GC::runCycle(Runtime *rt) {
+void GC::runCycle() {
     if (!this->enabled) {
         return;
     }
@@ -248,12 +252,12 @@ void GC::runCycle(Runtime *rt) {
     auto scope = rt->scope;
     while (scope != NULL) {
         for (auto &[_, obj] : scope->variables) {
-            mark(obj, this, rt);
+            mark(obj, this->rt);
         }
         scope = scope->prev;
     }
     for (auto &[obj, _] : this->held_objects) {
-        mark(obj, this, rt);
+        mark(obj, this->rt);
     }
     // sweep
     std::vector<Object *> deleted_objects;
@@ -288,15 +292,15 @@ void GC::runCycle(Runtime *rt) {
     }
 
     this->gc_mark = !this->gc_mark;
-    this->gc_strategy->acknowledgeEndOfCycle(this, rt);
-    //fprintf(stderr, "GC CYCLE END\n");
+    this->gc_strategy->acknowledgeEndOfCycle();
+    // fprintf(stderr, "GC CYCLE END\n");
 }
 
-void GC::enable(Runtime *rt) {
+void GC::enable() {
     this->enabled = true;
 }
 
-void GC::disable(Runtime *rt) {
+void GC::disable() {
     this->enabled = false;
 }
 }    // namespace Cotton

@@ -27,10 +27,10 @@ namespace Cotton::Builtin {
 class UserDefinedInstance: public Instance {
 public:
     int64_t nameid;
-    UserDefinedInstance(Runtime *rt, bool on_stack);
+    UserDefinedInstance(Runtime *rt);
     ~UserDefinedInstance();
 
-    Instance   *copy(Runtime *rt, bool force_heap = true);
+    Instance   *copy();
     size_t      getSize();
     std::string shortRepr();
 };
@@ -43,8 +43,8 @@ public:
     size_t getInstanceSize();
     UserDefinedType(Runtime *rt);
     ~UserDefinedType() = default;
-    Object     *create(Runtime *rt);
+    Object     *create();
     std::string shortRepr();
-    Object     *copy(Object *obj, Runtime *rt, bool force_heap = true);
+    Object     *copy(Object *obj);
 };
 }    // namespace Cotton::Builtin

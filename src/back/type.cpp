@@ -30,15 +30,15 @@ namespace Cotton {
 
 int64_t Type::total_types = 0;
 
-Type::Type(bool is_simple, Runtime *rt) {
+Type::Type(Runtime *rt) {
+    this->rt = rt;
     this->id = ++Type::total_types;
     for (auto &op : this->operators) {
         op = NULL;
     }
-    this->is_simple = is_simple;
     this->gc_mark   = !rt->gc->gc_mark;
 
-    rt->gc->track(this, rt);
+    rt->gc->track(this);
 }
 
 Type::~Type() {
@@ -50,15 +50,15 @@ Type::~Type() {
     // we don't do anything else, because the GC will take care of that
 }
 
-void Type::addOperator(OperatorNode::OperatorId id, OperatorAdapter *op, Runtime *rt) {
+void Type::addOperator(OperatorNode::OperatorId id, OperatorAdapter *op) {
     this->operators[id] = op;
 }
 
-void Type::addMethod(int64_t id, Object *method, Runtime *rt) {
+void Type::addMethod(int64_t id, Object *method) {
     this->methods[id] = method;
 }
 
-OperatorAdapter *Type::getOperator(OperatorNode::OperatorId id, Runtime *rt) {
+OperatorAdapter *Type::getOperator(OperatorNode::OperatorId id) {
     auto res = this->operators[id];
     if (res == NULL) {
         auto method_id = MagicMethods::getMagicOperator(id);
@@ -66,12 +66,12 @@ OperatorAdapter *Type::getOperator(OperatorNode::OperatorId id, Runtime *rt) {
             rt->signalError("Failed to get operator " + std::to_string(id) + " in " + this->shortRepr()
                             + " because the appropriate magic method could not be found");
         }
-        auto method = this->getMethod(method_id, rt);
+        auto method = this->getMethod(method_id);
         if (method->type == NULL) {
             rt->signalError("Failed to get operator " + std::to_string(id) + " in " + this->shortRepr()
                             + " because the appropriate magic method is an invalid object");
         }
-        auto res = method->type->getOperator(OperatorNode::CALL, rt);
+        auto res = method->type->getOperator(OperatorNode::CALL);
         return res;
     }
     else {
@@ -79,7 +79,7 @@ OperatorAdapter *Type::getOperator(OperatorNode::OperatorId id, Runtime *rt) {
     }
 }
 
-Object *Type::getMethod(int64_t id, Runtime *rt) {
+Object *Type::getMethod(int64_t id) {
     auto it = this->methods.find(id);
     if (it != this->methods.end()) {
         if (!rt->isInstanceObject(it->second)) {
@@ -91,30 +91,30 @@ Object *Type::getMethod(int64_t id, Runtime *rt) {
     rt->signalError(this->shortRepr() + " doesn't have method " + NameId::shortRepr(id));
 }
 
-bool Type::hasOperator(OperatorNode::OperatorId id, Runtime *rt) {
+bool Type::hasOperator(OperatorNode::OperatorId id) {
     auto res = this->operators[id];
     if (res == NULL) {
         auto method_id = MagicMethods::getMagicOperator(id);
         if (method_id == -1) {
             rt->signalError("Invalid operator");
         }
-        if (!this->hasMethod(method_id, rt)) {
+        if (!this->hasMethod(method_id)) {
             return false;
         }
-        auto method = this->getMethod(method_id, rt);
-        return method->type->getOperator(OperatorNode::CALL, rt);
+        auto method = this->getMethod(method_id);
+        return method->type->getOperator(OperatorNode::CALL);
     }
     else {
         return true;
     }
 }
 
-bool Type::hasMethod(int64_t id, Runtime *rt) {
+bool Type::hasMethod(int64_t id) {
     auto it = this->methods.find(id);
     return it != this->methods.end();
 }
 
-std::vector<Object *> Type::getGCReachable(Runtime *rt) {
+std::vector<Object *> Type::getGCReachable() {
     std::vector<Object *> res;
     for (auto &elem : this->methods) {
         res.push_back(elem.second);
@@ -308,4 +308,7 @@ namespace MagicMethods {
     }
 }    // namespace MagicMethods
 
+OperatorAdapter::OperatorAdapter(Runtime *rt) {
+    this->rt = rt;
+}
 };    // namespace Cotton

@@ -22,29 +22,19 @@
 #include "api.h"
 
 namespace Cotton::Builtin {
-BooleanInstance::BooleanInstance(Runtime *rt, bool on_stack)
-    : Instance(rt, sizeof(BooleanInstance), on_stack) {
+BooleanInstance::BooleanInstance(Runtime *rt)
+    : Instance(rt, sizeof(BooleanInstance)) {
     this->value = false;
 }
 
 BooleanInstance::~BooleanInstance() {}
 
-Instance *BooleanInstance::copy(Runtime *rt, bool force_heap) {
-    Instance *res = NULL;
-    if (!force_heap) {
-        res = rt->stack->allocAndInitInstance<BooleanInstance>(sizeof(BooleanInstance), rt);
-        if (res != NULL) {
-            res->on_stack                      = true;
-            icast(res, BooleanInstance)->value = this->value;
-            return res;
-        }
-    }
-    res = new (std::nothrow) BooleanInstance(rt, false);
+Instance *BooleanInstance::copy() {
+    Instance *res = new (std::nothrow) BooleanInstance(rt);
     if (res == NULL) {
         rt->signalError("Failed to copy " + this->shortRepr());
     }
     icast(res, BooleanInstance)->value = this->value;
-    res->on_stack                      = false;
     return res;
 }
 
@@ -64,97 +54,22 @@ size_t BooleanType::getInstanceSize() {
     return sizeof(BooleanInstance);
 }
 
-class BooleanPostincAdapter: public OperatorAdapter {
+class BooleanUnsupportedAdapter: public OperatorAdapter {
 public:
-    Object *operator()(Object *self, const std::vector<Object *> &others, Runtime *rt) {
-        if (!rt->isTypeObject(self) || self->type->id != rt->boolean_type->id) {
-            rt->signalError("Left-side object is invalid: " + self->shortRepr());
-        }
+    BooleanUnsupportedAdapter(Runtime *rt)
+        : OperatorAdapter(rt) {}
 
-        rt->signalError(self->shortRepr() + " does not support that operator");
-    }
-};
-
-class BooleanPostdecAdapter: public OperatorAdapter {
-public:
-    Object *operator()(Object *self, const std::vector<Object *> &others, Runtime *rt) {
-        if (!rt->isTypeObject(self) || self->type->id != rt->boolean_type->id) {
-            rt->signalError("Left-side object is invalid: " + self->shortRepr());
-        }
-
-        rt->signalError(self->shortRepr() + " does not support that operator");
-    }
-};
-
-class BooleanCallAdapter: public OperatorAdapter {
-public:
-    Object *operator()(Object *self, const std::vector<Object *> &others, Runtime *rt) {
-        if (!rt->isTypeObject(self) || self->type->id != rt->boolean_type->id) {
-            rt->signalError("Left-side object is invalid: " + self->shortRepr());
-        }
-
-        rt->signalError(self->shortRepr() + " does not support that operator");
-    }
-};
-
-class BooleanIndexAdapter: public OperatorAdapter {
-public:
-    Object *operator()(Object *self, const std::vector<Object *> &others, Runtime *rt) {
-        if (!rt->isTypeObject(self) || self->type->id != rt->boolean_type->id) {
-            rt->signalError("Left-side object is invalid: " + self->shortRepr());
-        }
-
-        rt->signalError(self->shortRepr() + " does not support that operator");
-    }
-};
-
-class BooleanPreincAdapter: public OperatorAdapter {
-public:
-    Object *operator()(Object *self, const std::vector<Object *> &others, Runtime *rt) {
-        if (!rt->isTypeObject(self) || self->type->id != rt->boolean_type->id) {
-            rt->signalError("Left-side object is invalid: " + self->shortRepr());
-        }
-
-        rt->signalError(self->shortRepr() + " does not support that operator");
-    }
-};
-
-class BooleanPredecAdapter: public OperatorAdapter {
-public:
-    Object *operator()(Object *self, const std::vector<Object *> &others, Runtime *rt) {
-        if (!rt->isTypeObject(self) || self->type->id != rt->boolean_type->id) {
-            rt->signalError("Left-side object is invalid: " + self->shortRepr());
-        }
-
-        rt->signalError(self->shortRepr() + " does not support that operator");
-    }
-};
-
-class BooleanPositiveAdapter: public OperatorAdapter {
-public:
-    Object *operator()(Object *self, const std::vector<Object *> &others, Runtime *rt) {
-        if (!rt->isTypeObject(self) || self->type->id != rt->boolean_type->id) {
-            rt->signalError("Left-side object is invalid: " + self->shortRepr());
-        }
-
-        rt->signalError(self->shortRepr() + " does not support that operator");
-    }
-};
-
-class BooleanNegativeAdapter: public OperatorAdapter {
-public:
-    Object *operator()(Object *self, const std::vector<Object *> &others, Runtime *rt) {
-        if (!rt->isTypeObject(self) || self->type->id != rt->boolean_type->id) {
-            rt->signalError("Left-side object is invalid: " + self->shortRepr());
-        }
-
+    Object *operator()(Object *self, const std::vector<Object *> &others) {
         rt->signalError(self->shortRepr() + " does not support that operator");
     }
 };
 
 class BooleanNotAdapter: public OperatorAdapter {
 public:
-    Object *operator()(Object *self, const std::vector<Object *> &others, Runtime *rt) {
+    BooleanNotAdapter(Runtime *rt)
+        : OperatorAdapter(rt) {}
+
+    Object *operator()(Object *self, const std::vector<Object *> &others) {
         if (!rt->isTypeObject(self) || self->type->id != rt->boolean_type->id) {
             rt->signalError("Left-side object is invalid: " + self->shortRepr());
         }
@@ -164,141 +79,12 @@ public:
     }
 };
 
-class BooleanInverseAdapter: public OperatorAdapter {
-public:
-    Object *operator()(Object *self, const std::vector<Object *> &others, Runtime *rt) {
-        if (!rt->isTypeObject(self) || self->type->id != rt->boolean_type->id) {
-            rt->signalError("Left-side object is invalid: " + self->shortRepr());
-        }
-
-        rt->signalError(self->shortRepr() + " does not support that operator");
-    }
-};
-
-class BooleanMultAdapter: public OperatorAdapter {
-public:
-    Object *operator()(Object *self, const std::vector<Object *> &others, Runtime *rt) {
-        if (!rt->isTypeObject(self) || self->type->id != rt->boolean_type->id) {
-            rt->signalError("Left-side object is invalid: " + self->shortRepr());
-        }
-
-        rt->signalError(self->shortRepr() + " does not support that operator");
-    }
-};
-
-class BooleanDivAdapter: public OperatorAdapter {
-public:
-    Object *operator()(Object *self, const std::vector<Object *> &others, Runtime *rt) {
-        if (!rt->isTypeObject(self) || self->type->id != rt->boolean_type->id) {
-            rt->signalError("Left-side object is invalid: " + self->shortRepr());
-        }
-
-        rt->signalError(self->shortRepr() + " does not support that operator");
-    }
-};
-
-class BooleanRemAdapter: public OperatorAdapter {
-public:
-    Object *operator()(Object *self, const std::vector<Object *> &others, Runtime *rt) {
-        if (!rt->isTypeObject(self) || self->type->id != rt->boolean_type->id) {
-            rt->signalError("Left-side object is invalid: " + self->shortRepr());
-        }
-
-        rt->signalError(self->shortRepr() + " does not support that operator");
-    }
-};
-
-class BooleanRshiftAdapter: public OperatorAdapter {
-public:
-    Object *operator()(Object *self, const std::vector<Object *> &others, Runtime *rt) {
-        if (!rt->isTypeObject(self) || self->type->id != rt->boolean_type->id) {
-            rt->signalError("Left-side object is invalid: " + self->shortRepr());
-        }
-
-        rt->signalError(self->shortRepr() + " does not support that operator");
-    }
-};
-
-class BooleanLshiftAdapter: public OperatorAdapter {
-public:
-    Object *operator()(Object *self, const std::vector<Object *> &others, Runtime *rt) {
-        if (!rt->isTypeObject(self) || self->type->id != rt->boolean_type->id) {
-            rt->signalError("Left-side object is invalid: " + self->shortRepr());
-        }
-
-        rt->signalError(self->shortRepr() + " does not support that operator");
-    }
-};
-
-class BooleanAddAdapter: public OperatorAdapter {
-public:
-    Object *operator()(Object *self, const std::vector<Object *> &others, Runtime *rt) {
-        if (!rt->isTypeObject(self) || self->type->id != rt->boolean_type->id) {
-            rt->signalError("Left-side object is invalid: " + self->shortRepr());
-        }
-
-        rt->signalError(self->shortRepr() + " does not support that operator");
-    }
-};
-
-class BooleanSubAdapter: public OperatorAdapter {
-public:
-    Object *operator()(Object *self, const std::vector<Object *> &others, Runtime *rt) {
-        if (!rt->isTypeObject(self) || self->type->id != rt->boolean_type->id) {
-            rt->signalError("Left-side object is invalid: " + self->shortRepr());
-        }
-
-        rt->signalError(self->shortRepr() + " does not support that operator");
-    }
-};
-
-class BooleanLtAdapter: public OperatorAdapter {
-public:
-    Object *operator()(Object *self, const std::vector<Object *> &others, Runtime *rt) {
-        if (!rt->isTypeObject(self) || self->type->id != rt->boolean_type->id) {
-            rt->signalError("Left-side object is invalid: " + self->shortRepr());
-        }
-
-        rt->signalError(self->shortRepr() + " does not support that operator");
-    }
-};
-
-class BooleanLeqAdapter: public OperatorAdapter {
-public:
-    Object *operator()(Object *self, const std::vector<Object *> &others, Runtime *rt) {
-        if (!rt->isTypeObject(self) || self->type->id != rt->boolean_type->id) {
-            rt->signalError("Left-side object is invalid: " + self->shortRepr());
-        }
-
-        rt->signalError(self->shortRepr() + " does not support that operator");
-    }
-};
-
-class BooleanGtAdapter: public OperatorAdapter {
-public:
-    Object *operator()(Object *self, const std::vector<Object *> &others, Runtime *rt) {
-        if (!rt->isTypeObject(self) || self->type->id != rt->boolean_type->id) {
-            rt->signalError("Left-side object is invalid: " + self->shortRepr());
-        }
-
-        rt->signalError(self->shortRepr() + " does not support that operator");
-    }
-};
-
-class BooleanGeqAdapter: public OperatorAdapter {
-public:
-    Object *operator()(Object *self, const std::vector<Object *> &others, Runtime *rt) {
-        if (!rt->isTypeObject(self) || self->type->id != rt->boolean_type->id) {
-            rt->signalError("Left-side object is invalid: " + self->shortRepr());
-        }
-
-        rt->signalError(self->shortRepr() + " does not support that operator");
-    }
-};
-
 class BooleanEqAdapter: public OperatorAdapter {
 public:
-    Object *operator()(Object *self, const std::vector<Object *> &others, Runtime *rt) {
+    BooleanEqAdapter(Runtime *rt)
+        : OperatorAdapter(rt) {}
+
+    Object *operator()(Object *self, const std::vector<Object *> &others) {
         if (!rt->isTypeObject(self) || self->type->id != rt->boolean_type->id) {
             rt->signalError("Left-side object is invalid: " + self->shortRepr());
         }
@@ -328,49 +114,22 @@ public:
 
 class BooleanNeqAdapter: public BooleanEqAdapter {
 public:
-    Object *operator()(Object *self, const std::vector<Object *> &others, Runtime *rt) {
-        auto res                 = BooleanEqAdapter::operator()(self, others, rt);
+    BooleanNeqAdapter(Runtime *rt)
+        : BooleanEqAdapter(rt) {}
+
+    Object *operator()(Object *self, const std::vector<Object *> &others) {
+        auto res                 = BooleanEqAdapter::operator()(self, others);
         getBooleanValue(res, rt) = !getBooleanValue(res, rt);
         return res;
     }
 };
 
-class BooleanBitandAdapter: public OperatorAdapter {
-public:
-    Object *operator()(Object *self, const std::vector<Object *> &others, Runtime *rt) {
-        if (!rt->isTypeObject(self) || self->type->id != rt->boolean_type->id) {
-            rt->signalError("Left-side object is invalid: " + self->shortRepr());
-        }
-
-        rt->signalError(self->shortRepr() + " does not support that operator");
-    }
-};
-
-class BooleanBitxorAdapter: public OperatorAdapter {
-public:
-    Object *operator()(Object *self, const std::vector<Object *> &others, Runtime *rt) {
-        if (!rt->isTypeObject(self) || self->type->id != rt->boolean_type->id) {
-            rt->signalError("Left-side object is invalid: " + self->shortRepr());
-        }
-
-        rt->signalError(self->shortRepr() + " does not support that operator");
-    }
-};
-
-class BooleanBitorAdapter: public OperatorAdapter {
-public:
-    Object *operator()(Object *self, const std::vector<Object *> &others, Runtime *rt) {
-        if (!rt->isTypeObject(self) || self->type->id != rt->boolean_type->id) {
-            rt->signalError("Left-side object is invalid: " + self->shortRepr());
-        }
-
-        rt->signalError(self->shortRepr() + " does not support that operator");
-    }
-};
-
 class BooleanAndAdapter: public OperatorAdapter {
 public:
-    Object *operator()(Object *self, const std::vector<Object *> &others, Runtime *rt) {
+    BooleanAndAdapter(Runtime *rt)
+        : OperatorAdapter(rt) {}
+
+    Object *operator()(Object *self, const std::vector<Object *> &others) {
         if (!rt->isTypeObject(self) || self->type->id != rt->boolean_type->id) {
             rt->signalError("Left-side object is invalid: " + self->shortRepr());
         }
@@ -395,7 +154,10 @@ public:
 
 class BooleanOrAdapter: public OperatorAdapter {
 public:
-    Object *operator()(Object *self, const std::vector<Object *> &others, Runtime *rt) {
+    BooleanOrAdapter(Runtime *rt)
+        : OperatorAdapter(rt) {}
+
+    Object *operator()(Object *self, const std::vector<Object *> &others) {
         if (!rt->isTypeObject(self) || self->type->id != rt->boolean_type->id) {
             rt->signalError("Left-side object is invalid: " + self->shortRepr());
         }
@@ -420,52 +182,52 @@ public:
 
 // TODO: add all operators to function and nothing
 BooleanType::BooleanType(Runtime *rt)
-    : Type(true, rt) {
-    this->addOperator(OperatorNode::POST_PLUS_PLUS, new BooleanPostincAdapter(), rt);
-    this->addOperator(OperatorNode::POST_MINUS_MINUS, new BooleanPostdecAdapter(), rt);
-    this->addOperator(OperatorNode::CALL, new BooleanCallAdapter(), rt);
-    this->addOperator(OperatorNode::INDEX, new BooleanIndexAdapter(), rt);
-    this->addOperator(OperatorNode::PRE_PLUS_PLUS, new BooleanPreincAdapter(), rt);
-    this->addOperator(OperatorNode::PRE_MINUS_MINUS, new BooleanPredecAdapter(), rt);
-    this->addOperator(OperatorNode::PRE_PLUS, new BooleanPositiveAdapter(), rt);
-    this->addOperator(OperatorNode::PRE_MINUS, new BooleanNegativeAdapter(), rt);
-    this->addOperator(OperatorNode::NOT, new BooleanNotAdapter(), rt);
-    this->addOperator(OperatorNode::INVERSE, new BooleanInverseAdapter(), rt);
-    this->addOperator(OperatorNode::MULT, new BooleanMultAdapter(), rt);
-    this->addOperator(OperatorNode::DIV, new BooleanDivAdapter(), rt);
-    this->addOperator(OperatorNode::REM, new BooleanRemAdapter(), rt);
-    this->addOperator(OperatorNode::RIGHT_SHIFT, new BooleanRshiftAdapter(), rt);
-    this->addOperator(OperatorNode::LEFT_SHIFT, new BooleanLshiftAdapter(), rt);
-    this->addOperator(OperatorNode::PLUS, new BooleanAddAdapter(), rt);
-    this->addOperator(OperatorNode::MINUS, new BooleanSubAdapter(), rt);
-    this->addOperator(OperatorNode::LESS, new BooleanLtAdapter(), rt);
-    this->addOperator(OperatorNode::LESS_EQUAL, new BooleanLeqAdapter(), rt);
-    this->addOperator(OperatorNode::GREATER, new BooleanGtAdapter(), rt);
-    this->addOperator(OperatorNode::GREATER_EQUAL, new BooleanGeqAdapter(), rt);
-    this->addOperator(OperatorNode::EQUAL, new BooleanEqAdapter(), rt);
-    this->addOperator(OperatorNode::NOT_EQUAL, new BooleanNeqAdapter(), rt);
-    this->addOperator(OperatorNode::BITAND, new BooleanBitandAdapter(), rt);
-    this->addOperator(OperatorNode::BITXOR, new BooleanBitxorAdapter(), rt);
-    this->addOperator(OperatorNode::BITOR, new BooleanBitorAdapter(), rt);
-    this->addOperator(OperatorNode::AND, new BooleanAndAdapter(), rt);
-    this->addOperator(OperatorNode::OR, new BooleanOrAdapter(), rt);
+    : Type(rt) {
+    this->addOperator(OperatorNode::POST_PLUS_PLUS, new BooleanUnsupportedAdapter(rt));
+    this->addOperator(OperatorNode::POST_MINUS_MINUS, new BooleanUnsupportedAdapter(rt));
+    this->addOperator(OperatorNode::CALL, new BooleanUnsupportedAdapter(rt));
+    this->addOperator(OperatorNode::INDEX, new BooleanUnsupportedAdapter(rt));
+    this->addOperator(OperatorNode::PRE_PLUS_PLUS, new BooleanUnsupportedAdapter(rt));
+    this->addOperator(OperatorNode::PRE_MINUS_MINUS, new BooleanUnsupportedAdapter(rt));
+    this->addOperator(OperatorNode::PRE_PLUS, new BooleanUnsupportedAdapter(rt));
+    this->addOperator(OperatorNode::PRE_MINUS, new BooleanUnsupportedAdapter(rt));
+    this->addOperator(OperatorNode::NOT, new BooleanNotAdapter(rt));
+    this->addOperator(OperatorNode::INVERSE, new BooleanUnsupportedAdapter(rt));
+    this->addOperator(OperatorNode::MULT, new BooleanUnsupportedAdapter(rt));
+    this->addOperator(OperatorNode::DIV, new BooleanUnsupportedAdapter(rt));
+    this->addOperator(OperatorNode::REM, new BooleanUnsupportedAdapter(rt));
+    this->addOperator(OperatorNode::RIGHT_SHIFT, new BooleanUnsupportedAdapter(rt));
+    this->addOperator(OperatorNode::LEFT_SHIFT, new BooleanUnsupportedAdapter(rt));
+    this->addOperator(OperatorNode::PLUS, new BooleanUnsupportedAdapter(rt));
+    this->addOperator(OperatorNode::MINUS, new BooleanUnsupportedAdapter(rt));
+    this->addOperator(OperatorNode::LESS, new BooleanUnsupportedAdapter(rt));
+    this->addOperator(OperatorNode::LESS_EQUAL, new BooleanUnsupportedAdapter(rt));
+    this->addOperator(OperatorNode::GREATER, new BooleanUnsupportedAdapter(rt));
+    this->addOperator(OperatorNode::GREATER_EQUAL, new BooleanUnsupportedAdapter(rt));
+    this->addOperator(OperatorNode::EQUAL, new BooleanEqAdapter(rt));
+    this->addOperator(OperatorNode::NOT_EQUAL, new BooleanNeqAdapter(rt));
+    this->addOperator(OperatorNode::BITAND, new BooleanUnsupportedAdapter(rt));
+    this->addOperator(OperatorNode::BITXOR, new BooleanUnsupportedAdapter(rt));
+    this->addOperator(OperatorNode::BITOR, new BooleanUnsupportedAdapter(rt));
+    this->addOperator(OperatorNode::AND, new BooleanAndAdapter(rt));
+    this->addOperator(OperatorNode::OR, new BooleanOrAdapter(rt));
 }
 
-Object *BooleanType::create(Runtime *rt) {
-    auto ins = createInstance(rt, true, BooleanInstance);
-    auto obj = createObject(rt, true, ins, this, true);
+Object *BooleanType::create() {
+    auto ins = createInstance(rt, BooleanInstance);
+    auto obj = createObject(rt, true, ins, this);
     return obj;
 }
 
-Object *BooleanType::copy(Object *obj, Runtime *rt, bool force_heap) {
+Object *BooleanType::copy(Object *obj) {
     if (!rt->isTypeObject(obj) || obj->type->id != rt->boolean_type->id) {
         rt->signalError("Failed to copy an invalid object: " + obj->shortRepr());
     }
     if (!rt->isInstanceObject(obj)) {
-        return createObject(rt, false, NULL, this, !force_heap);
+        return createObject(rt, false, NULL, this);
     }
-    auto ins = obj->instance->copy(rt, force_heap);
-    auto res = createObject(rt, true, ins, this, !force_heap);
+    auto ins = obj->instance->copy();
+    auto res = createObject(rt, true, ins, this);
     return res;
 }
 

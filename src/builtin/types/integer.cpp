@@ -22,29 +22,19 @@
 #include "api.h"
 
 namespace Cotton::Builtin {
-IntegerInstance::IntegerInstance(Runtime *rt, bool on_stack)
-    : Instance(rt, sizeof(IntegerInstance), on_stack) {
+IntegerInstance::IntegerInstance(Runtime *rt)
+    : Instance(rt, sizeof(IntegerInstance)) {
     this->value = 0;
 }
 
 IntegerInstance::~IntegerInstance() {}
 
-Instance *IntegerInstance::copy(Runtime *rt, bool force_heap) {
-    Instance *res = NULL;
-    if (!force_heap) {
-        res = rt->stack->allocAndInitInstance<IntegerInstance>(sizeof(IntegerInstance), rt);
-        if (res != NULL) {
-            res->on_stack                      = true;
-            icast(res, IntegerInstance)->value = this->value;
-            return res;
-        }
-    }
-    res = new (std::nothrow) IntegerInstance(rt, false);
+Instance *IntegerInstance::copy() {
+    Instance *res = new (std::nothrow) IntegerInstance(rt);
     if (res == NULL) {
         rt->signalError("Failed to copy " + this->shortRepr());
     }
     icast(res, IntegerInstance)->value = this->value;
-    res->on_stack                      = false;
     return res;
 }
 
@@ -65,7 +55,10 @@ size_t IntegerType::getInstanceSize() {
 
 class IntegerPostincAdapter: public OperatorAdapter {
 public:
-    Object *operator()(Object *self, const std::vector<Object *> &others, Runtime *rt) {
+    IntegerPostincAdapter(Runtime *rt)
+        : OperatorAdapter(rt) {}
+
+    Object *operator()(Object *self, const std::vector<Object *> &others) {
         if (!rt->isTypeObject(self) || self->type->id != rt->integer_type->id) {
             rt->signalError("Left-side object is invalid: " + self->shortRepr());
         }
@@ -73,7 +66,7 @@ public:
             rt->signalError(self->shortRepr() + " does not support that operator");
         }
 
-        auto res = self->type->copy(self, rt);
+        auto res = self->type->copy(self);
         getIntegerValueFast(self)++;
         return res;
     }
@@ -81,7 +74,10 @@ public:
 
 class IntegerPostdecAdapter: public OperatorAdapter {
 public:
-    Object *operator()(Object *self, const std::vector<Object *> &others, Runtime *rt) {
+    IntegerPostdecAdapter(Runtime *rt)
+        : OperatorAdapter(rt) {}
+
+    Object *operator()(Object *self, const std::vector<Object *> &others) {
         if (!rt->isTypeObject(self) || self->type->id != rt->integer_type->id) {
             rt->signalError("Left-side object is invalid: " + self->shortRepr());
         }
@@ -89,37 +85,28 @@ public:
             rt->signalError(self->shortRepr() + " does not support that operator");
         }
 
-        auto res = self->type->copy(self, rt);
+        auto res = self->type->copy(self);
         getIntegerValueFast(self)--;
         return res;
     }
 };
 
-class IntegerCallAdapter: public OperatorAdapter {
+class IntegerUnsupportedAdapter: public OperatorAdapter {
 public:
-    Object *operator()(Object *self, const std::vector<Object *> &others, Runtime *rt) {
-        if (!rt->isTypeObject(self) || self->type->id != rt->integer_type->id) {
-            rt->signalError("Left-side object is invalid: " + self->shortRepr());
-        }
+    IntegerUnsupportedAdapter(Runtime *rt)
+        : OperatorAdapter(rt) {}
 
-        rt->signalError(self->shortRepr() + " does not support that operator");
-    }
-};
-
-class IntegerIndexAdapter: public OperatorAdapter {
-public:
-    Object *operator()(Object *self, const std::vector<Object *> &others, Runtime *rt) {
-        if (!rt->isTypeObject(self) || self->type->id != rt->integer_type->id) {
-            rt->signalError("Left-side object is invalid: " + self->shortRepr());
-        }
-
+    Object *operator()(Object *self, const std::vector<Object *> &others) {
         rt->signalError(self->shortRepr() + " does not support that operator");
     }
 };
 
 class IntegerPreincAdapter: public OperatorAdapter {
 public:
-    Object *operator()(Object *self, const std::vector<Object *> &others, Runtime *rt) {
+    IntegerPreincAdapter(Runtime *rt)
+        : OperatorAdapter(rt) {}
+
+    Object *operator()(Object *self, const std::vector<Object *> &others) {
         if (!rt->isTypeObject(self) || self->type->id != rt->integer_type->id) {
             rt->signalError("Left-side object is invalid: " + self->shortRepr());
         }
@@ -128,14 +115,17 @@ public:
         }
 
         getIntegerValueFast(self)++;
-        auto res = self->type->copy(self, rt);
+        auto res = self->type->copy(self);
         return res;
     }
 };
 
 class IntegerPredecAdapter: public OperatorAdapter {
 public:
-    Object *operator()(Object *self, const std::vector<Object *> &others, Runtime *rt) {
+    IntegerPredecAdapter(Runtime *rt)
+        : OperatorAdapter(rt) {}
+
+    Object *operator()(Object *self, const std::vector<Object *> &others) {
         if (!rt->isTypeObject(self) || self->type->id != rt->integer_type->id) {
             rt->signalError("Left-side object is invalid: " + self->shortRepr());
         }
@@ -144,14 +134,17 @@ public:
         }
 
         getIntegerValueFast(self)--;
-        auto res = self->type->copy(self, rt);
+        auto res = self->type->copy(self);
         return res;
     }
 };
 
 class IntegerPositiveAdapter: public OperatorAdapter {
 public:
-    Object *operator()(Object *self, const std::vector<Object *> &others, Runtime *rt) {
+    IntegerPositiveAdapter(Runtime *rt)
+        : OperatorAdapter(rt) {}
+
+    Object *operator()(Object *self, const std::vector<Object *> &others) {
         if (!rt->isTypeObject(self) || self->type->id != rt->integer_type->id) {
             rt->signalError("Left-side object is invalid: " + self->shortRepr());
         }
@@ -159,14 +152,17 @@ public:
             rt->signalError(self->shortRepr() + " does not support that operator");
         }
 
-        auto res = self->type->copy(self, rt);
+        auto res = self->type->copy(self);
         return res;
     }
 };
 
 class IntegerNegativeAdapter: public OperatorAdapter {
 public:
-    Object *operator()(Object *self, const std::vector<Object *> &others, Runtime *rt) {
+    IntegerNegativeAdapter(Runtime *rt)
+        : OperatorAdapter(rt) {}
+
+    Object *operator()(Object *self, const std::vector<Object *> &others) {
         if (!rt->isTypeObject(self) || self->type->id != rt->integer_type->id) {
             rt->signalError("Left-side object is invalid: " + self->shortRepr());
         }
@@ -174,25 +170,18 @@ public:
             rt->signalError(self->shortRepr() + " does not support that operator");
         }
 
-        auto res                  = self->type->copy(self, rt);
+        auto res                  = self->type->copy(self);
         getIntegerValueFast(res) *= -1;
         return res;
     }
 };
 
-class IntegerNotAdapter: public OperatorAdapter {
-public:
-    Object *operator()(Object *self, const std::vector<Object *> &others, Runtime *rt) {
-        if (!rt->isTypeObject(self) || self->type->id != rt->integer_type->id) {
-            rt->signalError("Left-side object is invalid: " + self->shortRepr());
-        }
-        rt->signalError(self->shortRepr() + " does not support that operator");
-    }
-};
-
 class IntegerInverseAdapter: public OperatorAdapter {
 public:
-    Object *operator()(Object *self, const std::vector<Object *> &others, Runtime *rt) {
+    IntegerInverseAdapter(Runtime *rt)
+        : OperatorAdapter(rt) {}
+
+    Object *operator()(Object *self, const std::vector<Object *> &others) {
         if (!rt->isTypeObject(self) || self->type->id != rt->integer_type->id) {
             rt->signalError("Left-side object is invalid: " + self->shortRepr());
         }
@@ -200,7 +189,7 @@ public:
             rt->signalError(self->shortRepr() + " does not support that operator");
         }
 
-        auto res                 = self->type->copy(self, rt);
+        auto res                 = self->type->copy(self);
         getIntegerValueFast(res) = ~getIntegerValueFast(res);
         return res;
     }
@@ -208,7 +197,10 @@ public:
 
 class IntegerMultAdapter: public OperatorAdapter {
 public:
-    Object *operator()(Object *self, const std::vector<Object *> &others, Runtime *rt) {
+    IntegerMultAdapter(Runtime *rt)
+        : OperatorAdapter(rt) {}
+
+    Object *operator()(Object *self, const std::vector<Object *> &others) {
         if (!rt->isTypeObject(self) || self->type->id != rt->integer_type->id) {
             rt->signalError("Left-side object is invalid: " + self->shortRepr());
         }
@@ -234,7 +226,10 @@ public:
 
 class IntegerDivAdapter: public OperatorAdapter {
 public:
-    Object *operator()(Object *self, const std::vector<Object *> &others, Runtime *rt) {
+    IntegerDivAdapter(Runtime *rt)
+        : OperatorAdapter(rt) {}
+
+    Object *operator()(Object *self, const std::vector<Object *> &others) {
         if (!rt->isTypeObject(self) || self->type->id != rt->integer_type->id) {
             rt->signalError("Left-side object is invalid: " + self->shortRepr());
         }
@@ -260,7 +255,10 @@ public:
 
 class IntegerRemAdapter: public OperatorAdapter {
 public:
-    Object *operator()(Object *self, const std::vector<Object *> &others, Runtime *rt) {
+    IntegerRemAdapter(Runtime *rt)
+        : OperatorAdapter(rt) {}
+
+    Object *operator()(Object *self, const std::vector<Object *> &others) {
         if (!rt->isTypeObject(self) || self->type->id != rt->integer_type->id) {
             rt->signalError("Left-side object is invalid: " + self->shortRepr());
         }
@@ -286,7 +284,10 @@ public:
 
 class IntegerRshiftAdapter: public OperatorAdapter {
 public:
-    Object *operator()(Object *self, const std::vector<Object *> &others, Runtime *rt) {
+    IntegerRshiftAdapter(Runtime *rt)
+        : OperatorAdapter(rt) {}
+
+    Object *operator()(Object *self, const std::vector<Object *> &others) {
         if (!rt->isTypeObject(self) || self->type->id != rt->integer_type->id) {
             rt->signalError("Left-side object is invalid: " + self->shortRepr());
         }
@@ -312,7 +313,10 @@ public:
 
 class IntegerLshiftAdapter: public OperatorAdapter {
 public:
-    Object *operator()(Object *self, const std::vector<Object *> &others, Runtime *rt) {
+    IntegerLshiftAdapter(Runtime *rt)
+        : OperatorAdapter(rt) {}
+
+    Object *operator()(Object *self, const std::vector<Object *> &others) {
         if (!rt->isTypeObject(self) || self->type->id != rt->integer_type->id) {
             rt->signalError("Left-side object is invalid: " + self->shortRepr());
         }
@@ -338,7 +342,10 @@ public:
 
 class IntegerAddAdapter: public OperatorAdapter {
 public:
-    Object *operator()(Object *self, const std::vector<Object *> &others, Runtime *rt) {
+    IntegerAddAdapter(Runtime *rt)
+        : OperatorAdapter(rt) {}
+
+    Object *operator()(Object *self, const std::vector<Object *> &others) {
         if (!rt->isTypeObject(self) || self->type->id != rt->integer_type->id) {
             rt->signalError("Left-side object is invalid: " + self->shortRepr());
         }
@@ -364,7 +371,10 @@ public:
 
 class IntegerSubAdapter: public OperatorAdapter {
 public:
-    Object *operator()(Object *self, const std::vector<Object *> &others, Runtime *rt) {
+    IntegerSubAdapter(Runtime *rt)
+        : OperatorAdapter(rt) {}
+
+    Object *operator()(Object *self, const std::vector<Object *> &others) {
         if (!rt->isTypeObject(self) || self->type->id != rt->integer_type->id) {
             rt->signalError("Left-side object is invalid: " + self->shortRepr());
         }
@@ -390,7 +400,10 @@ public:
 
 class IntegerLtAdapter: public OperatorAdapter {
 public:
-    Object *operator()(Object *self, const std::vector<Object *> &others, Runtime *rt) {
+    IntegerLtAdapter(Runtime *rt)
+        : OperatorAdapter(rt) {}
+
+    Object *operator()(Object *self, const std::vector<Object *> &others) {
         if (!rt->isTypeObject(self) || self->type->id != rt->integer_type->id) {
             rt->signalError("Left-side object is invalid: " + self->shortRepr());
         }
@@ -416,7 +429,10 @@ public:
 
 class IntegerLeqAdapter: public OperatorAdapter {
 public:
-    Object *operator()(Object *self, const std::vector<Object *> &others, Runtime *rt) {
+    IntegerLeqAdapter(Runtime *rt)
+        : OperatorAdapter(rt) {}
+
+    Object *operator()(Object *self, const std::vector<Object *> &others) {
         if (!rt->isTypeObject(self) || self->type->id != rt->integer_type->id) {
             rt->signalError("Left-side object is invalid: " + self->shortRepr());
         }
@@ -442,7 +458,10 @@ public:
 
 class IntegerGtAdapter: public OperatorAdapter {
 public:
-    Object *operator()(Object *self, const std::vector<Object *> &others, Runtime *rt) {
+    IntegerGtAdapter(Runtime *rt)
+        : OperatorAdapter(rt) {}
+
+    Object *operator()(Object *self, const std::vector<Object *> &others) {
         if (!rt->isTypeObject(self) || self->type->id != rt->integer_type->id) {
             rt->signalError("Left-side object is invalid: " + self->shortRepr());
         }
@@ -468,7 +487,10 @@ public:
 
 class IntegerGeqAdapter: public OperatorAdapter {
 public:
-    Object *operator()(Object *self, const std::vector<Object *> &others, Runtime *rt) {
+    IntegerGeqAdapter(Runtime *rt)
+        : OperatorAdapter(rt) {}
+
+    Object *operator()(Object *self, const std::vector<Object *> &others) {
         if (!rt->isTypeObject(self) || self->type->id != rt->integer_type->id) {
             rt->signalError("Left-side object is invalid: " + self->shortRepr());
         }
@@ -494,7 +516,10 @@ public:
 
 class IntegerEqAdapter: public OperatorAdapter {
 public:
-    Object *operator()(Object *self, const std::vector<Object *> &others, Runtime *rt) {
+    IntegerEqAdapter(Runtime *rt)
+        : OperatorAdapter(rt) {}
+
+    Object *operator()(Object *self, const std::vector<Object *> &others) {
         if (!rt->isTypeObject(self) || self->type->id != rt->integer_type->id) {
             rt->signalError("Left-side object is invalid: " + self->shortRepr());
         }
@@ -524,16 +549,22 @@ public:
 
 class IntegerNeqAdapter: public IntegerEqAdapter {
 public:
-    Object *operator()(Object *self, const std::vector<Object *> &others, Runtime *rt) {
-        auto res                 = IntegerEqAdapter::operator()(self, others, rt);
-        getIntegerValueFast(res) = !getIntegerValueFast(res);
+    IntegerNeqAdapter(Runtime *rt)
+        : IntegerEqAdapter(rt) {}
+
+    Object *operator()(Object *self, const std::vector<Object *> &others) {
+        auto res                 = IntegerEqAdapter::operator()(self, others);
+        getBooleanValueFast(res) = !getBooleanValueFast(res);
         return res;
     }
 };
 
 class IntegerBitandAdapter: public OperatorAdapter {
 public:
-    Object *operator()(Object *self, const std::vector<Object *> &others, Runtime *rt) {
+    IntegerBitandAdapter(Runtime *rt)
+        : OperatorAdapter(rt) {}
+
+    Object *operator()(Object *self, const std::vector<Object *> &others) {
         if (!rt->isTypeObject(self) || self->type->id != rt->integer_type->id) {
             rt->signalError("Left-side object is invalid: " + self->shortRepr());
         }
@@ -559,7 +590,10 @@ public:
 
 class IntegerBitxorAdapter: public OperatorAdapter {
 public:
-    Object *operator()(Object *self, const std::vector<Object *> &others, Runtime *rt) {
+    IntegerBitxorAdapter(Runtime *rt)
+        : OperatorAdapter(rt) {}
+
+    Object *operator()(Object *self, const std::vector<Object *> &others) {
         if (!rt->isTypeObject(self) || self->type->id != rt->integer_type->id) {
             rt->signalError("Left-side object is invalid: " + self->shortRepr());
         }
@@ -585,7 +619,10 @@ public:
 
 class IntegerBitorAdapter: public OperatorAdapter {
 public:
-    Object *operator()(Object *self, const std::vector<Object *> &others, Runtime *rt) {
+    IntegerBitorAdapter(Runtime *rt)
+        : OperatorAdapter(rt) {}
+
+    Object *operator()(Object *self, const std::vector<Object *> &others) {
         if (!rt->isTypeObject(self) || self->type->id != rt->integer_type->id) {
             rt->signalError("Left-side object is invalid: " + self->shortRepr());
         }
@@ -609,74 +646,54 @@ public:
     }
 };
 
-class IntegerAndAdapter: public OperatorAdapter {
-public:
-    Object *operator()(Object *self, const std::vector<Object *> &others, Runtime *rt) {
-        if (!rt->isTypeObject(self) || self->type->id != rt->integer_type->id) {
-            rt->signalError("Left-side object is invalid: " + self->shortRepr());
-        }
-        rt->signalError(self->shortRepr() + " does not support that operator");
-    }
-};
-
-class IntegerOrAdapter: public OperatorAdapter {
-public:
-    Object *operator()(Object *self, const std::vector<Object *> &others, Runtime *rt) {
-        if (!rt->isTypeObject(self) || self->type->id != rt->integer_type->id) {
-            rt->signalError("Left-side object is invalid: " + self->shortRepr());
-        }
-        rt->signalError(self->shortRepr() + " does not support that operator");
-    }
-};
-
 // TODO: add all operators to function and nothing
 IntegerType::IntegerType(Runtime *rt)
-    : Type(true, rt) {
-    this->addOperator(OperatorNode::POST_PLUS_PLUS, new IntegerPostincAdapter(), rt);
-    this->addOperator(OperatorNode::POST_MINUS_MINUS, new IntegerPostdecAdapter(), rt);
-    this->addOperator(OperatorNode::CALL, new IntegerCallAdapter(), rt);
-    this->addOperator(OperatorNode::INDEX, new IntegerIndexAdapter(), rt);
-    this->addOperator(OperatorNode::PRE_PLUS_PLUS, new IntegerPreincAdapter(), rt);
-    this->addOperator(OperatorNode::PRE_MINUS_MINUS, new IntegerPredecAdapter(), rt);
-    this->addOperator(OperatorNode::PRE_PLUS, new IntegerPositiveAdapter(), rt);
-    this->addOperator(OperatorNode::PRE_MINUS, new IntegerNegativeAdapter(), rt);
-    this->addOperator(OperatorNode::NOT, new IntegerNotAdapter(), rt);
-    this->addOperator(OperatorNode::INVERSE, new IntegerInverseAdapter(), rt);
-    this->addOperator(OperatorNode::MULT, new IntegerMultAdapter(), rt);
-    this->addOperator(OperatorNode::DIV, new IntegerDivAdapter(), rt);
-    this->addOperator(OperatorNode::REM, new IntegerRemAdapter(), rt);
-    this->addOperator(OperatorNode::RIGHT_SHIFT, new IntegerRshiftAdapter(), rt);
-    this->addOperator(OperatorNode::LEFT_SHIFT, new IntegerLshiftAdapter(), rt);
-    this->addOperator(OperatorNode::PLUS, new IntegerAddAdapter(), rt);
-    this->addOperator(OperatorNode::MINUS, new IntegerSubAdapter(), rt);
-    this->addOperator(OperatorNode::LESS, new IntegerLtAdapter(), rt);
-    this->addOperator(OperatorNode::LESS_EQUAL, new IntegerLeqAdapter(), rt);
-    this->addOperator(OperatorNode::GREATER, new IntegerGtAdapter(), rt);
-    this->addOperator(OperatorNode::GREATER_EQUAL, new IntegerGeqAdapter(), rt);
-    this->addOperator(OperatorNode::EQUAL, new IntegerEqAdapter(), rt);
-    this->addOperator(OperatorNode::NOT_EQUAL, new IntegerNeqAdapter(), rt);
-    this->addOperator(OperatorNode::BITAND, new IntegerBitandAdapter(), rt);
-    this->addOperator(OperatorNode::BITXOR, new IntegerBitxorAdapter(), rt);
-    this->addOperator(OperatorNode::BITOR, new IntegerBitorAdapter(), rt);
-    this->addOperator(OperatorNode::AND, new IntegerAndAdapter(), rt);
-    this->addOperator(OperatorNode::OR, new IntegerOrAdapter(), rt);
+    : Type(rt) {
+    this->addOperator(OperatorNode::POST_PLUS_PLUS, new IntegerPostincAdapter(rt));
+    this->addOperator(OperatorNode::POST_MINUS_MINUS, new IntegerPostdecAdapter(rt));
+    this->addOperator(OperatorNode::CALL, new IntegerUnsupportedAdapter(rt));
+    this->addOperator(OperatorNode::INDEX, new IntegerUnsupportedAdapter(rt));
+    this->addOperator(OperatorNode::PRE_PLUS_PLUS, new IntegerPreincAdapter(rt));
+    this->addOperator(OperatorNode::PRE_MINUS_MINUS, new IntegerPredecAdapter(rt));
+    this->addOperator(OperatorNode::PRE_PLUS, new IntegerPositiveAdapter(rt));
+    this->addOperator(OperatorNode::PRE_MINUS, new IntegerNegativeAdapter(rt));
+    this->addOperator(OperatorNode::NOT, new IntegerUnsupportedAdapter(rt));
+    this->addOperator(OperatorNode::INVERSE, new IntegerInverseAdapter(rt));
+    this->addOperator(OperatorNode::MULT, new IntegerMultAdapter(rt));
+    this->addOperator(OperatorNode::DIV, new IntegerDivAdapter(rt));
+    this->addOperator(OperatorNode::REM, new IntegerRemAdapter(rt));
+    this->addOperator(OperatorNode::RIGHT_SHIFT, new IntegerRshiftAdapter(rt));
+    this->addOperator(OperatorNode::LEFT_SHIFT, new IntegerLshiftAdapter(rt));
+    this->addOperator(OperatorNode::PLUS, new IntegerAddAdapter(rt));
+    this->addOperator(OperatorNode::MINUS, new IntegerSubAdapter(rt));
+    this->addOperator(OperatorNode::LESS, new IntegerLtAdapter(rt));
+    this->addOperator(OperatorNode::LESS_EQUAL, new IntegerLeqAdapter(rt));
+    this->addOperator(OperatorNode::GREATER, new IntegerGtAdapter(rt));
+    this->addOperator(OperatorNode::GREATER_EQUAL, new IntegerGeqAdapter(rt));
+    this->addOperator(OperatorNode::EQUAL, new IntegerEqAdapter(rt));
+    this->addOperator(OperatorNode::NOT_EQUAL, new IntegerNeqAdapter(rt));
+    this->addOperator(OperatorNode::BITAND, new IntegerBitandAdapter(rt));
+    this->addOperator(OperatorNode::BITXOR, new IntegerBitxorAdapter(rt));
+    this->addOperator(OperatorNode::BITOR, new IntegerBitorAdapter(rt));
+    this->addOperator(OperatorNode::AND, new IntegerUnsupportedAdapter(rt));
+    this->addOperator(OperatorNode::OR, new IntegerUnsupportedAdapter(rt));
 }
 
-Object *IntegerType::create(Runtime *rt) {
-    auto ins = createInstance(rt, true, IntegerInstance);
-    auto obj = createObject(rt, true, ins, this, true);
+Object *IntegerType::create() {
+    auto ins = createInstance(rt, IntegerInstance);
+    auto obj = createObject(rt, true, ins, this);
     return obj;
 }
 
-Object *IntegerType::copy(Object *obj, Runtime *rt, bool force_heap) {
+Object *IntegerType::copy(Object *obj) {
     if (!rt->isTypeObject(obj) || obj->type->id != rt->integer_type->id) {
         rt->signalError("Failed to copy an invalid object: " + obj->shortRepr());
     }
     if (!rt->isInstanceObject(obj)) {
-        return createObject(rt, false, NULL, this, !force_heap);
+        return createObject(rt, false, NULL, this);
     }
-    auto ins = obj->instance->copy(rt, force_heap);
-    auto res = createObject(rt, true, ins, this, !force_heap);
+    auto ins = obj->instance->copy();
+    auto res = createObject(rt, true, ins, this);
     return res;
 }
 

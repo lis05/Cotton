@@ -29,13 +29,13 @@ class StringInstance: public Instance {
 public:
     std::vector<Object *> data;
 
-    StringInstance(Runtime *rt, bool on_stack);
+    StringInstance(Runtime *rt);
     ~StringInstance();
 
-    Instance             *copy(Runtime *rt, bool force_heap = false);
+    Instance             *copy();
     size_t                getSize();
     std::string           shortRepr();
-    std::vector<Object *> getGCReachable(Runtime *rt);
+    std::vector<Object *> getGCReachable();
 };
 
 class StringType: public Type {
@@ -43,8 +43,8 @@ public:
     size_t getInstanceSize();
     StringType(Runtime *rt);
     ~StringType() = default;
-    Object     *create(Runtime *rt);
-    Object     *copy(Object *obj, Runtime *rt, bool force_heap = false);
+    Object     *create();
+    Object     *copy(Object *obj);
     std::string shortRepr();
 };
 

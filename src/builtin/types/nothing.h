@@ -26,10 +26,10 @@
 namespace Cotton::Builtin {
 class NothingInstance: public Instance {
 public:
-    NothingInstance(Runtime *rt, bool on_stack);
+    NothingInstance(Runtime *rt);
     ~NothingInstance();
 
-    Instance   *copy(Runtime *rt, bool force_heap = false);
+    Instance   *copy();
     size_t      getSize();
     std::string shortRepr();
 };
@@ -39,9 +39,9 @@ public:
     size_t getInstanceSize();
     NothingType(Runtime *rt);
     ~NothingType() = default;
-    Object     *create(Runtime *rt);
+    Object     *create();
     std::string shortRepr();
-    Object *copy(Object *obj, Runtime *rt, bool force_heap = false);
+    Object *copy(Object *obj);
 };
 
 Object *makeNothingInstanceObject(Runtime *rt);

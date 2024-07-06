@@ -30,6 +30,7 @@ class Object;
 
 class Instance {
 public:
+    Runtime                                     *rt;
     static int64_t                               total_instances;
     int64_t                                      id;
     __gnu_pbds::cc_hash_table<int64_t, Object *> fields;
@@ -37,14 +38,13 @@ public:
     Object                                      *selectField(int64_t id, Runtime *rt);
     bool                                         hasField(int64_t id, Runtime *rt);
     void                                         addField(int64_t id, Object *obj, Runtime *rt);
-    bool                                         gc_mark  : 1;
-    bool                                         on_stack : 1;    // set after creation
+    bool                                         gc_mark : 1;
 
-    Instance(Runtime *rt, size_t bytes, bool on_stack);
+    Instance(Runtime *rt, size_t bytes);
     virtual ~Instance() = default;
 
-    virtual std::vector<Object *> getGCReachable(Runtime *rt);
-    virtual Instance             *copy(Runtime *rt, bool force_heap = false) = 0;
+    virtual std::vector<Object *> getGCReachable();
+    virtual Instance             *copy() = 0;
     virtual size_t                getSize()         = 0;    // in bytes
     virtual std::string           shortRepr()       = 0;
 };

@@ -31,46 +31,50 @@ class GC;
 
 class GCStrategy {
 public:
-    virtual void acknowledgeTrack(Object *object, GC *gc, Runtime *rt)                   = 0;
-    virtual void acknowledgeTrack(Instance *instance, size_t bytes, GC *gc, Runtime *rt) = 0;
-    virtual void acknowledgeTrack(Type *type, GC *gc, Runtime *rt)                       = 0;
-    virtual void acknowledgeUntrack(Object *object, GC *gc, Runtime *rt)                 = 0;
-    virtual void acknowledgeUntrack(Instance *instance, GC *gc, Runtime *rt)             = 0;
-    virtual void acknowledgeUntrack(Type *type, GC *gc, Runtime *rt)                     = 0;
-    virtual void acknowledgeEndOfCycle(GC *gc, Runtime *rt)                              = 0;
-    virtual void acknowledgePing(GC *gc, Runtime *rt)                                    = 0;
+    Runtime     *rt;
+    virtual void acknowledgeTrack(Object *object)                   = 0;
+    virtual void acknowledgeTrack(Instance *instance, size_t bytes) = 0;
+    virtual void acknowledgeTrack(Type *type)                       = 0;
+    virtual void acknowledgeUntrack(Object *object)                 = 0;
+    virtual void acknowledgeUntrack(Instance *instance)             = 0;
+    virtual void acknowledgeUntrack(Type *type)                     = 0;
+    virtual void acknowledgeEndOfCycle()                            = 0;
+    virtual void acknowledgePing()                                  = 0;
 };
 
 class GCDefaultStrategy: public GCStrategy {
 public:
-    const int NUM_TRACKED_INIT = 10'000;              // prev_num_tracked is set to this at initialization
-    const int NUM_TRACKED_MULT = 6;                   // cycle runs when prev_num_tracked < num_tracked / 2;
+    const int NUM_TRACKED_INIT = 10'000;    // prev_num_tracked is set to this at initialization
+    const int NUM_TRACKED_MULT = 6;         // cycle runs when prev_num_tracked < num_tracked / 2;
     int64_t   num_tracked, prev_num_tracked;
 
+    const int MIN_CYCLE_SIZE      = 80'000;
     const int SIZEOF_TRACKED_INIT = 80'000;           // prev_num_tracked is set to this at initialization
     const int SIZEOF_TRACKED_MULT = 6;                // cycle runs when prev_sizeof_tracked < num_tracked / 2;
     int64_t   sizeof_tracked, prev_sizeof_tracked;    // in bytes
 
-    const int OPS_MOD = 100'000;                       // cycle runs when opc_cnt % OPS_MOD == 0
+    const int OPS_MOD = 100'000;                      // cycle runs when opc_cnt % OPS_MOD == 0
     int64_t   ops_cnt;                                // number of tracks and untrackes modulo OPS_MOD
 
     GCDefaultStrategy();
     ~GCDefaultStrategy() = default;
 
-    void acknowledgeTrack(Object *object, GC *gc, Runtime *rt);
-    void acknowledgeTrack(Instance *instance, size_t bytes, GC *gc, Runtime *rt);
-    void acknowledgeTrack(Type *type, GC *gc, Runtime *rt);
-    void acknowledgeUntrack(Object *object, GC *gc, Runtime *rt);
-    void acknowledgeUntrack(Instance *instance, GC *gc, Runtime *rt);
-    void acknowledgeUntrack(Type *type, GC *gc, Runtime *rt);
-    void acknowledgeEndOfCycle(GC *gc, Runtime *rt);
-    void acknowledgePing(GC *gc, Runtime *rt);
+    void acknowledgeTrack(Object *object);
+    void acknowledgeTrack(Instance *instance, size_t bytes);
+    void acknowledgeTrack(Type *type);
+    void acknowledgeUntrack(Object *object);
+    void acknowledgeUntrack(Instance *instance);
+    void acknowledgeUntrack(Type *type);
+    void acknowledgeEndOfCycle();
+    void acknowledgePing();
 
-    void checkConditions(GC *gc, Runtime *rt);
+    void checkConditions();
 };
 
 class GC {
 public:
+    Runtime *rt;
+
     __gnu_pbds::gp_hash_table<Object *, bool> tracked_objects;
     __gnu_pbds::gp_hash_table<Object *, bool> held_objects;
 
@@ -84,23 +88,23 @@ public:
     GC(GCStrategy *gc_strategy);
     ~GC();
 
-    void track(Object *object, Runtime *rt);
-    void track(Instance *instance, size_t bytes, Runtime *rt);
-    void track(Type *type, Runtime *rt);
+    void track(Object *object);
+    void track(Instance *instance, size_t bytes);
+    void track(Type *type);
 
-    void untrack(Object *object, Runtime *rt);
-    void untrack(Instance *instance, Runtime *rt);
-    void untrack(Type *type, Runtime *rt);
+    void untrack(Object *object);
+    void untrack(Instance *instance);
+    void untrack(Type *type);
 
-    void hold(Object *object, Runtime *rt);    // even if object can't be reached, it will still be preserved, as
-                                               // well as items reachable from it
-    void release(Object *object, Runtime *rt);
+    void hold(Object *object);    // even if object can't be reached, it will still be preserved, as
+                                  // well as items reachable from it
+    void release(Object *object);
 
-    void ping(Runtime *rt);
+    void ping();
 
-    void runCycle(Runtime *rt);
+    void runCycle();
 
-    void enable(Runtime *rt);
-    void disable(Runtime *rt);
+    void enable();
+    void disable();
 };
 }    // namespace Cotton

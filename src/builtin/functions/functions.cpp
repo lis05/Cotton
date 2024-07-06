@@ -36,7 +36,12 @@ static Object *make(const std::vector<Object *> &args, Runtime *rt) {
 }
 
 static Object *print(const std::vector<Object *> &args, Runtime *rt) {
+    bool f = false;
     for (auto arg : args) {
+        if (f) {
+            std::cout << " ";
+        }
+        f = true;
         if (rt->isInstanceObject(arg)) {
             if (arg->type->id == rt->boolean_type->id) {
                 std::cout << (getBooleanValue(arg, rt) ? "true" : "false");
@@ -69,6 +74,7 @@ static Object *print(const std::vector<Object *> &args, Runtime *rt) {
             rt->signalError("Cannot print " + arg->shortRepr());
         }
     }
+    std::cout << std::endl;
     return makeNothingInstanceObject(rt);
 }
 

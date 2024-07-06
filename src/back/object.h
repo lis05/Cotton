@@ -32,19 +32,19 @@ class Runtime;
 
 class Object {
 public:
+    Runtime       *rt;
     static int64_t total_objects;
     int64_t        id;
     bool           is_instance : 1;    // otherwise it's type
-    bool           on_stack    : 1;    // otherwise it's in heap
     bool           gc_mark     : 1;
 
     Instance *instance;
     Type     *type;
 
-    Object(bool is_instance, bool on_stack, Instance *instance, Type *type, Runtime *rt);
+    Object(bool is_instance, Instance *instance, Type *type, Runtime *rt);
     ~Object();
 
-    std::vector<Object *> getGCReachable(Runtime *rt);
+    std::vector<Object *> getGCReachable();
     // short representation of the object
     std::string           shortRepr();
 
@@ -52,6 +52,6 @@ public:
 };
 
 std::ostream &operator<<(std::ostream &stream, Object *obj);
-   // namespace MagicMethods
+// namespace MagicMethods
 
 };    // namespace Cotton

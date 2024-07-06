@@ -22,33 +22,21 @@
 #include "api.h"
 
 namespace Cotton::Builtin {
-StringInstance::StringInstance(Runtime *rt, bool on_stack)
-    : Instance(rt, sizeof(StringInstance), on_stack) {
+StringInstance::StringInstance(Runtime *rt)
+    : Instance(rt, sizeof(StringInstance)) {
     this->data = {};
 }
 
 StringInstance::~StringInstance() {}
 
-Instance *StringInstance::copy(Runtime *rt, bool force_heap) {
-    Instance *res = NULL;
-    if (!force_heap) {
-        res = rt->stack->allocAndInitInstance<StringInstance>(sizeof(StringInstance), rt);
-        if (res != NULL) {
-            res->on_stack = true;
-            for (auto obj : this->data) {
-                ((StringInstance *)res)->data.push_back(rt->copy(obj, force_heap));
-            }
-            return res;
-        }
-    }
-    res = new (std::nothrow) StringInstance(rt, false);
+Instance *StringInstance::copy() {
+    Instance *res = new (std::nothrow) StringInstance(rt);
     if (res == NULL) {
         rt->signalError("Failed to copy " + this->shortRepr());
     }
     for (auto obj : this->data) {
-        ((StringInstance *)res)->data.push_back(rt->copy(obj, force_heap));
+        ((StringInstance *)res)->data.push_back(rt->copy(obj));
     }
-    res->on_stack = false;
     return res;
 }
 
@@ -64,8 +52,8 @@ size_t StringInstance::getSize() {
     return sizeof(StringInstance);
 }
 
-std::vector<Object *> StringInstance::getGCReachable(Runtime *rt) {
-    auto res = Instance::getGCReachable(rt);
+std::vector<Object *> StringInstance::getGCReachable() {
+    auto res = Instance::getGCReachable();
     for (auto obj : this->data) {
         res.push_back(obj);
     }
@@ -76,39 +64,22 @@ size_t StringType::getInstanceSize() {
     return sizeof(StringInstance);
 }
 
-class StringPostincAdapter: public OperatorAdapter {
+class StringUnsupportedAdapter: public OperatorAdapter {
 public:
-    Object *operator()(Object *self, const std::vector<Object *> &others, Runtime *rt) {
-        if (!rt->isTypeObject(self) || self->type->id != rt->string_type->id) {
-            rt->signalError("Left-side object is invalid: " + self->shortRepr());
-        }
-        rt->signalError(self->shortRepr() + " does not support that operator");
-    }
-};
+    StringUnsupportedAdapter(Runtime *rt)
+        : OperatorAdapter(rt) {}
 
-class StringPostdecAdapter: public OperatorAdapter {
-public:
-    Object *operator()(Object *self, const std::vector<Object *> &others, Runtime *rt) {
-        if (!rt->isTypeObject(self) || self->type->id != rt->string_type->id) {
-            rt->signalError("Left-side object is invalid: " + self->shortRepr());
-        }
-        rt->signalError(self->shortRepr() + " does not support that operator");
-    }
-};
-
-class StringCallAdapter: public OperatorAdapter {
-public:
-    Object *operator()(Object *self, const std::vector<Object *> &others, Runtime *rt) {
-        if (!rt->isTypeObject(self) || self->type->id != rt->string_type->id) {
-            rt->signalError("Left-side object is invalid: " + self->shortRepr());
-        }
+    Object *operator()(Object *self, const std::vector<Object *> &others) {
         rt->signalError(self->shortRepr() + " does not support that operator");
     }
 };
 
 class StringIndexAdapter: public OperatorAdapter {
 public:
-    Object *operator()(Object *self, const std::vector<Object *> &others, Runtime *rt) {
+    StringIndexAdapter(Runtime *rt)
+        : OperatorAdapter(rt) {}
+
+    Object *operator()(Object *self, const std::vector<Object *> &others) {
         if (!rt->isTypeObject(self) || self->type->id != rt->string_type->id) {
             rt->signalError("Left-side object is invalid: " + self->shortRepr());
         }
@@ -123,7 +94,7 @@ public:
         if (!rt->isTypeObject(arg1)) {
             rt->signalError("Right-side object is invalid: " + arg1->shortRepr());
         }
-        if (!rt->isInstanceObject(arg1) || arg1->type->id != rt->string_type->id) {
+        if (!rt->isInstanceObject(arg1) || arg1->type->id != rt->integer_type->id) {
             rt->signalError("Index " + arg1->shortRepr() + " must be an integer instance object");
         }
         if (!(0 <= getIntegerValueFast(arg1) && getIntegerValueFast(arg1) < getStringDataFast(self).size())) {
@@ -133,119 +104,12 @@ public:
     }
 };
 
-class StringPreincAdapter: public OperatorAdapter {
-public:
-    Object *operator()(Object *self, const std::vector<Object *> &others, Runtime *rt) {
-        if (!rt->isTypeObject(self) || self->type->id != rt->string_type->id) {
-            rt->signalError("Left-side object is invalid: " + self->shortRepr());
-        }
-        rt->signalError(self->shortRepr() + " does not support that operator");
-    }
-};
-
-class StringPredecAdapter: public OperatorAdapter {
-public:
-    Object *operator()(Object *self, const std::vector<Object *> &others, Runtime *rt) {
-        if (!rt->isTypeObject(self) || self->type->id != rt->string_type->id) {
-            rt->signalError("Left-side object is invalid: " + self->shortRepr());
-        }
-        rt->signalError(self->shortRepr() + " does not support that operator");
-    }
-};
-
-class StringPositiveAdapter: public OperatorAdapter {
-public:
-    Object *operator()(Object *self, const std::vector<Object *> &others, Runtime *rt) {
-        if (!rt->isTypeObject(self) || self->type->id != rt->string_type->id) {
-            rt->signalError("Left-side object is invalid: " + self->shortRepr());
-        }
-        rt->signalError(self->shortRepr() + " does not support that operator");
-    }
-};
-
-class StringNegativeAdapter: public OperatorAdapter {
-public:
-    Object *operator()(Object *self, const std::vector<Object *> &others, Runtime *rt) {
-        if (!rt->isTypeObject(self) || self->type->id != rt->string_type->id) {
-            rt->signalError("Left-side object is invalid: " + self->shortRepr());
-        }
-        rt->signalError(self->shortRepr() + " does not support that operator");
-    }
-};
-
-class StringNotAdapter: public OperatorAdapter {
-public:
-    Object *operator()(Object *self, const std::vector<Object *> &others, Runtime *rt) {
-        if (!rt->isTypeObject(self) || self->type->id != rt->string_type->id) {
-            rt->signalError("Left-side object is invalid: " + self->shortRepr());
-        }
-        rt->signalError(self->shortRepr() + " does not support that operator");
-    }
-};
-
-class StringInverseAdapter: public OperatorAdapter {
-public:
-    Object *operator()(Object *self, const std::vector<Object *> &others, Runtime *rt) {
-        if (!rt->isTypeObject(self) || self->type->id != rt->string_type->id) {
-            rt->signalError("Left-side object is invalid: " + self->shortRepr());
-        }
-        rt->signalError(self->shortRepr() + " does not support that operator");
-    }
-};
-
-class StringMultAdapter: public OperatorAdapter {
-public:
-    Object *operator()(Object *self, const std::vector<Object *> &others, Runtime *rt) {
-        if (!rt->isTypeObject(self) || self->type->id != rt->string_type->id) {
-            rt->signalError("Left-side object is invalid: " + self->shortRepr());
-        }
-        rt->signalError(self->shortRepr() + " does not support that operator");
-    }
-};
-
-class StringDivAdapter: public OperatorAdapter {
-public:
-    Object *operator()(Object *self, const std::vector<Object *> &others, Runtime *rt) {
-        if (!rt->isTypeObject(self) || self->type->id != rt->string_type->id) {
-            rt->signalError("Left-side object is invalid: " + self->shortRepr());
-        }
-        rt->signalError(self->shortRepr() + " does not support that operator");
-    }
-};
-
-class StringRemAdapter: public OperatorAdapter {
-public:
-    Object *operator()(Object *self, const std::vector<Object *> &others, Runtime *rt) {
-        if (!rt->isTypeObject(self) || self->type->id != rt->string_type->id) {
-            rt->signalError("Left-side object is invalid: " + self->shortRepr());
-        }
-        rt->signalError(self->shortRepr() + " does not support that operator");
-    }
-};
-
-class StringRshiftAdapter: public OperatorAdapter {
-public:
-    Object *operator()(Object *self, const std::vector<Object *> &others, Runtime *rt) {
-        if (!rt->isTypeObject(self) || self->type->id != rt->string_type->id) {
-            rt->signalError("Left-side object is invalid: " + self->shortRepr());
-        }
-        rt->signalError(self->shortRepr() + " does not support that operator");
-    }
-};
-
-class StringLshiftAdapter: public OperatorAdapter {
-public:
-    Object *operator()(Object *self, const std::vector<Object *> &others, Runtime *rt) {
-        if (!rt->isTypeObject(self) || self->type->id != rt->string_type->id) {
-            rt->signalError("Left-side object is invalid: " + self->shortRepr());
-        }
-        rt->signalError(self->shortRepr() + " does not support that operator");
-    }
-};
-
 class StringAddAdapter: public OperatorAdapter {
 public:
-    Object *operator()(Object *self, const std::vector<Object *> &others, Runtime *rt) {
+    StringAddAdapter(Runtime *rt)
+        : OperatorAdapter(rt) {}
+
+    Object *operator()(Object *self, const std::vector<Object *> &others) {
         if (!rt->isTypeObject(self) || self->type->id != rt->string_type->id) {
             rt->signalError("Left-side object is invalid: " + self->shortRepr());
         }
@@ -273,59 +137,12 @@ public:
     }
 };
 
-class StringSubAdapter: public OperatorAdapter {
-public:
-    Object *operator()(Object *self, const std::vector<Object *> &others, Runtime *rt) {
-        if (!rt->isTypeObject(self) || self->type->id != rt->string_type->id) {
-            rt->signalError("Left-side object is invalid: " + self->shortRepr());
-        }
-        rt->signalError(self->shortRepr() + " does not support that operator");
-    }
-};
-
-class StringLtAdapter: public OperatorAdapter {
-public:
-    Object *operator()(Object *self, const std::vector<Object *> &others, Runtime *rt) {
-        if (!rt->isTypeObject(self) || self->type->id != rt->string_type->id) {
-            rt->signalError("Left-side object is invalid: " + self->shortRepr());
-        }
-        rt->signalError(self->shortRepr() + " does not support that operator");
-    }
-};
-
-class StringLeqAdapter: public OperatorAdapter {
-public:
-    Object *operator()(Object *self, const std::vector<Object *> &others, Runtime *rt) {
-        if (!rt->isTypeObject(self) || self->type->id != rt->string_type->id) {
-            rt->signalError("Left-side object is invalid: " + self->shortRepr());
-        }
-        rt->signalError(self->shortRepr() + " does not support that operator");
-    }
-};
-
-class StringGtAdapter: public OperatorAdapter {
-public:
-    Object *operator()(Object *self, const std::vector<Object *> &others, Runtime *rt) {
-        if (!rt->isTypeObject(self) || self->type->id != rt->string_type->id) {
-            rt->signalError("Left-side object is invalid: " + self->shortRepr());
-        }
-        rt->signalError(self->shortRepr() + " does not support that operator");
-    }
-};
-
-class StringGeqAdapter: public OperatorAdapter {
-public:
-    Object *operator()(Object *self, const std::vector<Object *> &others, Runtime *rt) {
-        if (!rt->isTypeObject(self) || self->type->id != rt->string_type->id) {
-            rt->signalError("Left-side object is invalid: " + self->shortRepr());
-        }
-        rt->signalError(self->shortRepr() + " does not support that operator");
-    }
-};
-
 class StringEqAdapter: public OperatorAdapter {
 public:
-    Object *operator()(Object *self, const std::vector<Object *> &others, Runtime *rt) {
+    StringEqAdapter(Runtime *rt)
+        : OperatorAdapter(rt) {}
+
+    Object *operator()(Object *self, const std::vector<Object *> &others) {
         if (!rt->isTypeObject(self) || self->type->id != rt->boolean_type->id) {
             rt->signalError("Left-side object is invalid: " + self->shortRepr());
         }
@@ -366,60 +183,13 @@ public:
 
 class StringNeqAdapter: public StringEqAdapter {
 public:
-    Object *operator()(Object *self, const std::vector<Object *> &others, Runtime *rt) {
-        auto res                 = StringEqAdapter::operator()(self, others, rt);
+    StringNeqAdapter(Runtime *rt)
+        : StringEqAdapter(rt) {}
+
+    Object *operator()(Object *self, const std::vector<Object *> &others) {
+        auto res                 = StringEqAdapter::operator()(self, others);
         getBooleanValueFast(res) = !getBooleanValueFast(res);
         return res;
-    }
-};
-
-class StringBitandAdapter: public OperatorAdapter {
-public:
-    Object *operator()(Object *self, const std::vector<Object *> &others, Runtime *rt) {
-        if (!rt->isTypeObject(self) || self->type->id != rt->string_type->id) {
-            rt->signalError("Left-side object is invalid: " + self->shortRepr());
-        }
-        rt->signalError(self->shortRepr() + " does not support that operator");
-    }
-};
-
-class StringBitxorAdapter: public OperatorAdapter {
-public:
-    Object *operator()(Object *self, const std::vector<Object *> &others, Runtime *rt) {
-        if (!rt->isTypeObject(self) || self->type->id != rt->string_type->id) {
-            rt->signalError("Left-side object is invalid: " + self->shortRepr());
-        }
-        rt->signalError(self->shortRepr() + " does not support that operator");
-    }
-};
-
-class StringBitorAdapter: public OperatorAdapter {
-public:
-    Object *operator()(Object *self, const std::vector<Object *> &others, Runtime *rt) {
-        if (!rt->isTypeObject(self) || self->type->id != rt->string_type->id) {
-            rt->signalError("Left-side object is invalid: " + self->shortRepr());
-        }
-        rt->signalError(self->shortRepr() + " does not support that operator");
-    }
-};
-
-class StringAndAdapter: public OperatorAdapter {
-public:
-    Object *operator()(Object *self, const std::vector<Object *> &others, Runtime *rt) {
-        if (!rt->isTypeObject(self) || self->type->id != rt->string_type->id) {
-            rt->signalError("Left-side object is invalid: " + self->shortRepr());
-        }
-        rt->signalError(self->shortRepr() + " does not support that operator");
-    }
-};
-
-class StringOrAdapter: public OperatorAdapter {
-public:
-    Object *operator()(Object *self, const std::vector<Object *> &others, Runtime *rt) {
-        if (!rt->isTypeObject(self) || self->type->id != rt->string_type->id) {
-            rt->signalError("Left-side object is invalid: " + self->shortRepr());
-        }
-        rt->signalError(self->shortRepr() + " does not support that operator");
     }
 };
 
@@ -439,54 +209,54 @@ static Object *stringSizeMethod(const std::vector<Object *> &args, Runtime *rt) 
 
 // TODO: add all operators to function and nothing
 StringType::StringType(Runtime *rt)
-    : Type(true, rt) {
-    this->addOperator(OperatorNode::POST_PLUS_PLUS, new StringPostincAdapter(), rt);
-    this->addOperator(OperatorNode::POST_MINUS_MINUS, new StringPostdecAdapter(), rt);
-    this->addOperator(OperatorNode::CALL, new StringCallAdapter(), rt);
-    this->addOperator(OperatorNode::INDEX, new StringIndexAdapter(), rt);
-    this->addOperator(OperatorNode::PRE_PLUS_PLUS, new StringPreincAdapter(), rt);
-    this->addOperator(OperatorNode::PRE_MINUS_MINUS, new StringPredecAdapter(), rt);
-    this->addOperator(OperatorNode::PRE_PLUS, new StringPositiveAdapter(), rt);
-    this->addOperator(OperatorNode::PRE_MINUS, new StringNegativeAdapter(), rt);
-    this->addOperator(OperatorNode::NOT, new StringNotAdapter(), rt);
-    this->addOperator(OperatorNode::INVERSE, new StringInverseAdapter(), rt);
-    this->addOperator(OperatorNode::MULT, new StringMultAdapter(), rt);
-    this->addOperator(OperatorNode::DIV, new StringDivAdapter(), rt);
-    this->addOperator(OperatorNode::REM, new StringRemAdapter(), rt);
-    this->addOperator(OperatorNode::RIGHT_SHIFT, new StringRshiftAdapter(), rt);
-    this->addOperator(OperatorNode::LEFT_SHIFT, new StringLshiftAdapter(), rt);
-    this->addOperator(OperatorNode::PLUS, new StringAddAdapter(), rt);
-    this->addOperator(OperatorNode::MINUS, new StringSubAdapter(), rt);
-    this->addOperator(OperatorNode::LESS, new StringLtAdapter(), rt);
-    this->addOperator(OperatorNode::LESS_EQUAL, new StringLeqAdapter(), rt);
-    this->addOperator(OperatorNode::GREATER, new StringGtAdapter(), rt);
-    this->addOperator(OperatorNode::GREATER_EQUAL, new StringGeqAdapter(), rt);
-    this->addOperator(OperatorNode::EQUAL, new StringEqAdapter(), rt);
-    this->addOperator(OperatorNode::NOT_EQUAL, new StringNeqAdapter(), rt);
-    this->addOperator(OperatorNode::BITAND, new StringBitandAdapter(), rt);
-    this->addOperator(OperatorNode::BITXOR, new StringBitxorAdapter(), rt);
-    this->addOperator(OperatorNode::BITOR, new StringBitorAdapter(), rt);
-    this->addOperator(OperatorNode::AND, new StringAndAdapter(), rt);
-    this->addOperator(OperatorNode::OR, new StringOrAdapter(), rt);
+    : Type(rt) {
+    this->addOperator(OperatorNode::POST_PLUS_PLUS, new StringUnsupportedAdapter(rt));
+    this->addOperator(OperatorNode::POST_MINUS_MINUS, new StringUnsupportedAdapter(rt));
+    this->addOperator(OperatorNode::CALL, new StringUnsupportedAdapter(rt));
+    this->addOperator(OperatorNode::INDEX, new StringIndexAdapter(rt));
+    this->addOperator(OperatorNode::PRE_PLUS_PLUS, new StringUnsupportedAdapter(rt));
+    this->addOperator(OperatorNode::PRE_MINUS_MINUS, new StringUnsupportedAdapter(rt));
+    this->addOperator(OperatorNode::PRE_PLUS, new StringUnsupportedAdapter(rt));
+    this->addOperator(OperatorNode::PRE_MINUS, new StringUnsupportedAdapter(rt));
+    this->addOperator(OperatorNode::NOT, new StringUnsupportedAdapter(rt));
+    this->addOperator(OperatorNode::INVERSE, new StringUnsupportedAdapter(rt));
+    this->addOperator(OperatorNode::MULT, new StringUnsupportedAdapter(rt));
+    this->addOperator(OperatorNode::DIV, new StringUnsupportedAdapter(rt));
+    this->addOperator(OperatorNode::REM, new StringUnsupportedAdapter(rt));
+    this->addOperator(OperatorNode::RIGHT_SHIFT, new StringUnsupportedAdapter(rt));
+    this->addOperator(OperatorNode::LEFT_SHIFT, new StringUnsupportedAdapter(rt));
+    this->addOperator(OperatorNode::PLUS, new StringAddAdapter(rt));
+    this->addOperator(OperatorNode::MINUS, new StringUnsupportedAdapter(rt));
+    this->addOperator(OperatorNode::LESS, new StringUnsupportedAdapter(rt));
+    this->addOperator(OperatorNode::LESS_EQUAL, new StringUnsupportedAdapter(rt));
+    this->addOperator(OperatorNode::GREATER, new StringUnsupportedAdapter(rt));
+    this->addOperator(OperatorNode::GREATER_EQUAL, new StringUnsupportedAdapter(rt));
+    this->addOperator(OperatorNode::EQUAL, new StringEqAdapter(rt));
+    this->addOperator(OperatorNode::NOT_EQUAL, new StringNeqAdapter(rt));
+    this->addOperator(OperatorNode::BITAND, new StringUnsupportedAdapter(rt));
+    this->addOperator(OperatorNode::BITXOR, new StringUnsupportedAdapter(rt));
+    this->addOperator(OperatorNode::BITOR, new StringUnsupportedAdapter(rt));
+    this->addOperator(OperatorNode::AND, new StringUnsupportedAdapter(rt));
+    this->addOperator(OperatorNode::OR, new StringUnsupportedAdapter(rt));
 
-    this->addMethod(NameId("size").id, makeFunctionInstanceObject(true, stringSizeMethod, NULL, rt), rt);
+    this->addMethod(NameId("size").id, makeFunctionInstanceObject(true, stringSizeMethod, NULL, rt));
 }
 
-Object *StringType::create(Runtime *rt) {
-    auto ins = createInstance(rt, false, StringInstance);
-    auto obj = createObject(rt, true, ins, this, false);
+Object *StringType::create() {
+    auto ins = createInstance(rt, StringInstance);
+    auto obj = createObject(rt, true, ins, this);
     return obj;
 }
 
-Object *StringType::copy(Object *obj, Runtime *rt, bool force_heap) {
+Object *StringType::copy(Object *obj) {
     if (!rt->isTypeObject(obj) || obj->type->id != rt->string_type->id) {
         rt->signalError("Failed to copy an invalid object: " + obj->shortRepr());
     }
     if (!rt->isInstanceObject(obj)) {
-        return createObject(rt, false, NULL, this, !force_heap);
+        return createObject(rt, false, NULL, this);
     }
-    auto ins = obj->instance->copy(rt, force_heap);
-    auto res = createObject(rt, true, ins, this, !force_heap);
+    auto ins = obj->instance->copy();
+    auto res = createObject(rt, true, ins, this);
     return res;
 }
 

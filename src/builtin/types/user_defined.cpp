@@ -25,12 +25,12 @@
 
 namespace Cotton::Builtin {
 
-UserDefinedInstance::UserDefinedInstance(Runtime *rt, bool on_stack)
-    : Instance(rt, sizeof(UserDefinedInstance), on_stack) {}
+UserDefinedInstance::UserDefinedInstance(Runtime *rt)
+    : Instance(rt, sizeof(UserDefinedInstance)) {}
 
 UserDefinedInstance::~UserDefinedInstance() {}
 
-Instance *UserDefinedInstance::copy(Runtime *rt, bool force_heap) {
+Instance *UserDefinedInstance::copy() {
     return this;    // because record is a complex data type
 }
 
@@ -51,49 +51,52 @@ std::string UserDefinedInstance::shortRepr() {
 
 class UserDefinedDefaultAdapter: public OperatorAdapter {
 public:
-    Object *operator()(Object *self, const std::vector<Object *> &others, Runtime *rt) {
+    UserDefinedDefaultAdapter(Runtime *rt)
+        : OperatorAdapter(rt) {}
+
+    Object *operator()(Object *self, const std::vector<Object *> &others) {
         rt->signalError(self->shortRepr() + " does not support that operator");
     }
 };
 
 UserDefinedType::UserDefinedType(Runtime *rt)
-    : Type(true, rt) {
-    this->addOperator(OperatorNode::POST_PLUS_PLUS, new UserDefinedDefaultAdapter(), rt);
-    this->addOperator(OperatorNode::POST_MINUS_MINUS, new UserDefinedDefaultAdapter(), rt);
-    this->addOperator(OperatorNode::CALL, new UserDefinedDefaultAdapter(), rt);
-    this->addOperator(OperatorNode::INDEX, new UserDefinedDefaultAdapter(), rt);
-    this->addOperator(OperatorNode::PRE_PLUS_PLUS, new UserDefinedDefaultAdapter(), rt);
-    this->addOperator(OperatorNode::PRE_MINUS_MINUS, new UserDefinedDefaultAdapter(), rt);
-    this->addOperator(OperatorNode::PRE_PLUS, new UserDefinedDefaultAdapter(), rt);
-    this->addOperator(OperatorNode::PRE_MINUS, new UserDefinedDefaultAdapter(), rt);
-    this->addOperator(OperatorNode::NOT, new UserDefinedDefaultAdapter(), rt);
-    this->addOperator(OperatorNode::INVERSE, new UserDefinedDefaultAdapter(), rt);
-    this->addOperator(OperatorNode::MULT, new UserDefinedDefaultAdapter(), rt);
-    this->addOperator(OperatorNode::DIV, new UserDefinedDefaultAdapter(), rt);
-    this->addOperator(OperatorNode::REM, new UserDefinedDefaultAdapter(), rt);
-    this->addOperator(OperatorNode::RIGHT_SHIFT, new UserDefinedDefaultAdapter(), rt);
-    this->addOperator(OperatorNode::LEFT_SHIFT, new UserDefinedDefaultAdapter(), rt);
-    this->addOperator(OperatorNode::PLUS, new UserDefinedDefaultAdapter(), rt);
-    this->addOperator(OperatorNode::MINUS, new UserDefinedDefaultAdapter(), rt);
-    this->addOperator(OperatorNode::LESS, new UserDefinedDefaultAdapter(), rt);
-    this->addOperator(OperatorNode::LESS_EQUAL, new UserDefinedDefaultAdapter(), rt);
-    this->addOperator(OperatorNode::GREATER, new UserDefinedDefaultAdapter(), rt);
-    this->addOperator(OperatorNode::GREATER_EQUAL, new UserDefinedDefaultAdapter(), rt);
-    this->addOperator(OperatorNode::EQUAL, new UserDefinedDefaultAdapter(), rt);
-    this->addOperator(OperatorNode::NOT_EQUAL, new UserDefinedDefaultAdapter(), rt);
-    this->addOperator(OperatorNode::BITAND, new UserDefinedDefaultAdapter(), rt);
-    this->addOperator(OperatorNode::BITXOR, new UserDefinedDefaultAdapter(), rt);
-    this->addOperator(OperatorNode::BITOR, new UserDefinedDefaultAdapter(), rt);
-    this->addOperator(OperatorNode::AND, new UserDefinedDefaultAdapter(), rt);
-    this->addOperator(OperatorNode::OR, new UserDefinedDefaultAdapter(), rt);
+    : Type(rt) {
+    this->addOperator(OperatorNode::POST_PLUS_PLUS, new UserDefinedDefaultAdapter(rt));
+    this->addOperator(OperatorNode::POST_MINUS_MINUS, new UserDefinedDefaultAdapter(rt));
+    this->addOperator(OperatorNode::CALL, new UserDefinedDefaultAdapter(rt));
+    this->addOperator(OperatorNode::INDEX, new UserDefinedDefaultAdapter(rt));
+    this->addOperator(OperatorNode::PRE_PLUS_PLUS, new UserDefinedDefaultAdapter(rt));
+    this->addOperator(OperatorNode::PRE_MINUS_MINUS, new UserDefinedDefaultAdapter(rt));
+    this->addOperator(OperatorNode::PRE_PLUS, new UserDefinedDefaultAdapter(rt));
+    this->addOperator(OperatorNode::PRE_MINUS, new UserDefinedDefaultAdapter(rt));
+    this->addOperator(OperatorNode::NOT, new UserDefinedDefaultAdapter(rt));
+    this->addOperator(OperatorNode::INVERSE, new UserDefinedDefaultAdapter(rt));
+    this->addOperator(OperatorNode::MULT, new UserDefinedDefaultAdapter(rt));
+    this->addOperator(OperatorNode::DIV, new UserDefinedDefaultAdapter(rt));
+    this->addOperator(OperatorNode::REM, new UserDefinedDefaultAdapter(rt));
+    this->addOperator(OperatorNode::RIGHT_SHIFT, new UserDefinedDefaultAdapter(rt));
+    this->addOperator(OperatorNode::LEFT_SHIFT, new UserDefinedDefaultAdapter(rt));
+    this->addOperator(OperatorNode::PLUS, new UserDefinedDefaultAdapter(rt));
+    this->addOperator(OperatorNode::MINUS, new UserDefinedDefaultAdapter(rt));
+    this->addOperator(OperatorNode::LESS, new UserDefinedDefaultAdapter(rt));
+    this->addOperator(OperatorNode::LESS_EQUAL, new UserDefinedDefaultAdapter(rt));
+    this->addOperator(OperatorNode::GREATER, new UserDefinedDefaultAdapter(rt));
+    this->addOperator(OperatorNode::GREATER_EQUAL, new UserDefinedDefaultAdapter(rt));
+    this->addOperator(OperatorNode::EQUAL, new UserDefinedDefaultAdapter(rt));
+    this->addOperator(OperatorNode::NOT_EQUAL, new UserDefinedDefaultAdapter(rt));
+    this->addOperator(OperatorNode::BITAND, new UserDefinedDefaultAdapter(rt));
+    this->addOperator(OperatorNode::BITXOR, new UserDefinedDefaultAdapter(rt));
+    this->addOperator(OperatorNode::BITOR, new UserDefinedDefaultAdapter(rt));
+    this->addOperator(OperatorNode::AND, new UserDefinedDefaultAdapter(rt));
+    this->addOperator(OperatorNode::OR, new UserDefinedDefaultAdapter(rt));
 }
 
-Object *UserDefinedType::create(Runtime *rt) {
-    auto ins = createInstance(rt, false, UserDefinedInstance);
+Object *UserDefinedType::create() {
+    auto ins = createInstance(rt, UserDefinedInstance);
     for (auto f : this->instance_fields) {
         ins->addField(NameId(f).id, makeNothingInstanceObject(rt), rt);
     }
-    auto obj = createObject(rt, true, ins, this, false);
+    auto obj = createObject(rt, true, ins, this);
     return obj;
 }
 
@@ -105,15 +108,15 @@ std::string UserDefinedType::shortRepr() {
            + ")";
 }
 
-Object *UserDefinedType::copy(Object *obj, Runtime *rt, bool force_heap) {
+Object *UserDefinedType::copy(Object *obj) {
     if (!rt->isTypeObject(obj)) {
         rt->signalError("Failed to copy an invalid object: " + obj->shortRepr());
     }
     if (!rt->isInstanceObject(obj)) {
-        return createObject(rt, false, NULL, this, !force_heap);
+        return createObject(rt, false, NULL, this);
     }
-    auto ins = obj->instance->copy(rt, force_heap);
-    auto res = createObject(rt, true, ins, this, !force_heap);
+    auto ins = obj->instance->copy();
+    auto res = createObject(rt, true, ins, this);
     return res;
 }
 
