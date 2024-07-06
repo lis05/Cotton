@@ -21,16 +21,22 @@
  CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
+#include "../../profiler.h"
 #include "api.h"
 
 namespace Cotton::Builtin {
 
 NothingInstance::NothingInstance(Runtime *rt)
-    : Instance(rt, sizeof(NothingInstance)) {}
+    : Instance(rt, sizeof(NothingInstance)) {
+    ProfilerCAPTURE();
+}
 
-NothingInstance::~NothingInstance() {}
+NothingInstance::~NothingInstance() {
+    ProfilerCAPTURE();
+}
 
 Instance *NothingInstance::copy() {
+    ProfilerCAPTURE();
     Instance *res = new (std::nothrow) NothingInstance(rt);
     if (res == NULL) {
         rt->signalError("Failed to copy " + this->shortRepr());
@@ -39,14 +45,17 @@ Instance *NothingInstance::copy() {
 }
 
 size_t NothingInstance::getSize() {
+    ProfilerCAPTURE();
     return sizeof(NothingInstance);
 }
 
 size_t NothingType::getInstanceSize() {
+    ProfilerCAPTURE();
     return sizeof(NothingInstance);
 }
 
 std::string NothingInstance::shortRepr() {
+    ProfilerCAPTURE();
     if (this == NULL) {
         return "NULL";
     }
@@ -59,6 +68,7 @@ public:
         : OperatorAdapter(rt) {}
 
     Object *operator()(Object *self, const std::vector<Object *> &others) {
+        ProfilerCAPTURE();
         rt->signalError(self->shortRepr() + " does not support that operator");
     }
 };
@@ -69,9 +79,7 @@ public:
         : OperatorAdapter(rt) {}
 
     Object *operator()(Object *self, const std::vector<Object *> &others) {
-        if (!rt->isTypeObject(self) || self->type->id != rt->nothing_type->id) {
-            rt->signalError("Left-side object is invalid: " + self->shortRepr());
-        }
+        ProfilerCAPTURE();
         if (others.size() != 1) {
             rt->signalError("Expected exactly one right-side argument");
         }
@@ -80,12 +88,15 @@ public:
             rt->signalError("Right-side object is invalid: " + arg1->shortRepr());
         }
 
-        if (rt->isInstanceObject(self) && rt->isInstanceObject(arg1)) {
+        bool i1 = rt->isInstanceObject(self);
+        bool i2 = arg1->instance != NULL;
+
+        if (i1 && i2) {
             auto res                 = rt->make(rt->boolean_type, Runtime::INSTANCE_OBJECT);
             getBooleanValue(res, rt) = (arg1->type->id == self->type->id);
             return res;
         }
-        else if (!rt->isInstanceObject(self) && !rt->isInstanceObject(arg1)) {
+        else if (!i1 && !i2) {
             auto res                 = rt->make(rt->boolean_type, Runtime::INSTANCE_OBJECT);
             getBooleanValue(res, rt) = (arg1->type->id == self->type->id);
             return res;
@@ -104,14 +115,17 @@ public:
         : NothingEqAdapter(rt) {}
 
     Object *operator()(Object *self, const std::vector<Object *> &others) {
+        ProfilerCAPTURE();
         auto res                 = NothingEqAdapter::operator()(self, others);
         getBooleanValue(res, rt) = !getBooleanValue(res, rt);
         return res;
     }
 };
+
 // TODO: add all operators to function and nothing
 NothingType::NothingType(Runtime *rt)
     : Type(rt) {
+    ProfilerCAPTURE();
     this->addOperator(OperatorNode::POST_PLUS_PLUS, new NothingUnsupportedAdapter(rt));
     this->addOperator(OperatorNode::POST_MINUS_MINUS, new NothingUnsupportedAdapter(rt));
     this->addOperator(OperatorNode::CALL, new NothingUnsupportedAdapter(rt));
@@ -143,12 +157,14 @@ NothingType::NothingType(Runtime *rt)
 }
 
 Object *NothingType::create() {
+    ProfilerCAPTURE();
     auto ins = createInstance(rt, NothingInstance);
     auto obj = createObject(rt, true, ins, this);
     return obj;
 }
 
 std::string NothingType::shortRepr() {
+    ProfilerCAPTURE();
     if (this == NULL) {
         return "NULL";
     }
@@ -156,10 +172,11 @@ std::string NothingType::shortRepr() {
 }
 
 Object *NothingType::copy(Object *obj) {
+    ProfilerCAPTURE();
     if (!rt->isTypeObject(obj) || obj->type->id != rt->nothing_type->id) {
         rt->signalError("Failed to copy an invalid object: " + obj->shortRepr());
     }
-    if (!rt->isInstanceObject(obj)) {
+    if (obj->instance == NULL) {
         return createObject(rt, false, NULL, this);
     }
     auto ins = obj->instance->copy();
@@ -168,6 +185,7 @@ Object *NothingType::copy(Object *obj) {
 }
 
 Object *makeNothingInstanceObject(Runtime *rt) {
+    ProfilerCAPTURE();
     auto res = rt->make(rt->nothing_type, rt->INSTANCE_OBJECT);
     return res;
 }

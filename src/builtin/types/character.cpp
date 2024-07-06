@@ -19,17 +19,22 @@
  CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
+#include "../../profiler.h"
 #include "api.h"
 
 namespace Cotton::Builtin {
 CharacterInstance::CharacterInstance(Runtime *rt)
     : Instance(rt, sizeof(CharacterInstance)) {
+    ProfilerCAPTURE();
     this->value = '\0';
 }
 
-CharacterInstance::~CharacterInstance() {}
+CharacterInstance::~CharacterInstance() {
+    ProfilerCAPTURE();
+}
 
 Instance *CharacterInstance::copy() {
+    ProfilerCAPTURE();
     Instance *res = new (std::nothrow) CharacterInstance(rt);
     if (res == NULL) {
         rt->signalError("Failed to copy " + this->shortRepr());
@@ -39,6 +44,7 @@ Instance *CharacterInstance::copy() {
 }
 
 std::string CharacterInstance::shortRepr() {
+    ProfilerCAPTURE();
     if (this == NULL) {
         return "CharacterInstance(NULL)";
     }
@@ -47,10 +53,12 @@ std::string CharacterInstance::shortRepr() {
 }
 
 size_t CharacterInstance::getSize() {
+    ProfilerCAPTURE();
     return sizeof(CharacterInstance);
 }
 
 size_t CharacterType::getInstanceSize() {
+    ProfilerCAPTURE();
     return sizeof(CharacterInstance);
 }
 
@@ -60,9 +68,8 @@ public:
         : OperatorAdapter(rt) {}
 
     Object *operator()(Object *self, const std::vector<Object *> &others) {
-        if (!rt->isTypeObject(self) || self->type->id != rt->character_type->id) {
-            rt->signalError("Left-side object is invalid: " + self->shortRepr());
-        }
+        ProfilerCAPTURE();
+
         if (!rt->isInstanceObject(self)) {
             rt->signalError(self->shortRepr() + " does not support that operator");
         }
@@ -79,9 +86,8 @@ public:
         : OperatorAdapter(rt) {}
 
     Object *operator()(Object *self, const std::vector<Object *> &others) {
-        if (!rt->isTypeObject(self) || self->type->id != rt->character_type->id) {
-            rt->signalError("Left-side object is invalid: " + self->shortRepr());
-        }
+        ProfilerCAPTURE();
+
         if (!rt->isInstanceObject(self)) {
             rt->signalError(self->shortRepr() + " does not support that operator");
         }
@@ -98,6 +104,7 @@ public:
         : OperatorAdapter(rt) {}
 
     Object *operator()(Object *self, const std::vector<Object *> &others) {
+        ProfilerCAPTURE();
         rt->signalError(self->shortRepr() + " does not support that operator");
     }
 };
@@ -108,9 +115,8 @@ public:
         : OperatorAdapter(rt) {}
 
     Object *operator()(Object *self, const std::vector<Object *> &others) {
-        if (!rt->isTypeObject(self) || self->type->id != rt->character_type->id) {
-            rt->signalError("Left-side object is invalid: " + self->shortRepr());
-        }
+        ProfilerCAPTURE();
+
         if (!rt->isInstanceObject(self)) {
             rt->signalError(self->shortRepr() + " does not support that operator");
         }
@@ -127,9 +133,8 @@ public:
         : OperatorAdapter(rt) {}
 
     Object *operator()(Object *self, const std::vector<Object *> &others) {
-        if (!rt->isTypeObject(self) || self->type->id != rt->character_type->id) {
-            rt->signalError("Left-side object is invalid: " + self->shortRepr());
-        }
+        ProfilerCAPTURE();
+
         if (!rt->isInstanceObject(self)) {
             rt->signalError(self->shortRepr() + " does not support that operator");
         }
@@ -146,9 +151,8 @@ public:
         : OperatorAdapter(rt) {}
 
     Object *operator()(Object *self, const std::vector<Object *> &others) {
-        if (!rt->isTypeObject(self) || self->type->id != rt->character_type->id) {
-            rt->signalError("Left-side object is invalid: " + self->shortRepr());
-        }
+        ProfilerCAPTURE();
+
         if (!rt->isInstanceObject(self)) {
             rt->signalError(self->shortRepr() + " does not support that operator");
         }
@@ -164,9 +168,8 @@ public:
         : OperatorAdapter(rt) {}
 
     Object *operator()(Object *self, const std::vector<Object *> &others) {
-        if (!rt->isTypeObject(self) || self->type->id != rt->character_type->id) {
-            rt->signalError("Left-side object is invalid: " + self->shortRepr());
-        }
+        ProfilerCAPTURE();
+
         if (!rt->isInstanceObject(self)) {
             rt->signalError(self->shortRepr() + " does not support that operator");
         }
@@ -183,9 +186,8 @@ public:
         : OperatorAdapter(rt) {}
 
     Object *operator()(Object *self, const std::vector<Object *> &others) {
-        if (!rt->isTypeObject(self) || self->type->id != rt->character_type->id) {
-            rt->signalError("Left-side object is invalid: " + self->shortRepr());
-        }
+        ProfilerCAPTURE();
+
         if (!rt->isInstanceObject(self)) {
             rt->signalError(self->shortRepr() + " does not support that operator");
         }
@@ -202,9 +204,8 @@ public:
         : OperatorAdapter(rt) {}
 
     Object *operator()(Object *self, const std::vector<Object *> &others) {
-        if (!rt->isTypeObject(self) || self->type->id != rt->character_type->id) {
-            rt->signalError("Left-side object is invalid: " + self->shortRepr());
-        }
+        ProfilerCAPTURE();
+
         if (!rt->isInstanceObject(self)) {
             rt->signalError(self->shortRepr() + " does not support that operator");
         }
@@ -216,7 +217,7 @@ public:
         if (!rt->isTypeObject(arg1)) {
             rt->signalError("Right-side object is invalid: " + arg1->shortRepr());
         }
-        if (!rt->isInstanceObject(arg1) || arg1->type->id != rt->character_type->id) {
+        if (arg1->instance == NULL || arg1->type->id != rt->character_type->id) {
             rt->signalError("Right-side object " + arg1->shortRepr() + " must be a Character instance object");
         }
 
@@ -231,9 +232,8 @@ public:
         : OperatorAdapter(rt) {}
 
     Object *operator()(Object *self, const std::vector<Object *> &others) {
-        if (!rt->isTypeObject(self) || self->type->id != rt->character_type->id) {
-            rt->signalError("Left-side object is invalid: " + self->shortRepr());
-        }
+        ProfilerCAPTURE();
+
         if (!rt->isInstanceObject(self)) {
             rt->signalError(self->shortRepr() + " does not support that operator");
         }
@@ -245,7 +245,7 @@ public:
         if (!rt->isTypeObject(arg1)) {
             rt->signalError("Right-side object is invalid: " + arg1->shortRepr());
         }
-        if (!rt->isInstanceObject(arg1) || arg1->type->id != rt->character_type->id) {
+        if (arg1->instance == NULL || arg1->type->id != rt->character_type->id) {
             rt->signalError("Right-side object " + arg1->shortRepr() + " must be a Character instance object");
         }
 
@@ -260,9 +260,8 @@ public:
         : OperatorAdapter(rt) {}
 
     Object *operator()(Object *self, const std::vector<Object *> &others) {
-        if (!rt->isTypeObject(self) || self->type->id != rt->character_type->id) {
-            rt->signalError("Left-side object is invalid: " + self->shortRepr());
-        }
+        ProfilerCAPTURE();
+
         if (!rt->isInstanceObject(self)) {
             rt->signalError(self->shortRepr() + " does not support that operator");
         }
@@ -274,7 +273,7 @@ public:
         if (!rt->isTypeObject(arg1)) {
             rt->signalError("Right-side object is invalid: " + arg1->shortRepr());
         }
-        if (!rt->isInstanceObject(arg1) || arg1->type->id != rt->character_type->id) {
+        if (arg1->instance == NULL || arg1->type->id != rt->character_type->id) {
             rt->signalError("Right-side object " + arg1->shortRepr() + " must be a Character instance object");
         }
 
@@ -289,9 +288,8 @@ public:
         : OperatorAdapter(rt) {}
 
     Object *operator()(Object *self, const std::vector<Object *> &others) {
-        if (!rt->isTypeObject(self) || self->type->id != rt->character_type->id) {
-            rt->signalError("Left-side object is invalid: " + self->shortRepr());
-        }
+        ProfilerCAPTURE();
+
         if (!rt->isInstanceObject(self)) {
             rt->signalError(self->shortRepr() + " does not support that operator");
         }
@@ -303,7 +301,7 @@ public:
         if (!rt->isTypeObject(arg1)) {
             rt->signalError("Right-side object is invalid: " + arg1->shortRepr());
         }
-        if (!rt->isInstanceObject(arg1) || arg1->type->id != rt->character_type->id) {
+        if (arg1->instance == NULL || arg1->type->id != rt->character_type->id) {
             rt->signalError("Right-side object " + arg1->shortRepr() + " must be a Character instance object");
         }
 
@@ -318,9 +316,8 @@ public:
         : OperatorAdapter(rt) {}
 
     Object *operator()(Object *self, const std::vector<Object *> &others) {
-        if (!rt->isTypeObject(self) || self->type->id != rt->character_type->id) {
-            rt->signalError("Left-side object is invalid: " + self->shortRepr());
-        }
+        ProfilerCAPTURE();
+
         if (!rt->isInstanceObject(self)) {
             rt->signalError(self->shortRepr() + " does not support that operator");
         }
@@ -332,7 +329,7 @@ public:
         if (!rt->isTypeObject(arg1)) {
             rt->signalError("Right-side object is invalid: " + arg1->shortRepr());
         }
-        if (!rt->isInstanceObject(arg1) || arg1->type->id != rt->character_type->id) {
+        if (arg1->instance == NULL || arg1->type->id != rt->character_type->id) {
             rt->signalError("Right-side object " + arg1->shortRepr() + " must be a Character instance object");
         }
 
@@ -347,9 +344,8 @@ public:
         : OperatorAdapter(rt) {}
 
     Object *operator()(Object *self, const std::vector<Object *> &others) {
-        if (!rt->isTypeObject(self) || self->type->id != rt->character_type->id) {
-            rt->signalError("Left-side object is invalid: " + self->shortRepr());
-        }
+        ProfilerCAPTURE();
+
         if (!rt->isInstanceObject(self)) {
             rt->signalError(self->shortRepr() + " does not support that operator");
         }
@@ -361,7 +357,7 @@ public:
         if (!rt->isTypeObject(arg1)) {
             rt->signalError("Right-side object is invalid: " + arg1->shortRepr());
         }
-        if (!rt->isInstanceObject(arg1) || arg1->type->id != rt->character_type->id) {
+        if (arg1->instance == NULL || arg1->type->id != rt->character_type->id) {
             rt->signalError("Right-side object " + arg1->shortRepr() + " must be a Character instance object");
         }
 
@@ -376,9 +372,8 @@ public:
         : OperatorAdapter(rt) {}
 
     Object *operator()(Object *self, const std::vector<Object *> &others) {
-        if (!rt->isTypeObject(self) || self->type->id != rt->character_type->id) {
-            rt->signalError("Left-side object is invalid: " + self->shortRepr());
-        }
+        ProfilerCAPTURE();
+
         if (!rt->isInstanceObject(self)) {
             rt->signalError(self->shortRepr() + " does not support that operator");
         }
@@ -390,7 +385,7 @@ public:
         if (!rt->isTypeObject(arg1)) {
             rt->signalError("Right-side object is invalid: " + arg1->shortRepr());
         }
-        if (!rt->isInstanceObject(arg1) || arg1->type->id != rt->character_type->id) {
+        if (arg1->instance == NULL || arg1->type->id != rt->character_type->id) {
             rt->signalError("Right-side object " + arg1->shortRepr() + " must be a Character instance object");
         }
 
@@ -405,9 +400,8 @@ public:
         : OperatorAdapter(rt) {}
 
     Object *operator()(Object *self, const std::vector<Object *> &others) {
-        if (!rt->isTypeObject(self) || self->type->id != rt->character_type->id) {
-            rt->signalError("Left-side object is invalid: " + self->shortRepr());
-        }
+        ProfilerCAPTURE();
+
         if (!rt->isInstanceObject(self)) {
             rt->signalError(self->shortRepr() + " does not support that operator");
         }
@@ -419,7 +413,7 @@ public:
         if (!rt->isTypeObject(arg1)) {
             rt->signalError("Right-side object is invalid: " + arg1->shortRepr());
         }
-        if (!rt->isInstanceObject(arg1) || arg1->type->id != rt->character_type->id) {
+        if (arg1->instance == NULL || arg1->type->id != rt->character_type->id) {
             rt->signalError("Right-side object " + arg1->shortRepr() + " must be a Character instance object");
         }
 
@@ -434,9 +428,8 @@ public:
         : OperatorAdapter(rt) {}
 
     Object *operator()(Object *self, const std::vector<Object *> &others) {
-        if (!rt->isTypeObject(self) || self->type->id != rt->character_type->id) {
-            rt->signalError("Left-side object is invalid: " + self->shortRepr());
-        }
+        ProfilerCAPTURE();
+
         if (!rt->isInstanceObject(self)) {
             rt->signalError(self->shortRepr() + " does not support that operator");
         }
@@ -448,7 +441,7 @@ public:
         if (!rt->isTypeObject(arg1)) {
             rt->signalError("Right-side object is invalid: " + arg1->shortRepr());
         }
-        if (!rt->isInstanceObject(arg1) || arg1->type->id != rt->character_type->id) {
+        if (arg1->instance == NULL || arg1->type->id != rt->character_type->id) {
             rt->signalError("Right-side object " + arg1->shortRepr() + " must be a Character instance object");
         }
 
@@ -463,9 +456,8 @@ public:
         : OperatorAdapter(rt) {}
 
     Object *operator()(Object *self, const std::vector<Object *> &others) {
-        if (!rt->isTypeObject(self) || self->type->id != rt->character_type->id) {
-            rt->signalError("Left-side object is invalid: " + self->shortRepr());
-        }
+        ProfilerCAPTURE();
+
         if (!rt->isInstanceObject(self)) {
             rt->signalError(self->shortRepr() + " does not support that operator");
         }
@@ -477,7 +469,7 @@ public:
         if (!rt->isTypeObject(arg1)) {
             rt->signalError("Right-side object is invalid: " + arg1->shortRepr());
         }
-        if (!rt->isInstanceObject(arg1) || arg1->type->id != rt->character_type->id) {
+        if (arg1->instance == NULL || arg1->type->id != rt->character_type->id) {
             rt->signalError("Right-side object " + arg1->shortRepr() + " must be a Character instance object");
         }
 
@@ -492,9 +484,8 @@ public:
         : OperatorAdapter(rt) {}
 
     Object *operator()(Object *self, const std::vector<Object *> &others) {
-        if (!rt->isTypeObject(self) || self->type->id != rt->character_type->id) {
-            rt->signalError("Left-side object is invalid: " + self->shortRepr());
-        }
+        ProfilerCAPTURE();
+
         if (!rt->isInstanceObject(self)) {
             rt->signalError(self->shortRepr() + " does not support that operator");
         }
@@ -506,7 +497,7 @@ public:
         if (!rt->isTypeObject(arg1)) {
             rt->signalError("Right-side object is invalid: " + arg1->shortRepr());
         }
-        if (!rt->isInstanceObject(arg1) || arg1->type->id != rt->character_type->id) {
+        if (arg1->instance == NULL || arg1->type->id != rt->character_type->id) {
             rt->signalError("Right-side object " + arg1->shortRepr() + " must be a Character instance object");
         }
 
@@ -521,9 +512,8 @@ public:
         : OperatorAdapter(rt) {}
 
     Object *operator()(Object *self, const std::vector<Object *> &others) {
-        if (!rt->isTypeObject(self) || self->type->id != rt->character_type->id) {
-            rt->signalError("Left-side object is invalid: " + self->shortRepr());
-        }
+        ProfilerCAPTURE();
+
         if (others.size() != 1) {
             rt->signalError("Expected exactly one right-side argument");
             return NULL;
@@ -532,14 +522,16 @@ public:
         if (!rt->isTypeObject(arg1)) {
             rt->signalError("Right-side object is invalid: " + arg1->shortRepr());
         }
+        bool i1 = rt->isInstanceObject(self);
+        bool i2 = arg1->instance != NULL;
 
-        if (rt->isInstanceObject(self) && rt->isInstanceObject(arg1)) {
+        if (i1 && i2) {
             if (self->type->id != arg1->type->id) {
                 return makeBooleanInstanceObject(false, rt);
             }
             return makeBooleanInstanceObject(getCharacterValueFast(self) == getCharacterValueFast(arg1), rt);
         }
-        else if (!rt->isInstanceObject(self) && !rt->isInstanceObject(arg1)) {
+        else if (!i1 && !i2) {
             return makeBooleanInstanceObject(self->type->id == arg1->type->id, rt);
         }
         else {
@@ -554,6 +546,7 @@ public:
         : CharacterEqAdapter(rt) {}
 
     Object *operator()(Object *self, const std::vector<Object *> &others) {
+        ProfilerCAPTURE();
         auto res                   = CharacterEqAdapter::operator()(self, others);
         getCharacterValueFast(res) = !getCharacterValueFast(res);
         return res;
@@ -566,9 +559,8 @@ public:
         : OperatorAdapter(rt) {}
 
     Object *operator()(Object *self, const std::vector<Object *> &others) {
-        if (!rt->isTypeObject(self) || self->type->id != rt->character_type->id) {
-            rt->signalError("Left-side object is invalid: " + self->shortRepr());
-        }
+        ProfilerCAPTURE();
+
         if (!rt->isInstanceObject(self)) {
             rt->signalError(self->shortRepr() + " does not support that operator");
         }
@@ -580,7 +572,7 @@ public:
         if (!rt->isTypeObject(arg1)) {
             rt->signalError("Right-side object is invalid: " + arg1->shortRepr());
         }
-        if (!rt->isInstanceObject(arg1) || arg1->type->id != rt->character_type->id) {
+        if (arg1->instance == NULL || arg1->type->id != rt->character_type->id) {
             rt->signalError("Right-side object " + arg1->shortRepr() + " must be a Character instance object");
         }
 
@@ -595,9 +587,8 @@ public:
         : OperatorAdapter(rt) {}
 
     Object *operator()(Object *self, const std::vector<Object *> &others) {
-        if (!rt->isTypeObject(self) || self->type->id != rt->character_type->id) {
-            rt->signalError("Left-side object is invalid: " + self->shortRepr());
-        }
+        ProfilerCAPTURE();
+
         if (!rt->isInstanceObject(self)) {
             rt->signalError(self->shortRepr() + " does not support that operator");
         }
@@ -609,7 +600,7 @@ public:
         if (!rt->isTypeObject(arg1)) {
             rt->signalError("Right-side object is invalid: " + arg1->shortRepr());
         }
-        if (!rt->isInstanceObject(arg1) || arg1->type->id != rt->character_type->id) {
+        if (arg1->instance == NULL || arg1->type->id != rt->character_type->id) {
             rt->signalError("Right-side object " + arg1->shortRepr() + " must be a Character instance object");
         }
 
@@ -624,9 +615,8 @@ public:
         : OperatorAdapter(rt) {}
 
     Object *operator()(Object *self, const std::vector<Object *> &others) {
-        if (!rt->isTypeObject(self) || self->type->id != rt->character_type->id) {
-            rt->signalError("Left-side object is invalid: " + self->shortRepr());
-        }
+        ProfilerCAPTURE();
+
         if (!rt->isInstanceObject(self)) {
             rt->signalError(self->shortRepr() + " does not support that operator");
         }
@@ -638,7 +628,7 @@ public:
         if (!rt->isTypeObject(arg1)) {
             rt->signalError("Right-side object is invalid: " + arg1->shortRepr());
         }
-        if (!rt->isInstanceObject(arg1) || arg1->type->id != rt->character_type->id) {
+        if (arg1->instance == NULL || arg1->type->id != rt->character_type->id) {
             rt->signalError("Right-side object " + arg1->shortRepr() + " must be a Character instance object");
         }
 
@@ -650,6 +640,7 @@ public:
 // TODO: add all operators to function and nothing
 CharacterType::CharacterType(Runtime *rt)
     : Type(rt) {
+    ProfilerCAPTURE();
     this->addOperator(OperatorNode::POST_PLUS_PLUS, new CharacterPostincAdapter(rt));
     this->addOperator(OperatorNode::POST_MINUS_MINUS, new CharacterPostdecAdapter(rt));
     this->addOperator(OperatorNode::CALL, new CharacterUnsupportedAdapter(rt));
@@ -681,16 +672,18 @@ CharacterType::CharacterType(Runtime *rt)
 }
 
 Object *CharacterType::create() {
+    ProfilerCAPTURE();
     auto ins = createInstance(rt, CharacterInstance);
     auto obj = createObject(rt, true, ins, this);
     return obj;
 }
 
 Object *CharacterType::copy(Object *obj) {
+    ProfilerCAPTURE();
     if (!rt->isTypeObject(obj) || obj->type->id != rt->character_type->id) {
         rt->signalError("Failed to copy an invalid object: " + obj->shortRepr());
     }
-    if (!rt->isInstanceObject(obj)) {
+    if (obj->instance == NULL) {
         return createObject(rt, false, NULL, this);
     }
     auto ins = obj->instance->copy();
@@ -699,6 +692,7 @@ Object *CharacterType::copy(Object *obj) {
 }
 
 std::string CharacterType::shortRepr() {
+    ProfilerCAPTURE();
     if (this == NULL) {
         return "CharacterType(NULL)";
     }
@@ -706,6 +700,7 @@ std::string CharacterType::shortRepr() {
 }
 
 uint8_t &getCharacterValue(Object *obj, Runtime *rt) {
+    ProfilerCAPTURE();
     if (!rt->isInstanceObject(obj)) {
         rt->signalError(obj->shortRepr() + " is not an instance object");
     }
@@ -716,6 +711,7 @@ uint8_t &getCharacterValue(Object *obj, Runtime *rt) {
 }
 
 Object *makeCharacterInstanceObject(uint8_t value, Runtime *rt) {
+    ProfilerCAPTURE();
     auto res                                       = rt->make(rt->character_type, Runtime::INSTANCE_OBJECT);
     icast(res->instance, CharacterInstance)->value = value;
     return res;

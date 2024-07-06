@@ -24,6 +24,7 @@
 namespace Cotton::Builtin {
 
 static Object *make(const std::vector<Object *> &args, Runtime *rt) {
+    ProfilerCAPTURE();
     if (args.size() != 1) {
         rt->signalError("Expected exactly one argument");
     }
@@ -36,6 +37,7 @@ static Object *make(const std::vector<Object *> &args, Runtime *rt) {
 }
 
 static Object *print(const std::vector<Object *> &args, Runtime *rt) {
+    ProfilerCAPTURE();
     bool f = false;
     for (auto arg : args) {
         if (f) {
@@ -79,6 +81,7 @@ static Object *print(const std::vector<Object *> &args, Runtime *rt) {
 }
 
 void installBuiltinFunctions(Runtime *rt) {
+    ProfilerCAPTURE();
     rt->scope->addVariable(NameId("print").id, makeFunctionInstanceObject(true, print, NULL, rt), rt);
     rt->scope->addVariable(NameId("make").id, makeFunctionInstanceObject(true, make, NULL, rt), rt);
 }

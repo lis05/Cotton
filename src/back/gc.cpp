@@ -20,6 +20,7 @@
  */
 
 #include "gc.h"
+#include "../profiler.h"
 #include "instance.h"
 #include "object.h"
 #include "runtime.h"
@@ -28,6 +29,7 @@
 
 namespace Cotton {
 GCDefaultStrategy::GCDefaultStrategy() {
+    ProfilerCAPTURE();
     this->rt                  = NULL;
     this->num_tracked         = 0;
     this->prev_num_tracked    = NUM_TRACKED_INIT;
@@ -37,6 +39,7 @@ GCDefaultStrategy::GCDefaultStrategy() {
 }
 
 void GCDefaultStrategy::acknowledgeTrack(Object *object) {
+    ProfilerCAPTURE();
     if (object == NULL) {
         return;
     }
@@ -46,6 +49,7 @@ void GCDefaultStrategy::acknowledgeTrack(Object *object) {
 }
 
 void GCDefaultStrategy::acknowledgeTrack(Instance *instance, size_t bytes) {
+    ProfilerCAPTURE();
     if (instance == NULL) {
         return;
     }
@@ -55,6 +59,7 @@ void GCDefaultStrategy::acknowledgeTrack(Instance *instance, size_t bytes) {
 }
 
 void GCDefaultStrategy::acknowledgeTrack(Type *type) {
+    ProfilerCAPTURE();
     if (type == NULL) {
         return;
     }
@@ -64,6 +69,7 @@ void GCDefaultStrategy::acknowledgeTrack(Type *type) {
 }
 
 void GCDefaultStrategy::acknowledgeUntrack(Object *object) {
+    ProfilerCAPTURE();
     if (object == NULL) {
         return;
     }
@@ -72,6 +78,7 @@ void GCDefaultStrategy::acknowledgeUntrack(Object *object) {
 }
 
 void GCDefaultStrategy::acknowledgeUntrack(Instance *instance) {
+    ProfilerCAPTURE();
     if (instance == NULL) {
         return;
     }
@@ -80,6 +87,7 @@ void GCDefaultStrategy::acknowledgeUntrack(Instance *instance) {
 }
 
 void GCDefaultStrategy::acknowledgeUntrack(Type *type) {
+    ProfilerCAPTURE();
     if (type == NULL) {
         return;
     }
@@ -88,6 +96,7 @@ void GCDefaultStrategy::acknowledgeUntrack(Type *type) {
 }
 
 void GCDefaultStrategy::acknowledgeEndOfCycle() {
+    ProfilerCAPTURE();
     this->prev_num_tracked = this->rt->gc->tracked_instances.size() + this->rt->gc->tracked_objects.size()
                              + this->rt->gc->tracked_types.size();
     this->prev_sizeof_tracked = 0;
@@ -105,10 +114,12 @@ void GCDefaultStrategy::acknowledgeEndOfCycle() {
 }
 
 void GCDefaultStrategy::acknowledgePing() {
+    ProfilerCAPTURE();
     this->checkConditions();
 }
 
 void GCDefaultStrategy::checkConditions() {
+    ProfilerCAPTURE();
     if (this->sizeof_tracked >= MIN_CYCLE_SIZE
         && ((this->prev_num_tracked < this->num_tracked / NUM_TRACKED_MULT)
             || (this->prev_sizeof_tracked < this->sizeof_tracked / SIZEOF_TRACKED_MULT)
@@ -120,12 +131,14 @@ void GCDefaultStrategy::checkConditions() {
 }
 
 GC::GC(GCStrategy *gc_strategy) {
+    ProfilerCAPTURE();
     this->gc_strategy = gc_strategy;
     this->gc_mark     = 1;
     this->enabled     = true;
 }
 
 GC::~GC() {
+    ProfilerCAPTURE();
     for (auto &[obj, _] : this->tracked_objects) {
         delete obj;
     }
@@ -138,6 +151,7 @@ GC::~GC() {
 }
 
 void GC::track(Object *object) {
+    ProfilerCAPTURE();
     if (this->tracked_objects.find(object) != this->tracked_objects.end()) {
         return;
     }
@@ -146,6 +160,7 @@ void GC::track(Object *object) {
 }
 
 void GC::track(Instance *instance, size_t bytes) {
+    ProfilerCAPTURE();
     if (this->tracked_instances.find(instance) != this->tracked_instances.end()) {
         return;
     }
@@ -154,6 +169,7 @@ void GC::track(Instance *instance, size_t bytes) {
 }
 
 void GC::track(Type *type) {
+    ProfilerCAPTURE();
     if (this->tracked_types.find(type) != this->tracked_types.end()) {
         return;
     }
@@ -162,6 +178,7 @@ void GC::track(Type *type) {
 }
 
 void GC::untrack(Object *object) {
+    ProfilerCAPTURE();
     auto it = this->tracked_objects.find(object);
     if (it == this->tracked_objects.end()) {
         return;
@@ -170,6 +187,7 @@ void GC::untrack(Object *object) {
 }
 
 void GC::untrack(Instance *instance) {
+    ProfilerCAPTURE();
     auto it = this->tracked_instances.find(instance);
     if (it == this->tracked_instances.end()) {
         return;
@@ -178,6 +196,7 @@ void GC::untrack(Instance *instance) {
 }
 
 void GC::untrack(Type *type) {
+    ProfilerCAPTURE();
     auto it = this->tracked_types.find(type);
     if (it == this->tracked_types.end()) {
         return;
@@ -186,14 +205,17 @@ void GC::untrack(Type *type) {
 }
 
 void GC::hold(Object *object) {
+    ProfilerCAPTURE();
     this->held_objects[object] = true;
 }
 
 void GC::release(Object *object) {
+    ProfilerCAPTURE();
     this->held_objects.erase(object);
 }
 
 void GC::ping() {
+    ProfilerCAPTURE();
     this->gc_strategy->acknowledgePing();
 }
 
@@ -201,6 +223,7 @@ static void mark(Instance *ins, Runtime *rt);
 static void mark(Type *type, Runtime *rt);
 
 static void mark(Object *obj, Runtime *rt) {
+    ProfilerCAPTURE();
     if (obj == NULL) {
         return;
     }
@@ -217,6 +240,7 @@ static void mark(Object *obj, Runtime *rt) {
 }
 
 static void mark(Instance *ins, Runtime *rt) {
+    ProfilerCAPTURE();
     if (ins == NULL) {
         return;
     }
@@ -231,6 +255,7 @@ static void mark(Instance *ins, Runtime *rt) {
 }
 
 static void mark(Type *type, Runtime *rt) {
+    ProfilerCAPTURE();
     if (type == NULL) {
         return;
     }
@@ -245,6 +270,7 @@ static void mark(Type *type, Runtime *rt) {
 }
 
 void GC::runCycle() {
+    ProfilerCAPTURE();
     if (!this->enabled) {
         return;
     }
@@ -297,10 +323,12 @@ void GC::runCycle() {
 }
 
 void GC::enable() {
+    ProfilerCAPTURE();
     this->enabled = true;
 }
 
 void GC::disable() {
+    ProfilerCAPTURE();
     this->enabled = false;
 }
 }    // namespace Cotton

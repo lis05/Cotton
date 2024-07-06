@@ -25,3 +25,5 @@
 #include "builtin/api.h"
 #include "errors.h"
 #include "front/api.h"
+
+#include "profiler.h"

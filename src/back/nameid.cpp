@@ -1,4 +1,3 @@
-#include "nameid.h"
 /*
  Copyright (c) 2024 Ihor Lukianov (lis05)
 
@@ -21,18 +20,21 @@
  */
 
 #include "nameid.h"
+#include "../profiler.h"
 
 namespace Cotton {
 __gnu_pbds::cc_hash_table<std::string, int64_t> NameId::map;
 __gnu_pbds::cc_hash_table<int64_t, std::string> NameId::reverse_map;
 
 NameId::NameId() {
+    ProfilerCAPTURE();
     this->id    = -1;
     this->token = NULL;
     this->str   = NULL;
 }
 
 NameId::NameId(Token *token) {
+    ProfilerCAPTURE();
     if (token == NULL) {
         this->id = -1;
     }
@@ -51,6 +53,7 @@ NameId::NameId(Token *token) {
 }
 
 NameId::NameId(std::string *str) {
+    ProfilerCAPTURE();
     if (str == NULL) {
         this->id = -1;
     }
@@ -69,6 +72,7 @@ NameId::NameId(std::string *str) {
 }
 
 NameId::NameId(std::string str) {
+    ProfilerCAPTURE();
     if (NameId::map.find(str) != NameId::map.end()) {
         this->id = NameId::map[str];
     }
@@ -83,11 +87,13 @@ NameId::NameId(std::string str) {
 }
 
 NameId::~NameId() {
+    ProfilerCAPTURE();
     this->id    = -1;
     this->token = NULL;
 }
 
 std::string NameId::fromId(int64_t id) {
+    ProfilerCAPTURE();
     auto it = NameId::reverse_map.find(id);
     if (it != reverse_map.end()) {
         return it->second;
@@ -96,8 +102,9 @@ std::string NameId::fromId(int64_t id) {
 }
 
 std::string NameId::shortRepr(int64_t id) {
+    ProfilerCAPTURE();
     return fromId(id);
-    //return "NameId(id = " + std::to_string(id) + ", str = \'" + NameId::fromId(id) + "\')";
+    // return "NameId(id = " + std::to_string(id) + ", str = \'" + NameId::fromId(id) + "\')";
 }
 
 };    // namespace Cotton

@@ -19,25 +19,31 @@
  CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
+#include "../../profiler.h"
 #include "api.h"
 
 namespace Cotton::Builtin {
 FunctionInstance::FunctionInstance(Runtime *rt)
     : Instance(rt, sizeof(FunctionInstance)) {
+    ProfilerCAPTURE();
     this->is_internal  = true;
     this->internal_ptr = NULL;
     this->cotton_ptr   = NULL;
 }
 
-FunctionInstance::~FunctionInstance() {}
+FunctionInstance::~FunctionInstance() {
+    ProfilerCAPTURE();
+}
 
 void FunctionInstance::init(bool is_internal, InternalFunction internal_ptr, FuncDefNode *cotton_ptr) {
+    ProfilerCAPTURE();
     this->is_internal  = is_internal;
     this->internal_ptr = internal_ptr;
     this->cotton_ptr   = cotton_ptr;
 }
 
 Instance *FunctionInstance::copy() {
+    ProfilerCAPTURE();
     auto res = new (std::nothrow) FunctionInstance(rt);
     if (res == NULL) {
         rt->signalError("Failed to copy " + this->shortRepr());
@@ -47,6 +53,7 @@ Instance *FunctionInstance::copy() {
 }
 
 std::string FunctionInstance::shortRepr() {
+    ProfilerCAPTURE();
     if (this == NULL) {
         return "NULL";
     }
@@ -55,10 +62,12 @@ std::string FunctionInstance::shortRepr() {
 }
 
 size_t FunctionInstance::getSize() {
+    ProfilerCAPTURE();
     return sizeof(FunctionInstance);
 }
 
 size_t FunctionType::getInstanceSize() {
+    ProfilerCAPTURE();
     return sizeof(FunctionInstance);
 }
 
@@ -68,6 +77,7 @@ public:
         : OperatorAdapter(rt) {}
 
     Object *operator()(Object *self, const std::vector<Object *> &others) {
+        ProfilerCAPTURE();
         rt->signalError(self->shortRepr() + " does not support that operator");
     }
 };
@@ -76,10 +86,10 @@ class FunctionCallAdapter: public OperatorAdapter {
 public:
     FunctionCallAdapter(Runtime *rt)
         : OperatorAdapter(rt) {}
+
     Object *operator()(Object *self, const std::vector<Object *> &others) {
-        if (!rt->isTypeObject(self) || self->type->id != rt->function_type->id) {
-            rt->signalError("Left-side object is invalid: " + self->shortRepr());
-        }
+        ProfilerCAPTURE();
+
         if (!rt->isInstanceObject(self)) {
             rt->signalError(self->shortRepr() + " does not support that operator");
         }
@@ -127,10 +137,10 @@ class FunctionEqAdapter: public OperatorAdapter {
 public:
     FunctionEqAdapter(Runtime *rt)
         : OperatorAdapter(rt) {}
+
     Object *operator()(Object *self, const std::vector<Object *> &others) {
-        if (!rt->isTypeObject(self) || self->type->id != rt->function_type->id) {
-            rt->signalError("Left-side object is invalid: " + self->shortRepr());
-        }
+        ProfilerCAPTURE();
+
         if (others.size() != 1) {
             rt->signalError("Expected exactly one right-side argument");
             return NULL;
@@ -140,7 +150,10 @@ public:
             rt->signalError("Right-side object is invalid: " + arg1->shortRepr());
         }
 
-        if (rt->isInstanceObject(self) && rt->isInstanceObject(arg1)) {
+        bool i1 = rt->isInstanceObject(self);
+        bool i2 = arg1->instance != NULL;
+
+        if (i1 && i2) {
             auto res                 = rt->make(rt->boolean_type, Runtime::INSTANCE_OBJECT);
             getBooleanValue(res, rt) = false;
             if (self->type->id == arg1->type->id) {
@@ -154,7 +167,7 @@ public:
             }
             return res;
         }
-        else if (!rt->isInstanceObject(self) && !rt->isInstanceObject(arg1)) {
+        else if (!i1 && !i2) {
             auto res                 = rt->make(rt->boolean_type, Runtime::INSTANCE_OBJECT);
             getBooleanValue(res, rt) = self->type->id == arg1->type->id;
             return res;
@@ -171,7 +184,9 @@ class FunctionNeqAdapter: public FunctionEqAdapter {
 public:
     FunctionNeqAdapter(Runtime *rt)
         : FunctionEqAdapter(rt) {}
+
     Object *operator()(Object *self, const std::vector<Object *> &others) {
+        ProfilerCAPTURE();
         auto res                 = FunctionEqAdapter::operator()(self, others);
         getBooleanValue(res, rt) = !getBooleanValue(res, rt);
         return res;
@@ -181,6 +196,7 @@ public:
 // TODO: add all operators to function and nothing
 FunctionType::FunctionType(Runtime *rt)
     : Type(rt) {
+    ProfilerCAPTURE();
     this->addOperator(OperatorNode::POST_PLUS_PLUS, new FunctionUnsupportedAdapter(rt));
     this->addOperator(OperatorNode::POST_MINUS_MINUS, new FunctionUnsupportedAdapter(rt));
     this->addOperator(OperatorNode::CALL, new FunctionCallAdapter(rt));
@@ -212,16 +228,18 @@ FunctionType::FunctionType(Runtime *rt)
 }
 
 Object *FunctionType::create() {
+    ProfilerCAPTURE();
     auto ins = createInstance(rt, FunctionInstance);
     auto obj = createObject(rt, true, ins, this);
     return obj;
 }
 
 Object *FunctionType::copy(Object *obj) {
+    ProfilerCAPTURE();
     if (!rt->isTypeObject(obj) || obj->type->id != rt->function_type->id) {
         rt->signalError("Failed to copy an invalid object: " + obj->shortRepr());
     }
-    if (!rt->isInstanceObject(obj)) {
+    if (obj->instance == NULL) {
         return createObject(rt, false, NULL, this);
     }
     auto ins = obj->instance->copy();
@@ -230,6 +248,7 @@ Object *FunctionType::copy(Object *obj) {
 }
 
 std::string FunctionType::shortRepr() {
+    ProfilerCAPTURE();
     if (this == NULL) {
         return "NULL";
     }
@@ -238,6 +257,7 @@ std::string FunctionType::shortRepr() {
 
 Object *
 makeFunctionInstanceObject(bool is_internal, InternalFunction internal_ptr, FuncDefNode *cotton_ptr, Runtime *rt) {
+    ProfilerCAPTURE();
     auto res = rt->make(rt->function_type, rt->INSTANCE_OBJECT);
     icast(res->instance, FunctionInstance)->init(is_internal, internal_ptr, cotton_ptr);
     return res;

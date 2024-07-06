@@ -262,6 +262,7 @@ AtomNode::~AtomNode() {
 }
 
 AtomNode::AtomNode(Token *token) {
+    this->lit_obj = NULL;
     this->token = token;
     switch (token->id) {
     case Token::BOOLEAN_LIT : {

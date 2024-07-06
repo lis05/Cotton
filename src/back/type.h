@@ -69,6 +69,9 @@ public:
     // returns whether a method is present or not
     bool             hasMethod(int64_t id);
 
+    // returns method or NULL
+    Object *getMethodOrNULL(int64_t id);
+
     virtual std::vector<Object *> getGCReachable();
     virtual size_t                getInstanceSize() = 0;    // for placement on stack in case of is_simple
 

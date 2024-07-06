@@ -20,6 +20,7 @@
  */
 
 #include "instance.h"
+#include "../profiler.h"
 #include "gc.h"
 #include "nameid.h"
 #include "object.h"
@@ -28,34 +29,30 @@
 namespace Cotton {
 int64_t Instance::total_instances = 0;
 
-Object *Cotton::Instance::selectField(int64_t id, Runtime *rt) {
-    auto it = this->fields.find(id);
-    if (it != this->fields.end()) {
-        return it->second;
-    }
+Object *Cotton::Instance::selectField(int64_t id) {
+    ProfilerCAPTURE();
     rt->signalError(this->shortRepr() + "doesn't have field " + NameId::shortRepr(id));
 }
 
-bool Instance::hasField(int64_t id, Runtime *rt) {
-    return this->fields.find(id) != this->fields.end();
+bool Instance::hasField(int64_t id) {
+    ProfilerCAPTURE();
+    return false;
 }
 
-void Instance::addField(int64_t id, Object *obj, Runtime *rt) {
-    this->fields[id] = obj;
+void Instance::addField(int64_t id, Object *obj) {
+    ProfilerCAPTURE();
 }
 
 Instance::Instance(Runtime *rt, size_t bytes) {
-    this->rt = rt;
-    this->gc_mark  = !rt->gc->gc_mark;
-    this->id       = ++total_instances;
+    ProfilerCAPTURE();
+    this->rt      = rt;
+    this->gc_mark = !rt->gc->gc_mark;
+    this->id      = ++total_instances;
     rt->gc->track(this, bytes);
 }
 
 std::vector<Object *> Instance::getGCReachable() {
-    std::vector<Object *> res;
-    for (auto &elem : this->fields) {
-        res.push_back(elem.second);
-    }
-    return res;
+    ProfilerCAPTURE();
+    return {};
 }
 };    // namespace Cotton

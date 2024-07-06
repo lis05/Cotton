@@ -21,32 +21,69 @@
  CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
+#include "../../profiler.h"
 #include "api.h"
 
 namespace Cotton::Builtin {
 
 UserDefinedInstance::UserDefinedInstance(Runtime *rt)
-    : Instance(rt, sizeof(UserDefinedInstance)) {}
+    : Instance(rt, sizeof(UserDefinedInstance)) {
+    ProfilerCAPTURE();
+}
 
-UserDefinedInstance::~UserDefinedInstance() {}
+UserDefinedInstance::~UserDefinedInstance() {
+    ProfilerCAPTURE();
+}
+
+Object *UserDefinedInstance::selectField(int64_t id) {
+    ProfilerCAPTURE();
+    auto it = this->fields.find(id);
+    if (it != this->fields.end()) {
+        return it->second;
+    }
+    rt->signalError(this->shortRepr() + "doesn't have field " + NameId::shortRepr(id));
+}
+
+bool UserDefinedInstance::hasField(int64_t id) {
+    ProfilerCAPTURE();
+    return this->fields.find(id) != this->fields.end();
+}
+
+void UserDefinedInstance::addField(int64_t id, Object *obj) {
+    ProfilerCAPTURE();
+    this->fields[id] = obj;
+}
 
 Instance *UserDefinedInstance::copy() {
+    ProfilerCAPTURE();
     return this;    // because record is a complex data type
 }
 
 size_t UserDefinedInstance::getSize() {
+    ProfilerCAPTURE();
     return sizeof(UserDefinedInstance);
 }
 
 size_t UserDefinedType::getInstanceSize() {
+    ProfilerCAPTURE();
     return sizeof(UserDefinedInstance);
 }
 
 std::string UserDefinedInstance::shortRepr() {
+    ProfilerCAPTURE();
     if (this == NULL) {
         return "NULL";
     }
     return NameId::shortRepr(this->nameid) + "Instance(id = " + std::to_string(this->id) + ")";
+}
+
+std::vector<Object *> UserDefinedInstance::getGCReachable() {
+    ProfilerCAPTURE();
+    std::vector<Object *> res;
+    for (auto field : this->fields) {
+        res.push_back(field.second);
+    }
+    return res;
 }
 
 class UserDefinedDefaultAdapter: public OperatorAdapter {
@@ -55,12 +92,14 @@ public:
         : OperatorAdapter(rt) {}
 
     Object *operator()(Object *self, const std::vector<Object *> &others) {
+        ProfilerCAPTURE();
         rt->signalError(self->shortRepr() + " does not support that operator");
     }
 };
 
 UserDefinedType::UserDefinedType(Runtime *rt)
     : Type(rt) {
+    ProfilerCAPTURE();
     this->addOperator(OperatorNode::POST_PLUS_PLUS, new UserDefinedDefaultAdapter(rt));
     this->addOperator(OperatorNode::POST_MINUS_MINUS, new UserDefinedDefaultAdapter(rt));
     this->addOperator(OperatorNode::CALL, new UserDefinedDefaultAdapter(rt));
@@ -92,15 +131,17 @@ UserDefinedType::UserDefinedType(Runtime *rt)
 }
 
 Object *UserDefinedType::create() {
+    ProfilerCAPTURE();
     auto ins = createInstance(rt, UserDefinedInstance);
     for (auto f : this->instance_fields) {
-        ins->addField(NameId(f).id, makeNothingInstanceObject(rt), rt);
+        ins->addField(NameId(f).id, makeNothingInstanceObject(rt));
     }
     auto obj = createObject(rt, true, ins, this);
     return obj;
 }
 
 std::string UserDefinedType::shortRepr() {
+    ProfilerCAPTURE();
     if (this == NULL) {
         return "NULL";
     }
@@ -109,10 +150,11 @@ std::string UserDefinedType::shortRepr() {
 }
 
 Object *UserDefinedType::copy(Object *obj) {
+    ProfilerCAPTURE();
     if (!rt->isTypeObject(obj)) {
         rt->signalError("Failed to copy an invalid object: " + obj->shortRepr());
     }
-    if (!rt->isInstanceObject(obj)) {
+    if (obj->instance == NULL) {
         return createObject(rt, false, NULL, this);
     }
     auto ins = obj->instance->copy();
@@ -121,6 +163,7 @@ Object *UserDefinedType::copy(Object *obj) {
 }
 
 Object *makeUserDefinedInstanceObject(Runtime *rt) {
+    ProfilerCAPTURE();
     auto res = rt->make(rt->nothing_type, rt->INSTANCE_OBJECT);
     return res;
 }

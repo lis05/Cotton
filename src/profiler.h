@@ -20,34 +20,15 @@
  */
 
 #pragma once
-#include <cstdint>
-#include <cstddef>
-#include <vector>
-#include <string>
 
-namespace Cotton {
+namespace Cotton::Profiler {
+void capture(const char *name);
 
-class Runtime;
-class Object;
+void printResult();
+}    // namespace Cotton::Profiler
 
-class Instance {
-public:
-    Runtime        *rt;
-    static int64_t  total_instances;
-    int64_t         id;
-    // returns a valid object (non-null)
-    virtual Object *selectField(int64_t id);
-    virtual bool    hasField(int64_t id);
-    virtual void    addField(int64_t id, Object *obj);
-    bool            gc_mark : 1;
-
-    Instance(Runtime *rt, size_t bytes);
-    virtual ~Instance() = default;
-
-    virtual std::vector<Object *> getGCReachable();
-    virtual Instance             *copy()      = 0;
-    virtual size_t                getSize()   = 0;    // in bytes
-    virtual std::string           shortRepr() = 0;
-};
-
-}    // namespace Cotton
+#if defined COTTON_ENABLE_PROFILER
+    #define ProfilerCAPTURE() ProfilerCAPTURE(__PRETTY_FUNCTION__);
+#else
+    #define ProfilerCAPTURE() ;
+#endif

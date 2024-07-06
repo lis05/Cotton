@@ -22,17 +22,23 @@
 #pragma once
 #include "../../back/api.h"
 #include "../../front/api.h"
+#include <ext/pb_ds/assoc_container.hpp>
 
 namespace Cotton::Builtin {
 class UserDefinedInstance: public Instance {
 public:
-    int64_t nameid;
+    __gnu_pbds::cc_hash_table<int64_t, Object *> fields;
+    int64_t                                      nameid;
     UserDefinedInstance(Runtime *rt);
     ~UserDefinedInstance();
+    Object                                      *selectField(int64_t id);
+    bool                                         hasField(int64_t id);
+    void                                         addField(int64_t id, Object *obj);
 
     Instance   *copy();
     size_t      getSize();
     std::string shortRepr();
+    std::vector<Object*> getGCReachable();
 };
 
 class UserDefinedType: public Type {

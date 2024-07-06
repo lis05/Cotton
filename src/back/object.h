@@ -37,11 +37,12 @@ public:
     int64_t        id;
     bool           is_instance : 1;    // otherwise it's type
     bool           gc_mark     : 1;
+    bool           can_assign  : 1;
 
     Instance *instance;
     Type     *type;
 
-    Object(bool is_instance, Instance *instance, Type *type, Runtime *rt);
+    Object(bool is_instance, Instance *instance, Type *type, Runtime *rt, bool can_assign = true);
     ~Object();
 
     std::vector<Object *> getGCReachable();
@@ -49,6 +50,7 @@ public:
     std::string           shortRepr();
 
     void assignTo(Object *obj);
+    void assignToCopyOf(Object *obj);
 };
 
 std::ostream &operator<<(std::ostream &stream, Object *obj);

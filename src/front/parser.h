@@ -88,8 +88,8 @@ class TypeDefNode {
 public:
     Token *type_token;
 
-    Token                       *name;
-    std::vector<Token *>         fields;
+    Token                     *name;
+    std::vector<Token *>       fields;
     std::vector<FuncDefNode *> methods;
 
     TypeDefNode() = delete;
@@ -154,6 +154,8 @@ public:
     void print(int indent = 0, int step = 2);
 };
 
+class Object;
+
 class AtomNode {
 public:
     enum AtomId { BOOLEAN, CHARACTER, INTEGER, REAL, STRING, IDENTIFIER, NOTHING } id;
@@ -164,6 +166,8 @@ public:
     double      real_value;
     std::string string_value;
     Token      *ident;
+
+    Object *lit_obj;
 
     Token *token;    // for error handling
 
@@ -385,7 +389,7 @@ public:
             AtomNode       *atom;
             ParExprNode    *par_expr;
             IdentListNode  *ident_list;
-            FuncDefNode  *method_def;
+            FuncDefNode    *method_def;
             StmtNode       *stmt;
             WhileStmtNode  *while_stmt;
             ForStmtNode    *for_stmt;

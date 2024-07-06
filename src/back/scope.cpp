@@ -1,15 +1,18 @@
 #include "scope.h"
+#include "../profiler.h"
 #include "nameid.h"
 #include "runtime.h"
 
 namespace Cotton {
 Scope::Scope(Scope *prev, Scope *master, bool can_access_prev) {
+    ProfilerCAPTURE();
     this->prev            = prev;
     this->master          = master;
     this->can_access_prev = can_access_prev;
 }
 
 Scope::~Scope() {
+    ProfilerCAPTURE();
     this->prev            = NULL;
     this->master          = NULL;
     this->can_access_prev = false;
@@ -18,10 +21,12 @@ Scope::~Scope() {
 }
 
 void Scope::addVariable(int64_t id, Object *obj, Runtime *rt) {
+    ProfilerCAPTURE();
     this->variables[id] = obj;
 }
 
 Object *Scope::getVariable(int64_t id, Runtime *rt) {
+    ProfilerCAPTURE();
     Scope *s = this;
     while (s != NULL) {
         auto it = s->variables.find(id);
@@ -45,6 +50,7 @@ Object *Scope::getVariable(int64_t id, Runtime *rt) {
 }
 
 bool Scope::queryVariable(int64_t id, Runtime *rt) {
+    ProfilerCAPTURE();
     Scope *s = this;
     while (s != NULL) {
         auto it = s->variables.find(id);

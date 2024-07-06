@@ -19,17 +19,22 @@
  CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
+#include "../../profiler.h"
 #include "api.h"
 
 namespace Cotton::Builtin {
 BooleanInstance::BooleanInstance(Runtime *rt)
     : Instance(rt, sizeof(BooleanInstance)) {
+    ProfilerCAPTURE();
     this->value = false;
 }
 
-BooleanInstance::~BooleanInstance() {}
+BooleanInstance::~BooleanInstance() {
+    ProfilerCAPTURE();
+}
 
 Instance *BooleanInstance::copy() {
+    ProfilerCAPTURE();
     Instance *res = new (std::nothrow) BooleanInstance(rt);
     if (res == NULL) {
         rt->signalError("Failed to copy " + this->shortRepr());
@@ -39,6 +44,7 @@ Instance *BooleanInstance::copy() {
 }
 
 std::string BooleanInstance::shortRepr() {
+    ProfilerCAPTURE();
     if (this == NULL) {
         return "BooleanInstance(NULL)";
     }
@@ -47,10 +53,12 @@ std::string BooleanInstance::shortRepr() {
 }
 
 size_t BooleanInstance::getSize() {
+    ProfilerCAPTURE();
     return sizeof(BooleanInstance);
 }
 
 size_t BooleanType::getInstanceSize() {
+    ProfilerCAPTURE();
     return sizeof(BooleanInstance);
 }
 
@@ -60,6 +68,7 @@ public:
         : OperatorAdapter(rt) {}
 
     Object *operator()(Object *self, const std::vector<Object *> &others) {
+        ProfilerCAPTURE();
         rt->signalError(self->shortRepr() + " does not support that operator");
     }
 };
@@ -70,9 +79,8 @@ public:
         : OperatorAdapter(rt) {}
 
     Object *operator()(Object *self, const std::vector<Object *> &others) {
-        if (!rt->isTypeObject(self) || self->type->id != rt->boolean_type->id) {
-            rt->signalError("Left-side object is invalid: " + self->shortRepr());
-        }
+        ProfilerCAPTURE();
+
         auto res                 = rt->make(rt->boolean_type, Runtime::INSTANCE_OBJECT);
         getBooleanValue(res, rt) = !getBooleanValue(self, rt);
         return res;
@@ -85,9 +93,8 @@ public:
         : OperatorAdapter(rt) {}
 
     Object *operator()(Object *self, const std::vector<Object *> &others) {
-        if (!rt->isTypeObject(self) || self->type->id != rt->boolean_type->id) {
-            rt->signalError("Left-side object is invalid: " + self->shortRepr());
-        }
+        ProfilerCAPTURE();
+
         if (others.size() != 1) {
             rt->signalError("Expected exactly one right-side argument");
             return NULL;
@@ -96,14 +103,15 @@ public:
         if (!rt->isTypeObject(arg1)) {
             rt->signalError("Right-side object is invalid: " + arg1->shortRepr());
         }
-
-        if (rt->isInstanceObject(self) && rt->isInstanceObject(arg1)) {
+        auto isSelfI = rt->isInstanceObject(self);
+        auto isArg1I = arg1->instance != NULL;
+        if (isSelfI && isArg1I) {
             if (self->type->id != arg1->type->id) {
                 return makeBooleanInstanceObject(false, rt);
             }
             return makeBooleanInstanceObject(getBooleanValueFast(self) == getBooleanValueFast(arg1), rt);
         }
-        else if (!rt->isInstanceObject(self) && !rt->isInstanceObject(arg1)) {
+        else if (!isSelfI && !isArg1I) {
             return makeBooleanInstanceObject(self->type->id == arg1->type->id, rt);
         }
         else {
@@ -118,6 +126,7 @@ public:
         : BooleanEqAdapter(rt) {}
 
     Object *operator()(Object *self, const std::vector<Object *> &others) {
+        ProfilerCAPTURE();
         auto res                 = BooleanEqAdapter::operator()(self, others);
         getBooleanValue(res, rt) = !getBooleanValue(res, rt);
         return res;
@@ -130,9 +139,8 @@ public:
         : OperatorAdapter(rt) {}
 
     Object *operator()(Object *self, const std::vector<Object *> &others) {
-        if (!rt->isTypeObject(self) || self->type->id != rt->boolean_type->id) {
-            rt->signalError("Left-side object is invalid: " + self->shortRepr());
-        }
+        ProfilerCAPTURE();
+
         if (others.size() != 1) {
             rt->signalError("Expected exactly one right-side argument");
             return NULL;
@@ -144,7 +152,7 @@ public:
         if (arg1->type->id != rt->boolean_type->id) {
             rt->signalError("Right-side object is not Boolean: " + arg1->shortRepr());
         }
-        if (!rt->isInstanceObject(arg1)) {
+        if (arg1->instance == NULL) {
             rt->signalError("Right-side object is not an instance object: " + arg1->shortRepr());
         }
 
@@ -158,9 +166,8 @@ public:
         : OperatorAdapter(rt) {}
 
     Object *operator()(Object *self, const std::vector<Object *> &others) {
-        if (!rt->isTypeObject(self) || self->type->id != rt->boolean_type->id) {
-            rt->signalError("Left-side object is invalid: " + self->shortRepr());
-        }
+        ProfilerCAPTURE();
+
         if (others.size() != 1) {
             rt->signalError("Expected exactly one right-side argument");
             return NULL;
@@ -172,7 +179,7 @@ public:
         if (arg1->type->id != rt->boolean_type->id) {
             rt->signalError("Right-side object is not Boolean: " + arg1->shortRepr());
         }
-        if (!rt->isInstanceObject(arg1)) {
+        if (arg1->instance == NULL) {
             rt->signalError("Right-side object is not an instance object: " + arg1->shortRepr());
         }
 
@@ -183,6 +190,7 @@ public:
 // TODO: add all operators to function and nothing
 BooleanType::BooleanType(Runtime *rt)
     : Type(rt) {
+    ProfilerCAPTURE();
     this->addOperator(OperatorNode::POST_PLUS_PLUS, new BooleanUnsupportedAdapter(rt));
     this->addOperator(OperatorNode::POST_MINUS_MINUS, new BooleanUnsupportedAdapter(rt));
     this->addOperator(OperatorNode::CALL, new BooleanUnsupportedAdapter(rt));
@@ -214,16 +222,18 @@ BooleanType::BooleanType(Runtime *rt)
 }
 
 Object *BooleanType::create() {
+    ProfilerCAPTURE();
     auto ins = createInstance(rt, BooleanInstance);
     auto obj = createObject(rt, true, ins, this);
     return obj;
 }
 
 Object *BooleanType::copy(Object *obj) {
+    ProfilerCAPTURE();
     if (!rt->isTypeObject(obj) || obj->type->id != rt->boolean_type->id) {
         rt->signalError("Failed to copy an invalid object: " + obj->shortRepr());
     }
-    if (!rt->isInstanceObject(obj)) {
+    if (obj->instance == NULL) {
         return createObject(rt, false, NULL, this);
     }
     auto ins = obj->instance->copy();
@@ -232,6 +242,7 @@ Object *BooleanType::copy(Object *obj) {
 }
 
 std::string BooleanType::shortRepr() {
+    ProfilerCAPTURE();
     if (this == NULL) {
         return "BooleanType(NULL)";
     }
@@ -239,6 +250,7 @@ std::string BooleanType::shortRepr() {
 }
 
 bool &getBooleanValue(Object *obj, Runtime *rt) {
+    ProfilerCAPTURE();
     if (!rt->isInstanceObject(obj)) {
         rt->signalError(obj->shortRepr() + " is not an instance object");
     }
@@ -249,6 +261,7 @@ bool &getBooleanValue(Object *obj, Runtime *rt) {
 }
 
 Object *makeBooleanInstanceObject(bool value, Runtime *rt) {
+    ProfilerCAPTURE();
     auto res                                     = rt->make(rt->boolean_type, Runtime::INSTANCE_OBJECT);
     icast(res->instance, BooleanInstance)->value = value;
     return res;

@@ -20,6 +20,7 @@
  */
 
 #include "type.h"
+#include "../profiler.h"
 #include "gc.h"
 #include "nameid.h"
 #include "runtime.h"
@@ -31,17 +32,19 @@ namespace Cotton {
 int64_t Type::total_types = 0;
 
 Type::Type(Runtime *rt) {
+    ProfilerCAPTURE();
     this->rt = rt;
     this->id = ++Type::total_types;
     for (auto &op : this->operators) {
         op = NULL;
     }
-    this->gc_mark   = !rt->gc->gc_mark;
+    this->gc_mark = !rt->gc->gc_mark;
 
     rt->gc->track(this);
 }
 
 Type::~Type() {
+    ProfilerCAPTURE();
     this->id = -1;
     for (auto &op : this->operators) {
         delete op;
@@ -51,14 +54,17 @@ Type::~Type() {
 }
 
 void Type::addOperator(OperatorNode::OperatorId id, OperatorAdapter *op) {
+    ProfilerCAPTURE();
     this->operators[id] = op;
 }
 
 void Type::addMethod(int64_t id, Object *method) {
+    ProfilerCAPTURE();
     this->methods[id] = method;
 }
 
 OperatorAdapter *Type::getOperator(OperatorNode::OperatorId id) {
+    ProfilerCAPTURE();
     auto res = this->operators[id];
     if (res == NULL) {
         auto method_id = MagicMethods::getMagicOperator(id);
@@ -80,6 +86,7 @@ OperatorAdapter *Type::getOperator(OperatorNode::OperatorId id) {
 }
 
 Object *Type::getMethod(int64_t id) {
+    ProfilerCAPTURE();
     auto it = this->methods.find(id);
     if (it != this->methods.end()) {
         if (!rt->isInstanceObject(it->second)) {
@@ -92,6 +99,7 @@ Object *Type::getMethod(int64_t id) {
 }
 
 bool Type::hasOperator(OperatorNode::OperatorId id) {
+    ProfilerCAPTURE();
     auto res = this->operators[id];
     if (res == NULL) {
         auto method_id = MagicMethods::getMagicOperator(id);
@@ -110,11 +118,26 @@ bool Type::hasOperator(OperatorNode::OperatorId id) {
 }
 
 bool Type::hasMethod(int64_t id) {
+    ProfilerCAPTURE();
     auto it = this->methods.find(id);
     return it != this->methods.end();
 }
 
+Object *Type::getMethodOrNULL(int64_t id) {
+    ProfilerCAPTURE();
+    auto it = this->methods.find(id);
+    if (it != this->methods.end()) {
+        if (!rt->isInstanceObject(it->second)) {
+            rt->signalError("Method " + NameId::shortRepr(id) + " from " + this->shortRepr()
+                            + " is not an instance object");
+        }
+        return it->second;
+    }
+    return NULL;
+}
+
 std::vector<Object *> Type::getGCReachable() {
+    ProfilerCAPTURE();
     std::vector<Object *> res;
     for (auto &elem : this->methods) {
         res.push_back(elem.second);
@@ -124,156 +147,188 @@ std::vector<Object *> Type::getGCReachable() {
 
 namespace MagicMethods {
     int64_t __make__() {
+        ProfilerCAPTURE();
         static NameId res("__make__");
         return res.id;
     }
+
     int64_t __print__() {
+        ProfilerCAPTURE();
         static NameId res("__print__");
         return res.id;
     }
 
     // operators
     int64_t __postinc__() {
+        ProfilerCAPTURE();
         static NameId res("__postinc__");
         return res.id;
     }
 
     int64_t __postdec__() {
+        ProfilerCAPTURE();
         static NameId res("__postdec__");
         return res.id;
     }
 
     int64_t __call__() {
+        ProfilerCAPTURE();
         static NameId res("__call__");
         return res.id;
     }
 
     int64_t __index__() {
+        ProfilerCAPTURE();
         static NameId res("__index__");
         return res.id;
     }
 
     int64_t __preinc__() {
+        ProfilerCAPTURE();
         static NameId res("__preinc__");
         return res.id;
     }
 
     int64_t __predec__() {
+        ProfilerCAPTURE();
         static NameId res("__predec__");
         return res.id;
     }
 
     int64_t __positive__() {
+        ProfilerCAPTURE();
         static NameId res("__positive__");
         return res.id;
     }
 
     int64_t __negative__() {
+        ProfilerCAPTURE();
         static NameId res("__negative__");
         return res.id;
     }
 
     int64_t __not__() {
+        ProfilerCAPTURE();
         static NameId res("__not__");
         return res.id;
     }
 
     int64_t __inverse__() {
+        ProfilerCAPTURE();
         static NameId res("__inverse__");
         return res.id;
     }
 
     int64_t __mult__() {
+        ProfilerCAPTURE();
         static NameId res("__mult__");
         return res.id;
     }
 
     int64_t __div__() {
+        ProfilerCAPTURE();
         static NameId res("__div__");
         return res.id;
     }
 
     int64_t __rem__() {
+        ProfilerCAPTURE();
         static NameId res("__rem__");
         return res.id;
     }
 
     int64_t __rshift__() {
+        ProfilerCAPTURE();
         static NameId res("__rshift__");
         return res.id;
     }
 
     int64_t __lshift__() {
+        ProfilerCAPTURE();
         static NameId res("__lshift__");
         return res.id;
     }
 
     int64_t __add__() {
+        ProfilerCAPTURE();
         static NameId res("__add__");
         return res.id;
     }
 
     int64_t __sub__() {
+        ProfilerCAPTURE();
         static NameId res("__sub__");
         return res.id;
     }
 
     int64_t __lt__() {
+        ProfilerCAPTURE();
         static NameId res("__lt__");
         return res.id;
     }
 
     int64_t __leq__() {
+        ProfilerCAPTURE();
         static NameId res("__leq__");
         return res.id;
     }
 
     int64_t __gt__() {
+        ProfilerCAPTURE();
         static NameId res("__gt__");
         return res.id;
     }
 
     int64_t __geq__() {
+        ProfilerCAPTURE();
         static NameId res("__geq__");
         return res.id;
     }
 
     int64_t __eq__() {
+        ProfilerCAPTURE();
         static NameId res("__eq__");
         return res.id;
     }
 
     int64_t __neq__() {
+        ProfilerCAPTURE();
         static NameId res("__neq__");
         return res.id;
     }
 
     int64_t __bitand__() {
+        ProfilerCAPTURE();
         static NameId res("__bitand__");
         return res.id;
     }
 
     int64_t __bitxor__() {
+        ProfilerCAPTURE();
         static NameId res("__bitxor__");
         return res.id;
     }
 
     int64_t __bitor__() {
+        ProfilerCAPTURE();
         static NameId res("__bitor__");
         return res.id;
     }
 
     int64_t __and__() {
+        ProfilerCAPTURE();
         static NameId res("__and__");
         return res.id;
     }
 
     int64_t __or__() {
+        ProfilerCAPTURE();
         static NameId res("__or__");
         return res.id;
     }
 
     int64_t getMagicOperator(OperatorNode::OperatorId id) {
+        ProfilerCAPTURE();
         switch (id) {
         case OperatorNode::POST_PLUS_PLUS   : return __postinc__();
         case OperatorNode::POST_MINUS_MINUS : return __postdec__();
@@ -309,6 +364,7 @@ namespace MagicMethods {
 }    // namespace MagicMethods
 
 OperatorAdapter::OperatorAdapter(Runtime *rt) {
+    ProfilerCAPTURE();
     this->rt = rt;
 }
 };    // namespace Cotton

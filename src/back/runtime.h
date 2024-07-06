@@ -23,6 +23,7 @@
 
 #include "../front/parser.h"
 #include "object.h"
+#include <ext/pb_ds/assoc_container.hpp>
 #include <string>
 #include <vector>
 
@@ -61,6 +62,9 @@ public:
     Builtin::CharacterType *character_type;
     Builtin::StringType    *string_type;
 
+    Object                                             *exec_res_default;
+    __gnu_pbds::cc_hash_table<int64_t, Object *> readonly_literals;
+
     Scope *scope;
     // creates a new scope
     void   newFrame(bool can_access_prev_scope = true);
@@ -91,9 +95,8 @@ public:
         static uint8_t DIRECT_PASS;
         uint8_t        flags;
         Object        *result;
-        Object        *caller;
 
-        ExecutionResult(uint8_t flags, Object *result, Object *caller = NULL);
+        ExecutionResult(uint8_t flags, Object *result);
     };
 
     ExecutionResult execute(ExprNode *node);
@@ -121,6 +124,8 @@ public:
     Object *runOperator(OperatorNode::OperatorId id, Object *obj, const std::vector<Object *> &args);
     // runs method on the object. returns a valid object(non-null); if fails, signals an error
     Object *runMethod(int64_t id, Object *obj, const std::vector<Object *> &args);
+    // if has method, same as runMethod; otherwise returns NULL
+    Object *runIfHasMethodOrNULL(int64_t id, Object *obj, const std::vector<Object *> &args);
 };
 
 // tries to create instanc
