@@ -37,7 +37,7 @@ public:
     int64_t        id;
     bool           is_instance : 1;    // otherwise it's type
     bool           gc_mark     : 1;
-    bool           can_assign  : 1;
+    bool           can_modify  : 1;
     bool single_use : 1;    // if object is expected to be used only once (like x + y is going to be used only
                             // once in an expression)
 
@@ -57,7 +57,6 @@ public:
     // marks object with single use, as well as its insides
     void spreadSingleUse();
     void spreadMultiUse();
-
 };
 
 std::ostream &operator<<(std::ostream &stream, Object *obj);

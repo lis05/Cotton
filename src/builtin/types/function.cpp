@@ -125,10 +125,10 @@ public:
             }
             auto res = rt->execute(f->cotton_ptr->body);
             rt->popFrame();
-            if (res.result == NULL) {
+            if (res == NULL) {
                 rt->signalError("Execution of function " + self->shortRepr() + " has failed");
             }
-            return res.result;
+            return res;
         }
     }
 };

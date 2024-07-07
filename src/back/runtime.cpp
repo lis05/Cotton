@@ -41,6 +41,10 @@ Runtime::Runtime(GCStrategy *gc_strategy, ErrorManager *error_manager) {
 
     this->exec_res_default = this->make(this->nothing_type, Runtime::INSTANCE_OBJECT);
     this->gc->hold(this->exec_res_default);
+
+    this->protected_nothing             = this->make(this->nothing_type, Runtime::INSTANCE_OBJECT);
+    this->protected_nothing->can_modify = false;
+    this->gc->hold(this->protected_nothing);
 }
 
 void Runtime::newFrame(bool can_access_prev_scope) {
@@ -137,18 +141,7 @@ void Runtime::signalError(const std::string &message, bool include_token) {
     }
 }
 
-uint8_t Runtime::ExecutionResult::CONTINUE    = 1;
-uint8_t Runtime::ExecutionResult::BREAK       = 2;
-uint8_t Runtime::ExecutionResult::RETURN      = 4;
-uint8_t Runtime::ExecutionResult::DIRECT_PASS = 8;
-
-Runtime::ExecutionResult::ExecutionResult(uint8_t flags, Object *result) {
-    ProfilerCAPTURE();
-    this->flags  = flags;
-    this->result = result;
-}
-
-Runtime::ExecutionResult Runtime::execute(ExprNode *node) {
+Object *Runtime::execute(ExprNode *node) {
     ProfilerCAPTURE();
     if (node == NULL) {
         this->signalError("Failed to execute NULL AST node");
@@ -174,7 +167,7 @@ Runtime::ExecutionResult Runtime::execute(ExprNode *node) {
     }
 }
 
-Runtime::ExecutionResult Runtime::execute(FuncDefNode *node) {
+Object *Runtime::execute(FuncDefNode *node) {
     ProfilerCAPTURE();
     if (node == NULL) {
         this->signalError("Failed to execute NULL AST node");
@@ -184,10 +177,11 @@ Runtime::ExecutionResult Runtime::execute(FuncDefNode *node) {
     if (node->name != NULL) {
         this->scope->addVariable(node->name->nameid, func, this);
     }
-    return ExecutionResult(0, func);
+    setExecFlagNONE(this);
+    return func;
 }
 
-Runtime::ExecutionResult Runtime::execute(TypeDefNode *node) {
+Object *Runtime::execute(TypeDefNode *node) {
     ProfilerCAPTURE();
     if (node == NULL) {
         this->signalError("Failed to execute NULL AST node");
@@ -207,7 +201,8 @@ Runtime::ExecutionResult Runtime::execute(TypeDefNode *node) {
     auto res = this->make(type, Runtime::TYPE_OBJECT);
     this->scope->addVariable(type->nameid, res, this);
 
-    return ExecutionResult(0, res);
+    setExecFlagNONE(this);
+    return res;
 }
 
 static std::vector<Object *> getList(ExprNode *expr, Runtime *rt) {
@@ -216,22 +211,21 @@ static std::vector<Object *> getList(ExprNode *expr, Runtime *rt) {
     while (expr != NULL) {
         if (expr->id == ExprNode::OPERATOR && expr->op->id == OperatorNode::COMMA) {
             auto r = rt->execute(expr->op->first);
-
-            if (r.flags & Runtime::ExecutionResult::DIRECT_PASS) {
-                res.push_back(r.result);
+            if (isExecFlagDIRECT_PASS(rt)) {
+                res.push_back(r);
             }
             else {
-                res.push_back(rt->copy(r.result));
+                res.push_back(rt->copy(r));
             }
             expr = expr->op->second;
         }
         else {
             auto r = rt->execute(expr);
-            if (r.flags & Runtime::ExecutionResult::DIRECT_PASS) {
-                res.push_back(r.result);
+            if (isExecFlagDIRECT_PASS(rt)) {
+                res.push_back(r);
             }
             else {
-                res.push_back(rt->copy(r.result));
+                res.push_back(rt->copy(r));
             }
             break;
         }
@@ -239,7 +233,7 @@ static std::vector<Object *> getList(ExprNode *expr, Runtime *rt) {
     return res;
 }
 
-Runtime::ExecutionResult Runtime::execute(OperatorNode *node) {
+Object *Runtime::execute(OperatorNode *node) {
     ProfilerCAPTURE();
     if (node == NULL) {
         this->signalError("Failed to execute NULL AST node");
@@ -255,8 +249,8 @@ Runtime::ExecutionResult Runtime::execute(OperatorNode *node) {
         }
     }
     else if (node->id == OperatorNode::COMMA) {
-        ExecutionResult res  = this->execute(node->first);
-        auto            expr = node->second;
+        auto res  = this->execute(node->first);
+        auto expr = node->second;
         while (expr != NULL) {
             if (expr->id == ExprNode::OPERATOR && expr->op->id == OperatorNode::COMMA) {
                 auto r = this->execute(expr->op->first);
@@ -271,7 +265,7 @@ Runtime::ExecutionResult Runtime::execute(OperatorNode *node) {
     }
     else if (node->id == OperatorNode::CALL) {
         if (node->first->id == ExprNode::OPERATOR && node->first->op->id == OperatorNode::DOT) {
-            auto    caller   = this->execute(node->first->op->first).result;
+            auto    caller   = this->execute(node->first->op->first);
             Object *selected = NULL;
 
             auto dot = node->first->op;
@@ -304,11 +298,11 @@ Runtime::ExecutionResult Runtime::execute(OperatorNode *node) {
             }
 
             auto res = this->runOperator(node->id, caller, args);
-            return ExecutionResult(0, res);
+            setExecFlagNONE(this);
+            return res;
         }
         else {
-            Object         *self = this->execute(node->first).result;
-            ExecutionResult other(0, this->exec_res_default);
+            Object *self = this->execute(node->first);
             highlight(this, node->op);
             std::vector<Object *> args;
             auto                  list = getList(node->second, this);
@@ -319,12 +313,13 @@ Runtime::ExecutionResult Runtime::execute(OperatorNode *node) {
             }
 
             auto res = this->runOperator(node->id, self, args);
-            return ExecutionResult(0, res);
+            setExecFlagNONE(this);
+            return res;
         }
     }
 
-    Object         *self = this->execute(node->first).result;
-    ExecutionResult other(0, this->exec_res_default);
+    Object *self  = this->execute(node->first);
+    Object *other = NULL;
 
     highlight(this, node->op);
     switch (node->id) {
@@ -340,70 +335,89 @@ Runtime::ExecutionResult Runtime::execute(OperatorNode *node) {
         }
         if (self->instance->hasField(selector)) {
             auto res = self->instance->selectField(selector);
-            return ExecutionResult(0, res);
+
+            setExecFlagNONE(this);
+            return res;
         }
         else if (self->type->hasMethod(selector)) {
             auto res = self->type->getMethod(selector);
-            return ExecutionResult(0, res);
+
+            setExecFlagNONE(this);
+            return res;
         }
         else {
             this->signalError("Invalid selector");
         }
     }
     case OperatorNode::AT : {
-        return ExecutionResult(ExecutionResult::DIRECT_PASS, self);
+        setExecFlagDIRECT_PASS(this);
+        return self;
     }
     case OperatorNode::ASSIGN : {
         other = this->execute(node->second);
         highlight(this, node->op);
-        if (other.flags & ExecutionResult::DIRECT_PASS) {
-            self->assignTo(other.result);
+        if (isExecFlagDIRECT_PASS(this)) {
+            self->assignTo(other);
         }
         else {
-            self->assignToCopyOf(other.result);
+            self->assignToCopyOf(other);
         }
-        return ExecutionResult(0, self);
+
+        setExecFlagNONE(this);
+        return self;
     }
     case OperatorNode::PLUS_ASSIGN : {
         other = this->execute(node->second);
         highlight(this, node->op);
-        self->assignToCopyOf(this->runOperator(OperatorNode::PLUS, self, {other.result}));
-        return ExecutionResult(0, self);
+        self->assignToCopyOf(this->runOperator(OperatorNode::PLUS, self, {other}));
+
+        setExecFlagNONE(this);
+        return self;
     }
     case OperatorNode::MINUS_ASSIGN : {
         other = this->execute(node->second);
         highlight(this, node->op);
-        self->assignToCopyOf(this->runOperator(OperatorNode::MINUS, self, {other.result}));
-        return ExecutionResult(0, self);
+        self->assignToCopyOf(this->runOperator(OperatorNode::MINUS, self, {other}));
+
+        setExecFlagNONE(this);
+        return self;
     }
     case OperatorNode::MULT_ASSIGN : {
         other = this->execute(node->second);
         highlight(this, node->op);
-        self->assignToCopyOf(this->runOperator(OperatorNode::MULT, self, {other.result}));
-        return ExecutionResult(0, self);
+        self->assignToCopyOf(this->runOperator(OperatorNode::MULT, self, {other}));
+
+        setExecFlagNONE(this);
+        return self;
     }
     case OperatorNode::DIV_ASSIGN : {
         other = this->execute(node->second);
         highlight(this, node->op);
-        self->assignToCopyOf(this->runOperator(OperatorNode::DIV, self, {other.result}));
-        return ExecutionResult(0, self);
+        self->assignToCopyOf(this->runOperator(OperatorNode::DIV, self, {other}));
+
+        setExecFlagNONE(this);
+        return self;
     }
     case OperatorNode::REM_ASSIGN : {
         other = this->execute(node->second);
         highlight(this, node->op);
-        self->assignToCopyOf(this->runOperator(OperatorNode::REM, self, {other.result}));
-        return ExecutionResult(0, self);
+        self->assignToCopyOf(this->runOperator(OperatorNode::REM, self, {other}));
+
+        setExecFlagNONE(this);
+        return self;
     }
     }
     std::vector<Object *> list;
     if (node->second != NULL) {
-        list.emplace_back(this->execute(node->second).result);
+        list.emplace_back(this->execute(node->second));
     }
     auto res = this->runOperator(node->id, self, list);
-    return ExecutionResult(0, res);
+
+    setExecFlagNONE(this);
+    return res;
 }
 
-Runtime::ExecutionResult Runtime::execute(AtomNode *node) {
+Object *Runtime::execute(AtomNode *node) {
     ProfilerCAPTURE();
     if (node == NULL) {
         this->signalError("Failed to execute NULL AST node");
@@ -414,96 +428,126 @@ Runtime::ExecutionResult Runtime::execute(AtomNode *node) {
     switch (node->id) {
     case AtomNode::BOOLEAN : {
         if (node->lit_obj != NULL) {
-            return ExecutionResult(0, node->lit_obj);
+            setExecFlagNONE(this);
+            return node->lit_obj;
         }
         it = this->readonly_literals.find(node->token->nameid);
         if (it != this->readonly_literals.end()) {
-            return ExecutionResult(0, it->second);
+            setExecFlagNONE(this);
+            return it->second;
         }
         auto lit = Builtin::makeBooleanInstanceObject(node->bool_value, this);
         this->gc->hold(lit);
-        lit->can_assign                              = false;
+        lit->can_modify                              = false;
         this->readonly_literals[node->token->nameid] = lit;
-        return ExecutionResult(0, node->lit_obj = lit);
+
+        setExecFlagNONE(this);
+        return node->lit_obj = lit;
     }
     case AtomNode::CHARACTER : {
         if (node->lit_obj != NULL) {
-            return ExecutionResult(0, node->lit_obj);
+            setExecFlagNONE(this);
+            return node->lit_obj;
         }
         it = this->readonly_literals.find(node->token->nameid);
         if (it != this->readonly_literals.end()) {
-            return ExecutionResult(0, node->lit_obj = it->second);
+            setExecFlagNONE(this);
+            return node->lit_obj = it->second;
+            ;
         }
         auto lit = Builtin::makeCharacterInstanceObject(node->char_value, this);
         this->gc->hold(lit);
-        lit->can_assign                              = false;
+        lit->can_modify                              = false;
         this->readonly_literals[node->token->nameid] = lit;
-        return ExecutionResult(0, node->lit_obj = lit);
+
+        setExecFlagNONE(this);
+        return node->lit_obj = lit;
     }
     case AtomNode::INTEGER : {
         if (node->lit_obj != NULL) {
-            return ExecutionResult(0, node->lit_obj);
+            setExecFlagNONE(this);
+            return node->lit_obj;
         }
         it = this->readonly_literals.find(node->token->nameid);
         if (it != this->readonly_literals.end()) {
-            return ExecutionResult(0, node->lit_obj = it->second);
+            setExecFlagNONE(this);
+            return node->lit_obj = it->second;
+            ;
         }
         auto lit = Builtin::makeIntegerInstanceObject(node->int_value, this);
         this->gc->hold(lit);
-        lit->can_assign                              = false;
+        lit->can_modify                              = false;
         this->readonly_literals[node->token->nameid] = lit;
-        return ExecutionResult(0, node->lit_obj = lit);
+
+        setExecFlagNONE(this);
+        return node->lit_obj = lit;
     }
     case AtomNode::REAL : {
         if (node->lit_obj != NULL) {
-            return ExecutionResult(0, node->lit_obj);
+            setExecFlagNONE(this);
+            return node->lit_obj;
         }
         it = this->readonly_literals.find(node->token->nameid);
         if (it != this->readonly_literals.end()) {
-            return ExecutionResult(0, node->lit_obj = it->second);
+            setExecFlagNONE(this);
+            return node->lit_obj = it->second;
+            ;
         }
         auto lit = Builtin::makeRealInstanceObject(node->real_value, this);
         this->gc->hold(lit);
-        lit->can_assign                              = false;
+        lit->can_modify                              = false;
         this->readonly_literals[node->token->nameid] = lit;
-        return ExecutionResult(0, node->lit_obj = lit);
+
+        setExecFlagNONE(this);
+        return node->lit_obj = lit;
     }
     case AtomNode::STRING : {
         if (node->lit_obj != NULL) {
-            return ExecutionResult(0, node->lit_obj);
+            setExecFlagNONE(this);
+            return node->lit_obj;
         }
         it = this->readonly_literals.find(node->token->nameid);
         if (it != this->readonly_literals.end()) {
-            return ExecutionResult(0, node->lit_obj = it->second);
+            setExecFlagNONE(this);
+            return node->lit_obj = it->second;
+            ;
         }
         auto lit = Builtin::makeStringInstanceObject(node->string_value, this);
         this->gc->hold(lit);
-        lit->can_assign                              = false;
+        lit->can_modify                              = false;
         this->readonly_literals[node->token->nameid] = lit;
-        return ExecutionResult(0, node->lit_obj = lit);
+
+        setExecFlagNONE(this);
+        return node->lit_obj = lit;
     }
     case AtomNode::NOTHING : {
         if (node->lit_obj != NULL) {
-            return ExecutionResult(0, node->lit_obj);
+            setExecFlagNONE(this);
+            return node->lit_obj;
         }
         it = this->readonly_literals.find(node->token->nameid);
         if (it != this->readonly_literals.end()) {
-            return ExecutionResult(0, node->lit_obj = it->second);
+            setExecFlagNONE(this);
+            return node->lit_obj = it->second;
+            ;
         }
         auto lit = Builtin::makeNothingInstanceObject(this);
         this->gc->hold(lit);
-        lit->can_assign                              = false;
+        lit->can_modify                              = false;
         this->readonly_literals[node->token->nameid] = lit;
-        return ExecutionResult(0, node->lit_obj = lit);
+
+        setExecFlagNONE(this);
+        return node->lit_obj = lit;
     }
     case AtomNode::IDENTIFIER : {
-        return ExecutionResult(0, this->scope->getVariable(node->token->nameid, this));
+        setExecFlagNONE(this);
+        return this->scope->getVariable(node->token->nameid, this);
     }
     default : this->signalError("Unknown atom");
     }
 }
 
-Runtime::ExecutionResult Runtime::execute(ParExprNode *node) {
+Object *Runtime::execute(ParExprNode *node) {
     ProfilerCAPTURE();
     if (node == NULL) {
         this->signalError("Failed to execute NULL AST node");
@@ -511,7 +555,7 @@ Runtime::ExecutionResult Runtime::execute(ParExprNode *node) {
     return this->execute(node->expr);
 }
 
-Runtime::ExecutionResult Runtime::execute(StmtNode *node) {
+Object *Runtime::execute(StmtNode *node) {
     ProfilerCAPTURE();
     if (node == NULL) {
         this->signalError("Failed to execute NULL AST node");
@@ -528,10 +572,12 @@ Runtime::ExecutionResult Runtime::execute(StmtNode *node) {
         return this->execute(node->if_stmt);
     }
     case StmtNode::CONTINUE : {
-        return ExecutionResult(ExecutionResult::CONTINUE, NULL);    // NULL -> nothing?
+        setExecFlagCONTINUE(this);
+        return this->protected_nothing;
     }
     case StmtNode::BREAK : {
-        return ExecutionResult(ExecutionResult::BREAK, NULL);       // NULL -> nothing?
+        setExecFlagBREAK(this);
+        return this->protected_nothing;
     }
     case StmtNode::RETURN : {
         return this->execute(node->return_stmt);
@@ -548,7 +594,7 @@ Runtime::ExecutionResult Runtime::execute(StmtNode *node) {
     }
 }
 
-Runtime::ExecutionResult Runtime::execute(WhileStmtNode *node) {
+Object *Runtime::execute(WhileStmtNode *node) {
     ProfilerCAPTURE();
     if (node == NULL) {
         this->signalError("Failed to execute NULL AST node");
@@ -558,7 +604,7 @@ Runtime::ExecutionResult Runtime::execute(WhileStmtNode *node) {
         highlight(this, node->while_token);
 
         if (node->cond != NULL) {
-            auto cond = this->execute(node->cond).result;
+            auto cond = this->execute(node->cond);
 
             if (!Builtin::getBooleanValue(cond, this)) {
                 this->popFrame();
@@ -568,30 +614,31 @@ Runtime::ExecutionResult Runtime::execute(WhileStmtNode *node) {
 
         if (node->body != NULL) {
             auto body = this->execute(node->body);
-            if (body.flags & ExecutionResult::BREAK) {
+            if (isExecFlagBREAK(this)) {
                 this->popFrame();
                 break;
             }
-            else if (body.flags & ExecutionResult::CONTINUE) {
+            else if (isExecFlagCONTINUE(this)) {
                 continue;
             }
-            else if (body.flags & ExecutionResult::RETURN) {
-                if (body.flags & ExecutionResult::DIRECT_PASS) {
-                    auto res = ExecutionResult(ExecutionResult::RETURN, body.result);
+            else if (isExecFlagRETURN(this)) {
+                if (isExecFlagDIRECT_PASS(this)) {
+                    setExecFlagRETURN(this);
                     this->popFrame();
-                    return res;
+                    return body;
                 }
-                auto res = ExecutionResult(ExecutionResult::RETURN, this->copy(body.result));
+                setExecFlagRETURN(this);
                 this->popFrame();
-                return res;
+                return this->copy(body);
             };
         }
         this->popFrame();
     }
-    return ExecutionResult(0, this->exec_res_default);
+    setExecFlagNONE(this);
+    return this->protected_nothing;
 }
 
-Runtime::ExecutionResult Runtime::execute(ForStmtNode *node) {
+Object *Runtime::execute(ForStmtNode *node) {
     ProfilerCAPTURE();
     if (node == NULL) {
         this->signalError("Failed to execute NULL AST node");
@@ -607,7 +654,7 @@ Runtime::ExecutionResult Runtime::execute(ForStmtNode *node) {
         highlight(this, node->for_token);
 
         if (node->cond != NULL) {
-            auto cond = this->execute(node->cond).result;
+            auto cond = this->execute(node->cond);
 
             if (!Builtin::getBooleanValue(cond, this)) {
                 this->popFrame();
@@ -617,22 +664,22 @@ Runtime::ExecutionResult Runtime::execute(ForStmtNode *node) {
 
         if (node->body != NULL) {
             auto body = this->execute(node->body);
-            if (body.flags & ExecutionResult::BREAK) {
+            if (isExecFlagBREAK(this)) {
                 this->popFrame();
                 break;
             }
-            else if (body.flags & ExecutionResult::CONTINUE) {
+            else if (isExecFlagCONTINUE(this)) {
                 continue;
             }
-            else if (body.flags & ExecutionResult::RETURN) {
-                if (body.flags & ExecutionResult::DIRECT_PASS) {
-                    auto res = ExecutionResult(ExecutionResult::RETURN, body.result);
+            else if (isExecFlagRETURN(this)) {
+                if (isExecFlagDIRECT_PASS(this)) {
+                    setExecFlagRETURN(this);
                     this->popFrame();
-                    return res;
+                    return body;
                 }
-                auto res = ExecutionResult(ExecutionResult::RETURN, this->copy(body.result));
+                setExecFlagRETURN(this);
                 this->popFrame();
-                return res;
+                return this->copy(body);
             };
         }
 
@@ -641,17 +688,18 @@ Runtime::ExecutionResult Runtime::execute(ForStmtNode *node) {
         }
         this->popFrame();
     }
-    return ExecutionResult(0, this->exec_res_default);
+    setExecFlagNONE(this);
+    return this->protected_nothing;
 }
 
-Runtime::ExecutionResult Runtime::execute(IfStmtNode *node) {
+Object *Runtime::execute(IfStmtNode *node) {
     ProfilerCAPTURE();
     if (node == NULL) {
         this->signalError("Failed to execute NULL AST node");
     }
     highlight(this, node->if_token);
 
-    auto cond = this->execute(node->cond).result;
+    auto cond = this->execute(node->cond);
     highlight(this, node->if_token);
 
     if (Builtin::getBooleanValue(cond, this)) {
@@ -660,23 +708,26 @@ Runtime::ExecutionResult Runtime::execute(IfStmtNode *node) {
     else if (node->else_body != NULL) {
         return this->execute(node->else_body);
     }
-    return ExecutionResult(0, this->exec_res_default);
+    setExecFlagNONE(this);
+    return this->protected_nothing;
 }
 
-Runtime::ExecutionResult Runtime::execute(ReturnStmtNode *node) {
+Object *Runtime::execute(ReturnStmtNode *node) {
     ProfilerCAPTURE();
     if (node == NULL) {
         this->signalError("Failed to execute NULL AST node");
     }
     highlight(this, node->return_token);
     auto res = this->execute(node->value);
-    if (res.flags & ExecutionResult::DIRECT_PASS) {
-        return ExecutionResult(ExecutionResult::RETURN, res.result);
+    if (isExecFlagDIRECT_PASS(this)) {
+        setExecFlagRETURN(this);
+        return res;
     }
-    return ExecutionResult(ExecutionResult::RETURN, this->copy(res.result));
+    setExecFlagRETURN(this);
+    return this->copy(res);
 }
 
-Runtime::ExecutionResult Runtime::execute(BlockStmtNode *node) {
+Object *Runtime::execute(BlockStmtNode *node) {
     ProfilerCAPTURE();
     if (node == NULL) {
         this->signalError("Failed to execute NULL AST node");
@@ -689,31 +740,17 @@ Runtime::ExecutionResult Runtime::execute(BlockStmtNode *node) {
             continue;
         }
         auto res = this->execute(stmt);
-        if (res.flags & ExecutionResult::CONTINUE) {
+        if (!isExecFlagNONE(this)) {
             if (!node->is_unscoped) {
                 this->popFrame();
             }
             return res;
-        }
-        else if (res.flags & ExecutionResult::BREAK) {
-            if (!node->is_unscoped) {
-                this->popFrame();
-            }
-            return res;
-        }
-        else if (res.flags & ExecutionResult::RETURN) {
-            if (!node->is_unscoped) {
-                this->popFrame();
-            }
-            if (res.flags & ExecutionResult::DIRECT_PASS) {
-                return ExecutionResult(ExecutionResult::RETURN, res.result);
-            }
-            return ExecutionResult(ExecutionResult::RETURN, this->copy(res.result));
         }
     }
     if (!node->is_unscoped) {
         this->popFrame();
     }
-    return ExecutionResult(0, this->exec_res_default);
+    setExecFlagNONE(this);
+    return this->protected_nothing;
 }
 }    // namespace Cotton

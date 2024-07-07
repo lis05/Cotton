@@ -77,7 +77,7 @@ static Object *print(const std::vector<Object *> &args, Runtime *rt) {
         }
     }
     std::cout << std::endl;
-    return makeNothingInstanceObject(rt);
+    return rt->protected_nothing;
 }
 
 void installBuiltinFunctions(Runtime *rt) {

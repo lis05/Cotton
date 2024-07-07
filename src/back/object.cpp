@@ -18,7 +18,7 @@ Object::Object(bool is_instance, Instance *instance, Type *type, Runtime *rt) {
     this->type        = type;
     this->gc_mark     = !rt->gc->gc_mark;
     this->id          = ++total_objects;
-    this->can_assign  = true;
+    this->can_modify  = true;
     this->single_use  = false;
     rt->gc->track(this);
 }
@@ -54,7 +54,7 @@ std::string Object::shortRepr() {
     std::string res  = "Object(id = " + std::to_string(this->id) + ", flags = ";
     res             += (this->is_instance) ? "I" : "T";
     res             += (this->gc_mark) ? "1" : "0";
-    res             += (this->can_assign) ? "W" : "R";
+    res             += (this->can_modify) ? "W" : "R";
     res             += ", instance = " + ((this->instance == NULL) ? "NULL" : this->instance->shortRepr());
     res             += ", type = " + ((this->type == NULL) ? "NULL" : this->type->shortRepr());
     res             += ")";
@@ -63,7 +63,7 @@ std::string Object::shortRepr() {
 
 void Object::assignTo(Object *obj) {
     ProfilerCAPTURE();
-    if (!this->can_assign) {
+    if (!this->can_modify) {
         rt->signalError("Cannot assign to " + this->shortRepr());
     }
     auto id          = this->id;
@@ -75,7 +75,7 @@ void Object::assignTo(Object *obj) {
 
 void Object::assignToCopyOf(Object *obj) {
     ProfilerCAPTURE();
-    if (!this->can_assign) {
+    if (!this->can_modify) {
         rt->signalError("Cannot assign to " + this->shortRepr());
     }
     auto id          = this->id;

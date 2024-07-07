@@ -65,6 +65,10 @@ public:
     Object                                      *exec_res_default;
     __gnu_pbds::cc_hash_table<int64_t, Object *> readonly_literals;
 
+    Object *protected_nothing;
+    Object *protected_true;
+    Object *protected_false;
+
     Scope *scope;
     // creates a new scope
     void   newFrame(bool can_access_prev_scope = true);
@@ -79,30 +83,20 @@ public:
     [[noreturn]]
     void signalError(const std::string &message, bool include_token = true);
 
-    class ExecutionResult {
-    public:
-        static uint8_t CONTINUE;
-        static uint8_t BREAK;
-        static uint8_t RETURN;
-        static uint8_t DIRECT_PASS;
-        uint8_t        flags;
-        Object        *result;
+    uint8_t execution_flags;
 
-        ExecutionResult(uint8_t flags, Object *result);
-    };
-
-    ExecutionResult execute(ExprNode *node);
-    ExecutionResult execute(FuncDefNode *node);
-    ExecutionResult execute(TypeDefNode *node);
-    ExecutionResult execute(OperatorNode *node);
-    ExecutionResult execute(AtomNode *node);
-    ExecutionResult execute(ParExprNode *node);
-    ExecutionResult execute(StmtNode *node);
-    ExecutionResult execute(WhileStmtNode *node);
-    ExecutionResult execute(ForStmtNode *node);
-    ExecutionResult execute(IfStmtNode *node);
-    ExecutionResult execute(ReturnStmtNode *node);
-    ExecutionResult execute(BlockStmtNode *node);
+    Object *execute(ExprNode *node);
+    Object *execute(FuncDefNode *node);
+    Object *execute(TypeDefNode *node);
+    Object *execute(OperatorNode *node);
+    Object *execute(AtomNode *node);
+    Object *execute(ParExprNode *node);
+    Object *execute(StmtNode *node);
+    Object *execute(WhileStmtNode *node);
+    Object *execute(ForStmtNode *node);
+    Object *execute(IfStmtNode *node);
+    Object *execute(ReturnStmtNode *node);
+    Object *execute(BlockStmtNode *node);
 
     enum ObjectOptions { INSTANCE_OBJECT, TYPE_OBJECT };
 
@@ -127,6 +121,18 @@ public:
 #define isInstanceObjectOfType(obj, type) ((obj) != NULL && (obj)->instance != NULL && (obj)->type == (type))
 // checks whether obj is a type object (is non-NULL and has non-NULL type)
 #define isTypeObject(obj)                 (obj != NULL && (obj)->type != NULL)
+
+#define setExecFlagNONE(rt)        rt->execution_flags = 0;
+#define setExecFlagCONTINUE(rt)    rt->execution_flags = 1;
+#define setExecFlagBREAK(rt)       rt->execution_flags = 2;
+#define setExecFlagRETURN(rt)      rt->execution_flags = 4;
+#define setExecFlagDIRECT_PASS(rt) rt->execution_flags = 8;
+
+#define isExecFlagNONE(rt)        (rt->execution_flags == 0)
+#define isExecFlagCONTINUE(rt)    (rt->execution_flags == 1)
+#define isExecFlagBREAK(rt)       (rt->execution_flags == 2)
+#define isExecFlagRETURN(rt)      (rt->execution_flags == 4)
+#define isExecFlagDIRECT_PASS(rt) (rt->execution_flags == 8)
 
 // tries to create instanc
 
