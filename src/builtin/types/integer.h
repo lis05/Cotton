@@ -32,7 +32,7 @@ public:
     IntegerInstance(Runtime *rt);
     ~IntegerInstance();
 
-    Instance   *copy();
+    Instance   *copy(Runtime *rt);
     size_t      getSize();
     std::string shortRepr();
 };
@@ -42,8 +42,8 @@ public:
     size_t getInstanceSize();
     IntegerType(Runtime *rt);
     ~IntegerType() = default;
-    Object     *create();
-    Object     *copy(Object *obj);
+    Object     *create(Runtime *rt);
+    Object     *copy(Object *obj, Runtime *rt);
     std::string shortRepr();
 };
 

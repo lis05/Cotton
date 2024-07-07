@@ -18,9 +18,6 @@ Runtime::Runtime(GCStrategy *gc_strategy, ErrorManager *error_manager) {
     this->error_manager = error_manager;
     this->current_token = NULL;
 
-    this->gc->rt    = this;
-    gc_strategy->rt = this;
-
     this->nothing_type   = new Builtin::NothingType(this);
     this->function_type  = new Builtin::FunctionType(this);
     this->boolean_type   = new Builtin::BooleanType(this);
@@ -67,7 +64,7 @@ Object *Runtime::make(Type *type, ObjectOptions object_opt) {
     }
     Object *obj = NULL;
     if (object_opt == Runtime::INSTANCE_OBJECT) {
-        obj = type->create();
+        obj = type->create(this);
     }
     else {
         obj = new Object(false, NULL, type, this);
@@ -93,7 +90,7 @@ Object *Runtime::copy(Object *obj) {
     if (obj->single_use) {
         return obj;
     }
-    auto res = obj->type->copy(obj);
+    auto res = obj->type->copy(obj, this);
     return res;
 }
 
@@ -103,8 +100,8 @@ Object *Runtime::runOperator(OperatorNode::OperatorId id, Object *obj, const std
         this->signalError("Failed to run operator " + std::to_string(id) + " on " + obj->shortRepr());
     }
 
-    auto op  = obj->type->getOperator(id);
-    auto res = op->operator()(obj, args);
+    auto op  = obj->type->getOperator(id, this);
+    auto res = op->operator()(obj, args, this);
     return res;
 }
 
@@ -114,22 +111,10 @@ Object *Runtime::runMethod(int64_t id, Object *obj, const std::vector<Object *> 
         this->signalError("Failed to run method " + NameId::shortRepr(id) + " on " + obj->shortRepr());
     }
 
-    auto method = obj->type->getMethod(id);
+    auto method = obj->type->getMethod(id, this);
     return this->runOperator(OperatorNode::CALL, method, args);
 }
 
-Object *Runtime::runIfHasMethodOrNULL(int64_t id, Object *obj, const std::vector<Object *> &args) {
-    ProfilerCAPTURE();
-    if (!isInstanceObject(obj)) {
-        this->signalError("Failed to run method " + NameId::shortRepr(id) + " on " + obj->shortRepr());
-    }
-
-    auto method = obj->type->getMethodOrNULL(id);
-    if (method != NULL) {
-        return runOperator(OperatorNode::CALL, method, args);
-    }
-    return NULL;
-}
 
 void Runtime::signalError(const std::string &message, bool include_token) {
     ProfilerCAPTURE();
@@ -278,11 +263,11 @@ Object *Runtime::execute(OperatorNode *node) {
             if (!isInstanceObject(caller)) {
                 this->signalError("Left-side object " + caller->shortRepr() + " must be an instance object");
             }
-            if (caller->instance->hasField(selector)) {
-                selected = caller->instance->selectField(selector);
+            if (caller->instance->hasField(selector, this)) {
+                selected = caller->instance->selectField(selector, this);
             }
             else if (caller->type->hasMethod(selector)) {
-                selected = caller->type->getMethod(selector);
+                selected = caller->type->getMethod(selector, this);
             }
             else {
                 this->signalError("Invalid selector");
@@ -333,14 +318,14 @@ Object *Runtime::execute(OperatorNode *node) {
         if (!isInstanceObject(self)) {
             this->signalError("Left-side object " + self->shortRepr() + " must be an instance object");
         }
-        if (self->instance->hasField(selector)) {
-            auto res = self->instance->selectField(selector);
+        if (self->instance->hasField(selector, this)) {
+            auto res = self->instance->selectField(selector, this);
 
             setExecFlagNONE(this);
             return res;
         }
         else if (self->type->hasMethod(selector)) {
-            auto res = self->type->getMethod(selector);
+            auto res = self->type->getMethod(selector, this);
 
             setExecFlagNONE(this);
             return res;
@@ -357,10 +342,10 @@ Object *Runtime::execute(OperatorNode *node) {
         other = this->execute(node->second);
         highlight(this, node->op);
         if (isExecFlagDIRECT_PASS(this)) {
-            self->assignTo(other);
+            self->assignTo(other, this);
         }
         else {
-            self->assignToCopyOf(other);
+            self->assignToCopyOf(other, this);
         }
 
         setExecFlagNONE(this);
@@ -369,7 +354,7 @@ Object *Runtime::execute(OperatorNode *node) {
     case OperatorNode::PLUS_ASSIGN : {
         other = this->execute(node->second);
         highlight(this, node->op);
-        self->assignToCopyOf(this->runOperator(OperatorNode::PLUS, self, {other}));
+        self->assignToCopyOf(this->runOperator(OperatorNode::PLUS, self, {other}), this);
 
         setExecFlagNONE(this);
         return self;
@@ -377,7 +362,7 @@ Object *Runtime::execute(OperatorNode *node) {
     case OperatorNode::MINUS_ASSIGN : {
         other = this->execute(node->second);
         highlight(this, node->op);
-        self->assignToCopyOf(this->runOperator(OperatorNode::MINUS, self, {other}));
+        self->assignToCopyOf(this->runOperator(OperatorNode::MINUS, self, {other}), this);
 
         setExecFlagNONE(this);
         return self;
@@ -385,7 +370,7 @@ Object *Runtime::execute(OperatorNode *node) {
     case OperatorNode::MULT_ASSIGN : {
         other = this->execute(node->second);
         highlight(this, node->op);
-        self->assignToCopyOf(this->runOperator(OperatorNode::MULT, self, {other}));
+        self->assignToCopyOf(this->runOperator(OperatorNode::MULT, self, {other}), this);
 
         setExecFlagNONE(this);
         return self;
@@ -393,7 +378,7 @@ Object *Runtime::execute(OperatorNode *node) {
     case OperatorNode::DIV_ASSIGN : {
         other = this->execute(node->second);
         highlight(this, node->op);
-        self->assignToCopyOf(this->runOperator(OperatorNode::DIV, self, {other}));
+        self->assignToCopyOf(this->runOperator(OperatorNode::DIV, self, {other}), this);
 
         setExecFlagNONE(this);
         return self;
@@ -401,7 +386,7 @@ Object *Runtime::execute(OperatorNode *node) {
     case OperatorNode::REM_ASSIGN : {
         other = this->execute(node->second);
         highlight(this, node->op);
-        self->assignToCopyOf(this->runOperator(OperatorNode::REM, self, {other}));
+        self->assignToCopyOf(this->runOperator(OperatorNode::REM, self, {other}), this);
 
         setExecFlagNONE(this);
         return self;
@@ -560,7 +545,7 @@ Object *Runtime::execute(StmtNode *node) {
     if (node == NULL) {
         this->signalError("Failed to execute NULL AST node");
     }
-    this->gc->ping();
+    this->gc->ping(this);
     switch (node->id) {
     case StmtNode::WHILE : {
         return this->execute(node->while_stmt);

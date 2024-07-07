@@ -33,7 +33,7 @@ BooleanInstance::~BooleanInstance() {
     ProfilerCAPTURE();
 }
 
-Instance *BooleanInstance::copy() {
+Instance *BooleanInstance::copy(Runtime *rt) {
     ProfilerCAPTURE();
     Instance *res = new (std::nothrow) BooleanInstance(rt);
     if (res == NULL) {
@@ -64,10 +64,7 @@ size_t BooleanType::getInstanceSize() {
 
 class BooleanUnsupportedAdapter: public OperatorAdapter {
 public:
-    BooleanUnsupportedAdapter(Runtime *rt)
-        : OperatorAdapter(rt) {}
-
-    Object *operator()(Object *self, const std::vector<Object *> &others) {
+    Object *operator()(Object *self, const std::vector<Object *> &others, Runtime *rt) {
         ProfilerCAPTURE();
         rt->signalError(self->shortRepr() + " does not support that operator");
     }
@@ -75,10 +72,8 @@ public:
 
 class BooleanNotAdapter: public OperatorAdapter {
 public:
-    BooleanNotAdapter(Runtime *rt)
-        : OperatorAdapter(rt) {}
 
-    Object *operator()(Object *self, const std::vector<Object *> &others) {
+    Object *operator()(Object *self, const std::vector<Object *> &others, Runtime *rt) {
         ProfilerCAPTURE();
 
         auto res                 = rt->make(rt->boolean_type, Runtime::INSTANCE_OBJECT);
@@ -89,10 +84,7 @@ public:
 
 class BooleanEqAdapter: public OperatorAdapter {
 public:
-    BooleanEqAdapter(Runtime *rt)
-        : OperatorAdapter(rt) {}
-
-    Object *operator()(Object *self, const std::vector<Object *> &others) {
+    Object *operator()(Object *self, const std::vector<Object *> &others, Runtime *rt) {
         ProfilerCAPTURE();
 
         if (others.size() != 1) {
@@ -122,12 +114,10 @@ public:
 
 class BooleanNeqAdapter: public BooleanEqAdapter {
 public:
-    BooleanNeqAdapter(Runtime *rt)
-        : BooleanEqAdapter(rt) {}
 
-    Object *operator()(Object *self, const std::vector<Object *> &others) {
+    Object *operator()(Object *self, const std::vector<Object *> &others, Runtime *rt) {
         ProfilerCAPTURE();
-        auto res                 = BooleanEqAdapter::operator()(self, others);
+        auto res                 = BooleanEqAdapter::operator()(self, others, rt);
         getBooleanValue(res, rt) = !getBooleanValue(res, rt);
         return res;
     }
@@ -135,10 +125,7 @@ public:
 
 class BooleanAndAdapter: public OperatorAdapter {
 public:
-    BooleanAndAdapter(Runtime *rt)
-        : OperatorAdapter(rt) {}
-
-    Object *operator()(Object *self, const std::vector<Object *> &others) {
+    Object *operator()(Object *self, const std::vector<Object *> &others, Runtime *rt) {
         ProfilerCAPTURE();
 
         if (others.size() != 1) {
@@ -162,10 +149,7 @@ public:
 
 class BooleanOrAdapter: public OperatorAdapter {
 public:
-    BooleanOrAdapter(Runtime *rt)
-        : OperatorAdapter(rt) {}
-
-    Object *operator()(Object *self, const std::vector<Object *> &others) {
+    Object *operator()(Object *self, const std::vector<Object *> &others, Runtime *rt) {
         ProfilerCAPTURE();
 
         if (others.size() != 1) {
@@ -191,44 +175,44 @@ public:
 BooleanType::BooleanType(Runtime *rt)
     : Type(rt) {
     ProfilerCAPTURE();
-    this->addOperator(OperatorNode::POST_PLUS_PLUS, new BooleanUnsupportedAdapter(rt));
-    this->addOperator(OperatorNode::POST_MINUS_MINUS, new BooleanUnsupportedAdapter(rt));
-    this->addOperator(OperatorNode::CALL, new BooleanUnsupportedAdapter(rt));
-    this->addOperator(OperatorNode::INDEX, new BooleanUnsupportedAdapter(rt));
-    this->addOperator(OperatorNode::PRE_PLUS_PLUS, new BooleanUnsupportedAdapter(rt));
-    this->addOperator(OperatorNode::PRE_MINUS_MINUS, new BooleanUnsupportedAdapter(rt));
-    this->addOperator(OperatorNode::PRE_PLUS, new BooleanUnsupportedAdapter(rt));
-    this->addOperator(OperatorNode::PRE_MINUS, new BooleanUnsupportedAdapter(rt));
-    this->addOperator(OperatorNode::NOT, new BooleanNotAdapter(rt));
-    this->addOperator(OperatorNode::INVERSE, new BooleanUnsupportedAdapter(rt));
-    this->addOperator(OperatorNode::MULT, new BooleanUnsupportedAdapter(rt));
-    this->addOperator(OperatorNode::DIV, new BooleanUnsupportedAdapter(rt));
-    this->addOperator(OperatorNode::REM, new BooleanUnsupportedAdapter(rt));
-    this->addOperator(OperatorNode::RIGHT_SHIFT, new BooleanUnsupportedAdapter(rt));
-    this->addOperator(OperatorNode::LEFT_SHIFT, new BooleanUnsupportedAdapter(rt));
-    this->addOperator(OperatorNode::PLUS, new BooleanUnsupportedAdapter(rt));
-    this->addOperator(OperatorNode::MINUS, new BooleanUnsupportedAdapter(rt));
-    this->addOperator(OperatorNode::LESS, new BooleanUnsupportedAdapter(rt));
-    this->addOperator(OperatorNode::LESS_EQUAL, new BooleanUnsupportedAdapter(rt));
-    this->addOperator(OperatorNode::GREATER, new BooleanUnsupportedAdapter(rt));
-    this->addOperator(OperatorNode::GREATER_EQUAL, new BooleanUnsupportedAdapter(rt));
-    this->addOperator(OperatorNode::EQUAL, new BooleanEqAdapter(rt));
-    this->addOperator(OperatorNode::NOT_EQUAL, new BooleanNeqAdapter(rt));
-    this->addOperator(OperatorNode::BITAND, new BooleanUnsupportedAdapter(rt));
-    this->addOperator(OperatorNode::BITXOR, new BooleanUnsupportedAdapter(rt));
-    this->addOperator(OperatorNode::BITOR, new BooleanUnsupportedAdapter(rt));
-    this->addOperator(OperatorNode::AND, new BooleanAndAdapter(rt));
-    this->addOperator(OperatorNode::OR, new BooleanOrAdapter(rt));
+    this->addOperator(OperatorNode::POST_PLUS_PLUS, new BooleanUnsupportedAdapter());
+    this->addOperator(OperatorNode::POST_MINUS_MINUS, new BooleanUnsupportedAdapter());
+    this->addOperator(OperatorNode::CALL, new BooleanUnsupportedAdapter());
+    this->addOperator(OperatorNode::INDEX, new BooleanUnsupportedAdapter());
+    this->addOperator(OperatorNode::PRE_PLUS_PLUS, new BooleanUnsupportedAdapter());
+    this->addOperator(OperatorNode::PRE_MINUS_MINUS, new BooleanUnsupportedAdapter());
+    this->addOperator(OperatorNode::PRE_PLUS, new BooleanUnsupportedAdapter());
+    this->addOperator(OperatorNode::PRE_MINUS, new BooleanUnsupportedAdapter());
+    this->addOperator(OperatorNode::NOT, new BooleanNotAdapter());
+    this->addOperator(OperatorNode::INVERSE, new BooleanUnsupportedAdapter());
+    this->addOperator(OperatorNode::MULT, new BooleanUnsupportedAdapter());
+    this->addOperator(OperatorNode::DIV, new BooleanUnsupportedAdapter());
+    this->addOperator(OperatorNode::REM, new BooleanUnsupportedAdapter());
+    this->addOperator(OperatorNode::RIGHT_SHIFT, new BooleanUnsupportedAdapter());
+    this->addOperator(OperatorNode::LEFT_SHIFT, new BooleanUnsupportedAdapter());
+    this->addOperator(OperatorNode::PLUS, new BooleanUnsupportedAdapter());
+    this->addOperator(OperatorNode::MINUS, new BooleanUnsupportedAdapter());
+    this->addOperator(OperatorNode::LESS, new BooleanUnsupportedAdapter());
+    this->addOperator(OperatorNode::LESS_EQUAL, new BooleanUnsupportedAdapter());
+    this->addOperator(OperatorNode::GREATER, new BooleanUnsupportedAdapter());
+    this->addOperator(OperatorNode::GREATER_EQUAL, new BooleanUnsupportedAdapter());
+    this->addOperator(OperatorNode::EQUAL, new BooleanEqAdapter());
+    this->addOperator(OperatorNode::NOT_EQUAL, new BooleanNeqAdapter());
+    this->addOperator(OperatorNode::BITAND, new BooleanUnsupportedAdapter());
+    this->addOperator(OperatorNode::BITXOR, new BooleanUnsupportedAdapter());
+    this->addOperator(OperatorNode::BITOR, new BooleanUnsupportedAdapter());
+    this->addOperator(OperatorNode::AND, new BooleanAndAdapter());
+    this->addOperator(OperatorNode::OR, new BooleanOrAdapter());
 }
 
-Object *BooleanType::create() {
+Object *BooleanType::create(Runtime *rt) {
     ProfilerCAPTURE();
     auto ins = createInstance(rt, BooleanInstance);
     auto obj = createObject(rt, true, ins, this);
     return obj;
 }
 
-Object *BooleanType::copy(Object *obj) {
+Object *BooleanType::copy(Object *obj, Runtime *rt) {
     ProfilerCAPTURE();
     if (!isTypeObject(obj) || obj->type->id != rt->boolean_type->id) {
         rt->signalError("Failed to copy an invalid object: " + obj->shortRepr());
@@ -236,7 +220,7 @@ Object *BooleanType::copy(Object *obj) {
     if (obj->instance == NULL) {
         return createObject(rt, false, NULL, this);
     }
-    auto ins = obj->instance->copy();
+    auto ins = obj->instance->copy(rt);
     auto res = createObject(rt, true, ins, this);
     return res;
 }

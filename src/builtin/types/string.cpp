@@ -34,7 +34,7 @@ StringInstance::~StringInstance() {
     ProfilerCAPTURE();
 }
 
-Instance *StringInstance::copy() {
+Instance *StringInstance::copy(Runtime *rt) {
     ProfilerCAPTURE();
     Instance *res = new (std::nothrow) StringInstance(rt);
     if (res == NULL) {
@@ -88,10 +88,8 @@ size_t StringType::getInstanceSize() {
 
 class StringUnsupportedAdapter: public OperatorAdapter {
 public:
-    StringUnsupportedAdapter(Runtime *rt)
-        : OperatorAdapter(rt) {}
 
-    Object *operator()(Object *self, const std::vector<Object *> &others) {
+    Object *operator()(Object *self, const std::vector<Object *> &others, Runtime *rt) {
         ProfilerCAPTURE();
         rt->signalError(self->shortRepr() + " does not support that operator");
     }
@@ -99,10 +97,8 @@ public:
 
 class StringIndexAdapter: public OperatorAdapter {
 public:
-    StringIndexAdapter(Runtime *rt)
-        : OperatorAdapter(rt) {}
 
-    Object *operator()(Object *self, const std::vector<Object *> &others) {
+    Object *operator()(Object *self, const std::vector<Object *> &others, Runtime *rt) {
         ProfilerCAPTURE();
 
         if (!isInstanceObject(self)) {
@@ -128,10 +124,8 @@ public:
 
 class StringAddAdapter: public OperatorAdapter {
 public:
-    StringAddAdapter(Runtime *rt)
-        : OperatorAdapter(rt) {}
 
-    Object *operator()(Object *self, const std::vector<Object *> &others) {
+    Object *operator()(Object *self, const std::vector<Object *> &others, Runtime *rt) {
         ProfilerCAPTURE();
 
         if (!isInstanceObject(self)) {
@@ -160,10 +154,8 @@ public:
 
 class StringEqAdapter: public OperatorAdapter {
 public:
-    StringEqAdapter(Runtime *rt)
-        : OperatorAdapter(rt) {}
 
-    Object *operator()(Object *self, const std::vector<Object *> &others) {
+    Object *operator()(Object *self, const std::vector<Object *> &others, Runtime *rt) {
         ProfilerCAPTURE();
         if (others.size() != 1) {
             rt->signalError("Expected exactly one right-side argument");
@@ -205,12 +197,10 @@ public:
 
 class StringNeqAdapter: public StringEqAdapter {
 public:
-    StringNeqAdapter(Runtime *rt)
-        : StringEqAdapter(rt) {}
 
-    Object *operator()(Object *self, const std::vector<Object *> &others) {
+    Object *operator()(Object *self, const std::vector<Object *> &others, Runtime *rt) {
         ProfilerCAPTURE();
-        auto res                 = StringEqAdapter::operator()(self, others);
+        auto res                 = StringEqAdapter::operator()(self, others, rt);
         getBooleanValueFast(res) = !getBooleanValueFast(res);
         return res;
     }
@@ -235,46 +225,46 @@ static Object *stringSizeMethod(const std::vector<Object *> &args, Runtime *rt) 
 StringType::StringType(Runtime *rt)
     : Type(rt) {
     ProfilerCAPTURE();
-    this->addOperator(OperatorNode::POST_PLUS_PLUS, new StringUnsupportedAdapter(rt));
-    this->addOperator(OperatorNode::POST_MINUS_MINUS, new StringUnsupportedAdapter(rt));
-    this->addOperator(OperatorNode::CALL, new StringUnsupportedAdapter(rt));
-    this->addOperator(OperatorNode::INDEX, new StringIndexAdapter(rt));
-    this->addOperator(OperatorNode::PRE_PLUS_PLUS, new StringUnsupportedAdapter(rt));
-    this->addOperator(OperatorNode::PRE_MINUS_MINUS, new StringUnsupportedAdapter(rt));
-    this->addOperator(OperatorNode::PRE_PLUS, new StringUnsupportedAdapter(rt));
-    this->addOperator(OperatorNode::PRE_MINUS, new StringUnsupportedAdapter(rt));
-    this->addOperator(OperatorNode::NOT, new StringUnsupportedAdapter(rt));
-    this->addOperator(OperatorNode::INVERSE, new StringUnsupportedAdapter(rt));
-    this->addOperator(OperatorNode::MULT, new StringUnsupportedAdapter(rt));
-    this->addOperator(OperatorNode::DIV, new StringUnsupportedAdapter(rt));
-    this->addOperator(OperatorNode::REM, new StringUnsupportedAdapter(rt));
-    this->addOperator(OperatorNode::RIGHT_SHIFT, new StringUnsupportedAdapter(rt));
-    this->addOperator(OperatorNode::LEFT_SHIFT, new StringUnsupportedAdapter(rt));
-    this->addOperator(OperatorNode::PLUS, new StringAddAdapter(rt));
-    this->addOperator(OperatorNode::MINUS, new StringUnsupportedAdapter(rt));
-    this->addOperator(OperatorNode::LESS, new StringUnsupportedAdapter(rt));
-    this->addOperator(OperatorNode::LESS_EQUAL, new StringUnsupportedAdapter(rt));
-    this->addOperator(OperatorNode::GREATER, new StringUnsupportedAdapter(rt));
-    this->addOperator(OperatorNode::GREATER_EQUAL, new StringUnsupportedAdapter(rt));
-    this->addOperator(OperatorNode::EQUAL, new StringEqAdapter(rt));
-    this->addOperator(OperatorNode::NOT_EQUAL, new StringNeqAdapter(rt));
-    this->addOperator(OperatorNode::BITAND, new StringUnsupportedAdapter(rt));
-    this->addOperator(OperatorNode::BITXOR, new StringUnsupportedAdapter(rt));
-    this->addOperator(OperatorNode::BITOR, new StringUnsupportedAdapter(rt));
-    this->addOperator(OperatorNode::AND, new StringUnsupportedAdapter(rt));
-    this->addOperator(OperatorNode::OR, new StringUnsupportedAdapter(rt));
+    this->addOperator(OperatorNode::POST_PLUS_PLUS, new StringUnsupportedAdapter());
+    this->addOperator(OperatorNode::POST_MINUS_MINUS, new StringUnsupportedAdapter());
+    this->addOperator(OperatorNode::CALL, new StringUnsupportedAdapter());
+    this->addOperator(OperatorNode::INDEX, new StringIndexAdapter());
+    this->addOperator(OperatorNode::PRE_PLUS_PLUS, new StringUnsupportedAdapter());
+    this->addOperator(OperatorNode::PRE_MINUS_MINUS, new StringUnsupportedAdapter());
+    this->addOperator(OperatorNode::PRE_PLUS, new StringUnsupportedAdapter());
+    this->addOperator(OperatorNode::PRE_MINUS, new StringUnsupportedAdapter());
+    this->addOperator(OperatorNode::NOT, new StringUnsupportedAdapter());
+    this->addOperator(OperatorNode::INVERSE, new StringUnsupportedAdapter());
+    this->addOperator(OperatorNode::MULT, new StringUnsupportedAdapter());
+    this->addOperator(OperatorNode::DIV, new StringUnsupportedAdapter());
+    this->addOperator(OperatorNode::REM, new StringUnsupportedAdapter());
+    this->addOperator(OperatorNode::RIGHT_SHIFT, new StringUnsupportedAdapter());
+    this->addOperator(OperatorNode::LEFT_SHIFT, new StringUnsupportedAdapter());
+    this->addOperator(OperatorNode::PLUS, new StringAddAdapter());
+    this->addOperator(OperatorNode::MINUS, new StringUnsupportedAdapter());
+    this->addOperator(OperatorNode::LESS, new StringUnsupportedAdapter());
+    this->addOperator(OperatorNode::LESS_EQUAL, new StringUnsupportedAdapter());
+    this->addOperator(OperatorNode::GREATER, new StringUnsupportedAdapter());
+    this->addOperator(OperatorNode::GREATER_EQUAL, new StringUnsupportedAdapter());
+    this->addOperator(OperatorNode::EQUAL, new StringEqAdapter());
+    this->addOperator(OperatorNode::NOT_EQUAL, new StringNeqAdapter());
+    this->addOperator(OperatorNode::BITAND, new StringUnsupportedAdapter());
+    this->addOperator(OperatorNode::BITXOR, new StringUnsupportedAdapter());
+    this->addOperator(OperatorNode::BITOR, new StringUnsupportedAdapter());
+    this->addOperator(OperatorNode::AND, new StringUnsupportedAdapter());
+    this->addOperator(OperatorNode::OR, new StringUnsupportedAdapter());
 
     this->addMethod(NameId("size").id, makeFunctionInstanceObject(true, stringSizeMethod, NULL, rt));
 }
 
-Object *StringType::create() {
+Object *StringType::create(Runtime *rt) {
     ProfilerCAPTURE();
     auto ins = createInstance(rt, StringInstance);
     auto obj = createObject(rt, true, ins, this);
     return obj;
 }
 
-Object *StringType::copy(Object *obj) {
+Object *StringType::copy(Object *obj, Runtime *rt) {
     ProfilerCAPTURE();
     if (!isTypeObject(obj) || obj->type->id != rt->string_type->id) {
         rt->signalError("Failed to copy an invalid object: " + obj->shortRepr());
@@ -282,7 +272,7 @@ Object *StringType::copy(Object *obj) {
     if (obj->instance == NULL) {
         return createObject(rt, false, NULL, this);
     }
-    auto ins = obj->instance->copy();
+    auto ins = obj->instance->copy(rt);
     auto res = createObject(rt, true, ins, this);
     return res;
 }

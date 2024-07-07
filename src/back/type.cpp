@@ -33,7 +33,6 @@ int64_t Type::total_types = 0;
 
 Type::Type(Runtime *rt) {
     ProfilerCAPTURE();
-    this->rt = rt;
     this->id = ++Type::total_types;
     for (auto &op : this->operators) {
         op = NULL;
@@ -63,7 +62,7 @@ void Type::addMethod(int64_t id, Object *method) {
     this->methods[id] = method;
 }
 
-OperatorAdapter *Type::getOperator(OperatorNode::OperatorId id) {
+OperatorAdapter *Type::getOperator(OperatorNode::OperatorId id, Runtime *rt) {
     ProfilerCAPTURE();
     auto res = this->operators[id];
     if (res == NULL) {
@@ -72,12 +71,12 @@ OperatorAdapter *Type::getOperator(OperatorNode::OperatorId id) {
             rt->signalError("Failed to get operator " + std::to_string(id) + " in " + this->shortRepr()
                             + " because the appropriate magic method could not be found");
         }
-        auto method = this->getMethod(method_id);
+        auto method = this->getMethod(method_id, rt);
         if (method->type == NULL) {
             rt->signalError("Failed to get operator " + std::to_string(id) + " in " + this->shortRepr()
                             + " because the appropriate magic method is an invalid object");
         }
-        auto res = method->type->getOperator(OperatorNode::CALL);
+        auto res = method->type->getOperator(OperatorNode::CALL, rt);
         return res;
     }
     else {
@@ -85,7 +84,7 @@ OperatorAdapter *Type::getOperator(OperatorNode::OperatorId id) {
     }
 }
 
-Object *Type::getMethod(int64_t id) {
+Object *Type::getMethod(int64_t id, Runtime *rt) {
     ProfilerCAPTURE();
     auto it = this->methods.find(id);
     if (it != this->methods.end()) {
@@ -98,7 +97,7 @@ Object *Type::getMethod(int64_t id) {
     rt->signalError(this->shortRepr() + " doesn't have method " + NameId::shortRepr(id));
 }
 
-bool Type::hasOperator(OperatorNode::OperatorId id) {
+bool Type::hasOperator(OperatorNode::OperatorId id, Runtime *rt) {
     ProfilerCAPTURE();
     auto res = this->operators[id];
     if (res == NULL) {
@@ -109,8 +108,8 @@ bool Type::hasOperator(OperatorNode::OperatorId id) {
         if (!this->hasMethod(method_id)) {
             return false;
         }
-        auto method = this->getMethod(method_id);
-        return method->type->getOperator(OperatorNode::CALL);
+        auto method = this->getMethod(method_id, rt);
+        return method->type->getOperator(OperatorNode::CALL, rt);
     }
     else {
         return true;
@@ -121,19 +120,6 @@ bool Type::hasMethod(int64_t id) {
     ProfilerCAPTURE();
     auto it = this->methods.find(id);
     return it != this->methods.end();
-}
-
-Object *Type::getMethodOrNULL(int64_t id) {
-    ProfilerCAPTURE();
-    auto it = this->methods.find(id);
-    if (it != this->methods.end()) {
-        if (!isInstanceObject(it->second)) {
-            rt->signalError("Method " + NameId::shortRepr(id) + " from " + this->shortRepr()
-                            + " is not an instance object");
-        }
-        return it->second;
-    }
-    return NULL;
 }
 
 std::vector<Object *> Type::getGCReachable() {
@@ -363,8 +349,4 @@ namespace MagicMethods {
     }
 }    // namespace MagicMethods
 
-OperatorAdapter::OperatorAdapter(Runtime *rt) {
-    ProfilerCAPTURE();
-    this->rt = rt;
-}
 };    // namespace Cotton

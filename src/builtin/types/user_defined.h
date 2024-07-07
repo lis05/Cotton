@@ -31,11 +31,11 @@ public:
     int64_t                                      nameid;
     UserDefinedInstance(Runtime *rt);
     ~UserDefinedInstance();
-    Object                                      *selectField(int64_t id);
-    bool                                         hasField(int64_t id);
-    void                                         addField(int64_t id, Object *obj);
+    Object *selectField(int64_t id, Runtime *rt);
+    bool    hasField(int64_t id, Runtime *rt);
+    void    addField(int64_t id, Object *obj, Runtime *rt);
 
-    Instance   *copy();
+    Instance   *copy(Runtime *rt);
     size_t      getSize();
     std::string shortRepr();
     std::vector<Object*> getGCReachable();
@@ -49,8 +49,8 @@ public:
     size_t getInstanceSize();
     UserDefinedType(Runtime *rt);
     ~UserDefinedType() = default;
-    Object     *create();
+    Object     *create(Runtime *rt);
     std::string shortRepr();
-    Object     *copy(Object *obj);
+    Object     *copy(Object *obj, Runtime *rt);
 };
 }    // namespace Cotton::Builtin

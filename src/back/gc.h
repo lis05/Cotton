@@ -31,15 +31,14 @@ class GC;
 
 class GCStrategy {
 public:
-    Runtime     *rt;
     virtual void acknowledgeTrack(Object *object)                   = 0;
     virtual void acknowledgeTrack(Instance *instance, size_t bytes) = 0;
     virtual void acknowledgeTrack(Type *type)                       = 0;
     virtual void acknowledgeUntrack(Object *object)                 = 0;
     virtual void acknowledgeUntrack(Instance *instance)             = 0;
     virtual void acknowledgeUntrack(Type *type)                     = 0;
-    virtual void acknowledgeEndOfCycle()                            = 0;
-    virtual void acknowledgePing()                                  = 0;
+    virtual void acknowledgeEndOfCycle(Runtime *rt)                 = 0;
+    virtual void acknowledgePing(Runtime *rt)                       = 0;
 };
 
 class GCDefaultStrategy: public GCStrategy {
@@ -65,16 +64,14 @@ public:
     void acknowledgeUntrack(Object *object);
     void acknowledgeUntrack(Instance *instance);
     void acknowledgeUntrack(Type *type);
-    void acknowledgeEndOfCycle();
-    void acknowledgePing();
+    void acknowledgeEndOfCycle(Runtime *rt);
+    void acknowledgePing(Runtime *rt);
 
-    void checkConditions();
+    void checkConditions(Runtime *rt);
 };
 
 class GC {
 public:
-    Runtime *rt;
-
     __gnu_pbds::gp_hash_table<Object *, bool> tracked_objects;
     __gnu_pbds::gp_hash_table<Object *, bool> held_objects;
 
@@ -100,9 +97,9 @@ public:
                                   // well as items reachable from it
     void release(Object *object);
 
-    void ping();
+    void ping(Runtime *rt);
 
-    void runCycle();
+    void runCycle(Runtime *rt);
 
     void enable();
     void disable();

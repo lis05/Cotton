@@ -35,9 +35,7 @@ class Type;
 
 class OperatorAdapter {
 public:
-    Runtime *rt;
-    OperatorAdapter(Runtime *rt);
-    virtual Object *operator()(Object *self, const std::vector<Object *> &others) = 0;
+    virtual Object *operator()(Object *self, const std::vector<Object *> &others, Runtime *rt) = 0;
 };
 
 class Type {
@@ -45,7 +43,6 @@ private:
     static int64_t total_types;
 
 public:
-    Runtime         *rt;
     static const int num_operators = OperatorNode::TOTAL_OPERATORS;
     int64_t          id;
     OperatorAdapter *operators[num_operators];
@@ -61,24 +58,21 @@ public:
     // adds a method
     void             addMethod(int64_t id, Object *method);
     // returns a valid(non-NULL) operator adapter, signals and error if it isn't present
-    OperatorAdapter *getOperator(OperatorNode::OperatorId id);
+    OperatorAdapter *getOperator(OperatorNode::OperatorId id, Runtime *rt);
     // returns a valid(non-NULL, instance object) method object, signals and error if it isn't present
-    Object          *getMethod(int64_t id);
+    Object          *getMethod(int64_t id, Runtime *rt);
     // returns whether an operator is present or not
-    bool             hasOperator(OperatorNode::OperatorId id);
+    bool             hasOperator(OperatorNode::OperatorId id, Runtime *rt);
     // returns whether a method is present or not
     bool             hasMethod(int64_t id);
-
-    // returns method or NULL
-    Object *getMethodOrNULL(int64_t id);
 
     virtual std::vector<Object *> getGCReachable();
     virtual size_t                getInstanceSize() = 0;    // for placement on stack in case of is_simple
 
     // creates a valid (non-null) object
-    virtual Object *create()          = 0;
+    virtual Object *create(Runtime *rt)            = 0;
     // returns a valid (non-null) copy of the object
-    virtual Object *copy(Object *obj) = 0;
+    virtual Object *copy(Object *obj, Runtime *rt) = 0;
 
     virtual std::string shortRepr() = 0;
 };

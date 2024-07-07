@@ -42,7 +42,7 @@ void FunctionInstance::init(bool is_internal, InternalFunction internal_ptr, Fun
     this->cotton_ptr   = cotton_ptr;
 }
 
-Instance *FunctionInstance::copy() {
+Instance *FunctionInstance::copy(Runtime *rt) {
     ProfilerCAPTURE();
     auto res = new (std::nothrow) FunctionInstance(rt);
     if (res == NULL) {
@@ -73,10 +73,7 @@ size_t FunctionType::getInstanceSize() {
 
 class FunctionUnsupportedAdapter: public OperatorAdapter {
 public:
-    FunctionUnsupportedAdapter(Runtime *rt)
-        : OperatorAdapter(rt) {}
-
-    Object *operator()(Object *self, const std::vector<Object *> &others) {
+    Object *operator()(Object *self, const std::vector<Object *> &others, Runtime *rt) {
         ProfilerCAPTURE();
         rt->signalError(self->shortRepr() + " does not support that operator");
     }
@@ -84,10 +81,7 @@ public:
 
 class FunctionCallAdapter: public OperatorAdapter {
 public:
-    FunctionCallAdapter(Runtime *rt)
-        : OperatorAdapter(rt) {}
-
-    Object *operator()(Object *self, const std::vector<Object *> &others) {
+    Object *operator()(Object *self, const std::vector<Object *> &others, Runtime *rt) {
         ProfilerCAPTURE();
 
         if (!isInstanceObject(self)) {
@@ -135,10 +129,7 @@ public:
 
 class FunctionEqAdapter: public OperatorAdapter {
 public:
-    FunctionEqAdapter(Runtime *rt)
-        : OperatorAdapter(rt) {}
-
-    Object *operator()(Object *self, const std::vector<Object *> &others) {
+    Object *operator()(Object *self, const std::vector<Object *> &others, Runtime *rt) {
         ProfilerCAPTURE();
 
         if (others.size() != 1) {
@@ -182,12 +173,9 @@ public:
 
 class FunctionNeqAdapter: public FunctionEqAdapter {
 public:
-    FunctionNeqAdapter(Runtime *rt)
-        : FunctionEqAdapter(rt) {}
-
-    Object *operator()(Object *self, const std::vector<Object *> &others) {
+    Object *operator()(Object *self, const std::vector<Object *> &others, Runtime *rt) {
         ProfilerCAPTURE();
-        auto res                 = FunctionEqAdapter::operator()(self, others);
+        auto res                 = FunctionEqAdapter::operator()(self, others, rt);
         getBooleanValue(res, rt) = !getBooleanValue(res, rt);
         return res;
     }
@@ -197,44 +185,44 @@ public:
 FunctionType::FunctionType(Runtime *rt)
     : Type(rt) {
     ProfilerCAPTURE();
-    this->addOperator(OperatorNode::POST_PLUS_PLUS, new FunctionUnsupportedAdapter(rt));
-    this->addOperator(OperatorNode::POST_MINUS_MINUS, new FunctionUnsupportedAdapter(rt));
-    this->addOperator(OperatorNode::CALL, new FunctionCallAdapter(rt));
-    this->addOperator(OperatorNode::INDEX, new FunctionUnsupportedAdapter(rt));
-    this->addOperator(OperatorNode::PRE_PLUS_PLUS, new FunctionUnsupportedAdapter(rt));
-    this->addOperator(OperatorNode::PRE_MINUS_MINUS, new FunctionUnsupportedAdapter(rt));
-    this->addOperator(OperatorNode::PRE_PLUS, new FunctionUnsupportedAdapter(rt));
-    this->addOperator(OperatorNode::PRE_MINUS, new FunctionUnsupportedAdapter(rt));
-    this->addOperator(OperatorNode::NOT, new FunctionUnsupportedAdapter(rt));
-    this->addOperator(OperatorNode::INVERSE, new FunctionUnsupportedAdapter(rt));
-    this->addOperator(OperatorNode::MULT, new FunctionUnsupportedAdapter(rt));
-    this->addOperator(OperatorNode::DIV, new FunctionUnsupportedAdapter(rt));
-    this->addOperator(OperatorNode::REM, new FunctionUnsupportedAdapter(rt));
-    this->addOperator(OperatorNode::RIGHT_SHIFT, new FunctionUnsupportedAdapter(rt));
-    this->addOperator(OperatorNode::LEFT_SHIFT, new FunctionUnsupportedAdapter(rt));
-    this->addOperator(OperatorNode::PLUS, new FunctionUnsupportedAdapter(rt));
-    this->addOperator(OperatorNode::MINUS, new FunctionUnsupportedAdapter(rt));
-    this->addOperator(OperatorNode::LESS, new FunctionUnsupportedAdapter(rt));
-    this->addOperator(OperatorNode::LESS_EQUAL, new FunctionUnsupportedAdapter(rt));
-    this->addOperator(OperatorNode::GREATER, new FunctionUnsupportedAdapter(rt));
-    this->addOperator(OperatorNode::GREATER_EQUAL, new FunctionUnsupportedAdapter(rt));
-    this->addOperator(OperatorNode::EQUAL, new FunctionEqAdapter(rt));
-    this->addOperator(OperatorNode::NOT_EQUAL, new FunctionNeqAdapter(rt));
-    this->addOperator(OperatorNode::BITAND, new FunctionUnsupportedAdapter(rt));
-    this->addOperator(OperatorNode::BITXOR, new FunctionUnsupportedAdapter(rt));
-    this->addOperator(OperatorNode::BITOR, new FunctionUnsupportedAdapter(rt));
-    this->addOperator(OperatorNode::AND, new FunctionUnsupportedAdapter(rt));
-    this->addOperator(OperatorNode::OR, new FunctionUnsupportedAdapter(rt));
+    this->addOperator(OperatorNode::POST_PLUS_PLUS, new FunctionUnsupportedAdapter());
+    this->addOperator(OperatorNode::POST_MINUS_MINUS, new FunctionUnsupportedAdapter());
+    this->addOperator(OperatorNode::CALL, new FunctionCallAdapter());
+    this->addOperator(OperatorNode::INDEX, new FunctionUnsupportedAdapter());
+    this->addOperator(OperatorNode::PRE_PLUS_PLUS, new FunctionUnsupportedAdapter());
+    this->addOperator(OperatorNode::PRE_MINUS_MINUS, new FunctionUnsupportedAdapter());
+    this->addOperator(OperatorNode::PRE_PLUS, new FunctionUnsupportedAdapter());
+    this->addOperator(OperatorNode::PRE_MINUS, new FunctionUnsupportedAdapter());
+    this->addOperator(OperatorNode::NOT, new FunctionUnsupportedAdapter());
+    this->addOperator(OperatorNode::INVERSE, new FunctionUnsupportedAdapter());
+    this->addOperator(OperatorNode::MULT, new FunctionUnsupportedAdapter());
+    this->addOperator(OperatorNode::DIV, new FunctionUnsupportedAdapter());
+    this->addOperator(OperatorNode::REM, new FunctionUnsupportedAdapter());
+    this->addOperator(OperatorNode::RIGHT_SHIFT, new FunctionUnsupportedAdapter());
+    this->addOperator(OperatorNode::LEFT_SHIFT, new FunctionUnsupportedAdapter());
+    this->addOperator(OperatorNode::PLUS, new FunctionUnsupportedAdapter());
+    this->addOperator(OperatorNode::MINUS, new FunctionUnsupportedAdapter());
+    this->addOperator(OperatorNode::LESS, new FunctionUnsupportedAdapter());
+    this->addOperator(OperatorNode::LESS_EQUAL, new FunctionUnsupportedAdapter());
+    this->addOperator(OperatorNode::GREATER, new FunctionUnsupportedAdapter());
+    this->addOperator(OperatorNode::GREATER_EQUAL, new FunctionUnsupportedAdapter());
+    this->addOperator(OperatorNode::EQUAL, new FunctionEqAdapter());
+    this->addOperator(OperatorNode::NOT_EQUAL, new FunctionNeqAdapter());
+    this->addOperator(OperatorNode::BITAND, new FunctionUnsupportedAdapter());
+    this->addOperator(OperatorNode::BITXOR, new FunctionUnsupportedAdapter());
+    this->addOperator(OperatorNode::BITOR, new FunctionUnsupportedAdapter());
+    this->addOperator(OperatorNode::AND, new FunctionUnsupportedAdapter());
+    this->addOperator(OperatorNode::OR, new FunctionUnsupportedAdapter());
 }
 
-Object *FunctionType::create() {
+Object *FunctionType::create(Runtime *rt) {
     ProfilerCAPTURE();
     auto ins = createInstance(rt, FunctionInstance);
     auto obj = createObject(rt, true, ins, this);
     return obj;
 }
 
-Object *FunctionType::copy(Object *obj) {
+Object *FunctionType::copy(Object *obj, Runtime *rt) {
     ProfilerCAPTURE();
     if (!isTypeObject(obj) || obj->type->id != rt->function_type->id) {
         rt->signalError("Failed to copy an invalid object: " + obj->shortRepr());
@@ -242,7 +230,7 @@ Object *FunctionType::copy(Object *obj) {
     if (obj->instance == NULL) {
         return createObject(rt, false, NULL, this);
     }
-    auto ins = obj->instance->copy();
+    auto ins = obj->instance->copy(rt);
     auto res = createObject(rt, true, ins, this);
     return res;
 }

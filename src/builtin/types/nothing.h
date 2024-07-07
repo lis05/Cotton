@@ -29,7 +29,7 @@ public:
     NothingInstance(Runtime *rt);
     ~NothingInstance();
 
-    Instance   *copy();
+    Instance   *copy(Runtime *rt);
     size_t      getSize();
     std::string shortRepr();
 };
@@ -39,9 +39,9 @@ public:
     size_t getInstanceSize();
     NothingType(Runtime *rt);
     ~NothingType() = default;
-    Object     *create();
+    Object     *create(Runtime *rt);
     std::string shortRepr();
-    Object *copy(Object *obj);
+    Object *copy(Object *obj, Runtime *rt);
 };
 
 Object *makeNothingInstanceObject(Runtime *rt);

@@ -33,7 +33,7 @@ CharacterInstance::~CharacterInstance() {
     ProfilerCAPTURE();
 }
 
-Instance *CharacterInstance::copy() {
+Instance *CharacterInstance::copy(Runtime *rt) {
     ProfilerCAPTURE();
     Instance *res = new (std::nothrow) CharacterInstance(rt);
     if (res == NULL) {
@@ -64,17 +64,14 @@ size_t CharacterType::getInstanceSize() {
 
 class CharacterPostincAdapter: public OperatorAdapter {
 public:
-    CharacterPostincAdapter(Runtime *rt)
-        : OperatorAdapter(rt) {}
-
-    Object *operator()(Object *self, const std::vector<Object *> &others) {
+    Object *operator()(Object *self, const std::vector<Object *> &others, Runtime *rt) {
         ProfilerCAPTURE();
 
         if (!isInstanceObject(self)) {
             rt->signalError(self->shortRepr() + " does not support that operator");
         }
 
-        auto res = self->type->copy(self);
+        auto res = self->type->copy(self, rt);
         getCharacterValueFast(self)++;
         return res;
     }
@@ -82,17 +79,14 @@ public:
 
 class CharacterPostdecAdapter: public OperatorAdapter {
 public:
-    CharacterPostdecAdapter(Runtime *rt)
-        : OperatorAdapter(rt) {}
-
-    Object *operator()(Object *self, const std::vector<Object *> &others) {
+    Object *operator()(Object *self, const std::vector<Object *> &others, Runtime *rt) {
         ProfilerCAPTURE();
 
         if (!isInstanceObject(self)) {
             rt->signalError(self->shortRepr() + " does not support that operator");
         }
 
-        auto res = self->type->copy(self);
+        auto res = self->type->copy(self, rt);
         getCharacterValueFast(self)--;
         return res;
     }
@@ -100,10 +94,7 @@ public:
 
 class CharacterUnsupportedAdapter: public OperatorAdapter {
 public:
-    CharacterUnsupportedAdapter(Runtime *rt)
-        : OperatorAdapter(rt) {}
-
-    Object *operator()(Object *self, const std::vector<Object *> &others) {
+    Object *operator()(Object *self, const std::vector<Object *> &others, Runtime *rt) {
         ProfilerCAPTURE();
         rt->signalError(self->shortRepr() + " does not support that operator");
     }
@@ -111,10 +102,7 @@ public:
 
 class CharacterPreincAdapter: public OperatorAdapter {
 public:
-    CharacterPreincAdapter(Runtime *rt)
-        : OperatorAdapter(rt) {}
-
-    Object *operator()(Object *self, const std::vector<Object *> &others) {
+    Object *operator()(Object *self, const std::vector<Object *> &others, Runtime *rt) {
         ProfilerCAPTURE();
 
         if (!isInstanceObject(self)) {
@@ -122,17 +110,14 @@ public:
         }
 
         getCharacterValueFast(self)++;
-        auto res = self->type->copy(self);
+        auto res = self->type->copy(self, rt);
         return res;
     }
 };
 
 class CharacterPredecAdapter: public OperatorAdapter {
 public:
-    CharacterPredecAdapter(Runtime *rt)
-        : OperatorAdapter(rt) {}
-
-    Object *operator()(Object *self, const std::vector<Object *> &others) {
+    Object *operator()(Object *self, const std::vector<Object *> &others, Runtime *rt) {
         ProfilerCAPTURE();
 
         if (!isInstanceObject(self)) {
@@ -140,41 +125,35 @@ public:
         }
 
         getCharacterValueFast(self)--;
-        auto res = self->type->copy(self);
+        auto res = self->type->copy(self, rt);
         return res;
     }
 };
 
 class CharacterPositiveAdapter: public OperatorAdapter {
 public:
-    CharacterPositiveAdapter(Runtime *rt)
-        : OperatorAdapter(rt) {}
-
-    Object *operator()(Object *self, const std::vector<Object *> &others) {
+    Object *operator()(Object *self, const std::vector<Object *> &others, Runtime *rt) {
         ProfilerCAPTURE();
 
         if (!isInstanceObject(self)) {
             rt->signalError(self->shortRepr() + " does not support that operator");
         }
 
-        auto res = self->type->copy(self);
+        auto res = self->type->copy(self, rt);
         return res;
     }
 };
 
 class CharacterNegativeAdapter: public OperatorAdapter {
 public:
-    CharacterNegativeAdapter(Runtime *rt)
-        : OperatorAdapter(rt) {}
-
-    Object *operator()(Object *self, const std::vector<Object *> &others) {
+    Object *operator()(Object *self, const std::vector<Object *> &others, Runtime *rt) {
         ProfilerCAPTURE();
 
         if (!isInstanceObject(self)) {
             rt->signalError(self->shortRepr() + " does not support that operator");
         }
 
-        auto res                    = self->type->copy(self);
+        auto res                    = self->type->copy(self, rt);
         getCharacterValueFast(res) *= -1;
         return res;
     }
@@ -182,17 +161,14 @@ public:
 
 class CharacterInverseAdapter: public OperatorAdapter {
 public:
-    CharacterInverseAdapter(Runtime *rt)
-        : OperatorAdapter(rt) {}
-
-    Object *operator()(Object *self, const std::vector<Object *> &others) {
+    Object *operator()(Object *self, const std::vector<Object *> &others, Runtime *rt) {
         ProfilerCAPTURE();
 
         if (!isInstanceObject(self)) {
             rt->signalError(self->shortRepr() + " does not support that operator");
         }
 
-        auto res                   = self->type->copy(self);
+        auto res                   = self->type->copy(self, rt);
         getCharacterValueFast(res) = ~getCharacterValueFast(res);
         return res;
     }
@@ -200,10 +176,7 @@ public:
 
 class CharacterMultAdapter: public OperatorAdapter {
 public:
-    CharacterMultAdapter(Runtime *rt)
-        : OperatorAdapter(rt) {}
-
-    Object *operator()(Object *self, const std::vector<Object *> &others) {
+    Object *operator()(Object *self, const std::vector<Object *> &others, Runtime *rt) {
         ProfilerCAPTURE();
 
         if (!isInstanceObject(self)) {
@@ -228,10 +201,7 @@ public:
 
 class CharacterDivAdapter: public OperatorAdapter {
 public:
-    CharacterDivAdapter(Runtime *rt)
-        : OperatorAdapter(rt) {}
-
-    Object *operator()(Object *self, const std::vector<Object *> &others) {
+    Object *operator()(Object *self, const std::vector<Object *> &others, Runtime *rt) {
         ProfilerCAPTURE();
 
         if (!isInstanceObject(self)) {
@@ -256,10 +226,7 @@ public:
 
 class CharacterRemAdapter: public OperatorAdapter {
 public:
-    CharacterRemAdapter(Runtime *rt)
-        : OperatorAdapter(rt) {}
-
-    Object *operator()(Object *self, const std::vector<Object *> &others) {
+    Object *operator()(Object *self, const std::vector<Object *> &others, Runtime *rt) {
         ProfilerCAPTURE();
 
         if (!isInstanceObject(self)) {
@@ -284,10 +251,7 @@ public:
 
 class CharacterRshiftAdapter: public OperatorAdapter {
 public:
-    CharacterRshiftAdapter(Runtime *rt)
-        : OperatorAdapter(rt) {}
-
-    Object *operator()(Object *self, const std::vector<Object *> &others) {
+    Object *operator()(Object *self, const std::vector<Object *> &others, Runtime *rt) {
         ProfilerCAPTURE();
 
         if (!isInstanceObject(self)) {
@@ -312,10 +276,7 @@ public:
 
 class CharacterLshiftAdapter: public OperatorAdapter {
 public:
-    CharacterLshiftAdapter(Runtime *rt)
-        : OperatorAdapter(rt) {}
-
-    Object *operator()(Object *self, const std::vector<Object *> &others) {
+    Object *operator()(Object *self, const std::vector<Object *> &others, Runtime *rt) {
         ProfilerCAPTURE();
 
         if (!isInstanceObject(self)) {
@@ -340,10 +301,7 @@ public:
 
 class CharacterAddAdapter: public OperatorAdapter {
 public:
-    CharacterAddAdapter(Runtime *rt)
-        : OperatorAdapter(rt) {}
-
-    Object *operator()(Object *self, const std::vector<Object *> &others) {
+    Object *operator()(Object *self, const std::vector<Object *> &others, Runtime *rt) {
         ProfilerCAPTURE();
 
         if (!isInstanceObject(self)) {
@@ -368,10 +326,7 @@ public:
 
 class CharacterSubAdapter: public OperatorAdapter {
 public:
-    CharacterSubAdapter(Runtime *rt)
-        : OperatorAdapter(rt) {}
-
-    Object *operator()(Object *self, const std::vector<Object *> &others) {
+    Object *operator()(Object *self, const std::vector<Object *> &others, Runtime *rt) {
         ProfilerCAPTURE();
 
         if (!isInstanceObject(self)) {
@@ -396,10 +351,7 @@ public:
 
 class CharacterLtAdapter: public OperatorAdapter {
 public:
-    CharacterLtAdapter(Runtime *rt)
-        : OperatorAdapter(rt) {}
-
-    Object *operator()(Object *self, const std::vector<Object *> &others) {
+    Object *operator()(Object *self, const std::vector<Object *> &others, Runtime *rt) {
         ProfilerCAPTURE();
 
         if (!isInstanceObject(self)) {
@@ -424,10 +376,7 @@ public:
 
 class CharacterLeqAdapter: public OperatorAdapter {
 public:
-    CharacterLeqAdapter(Runtime *rt)
-        : OperatorAdapter(rt) {}
-
-    Object *operator()(Object *self, const std::vector<Object *> &others) {
+    Object *operator()(Object *self, const std::vector<Object *> &others, Runtime *rt) {
         ProfilerCAPTURE();
 
         if (!isInstanceObject(self)) {
@@ -452,10 +401,7 @@ public:
 
 class CharacterGtAdapter: public OperatorAdapter {
 public:
-    CharacterGtAdapter(Runtime *rt)
-        : OperatorAdapter(rt) {}
-
-    Object *operator()(Object *self, const std::vector<Object *> &others) {
+    Object *operator()(Object *self, const std::vector<Object *> &others, Runtime *rt) {
         ProfilerCAPTURE();
 
         if (!isInstanceObject(self)) {
@@ -480,10 +426,7 @@ public:
 
 class CharacterGeqAdapter: public OperatorAdapter {
 public:
-    CharacterGeqAdapter(Runtime *rt)
-        : OperatorAdapter(rt) {}
-
-    Object *operator()(Object *self, const std::vector<Object *> &others) {
+    Object *operator()(Object *self, const std::vector<Object *> &others, Runtime *rt) {
         ProfilerCAPTURE();
 
         if (!isInstanceObject(self)) {
@@ -508,10 +451,7 @@ public:
 
 class CharacterEqAdapter: public OperatorAdapter {
 public:
-    CharacterEqAdapter(Runtime *rt)
-        : OperatorAdapter(rt) {}
-
-    Object *operator()(Object *self, const std::vector<Object *> &others) {
+    Object *operator()(Object *self, const std::vector<Object *> &others, Runtime *rt) {
         ProfilerCAPTURE();
 
         if (others.size() != 1) {
@@ -542,12 +482,9 @@ public:
 
 class CharacterNeqAdapter: public CharacterEqAdapter {
 public:
-    CharacterNeqAdapter(Runtime *rt)
-        : CharacterEqAdapter(rt) {}
-
-    Object *operator()(Object *self, const std::vector<Object *> &others) {
+    Object *operator()(Object *self, const std::vector<Object *> &others, Runtime *rt) {
         ProfilerCAPTURE();
-        auto res                   = CharacterEqAdapter::operator()(self, others);
+        auto res                   = CharacterEqAdapter::operator()(self, others, rt);
         getCharacterValueFast(res) = !getCharacterValueFast(res);
         return res;
     }
@@ -555,10 +492,7 @@ public:
 
 class CharacterBitandAdapter: public OperatorAdapter {
 public:
-    CharacterBitandAdapter(Runtime *rt)
-        : OperatorAdapter(rt) {}
-
-    Object *operator()(Object *self, const std::vector<Object *> &others) {
+    Object *operator()(Object *self, const std::vector<Object *> &others, Runtime *rt) {
         ProfilerCAPTURE();
 
         if (!isInstanceObject(self)) {
@@ -583,10 +517,7 @@ public:
 
 class CharacterBitxorAdapter: public OperatorAdapter {
 public:
-    CharacterBitxorAdapter(Runtime *rt)
-        : OperatorAdapter(rt) {}
-
-    Object *operator()(Object *self, const std::vector<Object *> &others) {
+    Object *operator()(Object *self, const std::vector<Object *> &others, Runtime *rt) {
         ProfilerCAPTURE();
 
         if (!isInstanceObject(self)) {
@@ -611,10 +542,7 @@ public:
 
 class CharacterBitorAdapter: public OperatorAdapter {
 public:
-    CharacterBitorAdapter(Runtime *rt)
-        : OperatorAdapter(rt) {}
-
-    Object *operator()(Object *self, const std::vector<Object *> &others) {
+    Object *operator()(Object *self, const std::vector<Object *> &others, Runtime *rt) {
         ProfilerCAPTURE();
 
         if (!isInstanceObject(self)) {
@@ -641,44 +569,44 @@ public:
 CharacterType::CharacterType(Runtime *rt)
     : Type(rt) {
     ProfilerCAPTURE();
-    this->addOperator(OperatorNode::POST_PLUS_PLUS, new CharacterPostincAdapter(rt));
-    this->addOperator(OperatorNode::POST_MINUS_MINUS, new CharacterPostdecAdapter(rt));
-    this->addOperator(OperatorNode::CALL, new CharacterUnsupportedAdapter(rt));
-    this->addOperator(OperatorNode::INDEX, new CharacterUnsupportedAdapter(rt));
-    this->addOperator(OperatorNode::PRE_PLUS_PLUS, new CharacterPreincAdapter(rt));
-    this->addOperator(OperatorNode::PRE_MINUS_MINUS, new CharacterPredecAdapter(rt));
-    this->addOperator(OperatorNode::PRE_PLUS, new CharacterPositiveAdapter(rt));
-    this->addOperator(OperatorNode::PRE_MINUS, new CharacterNegativeAdapter(rt));
-    this->addOperator(OperatorNode::NOT, new CharacterUnsupportedAdapter(rt));
-    this->addOperator(OperatorNode::INVERSE, new CharacterInverseAdapter(rt));
-    this->addOperator(OperatorNode::MULT, new CharacterMultAdapter(rt));
-    this->addOperator(OperatorNode::DIV, new CharacterDivAdapter(rt));
-    this->addOperator(OperatorNode::REM, new CharacterRemAdapter(rt));
-    this->addOperator(OperatorNode::RIGHT_SHIFT, new CharacterRshiftAdapter(rt));
-    this->addOperator(OperatorNode::LEFT_SHIFT, new CharacterLshiftAdapter(rt));
-    this->addOperator(OperatorNode::PLUS, new CharacterAddAdapter(rt));
-    this->addOperator(OperatorNode::MINUS, new CharacterSubAdapter(rt));
-    this->addOperator(OperatorNode::LESS, new CharacterLtAdapter(rt));
-    this->addOperator(OperatorNode::LESS_EQUAL, new CharacterLeqAdapter(rt));
-    this->addOperator(OperatorNode::GREATER, new CharacterGtAdapter(rt));
-    this->addOperator(OperatorNode::GREATER_EQUAL, new CharacterGeqAdapter(rt));
-    this->addOperator(OperatorNode::EQUAL, new CharacterEqAdapter(rt));
-    this->addOperator(OperatorNode::NOT_EQUAL, new CharacterNeqAdapter(rt));
-    this->addOperator(OperatorNode::BITAND, new CharacterBitandAdapter(rt));
-    this->addOperator(OperatorNode::BITXOR, new CharacterBitxorAdapter(rt));
-    this->addOperator(OperatorNode::BITOR, new CharacterBitorAdapter(rt));
-    this->addOperator(OperatorNode::AND, new CharacterUnsupportedAdapter(rt));
-    this->addOperator(OperatorNode::OR, new CharacterUnsupportedAdapter(rt));
+    this->addOperator(OperatorNode::POST_PLUS_PLUS, new CharacterPostincAdapter());
+    this->addOperator(OperatorNode::POST_MINUS_MINUS, new CharacterPostdecAdapter());
+    this->addOperator(OperatorNode::CALL, new CharacterUnsupportedAdapter());
+    this->addOperator(OperatorNode::INDEX, new CharacterUnsupportedAdapter());
+    this->addOperator(OperatorNode::PRE_PLUS_PLUS, new CharacterPreincAdapter());
+    this->addOperator(OperatorNode::PRE_MINUS_MINUS, new CharacterPredecAdapter());
+    this->addOperator(OperatorNode::PRE_PLUS, new CharacterPositiveAdapter());
+    this->addOperator(OperatorNode::PRE_MINUS, new CharacterNegativeAdapter());
+    this->addOperator(OperatorNode::NOT, new CharacterUnsupportedAdapter());
+    this->addOperator(OperatorNode::INVERSE, new CharacterInverseAdapter());
+    this->addOperator(OperatorNode::MULT, new CharacterMultAdapter());
+    this->addOperator(OperatorNode::DIV, new CharacterDivAdapter());
+    this->addOperator(OperatorNode::REM, new CharacterRemAdapter());
+    this->addOperator(OperatorNode::RIGHT_SHIFT, new CharacterRshiftAdapter());
+    this->addOperator(OperatorNode::LEFT_SHIFT, new CharacterLshiftAdapter());
+    this->addOperator(OperatorNode::PLUS, new CharacterAddAdapter());
+    this->addOperator(OperatorNode::MINUS, new CharacterSubAdapter());
+    this->addOperator(OperatorNode::LESS, new CharacterLtAdapter());
+    this->addOperator(OperatorNode::LESS_EQUAL, new CharacterLeqAdapter());
+    this->addOperator(OperatorNode::GREATER, new CharacterGtAdapter());
+    this->addOperator(OperatorNode::GREATER_EQUAL, new CharacterGeqAdapter());
+    this->addOperator(OperatorNode::EQUAL, new CharacterEqAdapter());
+    this->addOperator(OperatorNode::NOT_EQUAL, new CharacterNeqAdapter());
+    this->addOperator(OperatorNode::BITAND, new CharacterBitandAdapter());
+    this->addOperator(OperatorNode::BITXOR, new CharacterBitxorAdapter());
+    this->addOperator(OperatorNode::BITOR, new CharacterBitorAdapter());
+    this->addOperator(OperatorNode::AND, new CharacterUnsupportedAdapter());
+    this->addOperator(OperatorNode::OR, new CharacterUnsupportedAdapter());
 }
 
-Object *CharacterType::create() {
+Object *CharacterType::create(Runtime *rt) {
     ProfilerCAPTURE();
     auto ins = createInstance(rt, CharacterInstance);
     auto obj = createObject(rt, true, ins, this);
     return obj;
 }
 
-Object *CharacterType::copy(Object *obj) {
+Object *CharacterType::copy(Object *obj, Runtime *rt) {
     ProfilerCAPTURE();
     if (!isTypeObject(obj) || obj->type->id != rt->character_type->id) {
         rt->signalError("Failed to copy an invalid object: " + obj->shortRepr());
@@ -686,7 +614,7 @@ Object *CharacterType::copy(Object *obj) {
     if (obj->instance == NULL) {
         return createObject(rt, false, NULL, this);
     }
-    auto ins = obj->instance->copy();
+    auto ins = obj->instance->copy(rt);
     auto res = createObject(rt, true, ins, this);
     return res;
 }

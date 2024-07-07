@@ -30,7 +30,6 @@
 namespace Cotton {
 GCDefaultStrategy::GCDefaultStrategy() {
     ProfilerCAPTURE();
-    this->rt                  = NULL;
     this->num_tracked         = 0;
     this->prev_num_tracked    = NUM_TRACKED_INIT;
     this->sizeof_tracked      = 0;
@@ -95,30 +94,30 @@ void GCDefaultStrategy::acknowledgeUntrack(Type *type) {
     this->sizeof_tracked -= sizeof(Type);
 }
 
-void GCDefaultStrategy::acknowledgeEndOfCycle() {
+void GCDefaultStrategy::acknowledgeEndOfCycle(Runtime *rt) {
     ProfilerCAPTURE();
-    this->prev_num_tracked = this->rt->gc->tracked_instances.size() + this->rt->gc->tracked_objects.size()
-                             + this->rt->gc->tracked_types.size();
+    this->prev_num_tracked = rt->gc->tracked_instances.size() + rt->gc->tracked_objects.size()
+                             + rt->gc->tracked_types.size();
     this->prev_sizeof_tracked = 0;
-    for (auto &[obj, _] : this->rt->gc->tracked_objects) {
+    for (auto &[obj, _] : rt->gc->tracked_objects) {
         this->prev_sizeof_tracked += sizeof(obj);
     }
-    for (auto &[ins, _] : this->rt->gc->tracked_instances) {
+    for (auto &[ins, _] : rt->gc->tracked_instances) {
         this->prev_sizeof_tracked += ins->getSize();
     }
-    for (auto &[type, _] : this->rt->gc->tracked_types) {
+    for (auto &[type, _] : rt->gc->tracked_types) {
         this->prev_sizeof_tracked += sizeof(type);
     }
     this->num_tracked    = this->prev_num_tracked;
     this->sizeof_tracked = this->prev_sizeof_tracked;
 }
 
-void GCDefaultStrategy::acknowledgePing() {
+void GCDefaultStrategy::acknowledgePing(Runtime *rt) {
     ProfilerCAPTURE();
-    this->checkConditions();
+    this->checkConditions(rt);
 }
 
-void GCDefaultStrategy::checkConditions() {
+void GCDefaultStrategy::checkConditions(Runtime *rt) {
     ProfilerCAPTURE();
     if (this->sizeof_tracked >= MIN_CYCLE_SIZE
         && ((this->prev_num_tracked < this->num_tracked / NUM_TRACKED_MULT)
@@ -126,7 +125,7 @@ void GCDefaultStrategy::checkConditions() {
             || (this->ops_cnt >= OPS_MOD)))
     {
         this->ops_cnt %= OPS_MOD;
-        this->rt->gc->runCycle();
+        rt->gc->runCycle(rt);
     }
 }
 
@@ -216,9 +215,9 @@ void GC::release(Object *object) {
     object->spreadSingleUse();
 }
 
-void GC::ping() {
+void GC::ping(Runtime *rt) {
     ProfilerCAPTURE();
-    this->gc_strategy->acknowledgePing();
+    this->gc_strategy->acknowledgePing(rt);
 }
 
 static void mark(Instance *ins, Runtime *rt);
@@ -271,7 +270,7 @@ static void mark(Type *type, Runtime *rt) {
     }
 }
 
-void GC::runCycle() {
+void GC::runCycle(Runtime *rt) {
     ProfilerCAPTURE();
     if (!this->enabled) {
         return;
@@ -280,12 +279,12 @@ void GC::runCycle() {
     auto scope = rt->scope;
     while (scope != NULL) {
         for (auto &[_, obj] : scope->variables) {
-            mark(obj, this->rt);
+            mark(obj, rt);
         }
         scope = scope->prev;
     }
     for (auto &[obj, _] : this->held_objects) {
-        mark(obj, this->rt);
+        mark(obj, rt);
     }
     // sweep
     std::vector<Object *> deleted_objects;
@@ -320,7 +319,7 @@ void GC::runCycle() {
     }
 
     this->gc_mark = !this->gc_mark;
-    this->gc_strategy->acknowledgeEndOfCycle();
+    this->gc_strategy->acknowledgeEndOfCycle(rt);
     // fprintf(stderr, "GC CYCLE END\n");
 }
 

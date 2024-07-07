@@ -33,7 +33,7 @@ RealInstance::~RealInstance() {
     ProfilerCAPTURE();
 }
 
-Instance *RealInstance::copy() {
+Instance *RealInstance::copy(Runtime *rt) {
     ProfilerCAPTURE();
     Instance *res = new (std::nothrow) RealInstance(rt);
     if (res == NULL) {
@@ -63,10 +63,8 @@ size_t RealType::getInstanceSize() {
 
 class RealUnsupportedAdapter: public OperatorAdapter {
 public:
-    RealUnsupportedAdapter(Runtime *rt)
-        : OperatorAdapter(rt) {}
 
-    Object *operator()(Object *self, const std::vector<Object *> &others) {
+    Object *operator()(Object *self, const std::vector<Object *> &others, Runtime *rt) {
         ProfilerCAPTURE();
         rt->signalError(self->shortRepr() + " does not support that operator");
     }
@@ -74,34 +72,30 @@ public:
 
 class RealPositiveAdapter: public OperatorAdapter {
 public:
-    RealPositiveAdapter(Runtime *rt)
-        : OperatorAdapter(rt) {}
 
-    Object *operator()(Object *self, const std::vector<Object *> &others) {
+    Object *operator()(Object *self, const std::vector<Object *> &others, Runtime *rt) {
         ProfilerCAPTURE();
 
         if (!isInstanceObject(self)) {
             rt->signalError(self->shortRepr() + " does not support that operator");
         }
 
-        auto res = self->type->copy(self);
+        auto res = self->type->copy(self, rt);
         return res;
     }
 };
 
 class RealNegativeAdapter: public OperatorAdapter {
 public:
-    RealNegativeAdapter(Runtime *rt)
-        : OperatorAdapter(rt) {}
 
-    Object *operator()(Object *self, const std::vector<Object *> &others) {
+    Object *operator()(Object *self, const std::vector<Object *> &others, Runtime *rt) {
         ProfilerCAPTURE();
 
         if (!isInstanceObject(self)) {
             rt->signalError(self->shortRepr() + " does not support that operator");
         }
 
-        auto res               = self->type->copy(self);
+        auto res               = self->type->copy(self, rt);
         getRealValueFast(res) *= -1;
         return res;
     }
@@ -109,10 +103,8 @@ public:
 
 class RealMultAdapter: public OperatorAdapter {
 public:
-    RealMultAdapter(Runtime *rt)
-        : OperatorAdapter(rt) {}
 
-    Object *operator()(Object *self, const std::vector<Object *> &others) {
+    Object *operator()(Object *self, const std::vector<Object *> &others, Runtime *rt) {
         ProfilerCAPTURE();
 
         if (!isInstanceObject(self)) {
@@ -137,10 +129,8 @@ public:
 
 class RealDivAdapter: public OperatorAdapter {
 public:
-    RealDivAdapter(Runtime *rt)
-        : OperatorAdapter(rt) {}
 
-    Object *operator()(Object *self, const std::vector<Object *> &others) {
+    Object *operator()(Object *self, const std::vector<Object *> &others, Runtime *rt) {
         ProfilerCAPTURE();
 
         if (!isInstanceObject(self)) {
@@ -165,10 +155,8 @@ public:
 
 class RealAddAdapter: public OperatorAdapter {
 public:
-    RealAddAdapter(Runtime *rt)
-        : OperatorAdapter(rt) {}
 
-    Object *operator()(Object *self, const std::vector<Object *> &others) {
+    Object *operator()(Object *self, const std::vector<Object *> &others, Runtime *rt) {
         ProfilerCAPTURE();
 
         if (!isInstanceObject(self)) {
@@ -193,10 +181,8 @@ public:
 
 class RealSubAdapter: public OperatorAdapter {
 public:
-    RealSubAdapter(Runtime *rt)
-        : OperatorAdapter(rt) {}
 
-    Object *operator()(Object *self, const std::vector<Object *> &others) {
+    Object *operator()(Object *self, const std::vector<Object *> &others, Runtime *rt) {
         ProfilerCAPTURE();
 
         if (!isInstanceObject(self)) {
@@ -221,10 +207,8 @@ public:
 
 class RealLtAdapter: public OperatorAdapter {
 public:
-    RealLtAdapter(Runtime *rt)
-        : OperatorAdapter(rt) {}
 
-    Object *operator()(Object *self, const std::vector<Object *> &others) {
+    Object *operator()(Object *self, const std::vector<Object *> &others, Runtime *rt) {
         ProfilerCAPTURE();
 
         if (!isInstanceObject(self)) {
@@ -249,10 +233,8 @@ public:
 
 class RealLeqAdapter: public OperatorAdapter {
 public:
-    RealLeqAdapter(Runtime *rt)
-        : OperatorAdapter(rt) {}
 
-    Object *operator()(Object *self, const std::vector<Object *> &others) {
+    Object *operator()(Object *self, const std::vector<Object *> &others, Runtime *rt) {
         ProfilerCAPTURE();
 
         if (!isInstanceObject(self)) {
@@ -277,10 +259,8 @@ public:
 
 class RealGtAdapter: public OperatorAdapter {
 public:
-    RealGtAdapter(Runtime *rt)
-        : OperatorAdapter(rt) {}
 
-    Object *operator()(Object *self, const std::vector<Object *> &others) {
+    Object *operator()(Object *self, const std::vector<Object *> &others, Runtime *rt) {
         ProfilerCAPTURE();
 
         if (!isInstanceObject(self)) {
@@ -305,10 +285,8 @@ public:
 
 class RealGeqAdapter: public OperatorAdapter {
 public:
-    RealGeqAdapter(Runtime *rt)
-        : OperatorAdapter(rt) {}
 
-    Object *operator()(Object *self, const std::vector<Object *> &others) {
+    Object *operator()(Object *self, const std::vector<Object *> &others, Runtime *rt) {
         ProfilerCAPTURE();
 
         if (!isInstanceObject(self)) {
@@ -333,10 +311,8 @@ public:
 
 class RealEqAdapter: public OperatorAdapter {
 public:
-    RealEqAdapter(Runtime *rt)
-        : OperatorAdapter(rt) {}
 
-    Object *operator()(Object *self, const std::vector<Object *> &others) {
+    Object *operator()(Object *self, const std::vector<Object *> &others, Runtime *rt) {
         ProfilerCAPTURE();
 
         if (others.size() != 1) {
@@ -368,12 +344,10 @@ public:
 
 class RealNeqAdapter: public RealEqAdapter {
 public:
-    RealNeqAdapter(Runtime *rt)
-        : RealEqAdapter(rt) {}
 
-    Object *operator()(Object *self, const std::vector<Object *> &others) {
+    Object *operator()(Object *self, const std::vector<Object *> &others, Runtime *rt) {
         ProfilerCAPTURE();
-        auto res              = RealEqAdapter::operator()(self, others);
+        auto res              = RealEqAdapter::operator()(self, others, rt);
         getRealValueFast(res) = !getRealValueFast(res);
         return res;
     }
@@ -383,44 +357,44 @@ public:
 RealType::RealType(Runtime *rt)
     : Type(rt) {
     ProfilerCAPTURE();
-    this->addOperator(OperatorNode::POST_PLUS_PLUS, new RealUnsupportedAdapter(rt));
-    this->addOperator(OperatorNode::POST_MINUS_MINUS, new RealUnsupportedAdapter(rt));
-    this->addOperator(OperatorNode::CALL, new RealUnsupportedAdapter(rt));
-    this->addOperator(OperatorNode::INDEX, new RealUnsupportedAdapter(rt));
-    this->addOperator(OperatorNode::PRE_PLUS_PLUS, new RealUnsupportedAdapter(rt));
-    this->addOperator(OperatorNode::PRE_MINUS_MINUS, new RealUnsupportedAdapter(rt));
-    this->addOperator(OperatorNode::PRE_PLUS, new RealPositiveAdapter(rt));
-    this->addOperator(OperatorNode::PRE_MINUS, new RealNegativeAdapter(rt));
-    this->addOperator(OperatorNode::NOT, new RealUnsupportedAdapter(rt));
-    this->addOperator(OperatorNode::INVERSE, new RealUnsupportedAdapter(rt));
-    this->addOperator(OperatorNode::MULT, new RealMultAdapter(rt));
-    this->addOperator(OperatorNode::DIV, new RealDivAdapter(rt));
-    this->addOperator(OperatorNode::REM, new RealUnsupportedAdapter(rt));
-    this->addOperator(OperatorNode::RIGHT_SHIFT, new RealUnsupportedAdapter(rt));
-    this->addOperator(OperatorNode::LEFT_SHIFT, new RealUnsupportedAdapter(rt));
-    this->addOperator(OperatorNode::PLUS, new RealAddAdapter(rt));
-    this->addOperator(OperatorNode::MINUS, new RealSubAdapter(rt));
-    this->addOperator(OperatorNode::LESS, new RealLtAdapter(rt));
-    this->addOperator(OperatorNode::LESS_EQUAL, new RealLeqAdapter(rt));
-    this->addOperator(OperatorNode::GREATER, new RealGtAdapter(rt));
-    this->addOperator(OperatorNode::GREATER_EQUAL, new RealGeqAdapter(rt));
-    this->addOperator(OperatorNode::EQUAL, new RealEqAdapter(rt));
-    this->addOperator(OperatorNode::NOT_EQUAL, new RealNeqAdapter(rt));
-    this->addOperator(OperatorNode::BITAND, new RealUnsupportedAdapter(rt));
-    this->addOperator(OperatorNode::BITXOR, new RealUnsupportedAdapter(rt));
-    this->addOperator(OperatorNode::BITOR, new RealUnsupportedAdapter(rt));
-    this->addOperator(OperatorNode::AND, new RealUnsupportedAdapter(rt));
-    this->addOperator(OperatorNode::OR, new RealUnsupportedAdapter(rt));
+    this->addOperator(OperatorNode::POST_PLUS_PLUS, new RealUnsupportedAdapter());
+    this->addOperator(OperatorNode::POST_MINUS_MINUS, new RealUnsupportedAdapter());
+    this->addOperator(OperatorNode::CALL, new RealUnsupportedAdapter());
+    this->addOperator(OperatorNode::INDEX, new RealUnsupportedAdapter());
+    this->addOperator(OperatorNode::PRE_PLUS_PLUS, new RealUnsupportedAdapter());
+    this->addOperator(OperatorNode::PRE_MINUS_MINUS, new RealUnsupportedAdapter());
+    this->addOperator(OperatorNode::PRE_PLUS, new RealPositiveAdapter());
+    this->addOperator(OperatorNode::PRE_MINUS, new RealNegativeAdapter());
+    this->addOperator(OperatorNode::NOT, new RealUnsupportedAdapter());
+    this->addOperator(OperatorNode::INVERSE, new RealUnsupportedAdapter());
+    this->addOperator(OperatorNode::MULT, new RealMultAdapter());
+    this->addOperator(OperatorNode::DIV, new RealDivAdapter());
+    this->addOperator(OperatorNode::REM, new RealUnsupportedAdapter());
+    this->addOperator(OperatorNode::RIGHT_SHIFT, new RealUnsupportedAdapter());
+    this->addOperator(OperatorNode::LEFT_SHIFT, new RealUnsupportedAdapter());
+    this->addOperator(OperatorNode::PLUS, new RealAddAdapter());
+    this->addOperator(OperatorNode::MINUS, new RealSubAdapter());
+    this->addOperator(OperatorNode::LESS, new RealLtAdapter());
+    this->addOperator(OperatorNode::LESS_EQUAL, new RealLeqAdapter());
+    this->addOperator(OperatorNode::GREATER, new RealGtAdapter());
+    this->addOperator(OperatorNode::GREATER_EQUAL, new RealGeqAdapter());
+    this->addOperator(OperatorNode::EQUAL, new RealEqAdapter());
+    this->addOperator(OperatorNode::NOT_EQUAL, new RealNeqAdapter());
+    this->addOperator(OperatorNode::BITAND, new RealUnsupportedAdapter());
+    this->addOperator(OperatorNode::BITXOR, new RealUnsupportedAdapter());
+    this->addOperator(OperatorNode::BITOR, new RealUnsupportedAdapter());
+    this->addOperator(OperatorNode::AND, new RealUnsupportedAdapter());
+    this->addOperator(OperatorNode::OR, new RealUnsupportedAdapter());
 }
 
-Object *RealType::create() {
+Object *RealType::create(Runtime *rt) {
     ProfilerCAPTURE();
     auto ins = createInstance(rt, RealInstance);
     auto obj = createObject(rt, true, ins, this);
     return obj;
 }
 
-Object *RealType::copy(Object *obj) {
+Object *RealType::copy(Object *obj, Runtime *rt) {
     ProfilerCAPTURE();
     if (!isTypeObject(obj) || obj->type->id != rt->real_type->id) {
         rt->signalError("Failed to copy an invalid object: " + obj->shortRepr());
@@ -428,7 +402,7 @@ Object *RealType::copy(Object *obj) {
     if (obj->instance == NULL) {
         return createObject(rt, false, NULL, this);
     }
-    auto ins = obj->instance->copy();
+    auto ins = obj->instance->copy(rt);
     auto res = createObject(rt, true, ins, this);
     return res;
 }

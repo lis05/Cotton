@@ -18,47 +18,31 @@
  IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
  CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
+#pragma once
 
-#include "instance.h"
-#include "../profiler.h"
-#include "gc.h"
-#include "nameid.h"
-#include "object.h"
-#include "runtime.h"
+#include <cstddef>
+#include <cstdint>
+#include <cstdlib>
 
-namespace Cotton {
-int64_t Instance::total_instances = 0;
-Object *Cotton::Instance::selectField(int64_t id, Runtime *rt) {
-    ProfilerCAPTURE();
-    rt->signalError(this->shortRepr() + "doesn't have field " + NameId::shortRepr(id));
-}
+template<size_t BLOCK_SIZE>
+class BitsetMemPool {
+    int      free;
+    uint64_t layer1;
+    uint64_t layer2[64];
+    void    *ptr;
 
-bool Instance::hasField(int64_t id, Runtime *rt) {
-    ProfilerCAPTURE();
-    return false;
-}
+    BitsetMemPool() {
+        free   = 64 * 64;
+        layer1 = 0;
+        for (auto &l : layer2) {
+            l = 0;
+        }
+        ptr = malloc(64 * 64 * BLOCK_SIZE);
+    }
 
-void Instance::addField(int64_t id, Object *obj, Runtime *rt) {
-    ProfilerCAPTURE();
-}
+    bool successfullyInitialized() {
+        return this->ptr != NULL;
+    }
 
-Instance::Instance(Runtime *rt, size_t bytes) {
-    ProfilerCAPTURE();
-    this->gc_mark = !rt->gc->gc_mark;
-    this->id      = ++total_instances;
-    rt->gc->track(this, bytes);
-}
-
-std::vector<Object *> Instance::getGCReachable() {
-    ProfilerCAPTURE();
-    return {};
-}
-
-void Instance::spreadSingleUse() {
-    ProfilerCAPTURE();
-}
-
-void Instance::spreadMultiUse() {
-    ProfilerCAPTURE();
-}
-};    // namespace Cotton
+    
+};

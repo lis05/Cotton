@@ -110,8 +110,6 @@ public:
     Object *runOperator(OperatorNode::OperatorId id, Object *obj, const std::vector<Object *> &args);
     // runs method on the object. returns a valid object(non-null); if fails, signals an error
     Object *runMethod(int64_t id, Object *obj, const std::vector<Object *> &args);
-    // if has method, same as runMethod; otherwise returns NULL
-    Object *runIfHasMethodOrNULL(int64_t id, Object *obj, const std::vector<Object *> &args);
 };
 
 #define highlight(rt, token) rt->current_token = token;

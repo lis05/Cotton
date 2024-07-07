@@ -32,20 +32,19 @@ class Object;
 
 class Instance {
 public:
-    Runtime        *rt;
     static int64_t  total_instances;
     int64_t         id;
     // returns a valid object (non-null)
-    virtual Object *selectField(int64_t id);
-    virtual bool    hasField(int64_t id);
-    virtual void    addField(int64_t id, Object *obj);
+    virtual Object *selectField(int64_t id, Runtime *rt);
+    virtual bool    hasField(int64_t id, Runtime *rt);
+    virtual void    addField(int64_t id, Object *obj, Runtime *rt);
     bool            gc_mark : 1;
 
     Instance(Runtime *rt, size_t bytes);
     virtual ~Instance() = default;
 
     virtual std::vector<Object *> getGCReachable();
-    virtual Instance             *copy()      = 0;
+    virtual Instance             *copy(Runtime *rt)      = 0;
     virtual size_t                getSize()   = 0;    // in bytes
     virtual std::string           shortRepr() = 0;
 

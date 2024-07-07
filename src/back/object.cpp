@@ -12,7 +12,6 @@ int64_t Object::total_objects = 0;
 
 Object::Object(bool is_instance, Instance *instance, Type *type, Runtime *rt) {
     ProfilerCAPTURE();
-    this->rt          = rt;
     this->is_instance = is_instance;
     this->instance    = instance;
     this->type        = type;
@@ -61,7 +60,7 @@ std::string Object::shortRepr() {
     return res;
 }
 
-void Object::assignTo(Object *obj) {
+void Object::assignTo(Object *obj, Runtime *rt) {
     ProfilerCAPTURE();
     if (!this->can_modify) {
         rt->signalError("Cannot assign to " + this->shortRepr());
@@ -73,7 +72,7 @@ void Object::assignTo(Object *obj) {
     this->id         = id;
 }
 
-void Object::assignToCopyOf(Object *obj) {
+void Object::assignToCopyOf(Object *obj, Runtime *rt) {
     ProfilerCAPTURE();
     if (!this->can_modify) {
         rt->signalError("Cannot assign to " + this->shortRepr());

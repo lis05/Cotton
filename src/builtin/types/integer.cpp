@@ -33,7 +33,7 @@ IntegerInstance::~IntegerInstance() {
     ProfilerCAPTURE();
 }
 
-Instance *IntegerInstance::copy() {
+Instance *IntegerInstance::copy(Runtime *rt) {
     ProfilerCAPTURE();
     Instance *res = new (std::nothrow) IntegerInstance(rt);
     if (res == NULL) {
@@ -63,17 +63,14 @@ size_t IntegerType::getInstanceSize() {
 
 class IntegerPostincAdapter: public OperatorAdapter {
 public:
-    IntegerPostincAdapter(Runtime *rt)
-        : OperatorAdapter(rt) {}
-
-    Object *operator()(Object *self, const std::vector<Object *> &others) {
+    Object *operator()(Object *self, const std::vector<Object *> &others, Runtime *rt) {
         ProfilerCAPTURE();
 
         if (!isInstanceObject(self)) {
             rt->signalError(self->shortRepr() + " does not support that operator");
         }
 
-        auto res = self->type->copy(self);
+        auto res = self->type->copy(self, rt);
         getIntegerValueFast(self)++;
         return res;
     }
@@ -81,17 +78,14 @@ public:
 
 class IntegerPostdecAdapter: public OperatorAdapter {
 public:
-    IntegerPostdecAdapter(Runtime *rt)
-        : OperatorAdapter(rt) {}
-
-    Object *operator()(Object *self, const std::vector<Object *> &others) {
+    Object *operator()(Object *self, const std::vector<Object *> &others, Runtime *rt) {
         ProfilerCAPTURE();
 
         if (!isInstanceObject(self)) {
             rt->signalError(self->shortRepr() + " does not support that operator");
         }
 
-        auto res = self->type->copy(self);
+        auto res = self->type->copy(self, rt);
         getIntegerValueFast(self)--;
         return res;
     }
@@ -99,10 +93,7 @@ public:
 
 class IntegerUnsupportedAdapter: public OperatorAdapter {
 public:
-    IntegerUnsupportedAdapter(Runtime *rt)
-        : OperatorAdapter(rt) {}
-
-    Object *operator()(Object *self, const std::vector<Object *> &others) {
+    Object *operator()(Object *self, const std::vector<Object *> &others, Runtime *rt) {
         ProfilerCAPTURE();
         rt->signalError(self->shortRepr() + " does not support that operator");
     }
@@ -110,10 +101,7 @@ public:
 
 class IntegerPreincAdapter: public OperatorAdapter {
 public:
-    IntegerPreincAdapter(Runtime *rt)
-        : OperatorAdapter(rt) {}
-
-    Object *operator()(Object *self, const std::vector<Object *> &others) {
+    Object *operator()(Object *self, const std::vector<Object *> &others, Runtime *rt) {
         ProfilerCAPTURE();
 
         if (!isInstanceObject(self)) {
@@ -121,17 +109,14 @@ public:
         }
 
         getIntegerValueFast(self)++;
-        auto res = self->type->copy(self);
+        auto res = self->type->copy(self, rt);
         return res;
     }
 };
 
 class IntegerPredecAdapter: public OperatorAdapter {
 public:
-    IntegerPredecAdapter(Runtime *rt)
-        : OperatorAdapter(rt) {}
-
-    Object *operator()(Object *self, const std::vector<Object *> &others) {
+    Object *operator()(Object *self, const std::vector<Object *> &others, Runtime *rt) {
         ProfilerCAPTURE();
 
         if (!isInstanceObject(self)) {
@@ -139,41 +124,35 @@ public:
         }
 
         getIntegerValueFast(self)--;
-        auto res = self->type->copy(self);
+        auto res = self->type->copy(self, rt);
         return res;
     }
 };
 
 class IntegerPositiveAdapter: public OperatorAdapter {
 public:
-    IntegerPositiveAdapter(Runtime *rt)
-        : OperatorAdapter(rt) {}
-
-    Object *operator()(Object *self, const std::vector<Object *> &others) {
+    Object *operator()(Object *self, const std::vector<Object *> &others, Runtime *rt) {
         ProfilerCAPTURE();
 
         if (!isInstanceObject(self)) {
             rt->signalError(self->shortRepr() + " does not support that operator");
         }
 
-        auto res = self->type->copy(self);
+        auto res = self->type->copy(self, rt);
         return res;
     }
 };
 
 class IntegerNegativeAdapter: public OperatorAdapter {
 public:
-    IntegerNegativeAdapter(Runtime *rt)
-        : OperatorAdapter(rt) {}
-
-    Object *operator()(Object *self, const std::vector<Object *> &others) {
+    Object *operator()(Object *self, const std::vector<Object *> &others, Runtime *rt) {
         ProfilerCAPTURE();
 
         if (!isInstanceObject(self)) {
             rt->signalError(self->shortRepr() + " does not support that operator");
         }
 
-        auto res                  = self->type->copy(self);
+        auto res                  = self->type->copy(self, rt);
         getIntegerValueFast(res) *= -1;
         return res;
     }
@@ -181,17 +160,14 @@ public:
 
 class IntegerInverseAdapter: public OperatorAdapter {
 public:
-    IntegerInverseAdapter(Runtime *rt)
-        : OperatorAdapter(rt) {}
-
-    Object *operator()(Object *self, const std::vector<Object *> &others) {
+    Object *operator()(Object *self, const std::vector<Object *> &others, Runtime *rt) {
         ProfilerCAPTURE();
 
         if (!isInstanceObject(self)) {
             rt->signalError(self->shortRepr() + " does not support that operator");
         }
 
-        auto res                 = self->type->copy(self);
+        auto res                 = self->type->copy(self, rt);
         getIntegerValueFast(res) = ~getIntegerValueFast(res);
         return res;
     }
@@ -199,10 +175,7 @@ public:
 
 class IntegerMultAdapter: public OperatorAdapter {
 public:
-    IntegerMultAdapter(Runtime *rt)
-        : OperatorAdapter(rt) {}
-
-    Object *operator()(Object *self, const std::vector<Object *> &others) {
+    Object *operator()(Object *self, const std::vector<Object *> &others, Runtime *rt) {
         ProfilerCAPTURE();
 
         if (!isInstanceObject(self)) {
@@ -227,10 +200,7 @@ public:
 
 class IntegerDivAdapter: public OperatorAdapter {
 public:
-    IntegerDivAdapter(Runtime *rt)
-        : OperatorAdapter(rt) {}
-
-    Object *operator()(Object *self, const std::vector<Object *> &others) {
+    Object *operator()(Object *self, const std::vector<Object *> &others, Runtime *rt) {
         ProfilerCAPTURE();
 
         if (!isInstanceObject(self)) {
@@ -255,10 +225,7 @@ public:
 
 class IntegerRemAdapter: public OperatorAdapter {
 public:
-    IntegerRemAdapter(Runtime *rt)
-        : OperatorAdapter(rt) {}
-
-    Object *operator()(Object *self, const std::vector<Object *> &others) {
+    Object *operator()(Object *self, const std::vector<Object *> &others, Runtime *rt) {
         ProfilerCAPTURE();
 
         if (!isInstanceObject(self)) {
@@ -283,10 +250,7 @@ public:
 
 class IntegerRshiftAdapter: public OperatorAdapter {
 public:
-    IntegerRshiftAdapter(Runtime *rt)
-        : OperatorAdapter(rt) {}
-
-    Object *operator()(Object *self, const std::vector<Object *> &others) {
+    Object *operator()(Object *self, const std::vector<Object *> &others, Runtime *rt) {
         ProfilerCAPTURE();
 
         if (!isInstanceObject(self)) {
@@ -311,10 +275,7 @@ public:
 
 class IntegerLshiftAdapter: public OperatorAdapter {
 public:
-    IntegerLshiftAdapter(Runtime *rt)
-        : OperatorAdapter(rt) {}
-
-    Object *operator()(Object *self, const std::vector<Object *> &others) {
+    Object *operator()(Object *self, const std::vector<Object *> &others, Runtime *rt) {
         ProfilerCAPTURE();
 
         if (!isInstanceObject(self)) {
@@ -339,10 +300,7 @@ public:
 
 class IntegerAddAdapter: public OperatorAdapter {
 public:
-    IntegerAddAdapter(Runtime *rt)
-        : OperatorAdapter(rt) {}
-
-    Object *operator()(Object *self, const std::vector<Object *> &others) {
+    Object *operator()(Object *self, const std::vector<Object *> &others, Runtime *rt) {
         ProfilerCAPTURE();
 
         if (!isInstanceObject(self)) {
@@ -367,10 +325,7 @@ public:
 
 class IntegerSubAdapter: public OperatorAdapter {
 public:
-    IntegerSubAdapter(Runtime *rt)
-        : OperatorAdapter(rt) {}
-
-    Object *operator()(Object *self, const std::vector<Object *> &others) {
+    Object *operator()(Object *self, const std::vector<Object *> &others, Runtime *rt) {
         ProfilerCAPTURE();
 
         if (!isInstanceObject(self)) {
@@ -395,10 +350,7 @@ public:
 
 class IntegerLtAdapter: public OperatorAdapter {
 public:
-    IntegerLtAdapter(Runtime *rt)
-        : OperatorAdapter(rt) {}
-
-    Object *operator()(Object *self, const std::vector<Object *> &others) {
+    Object *operator()(Object *self, const std::vector<Object *> &others, Runtime *rt) {
         ProfilerCAPTURE();
 
         if (!isInstanceObject(self)) {
@@ -423,10 +375,7 @@ public:
 
 class IntegerLeqAdapter: public OperatorAdapter {
 public:
-    IntegerLeqAdapter(Runtime *rt)
-        : OperatorAdapter(rt) {}
-
-    Object *operator()(Object *self, const std::vector<Object *> &others) {
+    Object *operator()(Object *self, const std::vector<Object *> &others, Runtime *rt) {
         ProfilerCAPTURE();
 
         if (!isInstanceObject(self)) {
@@ -451,10 +400,7 @@ public:
 
 class IntegerGtAdapter: public OperatorAdapter {
 public:
-    IntegerGtAdapter(Runtime *rt)
-        : OperatorAdapter(rt) {}
-
-    Object *operator()(Object *self, const std::vector<Object *> &others) {
+    Object *operator()(Object *self, const std::vector<Object *> &others, Runtime *rt) {
         ProfilerCAPTURE();
 
         if (!isInstanceObject(self)) {
@@ -479,10 +425,7 @@ public:
 
 class IntegerGeqAdapter: public OperatorAdapter {
 public:
-    IntegerGeqAdapter(Runtime *rt)
-        : OperatorAdapter(rt) {}
-
-    Object *operator()(Object *self, const std::vector<Object *> &others) {
+    Object *operator()(Object *self, const std::vector<Object *> &others, Runtime *rt) {
         ProfilerCAPTURE();
 
         if (!isInstanceObject(self)) {
@@ -507,10 +450,7 @@ public:
 
 class IntegerEqAdapter: public OperatorAdapter {
 public:
-    IntegerEqAdapter(Runtime *rt)
-        : OperatorAdapter(rt) {}
-
-    Object *operator()(Object *self, const std::vector<Object *> &others) {
+    Object *operator()(Object *self, const std::vector<Object *> &others, Runtime *rt) {
         ProfilerCAPTURE();
 
         if (others.size() != 1) {
@@ -542,12 +482,9 @@ public:
 
 class IntegerNeqAdapter: public IntegerEqAdapter {
 public:
-    IntegerNeqAdapter(Runtime *rt)
-        : IntegerEqAdapter(rt) {}
-
-    Object *operator()(Object *self, const std::vector<Object *> &others) {
+    Object *operator()(Object *self, const std::vector<Object *> &others, Runtime *rt) {
         ProfilerCAPTURE();
-        auto res                 = IntegerEqAdapter::operator()(self, others);
+        auto res                 = IntegerEqAdapter::operator()(self, others, rt);
         getBooleanValueFast(res) = !getBooleanValueFast(res);
         return res;
     }
@@ -555,10 +492,7 @@ public:
 
 class IntegerBitandAdapter: public OperatorAdapter {
 public:
-    IntegerBitandAdapter(Runtime *rt)
-        : OperatorAdapter(rt) {}
-
-    Object *operator()(Object *self, const std::vector<Object *> &others) {
+    Object *operator()(Object *self, const std::vector<Object *> &others, Runtime *rt) {
         ProfilerCAPTURE();
 
         if (!isInstanceObject(self)) {
@@ -583,10 +517,7 @@ public:
 
 class IntegerBitxorAdapter: public OperatorAdapter {
 public:
-    IntegerBitxorAdapter(Runtime *rt)
-        : OperatorAdapter(rt) {}
-
-    Object *operator()(Object *self, const std::vector<Object *> &others) {
+    Object *operator()(Object *self, const std::vector<Object *> &others, Runtime *rt) {
         ProfilerCAPTURE();
 
         if (!isInstanceObject(self)) {
@@ -611,10 +542,7 @@ public:
 
 class IntegerBitorAdapter: public OperatorAdapter {
 public:
-    IntegerBitorAdapter(Runtime *rt)
-        : OperatorAdapter(rt) {}
-
-    Object *operator()(Object *self, const std::vector<Object *> &others) {
+    Object *operator()(Object *self, const std::vector<Object *> &others, Runtime *rt) {
         ProfilerCAPTURE();
 
         if (!isInstanceObject(self)) {
@@ -641,44 +569,44 @@ public:
 IntegerType::IntegerType(Runtime *rt)
     : Type(rt) {
     ProfilerCAPTURE();
-    this->addOperator(OperatorNode::POST_PLUS_PLUS, new IntegerPostincAdapter(rt));
-    this->addOperator(OperatorNode::POST_MINUS_MINUS, new IntegerPostdecAdapter(rt));
-    this->addOperator(OperatorNode::CALL, new IntegerUnsupportedAdapter(rt));
-    this->addOperator(OperatorNode::INDEX, new IntegerUnsupportedAdapter(rt));
-    this->addOperator(OperatorNode::PRE_PLUS_PLUS, new IntegerPreincAdapter(rt));
-    this->addOperator(OperatorNode::PRE_MINUS_MINUS, new IntegerPredecAdapter(rt));
-    this->addOperator(OperatorNode::PRE_PLUS, new IntegerPositiveAdapter(rt));
-    this->addOperator(OperatorNode::PRE_MINUS, new IntegerNegativeAdapter(rt));
-    this->addOperator(OperatorNode::NOT, new IntegerUnsupportedAdapter(rt));
-    this->addOperator(OperatorNode::INVERSE, new IntegerInverseAdapter(rt));
-    this->addOperator(OperatorNode::MULT, new IntegerMultAdapter(rt));
-    this->addOperator(OperatorNode::DIV, new IntegerDivAdapter(rt));
-    this->addOperator(OperatorNode::REM, new IntegerRemAdapter(rt));
-    this->addOperator(OperatorNode::RIGHT_SHIFT, new IntegerRshiftAdapter(rt));
-    this->addOperator(OperatorNode::LEFT_SHIFT, new IntegerLshiftAdapter(rt));
-    this->addOperator(OperatorNode::PLUS, new IntegerAddAdapter(rt));
-    this->addOperator(OperatorNode::MINUS, new IntegerSubAdapter(rt));
-    this->addOperator(OperatorNode::LESS, new IntegerLtAdapter(rt));
-    this->addOperator(OperatorNode::LESS_EQUAL, new IntegerLeqAdapter(rt));
-    this->addOperator(OperatorNode::GREATER, new IntegerGtAdapter(rt));
-    this->addOperator(OperatorNode::GREATER_EQUAL, new IntegerGeqAdapter(rt));
-    this->addOperator(OperatorNode::EQUAL, new IntegerEqAdapter(rt));
-    this->addOperator(OperatorNode::NOT_EQUAL, new IntegerNeqAdapter(rt));
-    this->addOperator(OperatorNode::BITAND, new IntegerBitandAdapter(rt));
-    this->addOperator(OperatorNode::BITXOR, new IntegerBitxorAdapter(rt));
-    this->addOperator(OperatorNode::BITOR, new IntegerBitorAdapter(rt));
-    this->addOperator(OperatorNode::AND, new IntegerUnsupportedAdapter(rt));
-    this->addOperator(OperatorNode::OR, new IntegerUnsupportedAdapter(rt));
+    this->addOperator(OperatorNode::POST_PLUS_PLUS, new IntegerPostincAdapter());
+    this->addOperator(OperatorNode::POST_MINUS_MINUS, new IntegerPostdecAdapter());
+    this->addOperator(OperatorNode::CALL, new IntegerUnsupportedAdapter());
+    this->addOperator(OperatorNode::INDEX, new IntegerUnsupportedAdapter());
+    this->addOperator(OperatorNode::PRE_PLUS_PLUS, new IntegerPreincAdapter());
+    this->addOperator(OperatorNode::PRE_MINUS_MINUS, new IntegerPredecAdapter());
+    this->addOperator(OperatorNode::PRE_PLUS, new IntegerPositiveAdapter());
+    this->addOperator(OperatorNode::PRE_MINUS, new IntegerNegativeAdapter());
+    this->addOperator(OperatorNode::NOT, new IntegerUnsupportedAdapter());
+    this->addOperator(OperatorNode::INVERSE, new IntegerInverseAdapter());
+    this->addOperator(OperatorNode::MULT, new IntegerMultAdapter());
+    this->addOperator(OperatorNode::DIV, new IntegerDivAdapter());
+    this->addOperator(OperatorNode::REM, new IntegerRemAdapter());
+    this->addOperator(OperatorNode::RIGHT_SHIFT, new IntegerRshiftAdapter());
+    this->addOperator(OperatorNode::LEFT_SHIFT, new IntegerLshiftAdapter());
+    this->addOperator(OperatorNode::PLUS, new IntegerAddAdapter());
+    this->addOperator(OperatorNode::MINUS, new IntegerSubAdapter());
+    this->addOperator(OperatorNode::LESS, new IntegerLtAdapter());
+    this->addOperator(OperatorNode::LESS_EQUAL, new IntegerLeqAdapter());
+    this->addOperator(OperatorNode::GREATER, new IntegerGtAdapter());
+    this->addOperator(OperatorNode::GREATER_EQUAL, new IntegerGeqAdapter());
+    this->addOperator(OperatorNode::EQUAL, new IntegerEqAdapter());
+    this->addOperator(OperatorNode::NOT_EQUAL, new IntegerNeqAdapter());
+    this->addOperator(OperatorNode::BITAND, new IntegerBitandAdapter());
+    this->addOperator(OperatorNode::BITXOR, new IntegerBitxorAdapter());
+    this->addOperator(OperatorNode::BITOR, new IntegerBitorAdapter());
+    this->addOperator(OperatorNode::AND, new IntegerUnsupportedAdapter());
+    this->addOperator(OperatorNode::OR, new IntegerUnsupportedAdapter());
 }
 
-Object *IntegerType::create() {
+Object *IntegerType::create(Runtime *rt) {
     ProfilerCAPTURE();
     auto ins = createInstance(rt, IntegerInstance);
     auto obj = createObject(rt, true, ins, this);
     return obj;
 }
 
-Object *IntegerType::copy(Object *obj) {
+Object *IntegerType::copy(Object *obj, Runtime *rt) {
     ProfilerCAPTURE();
     if (!isTypeObject(obj) || obj->type->id != rt->integer_type->id) {
         rt->signalError("Failed to copy an invalid object: " + obj->shortRepr());
@@ -686,7 +614,7 @@ Object *IntegerType::copy(Object *obj) {
     if (obj->instance == NULL) {
         return createObject(rt, false, NULL, this);
     }
-    auto ins = obj->instance->copy();
+    auto ins = obj->instance->copy(rt);
     auto res = createObject(rt, true, ins, this);
     return res;
 }

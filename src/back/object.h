@@ -32,7 +32,6 @@ class Runtime;
 
 class Object {
 public:
-    Runtime       *rt;
     static int64_t total_objects;
     int64_t        id;
     bool           is_instance : 1;    // otherwise it's type
@@ -51,8 +50,8 @@ public:
     // short representation of the object
     std::string           shortRepr();
 
-    void assignTo(Object *obj);
-    void assignToCopyOf(Object *obj);
+    void assignTo(Object *obj, Runtime *rt);
+    void assignToCopyOf(Object *obj, Runtime *rt);
 
     // marks object with single use, as well as its insides
     void spreadSingleUse();

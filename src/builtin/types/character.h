@@ -32,7 +32,7 @@ public:
     CharacterInstance(Runtime *rt);
     ~CharacterInstance();
 
-    Instance   *copy();
+    Instance   *copy(Runtime *rt);
     size_t      getSize();
     std::string shortRepr();
 };
@@ -42,8 +42,8 @@ public:
     size_t getInstanceSize();
     CharacterType(Runtime *rt);
     ~CharacterType() = default;
-    Object     *create();
-    Object     *copy(Object *obj);
+    Object     *create(Runtime *rt);
+    Object     *copy(Object *obj, Runtime *rt);
     std::string shortRepr();
 };
 
