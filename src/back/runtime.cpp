@@ -13,6 +13,9 @@ namespace Cotton {
 Runtime::Runtime(GCStrategy *gc_strategy, ErrorManager *error_manager) {
     ProfilerCAPTURE();
     this->object_allocator = new PoolAllocator(64);
+    for (auto &a : this->array_of_allocators) {
+        a = NULL;
+    }
 
     this->scope         = new Scope(NULL, NULL, true);
     this->scope->master = this->scope;
@@ -48,6 +51,12 @@ Runtime::Runtime(GCStrategy *gc_strategy, ErrorManager *error_manager) {
 }
 
 PoolAllocator *Runtime::getAllocator(size_t size) {
+    if (size < 4096) {
+        if (this->array_of_allocators[size] != NULL) {
+            return this->array_of_allocators[size];
+        }
+        return this->array_of_allocators[size] = new PoolAllocator(64);
+    }
     auto it = this->allocators.find(size);
     if (it != this->allocators.end()) {
         return it->second;

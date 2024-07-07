@@ -65,6 +65,7 @@ public:
 
     PoolAllocator                                     *object_allocator;
     __gnu_pbds::cc_hash_table<size_t, PoolAllocator *> allocators;
+    PoolAllocator *array_of_allocators[4096]; // for small objects
 
     PoolAllocator *getAllocator(size_t size);
 
