@@ -19,6 +19,7 @@
  CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
+#include "boolean.h"
 #include "../../profiler.h"
 #include "api.h"
 
@@ -35,7 +36,7 @@ BooleanInstance::~BooleanInstance() {
 
 Instance *BooleanInstance::copy(Runtime *rt) {
     ProfilerCAPTURE();
-    Instance *res = new (std::nothrow) BooleanInstance(rt);
+    Instance *res = new (rt->alloc(sizeof(BooleanInstance))) BooleanInstance(rt);
     if (res == NULL) {
         rt->signalError("Failed to copy " + this->shortRepr());
     }
@@ -50,6 +51,10 @@ std::string BooleanInstance::shortRepr() {
     }
     return "BooleanInstance(id = " + std::to_string(this->id) + ", value = " + (this->value ? "true" : "false")
            + ")";
+}
+
+void BooleanInstance::destroy(Runtime *rt) {
+    rt->dealloc(this, sizeof(BooleanInstance));
 }
 
 size_t BooleanInstance::getSize() {
@@ -72,7 +77,6 @@ public:
 
 class BooleanNotAdapter: public OperatorAdapter {
 public:
-
     Object *operator()(Object *self, const std::vector<Object *> &others, Runtime *rt) {
         ProfilerCAPTURE();
 
@@ -114,7 +118,6 @@ public:
 
 class BooleanNeqAdapter: public BooleanEqAdapter {
 public:
-
     Object *operator()(Object *self, const std::vector<Object *> &others, Runtime *rt) {
         ProfilerCAPTURE();
         auto res                 = BooleanEqAdapter::operator()(self, others, rt);
@@ -207,8 +210,8 @@ BooleanType::BooleanType(Runtime *rt)
 
 Object *BooleanType::create(Runtime *rt) {
     ProfilerCAPTURE();
-    auto ins = createInstance(rt, BooleanInstance);
-    auto obj = createObject(rt, true, ins, this);
+    Instance *ins = new (rt->alloc(sizeof(BooleanInstance))) BooleanInstance(rt);
+    Object   *obj = newObject(true, ins, this, rt);
     return obj;
 }
 
@@ -218,10 +221,10 @@ Object *BooleanType::copy(Object *obj, Runtime *rt) {
         rt->signalError("Failed to copy an invalid object: " + obj->shortRepr());
     }
     if (obj->instance == NULL) {
-        return createObject(rt, false, NULL, this);
+        return newObject(false, NULL, this, rt);
     }
     auto ins = obj->instance->copy(rt);
-    auto res = createObject(rt, true, ins, this);
+    auto res = newObject(true, ins, this, rt);
     return res;
 }
 

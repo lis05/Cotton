@@ -21,6 +21,7 @@
 
 #pragma once
 
+#include "mempool.h"
 #include <ostream>
 #include <vector>
 

@@ -12,9 +12,12 @@
 namespace Cotton {
 Runtime::Runtime(GCStrategy *gc_strategy, ErrorManager *error_manager) {
     ProfilerCAPTURE();
+    this->object_allocator = new PoolAllocator(64);
+
     this->scope         = new Scope(NULL, NULL, true);
     this->scope->master = this->scope;
     this->gc            = new GC(gc_strategy);
+    this->gc->rt        = this;
     this->error_manager = error_manager;
     this->current_token = NULL;
 
@@ -44,6 +47,34 @@ Runtime::Runtime(GCStrategy *gc_strategy, ErrorManager *error_manager) {
     this->gc->hold(this->protected_nothing);
 }
 
+PoolAllocator *Runtime::getAllocator(size_t size) {
+    auto it = this->allocators.find(size);
+    if (it != this->allocators.end()) {
+        return it->second;
+    }
+    return this->allocators[size] = new PoolAllocator(64);
+}
+
+void *Runtime::alloc(size_t size) {
+    return this->getAllocator(size)->allocate(size);
+}
+
+void Runtime::dealloc(void *ptr, size_t size) {
+    return this->getAllocator(size)->deallocate(ptr, size);
+}
+
+void Runtime::destroy(Object *obj) {
+    if (obj != NULL) {
+        this->object_allocator->deallocate(obj, sizeof(obj));
+    }
+}
+
+void Runtime::destroy(Instance *ins) {
+    if (ins != NULL) {
+        ins->destroy(this);
+    }
+}
+
 void Runtime::newFrame(bool can_access_prev_scope) {
     ProfilerCAPTURE();
     auto scope  = new Scope(this->scope, this->scope->master, can_access_prev_scope);
@@ -67,7 +98,7 @@ Object *Runtime::make(Type *type, ObjectOptions object_opt) {
         obj = type->create(this);
     }
     else {
-        obj = new Object(false, NULL, type, this);
+        obj = newObject(false, NULL, type, this);
     }
 
     if (obj == NULL) {
@@ -114,7 +145,6 @@ Object *Runtime::runMethod(int64_t id, Object *obj, const std::vector<Object *> 
     auto method = obj->type->getMethod(id, this);
     return this->runOperator(OperatorNode::CALL, method, args);
 }
-
 
 void Runtime::signalError(const std::string &message, bool include_token) {
     ProfilerCAPTURE();

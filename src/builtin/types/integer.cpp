@@ -35,7 +35,8 @@ IntegerInstance::~IntegerInstance() {
 
 Instance *IntegerInstance::copy(Runtime *rt) {
     ProfilerCAPTURE();
-    Instance *res = new (std::nothrow) IntegerInstance(rt);
+    Instance *res = new (rt->alloc(sizeof(IntegerInstance))) IntegerInstance(rt);
+
     if (res == NULL) {
         rt->signalError("Failed to copy " + this->shortRepr());
     }
@@ -49,6 +50,10 @@ std::string IntegerInstance::shortRepr() {
         return "IntegerInstance(NULL)";
     }
     return "IntegerInstance(id = " + std::to_string(this->id) + ", value = " + std::to_string(this->value) + ")";
+}
+
+void IntegerInstance::destroy(Runtime *rt) {
+    rt->dealloc(this, sizeof(IntegerInstance));
 }
 
 size_t IntegerInstance::getSize() {
@@ -601,8 +606,8 @@ IntegerType::IntegerType(Runtime *rt)
 
 Object *IntegerType::create(Runtime *rt) {
     ProfilerCAPTURE();
-    auto ins = createInstance(rt, IntegerInstance);
-    auto obj = createObject(rt, true, ins, this);
+    Instance *ins = new (rt->alloc(sizeof(IntegerInstance))) IntegerInstance(rt);
+    Object   *obj = newObject(true, ins, this, rt);
     return obj;
 }
 
@@ -612,10 +617,10 @@ Object *IntegerType::copy(Object *obj, Runtime *rt) {
         rt->signalError("Failed to copy an invalid object: " + obj->shortRepr());
     }
     if (obj->instance == NULL) {
-        return createObject(rt, false, NULL, this);
+        return newObject(false, NULL, this, rt);
     }
     auto ins = obj->instance->copy(rt);
-    auto res = createObject(rt, true, ins, this);
+    auto res = newObject(true, ins, this, rt);
     return res;
 }
 

@@ -77,6 +77,10 @@ std::string UserDefinedInstance::shortRepr() {
     return NameId::shortRepr(this->nameid) + "Instance(id = " + std::to_string(this->id) + ")";
 }
 
+void UserDefinedInstance::destroy(Runtime *rt) {
+    delete this;
+}
+
 std::vector<Object *> UserDefinedInstance::getGCReachable() {
     ProfilerCAPTURE();
     std::vector<Object *> res;
@@ -129,11 +133,12 @@ UserDefinedType::UserDefinedType(Runtime *rt)
 
 Object *UserDefinedType::create(Runtime *rt) {
     ProfilerCAPTURE();
-    auto ins = createInstance(rt, UserDefinedInstance);
+    auto ins = new UserDefinedInstance(rt);
     for (auto f : this->instance_fields) {
         ins->addField(NameId(f).id, makeNothingInstanceObject(rt), rt);
     }
-    auto obj = createObject(rt, true, ins, this);
+    Object *obj = newObject(true, ins, this, rt);
+
     return obj;
 }
 
@@ -152,10 +157,10 @@ Object *UserDefinedType::copy(Object *obj, Runtime *rt) {
         rt->signalError("Failed to copy an invalid object: " + obj->shortRepr());
     }
     if (obj->instance == NULL) {
-        return createObject(rt, false, NULL, this);
+        return newObject(false, NULL, this, rt);
     }
     auto ins = obj->instance->copy(rt);
-    auto res = createObject(rt, true, ins, this);
+    auto res = newObject(true, ins, this, rt);
     return res;
 }
 
@@ -164,4 +169,5 @@ Object *makeUserDefinedInstanceObject(Runtime *rt) {
     auto res = rt->make(rt->nothing_type, rt->INSTANCE_OBJECT);
     return res;
 }
+
 }    // namespace Cotton::Builtin

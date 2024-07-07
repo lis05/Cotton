@@ -36,7 +36,8 @@ StringInstance::~StringInstance() {
 
 Instance *StringInstance::copy(Runtime *rt) {
     ProfilerCAPTURE();
-    Instance *res = new (std::nothrow) StringInstance(rt);
+    Instance *res = new (rt->alloc(sizeof(StringInstance))) StringInstance(rt);
+
     if (res == NULL) {
         rt->signalError("Failed to copy " + this->shortRepr());
     }
@@ -53,6 +54,10 @@ std::string StringInstance::shortRepr() {
     }
     return "StringInstance(id = " + std::to_string(this->id) + ", size = " + std::to_string(this->data.size())
            + ", data = ...)";
+}
+
+void StringInstance::destroy(Runtime *rt) {
+    rt->dealloc(this, sizeof(StringInstance));
 }
 
 size_t StringInstance::getSize() {
@@ -88,7 +93,6 @@ size_t StringType::getInstanceSize() {
 
 class StringUnsupportedAdapter: public OperatorAdapter {
 public:
-
     Object *operator()(Object *self, const std::vector<Object *> &others, Runtime *rt) {
         ProfilerCAPTURE();
         rt->signalError(self->shortRepr() + " does not support that operator");
@@ -97,7 +101,6 @@ public:
 
 class StringIndexAdapter: public OperatorAdapter {
 public:
-
     Object *operator()(Object *self, const std::vector<Object *> &others, Runtime *rt) {
         ProfilerCAPTURE();
 
@@ -124,7 +127,6 @@ public:
 
 class StringAddAdapter: public OperatorAdapter {
 public:
-
     Object *operator()(Object *self, const std::vector<Object *> &others, Runtime *rt) {
         ProfilerCAPTURE();
 
@@ -154,7 +156,6 @@ public:
 
 class StringEqAdapter: public OperatorAdapter {
 public:
-
     Object *operator()(Object *self, const std::vector<Object *> &others, Runtime *rt) {
         ProfilerCAPTURE();
         if (others.size() != 1) {
@@ -197,7 +198,6 @@ public:
 
 class StringNeqAdapter: public StringEqAdapter {
 public:
-
     Object *operator()(Object *self, const std::vector<Object *> &others, Runtime *rt) {
         ProfilerCAPTURE();
         auto res                 = StringEqAdapter::operator()(self, others, rt);
@@ -259,8 +259,8 @@ StringType::StringType(Runtime *rt)
 
 Object *StringType::create(Runtime *rt) {
     ProfilerCAPTURE();
-    auto ins = createInstance(rt, StringInstance);
-    auto obj = createObject(rt, true, ins, this);
+    Instance *ins = new (rt->alloc(sizeof(StringInstance))) StringInstance(rt);
+    Object   *obj = newObject(true, ins, this, rt);
     return obj;
 }
 
@@ -270,10 +270,10 @@ Object *StringType::copy(Object *obj, Runtime *rt) {
         rt->signalError("Failed to copy an invalid object: " + obj->shortRepr());
     }
     if (obj->instance == NULL) {
-        return createObject(rt, false, NULL, this);
+        return newObject(false, NULL, this, rt);
     }
     auto ins = obj->instance->copy(rt);
-    auto res = createObject(rt, true, ins, this);
+    auto res = newObject(true, ins, this, rt);
     return res;
 }
 

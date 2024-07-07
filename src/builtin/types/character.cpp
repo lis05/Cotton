@@ -35,7 +35,7 @@ CharacterInstance::~CharacterInstance() {
 
 Instance *CharacterInstance::copy(Runtime *rt) {
     ProfilerCAPTURE();
-    Instance *res = new (std::nothrow) CharacterInstance(rt);
+    Instance *res = new (rt->alloc(sizeof(CharacterInstance))) CharacterInstance(rt);
     if (res == NULL) {
         rt->signalError("Failed to copy " + this->shortRepr());
     }
@@ -50,6 +50,10 @@ std::string CharacterInstance::shortRepr() {
     }
     return "CharacterInstance(id = " + std::to_string(this->id) + ", value = " + std::to_string(this->value)
            + ": '" + (char)this->value + "')";
+}
+
+void CharacterInstance::destroy(Runtime *rt) {
+    rt->dealloc(this, sizeof(CharacterInstance));
 }
 
 size_t CharacterInstance::getSize() {
@@ -601,8 +605,8 @@ CharacterType::CharacterType(Runtime *rt)
 
 Object *CharacterType::create(Runtime *rt) {
     ProfilerCAPTURE();
-    auto ins = createInstance(rt, CharacterInstance);
-    auto obj = createObject(rt, true, ins, this);
+    Instance *ins = new (rt->alloc(sizeof(CharacterInstance))) CharacterInstance(rt);
+    Object   *obj = newObject(true, ins, this, rt);
     return obj;
 }
 
@@ -612,12 +616,13 @@ Object *CharacterType::copy(Object *obj, Runtime *rt) {
         rt->signalError("Failed to copy an invalid object: " + obj->shortRepr());
     }
     if (obj->instance == NULL) {
-        return createObject(rt, false, NULL, this);
+        return newObject(false, NULL, this, rt);
     }
     auto ins = obj->instance->copy(rt);
-    auto res = createObject(rt, true, ins, this);
+    auto res = newObject(true, ins, this, rt);
     return res;
 }
+
 
 std::string CharacterType::shortRepr() {
     ProfilerCAPTURE();

@@ -50,6 +50,8 @@ public:
 
     virtual void spreadSingleUse();
     virtual void spreadMultiUse();
+
+    virtual void destroy(Runtime *rt) = 0;
 };
 
 }    // namespace Cotton

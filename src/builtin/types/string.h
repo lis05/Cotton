@@ -38,6 +38,7 @@ public:
     std::vector<Object *> getGCReachable();
     void                  spreadSingleUse();
     void                  spreadMultiUse();
+    void destroy(Runtime *rt);
 };
 
 class StringType: public Type {

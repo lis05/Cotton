@@ -139,10 +139,10 @@ GC::GC(GCStrategy *gc_strategy) {
 GC::~GC() {
     ProfilerCAPTURE();
     for (auto &[obj, _] : this->tracked_objects) {
-        delete obj;
+        rt->destroy(obj);
     }
     for (auto &[ins, _] : this->tracked_instances) {
-        delete ins;
+        rt->destroy(ins);
     }
     for (auto &[type, _] : this->tracked_types) {
         delete type;
@@ -295,7 +295,7 @@ void GC::runCycle(Runtime *rt) {
     }
     for (auto &obj : deleted_objects) {
         this->tracked_objects.erase(obj);
-        delete obj;
+        rt->destroy(obj);
     }
     std::vector<Instance *> deleted_instances;
     for (auto &[ins, _] : this->tracked_instances) {
@@ -305,7 +305,7 @@ void GC::runCycle(Runtime *rt) {
     }
     for (auto &ins : deleted_instances) {
         this->tracked_instances.erase(ins);
-        delete ins;
+        rt->destroy(ins);
     }
     std::vector<Type *> deleted_types;
     for (auto &[type, _] : this->tracked_types) {

@@ -35,10 +35,12 @@ public:
     bool    hasField(int64_t id, Runtime *rt);
     void    addField(int64_t id, Object *obj, Runtime *rt);
 
-    Instance   *copy(Runtime *rt);
-    size_t      getSize();
-    std::string shortRepr();
-    std::vector<Object*> getGCReachable();
+    Instance             *copy(Runtime *rt);
+    size_t                getSize();
+    std::string           shortRepr();
+    std::vector<Object *> getGCReachable();
+
+    void destroy(Runtime *rt);
 };
 
 class UserDefinedType: public Type {

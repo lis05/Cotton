@@ -44,7 +44,7 @@ void FunctionInstance::init(bool is_internal, InternalFunction internal_ptr, Fun
 
 Instance *FunctionInstance::copy(Runtime *rt) {
     ProfilerCAPTURE();
-    auto res = new (std::nothrow) FunctionInstance(rt);
+    auto res = new FunctionInstance(rt);
     if (res == NULL) {
         rt->signalError("Failed to copy " + this->shortRepr());
     }
@@ -59,6 +59,10 @@ std::string FunctionInstance::shortRepr() {
     }
     return "FunctionInstance(id = " + std::to_string(this->id)
            + ", is_internal = " + (this->is_internal ? "true" : "false") + ")";
+}
+
+void FunctionInstance::destroy(Runtime *rt) {
+    delete this;
 }
 
 size_t FunctionInstance::getSize() {
@@ -217,8 +221,8 @@ FunctionType::FunctionType(Runtime *rt)
 
 Object *FunctionType::create(Runtime *rt) {
     ProfilerCAPTURE();
-    auto ins = createInstance(rt, FunctionInstance);
-    auto obj = createObject(rt, true, ins, this);
+    auto    ins = new FunctionInstance(rt);
+    Object *obj = newObject(true, ins, this, rt);
     return obj;
 }
 
@@ -228,10 +232,11 @@ Object *FunctionType::copy(Object *obj, Runtime *rt) {
         rt->signalError("Failed to copy an invalid object: " + obj->shortRepr());
     }
     if (obj->instance == NULL) {
-        return createObject(rt, false, NULL, this);
+        return newObject(false, NULL, this, rt);
     }
     auto ins = obj->instance->copy(rt);
-    auto res = createObject(rt, true, ins, this);
+    auto res = newObject(true, ins, this, rt);
+
     return res;
 }
 

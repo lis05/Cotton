@@ -32,6 +32,7 @@ public:
     Instance   *copy(Runtime *rt);
     size_t      getSize();
     std::string shortRepr();
+    void destroy(Runtime *rt);
 };
 
 class NothingType: public Type {

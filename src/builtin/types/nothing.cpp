@@ -37,7 +37,8 @@ NothingInstance::~NothingInstance() {
 
 Instance *NothingInstance::copy(Runtime *rt) {
     ProfilerCAPTURE();
-    Instance *res = new (std::nothrow) NothingInstance(rt);
+    Instance *res = new (rt->alloc(sizeof(NothingInstance))) NothingInstance(rt);
+
     if (res == NULL) {
         rt->signalError("Failed to copy " + this->shortRepr());
     }
@@ -62,9 +63,12 @@ std::string NothingInstance::shortRepr() {
     return "NothingInstance(id = " + std::to_string(this->id) + ")";
 }
 
+void NothingInstance::destroy(Runtime *rt) {
+    rt->dealloc(this, sizeof(NothingInstance));
+}
+
 class NothingUnsupportedAdapter: public OperatorAdapter {
 public:
-
     Object *operator()(Object *self, const std::vector<Object *> &others, Runtime *rt) {
         ProfilerCAPTURE();
         rt->signalError(self->shortRepr() + " does not support that operator");
@@ -73,7 +77,6 @@ public:
 
 class NothingEqAdapter: public OperatorAdapter {
 public:
-
     Object *operator()(Object *self, const std::vector<Object *> &others, Runtime *rt) {
         ProfilerCAPTURE();
         if (others.size() != 1) {
@@ -107,7 +110,6 @@ public:
 
 class NothingNeqAdapter: public NothingEqAdapter {
 public:
-
     Object *operator()(Object *self, const std::vector<Object *> &others, Runtime *rt) {
         ProfilerCAPTURE();
         auto res                 = NothingEqAdapter::operator()(self, others, rt);
@@ -152,8 +154,8 @@ NothingType::NothingType(Runtime *rt)
 
 Object *NothingType::create(Runtime *rt) {
     ProfilerCAPTURE();
-    auto ins = createInstance(rt, NothingInstance);
-    auto obj = createObject(rt, true, ins, this);
+    Instance *ins = new (rt->alloc(sizeof(NothingInstance))) NothingInstance(rt);
+    Object   *obj = newObject(true, ins, this, rt);
     return obj;
 }
 
@@ -171,10 +173,10 @@ Object *NothingType::copy(Object *obj, Runtime *rt) {
         rt->signalError("Failed to copy an invalid object: " + obj->shortRepr());
     }
     if (obj->instance == NULL) {
-        return createObject(rt, false, NULL, this);
+        return newObject(false, NULL, this, rt);
     }
     auto ins = obj->instance->copy(rt);
-    auto res = createObject(rt, true, ins, this);
+    auto res = newObject(true, ins, this, rt);
     return res;
 }
 

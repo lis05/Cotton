@@ -1,48 +1,72 @@
-/*
- Copyright (c) 2024 Ihor Lukianov (lis05)
-
- Permission is hereby granted, free of charge, to any person obtaining a copy of
- this software and associated documentation files (the "Software"), to deal in
- the Software without restriction, including without limitation the rights to
- use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of
- the Software, and to permit persons to whom the Software is furnished to do so,
- subject to the following conditions:
-
- The above copyright notice and this permission notice shall be included in all
- copies or substantial portions of the Software.
-
- THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS
- FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR
- COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER
- IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
- CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+/**
+ * Pool-allocator.
+ *
+ * Details: http://dmitrysoshnikov.com/compilers/writing-a-pool-allocator/
+ *
+ * Allocates a larger block using `malloc`.
+ *
+ * Splits the large block into smaller chunks
+ * of equal size.
+ *
+ * Uses bump-allocated per chunk.
+ *
+ * by Dmitry Soshnikov <dmitry.soshnikov@gmail.com>
+ * MIT Style License, 2019
  */
-#pragma once
 
+#pragma once
 #include <cstddef>
-#include <cstdint>
 #include <cstdlib>
 
-template<size_t BLOCK_SIZE>
-class BitsetMemPool {
-    int      free;
-    uint64_t layer1;
-    uint64_t layer2[64];
-    void    *ptr;
-
-    BitsetMemPool() {
-        free   = 64 * 64;
-        layer1 = 0;
-        for (auto &l : layer2) {
-            l = 0;
-        }
-        ptr = malloc(64 * 64 * BLOCK_SIZE);
-    }
-
-    bool successfullyInitialized() {
-        return this->ptr != NULL;
-    }
-
-    
+namespace Cotton{
+/**
+ * A chunk within a larger block.
+ */
+struct Chunk {
+    /**
+     * When a chunk is free, the `next` contains the
+     * address of the next chunk in a list.
+     *
+     * When it's allocated, this space is used by
+     * the user.
+     */
+    Chunk *next;
 };
+
+/**
+ * The allocator class.
+ *
+ * Features:
+ *
+ *   - Parametrized by number of chunks per block
+ *   - Keeps track of the allocation pointer
+ *   - Bump-allocates chunks
+ *   - Requests a new larger block when needed
+ *
+ */
+class PoolAllocator {
+public:
+    PoolAllocator(size_t chunksPerBlock);
+
+    void *allocate(size_t size);
+    void  deallocate(void *ptr, size_t size);
+
+private:
+    /**
+     * Number of chunks per larger block.
+     */
+    size_t mChunksPerBlock;
+
+    /**
+     * Allocation pointer.
+     */
+    Chunk *mAlloc = nullptr;
+
+    /**
+     * Allocates a larger block (pool) for chunks.
+     */
+    Chunk *allocateBlock(size_t chunkSize);
+};
+
+// -----------------------------------------------------------
+}

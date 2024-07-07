@@ -22,6 +22,7 @@
 #pragma once
 
 #include "../front/parser.h"
+#include "mempool.h"
 #include "object.h"
 #include <ext/pb_ds/assoc_container.hpp>
 #include <string>
@@ -61,6 +62,17 @@ public:
     Builtin::RealType      *real_type;
     Builtin::CharacterType *character_type;
     Builtin::StringType    *string_type;
+
+    PoolAllocator                                     *object_allocator;
+    __gnu_pbds::cc_hash_table<size_t, PoolAllocator *> allocators;
+
+    PoolAllocator *getAllocator(size_t size);
+
+    void *alloc(size_t size);
+    void  dealloc(void *ptr, size_t size);
+
+    void destroy(Object *obj);
+    void destroy(Instance *ins);
 
     Object                                      *exec_res_default;
     __gnu_pbds::cc_hash_table<int64_t, Object *> readonly_literals;
@@ -112,6 +124,9 @@ public:
     Object *runMethod(int64_t id, Object *obj, const std::vector<Object *> &args);
 };
 
+#define newObject(is_instance, instance, type, rt)                                                                \
+    new (rt->object_allocator->allocate(sizeof(Object))) Object(is_instance, instance, type, rt)
+
 #define highlight(rt, token) rt->current_token = token;
 
 // checks whether obj is an instance object (is non-NULL and has non-NULL type and non-NULL instance)
@@ -131,27 +146,6 @@ public:
 #define isExecFlagBREAK(rt)       (rt->execution_flags == 2)
 #define isExecFlagRETURN(rt)      (rt->execution_flags == 4)
 #define isExecFlagDIRECT_PASS(rt) (rt->execution_flags == 8)
-
-// tries to create instanc
-
-#define createInstance(rt, I)                                                                                     \
-    ({                                                                                                            \
-        Instance *ins = new (std::nothrow) I(rt);                                                                 \
-        if (ins == NULL) {                                                                                        \
-            return NULL;                                                                                          \
-        }                                                                                                         \
-        ins;                                                                                                      \
-    })
-
-// tries to create object
-#define createObject(rt, is_instance, ins, type)                                                                  \
-    ({                                                                                                            \
-        Object *obj = new (std::nothrow) Object(is_instance, ins, type, rt);                                      \
-        if (obj == NULL) {                                                                                        \
-            return NULL;                                                                                          \
-        }                                                                                                         \
-        obj;                                                                                                      \
-    })
 
 // casts instance to another instance
 #define icast(ins, type) ((type *)ins)

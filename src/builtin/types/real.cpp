@@ -35,7 +35,8 @@ RealInstance::~RealInstance() {
 
 Instance *RealInstance::copy(Runtime *rt) {
     ProfilerCAPTURE();
-    Instance *res = new (std::nothrow) RealInstance(rt);
+    Instance *res = new (rt->alloc(sizeof(RealInstance))) RealInstance(rt);
+
     if (res == NULL) {
         rt->signalError("Failed to copy " + this->shortRepr());
     }
@@ -51,6 +52,10 @@ std::string RealInstance::shortRepr() {
     return "RealInstance(id = " + std::to_string(this->id) + ", value = " + std::to_string(this->value) + ")";
 }
 
+void RealInstance::destroy(Runtime *rt) {
+    rt->dealloc(this, sizeof(RealInstance));
+}
+
 size_t RealInstance::getSize() {
     ProfilerCAPTURE();
     return sizeof(RealInstance);
@@ -63,7 +68,6 @@ size_t RealType::getInstanceSize() {
 
 class RealUnsupportedAdapter: public OperatorAdapter {
 public:
-
     Object *operator()(Object *self, const std::vector<Object *> &others, Runtime *rt) {
         ProfilerCAPTURE();
         rt->signalError(self->shortRepr() + " does not support that operator");
@@ -72,7 +76,6 @@ public:
 
 class RealPositiveAdapter: public OperatorAdapter {
 public:
-
     Object *operator()(Object *self, const std::vector<Object *> &others, Runtime *rt) {
         ProfilerCAPTURE();
 
@@ -87,7 +90,6 @@ public:
 
 class RealNegativeAdapter: public OperatorAdapter {
 public:
-
     Object *operator()(Object *self, const std::vector<Object *> &others, Runtime *rt) {
         ProfilerCAPTURE();
 
@@ -103,7 +105,6 @@ public:
 
 class RealMultAdapter: public OperatorAdapter {
 public:
-
     Object *operator()(Object *self, const std::vector<Object *> &others, Runtime *rt) {
         ProfilerCAPTURE();
 
@@ -129,7 +130,6 @@ public:
 
 class RealDivAdapter: public OperatorAdapter {
 public:
-
     Object *operator()(Object *self, const std::vector<Object *> &others, Runtime *rt) {
         ProfilerCAPTURE();
 
@@ -155,7 +155,6 @@ public:
 
 class RealAddAdapter: public OperatorAdapter {
 public:
-
     Object *operator()(Object *self, const std::vector<Object *> &others, Runtime *rt) {
         ProfilerCAPTURE();
 
@@ -181,7 +180,6 @@ public:
 
 class RealSubAdapter: public OperatorAdapter {
 public:
-
     Object *operator()(Object *self, const std::vector<Object *> &others, Runtime *rt) {
         ProfilerCAPTURE();
 
@@ -207,7 +205,6 @@ public:
 
 class RealLtAdapter: public OperatorAdapter {
 public:
-
     Object *operator()(Object *self, const std::vector<Object *> &others, Runtime *rt) {
         ProfilerCAPTURE();
 
@@ -233,7 +230,6 @@ public:
 
 class RealLeqAdapter: public OperatorAdapter {
 public:
-
     Object *operator()(Object *self, const std::vector<Object *> &others, Runtime *rt) {
         ProfilerCAPTURE();
 
@@ -259,7 +255,6 @@ public:
 
 class RealGtAdapter: public OperatorAdapter {
 public:
-
     Object *operator()(Object *self, const std::vector<Object *> &others, Runtime *rt) {
         ProfilerCAPTURE();
 
@@ -285,7 +280,6 @@ public:
 
 class RealGeqAdapter: public OperatorAdapter {
 public:
-
     Object *operator()(Object *self, const std::vector<Object *> &others, Runtime *rt) {
         ProfilerCAPTURE();
 
@@ -311,7 +305,6 @@ public:
 
 class RealEqAdapter: public OperatorAdapter {
 public:
-
     Object *operator()(Object *self, const std::vector<Object *> &others, Runtime *rt) {
         ProfilerCAPTURE();
 
@@ -344,7 +337,6 @@ public:
 
 class RealNeqAdapter: public RealEqAdapter {
 public:
-
     Object *operator()(Object *self, const std::vector<Object *> &others, Runtime *rt) {
         ProfilerCAPTURE();
         auto res              = RealEqAdapter::operator()(self, others, rt);
@@ -389,8 +381,8 @@ RealType::RealType(Runtime *rt)
 
 Object *RealType::create(Runtime *rt) {
     ProfilerCAPTURE();
-    auto ins = createInstance(rt, RealInstance);
-    auto obj = createObject(rt, true, ins, this);
+    Instance *ins = new (rt->alloc(sizeof(RealInstance))) RealInstance(rt);
+    Object   *obj = newObject(true, ins, this, rt);
     return obj;
 }
 
@@ -400,10 +392,10 @@ Object *RealType::copy(Object *obj, Runtime *rt) {
         rt->signalError("Failed to copy an invalid object: " + obj->shortRepr());
     }
     if (obj->instance == NULL) {
-        return createObject(rt, false, NULL, this);
+        return newObject(false, NULL, this, rt);
     }
     auto ins = obj->instance->copy(rt);
-    auto res = createObject(rt, true, ins, this);
+    auto res = newObject(true, ins, this, rt);
     return res;
 }
 
