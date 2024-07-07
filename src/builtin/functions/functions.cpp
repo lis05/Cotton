@@ -29,7 +29,7 @@ static Object *make(const std::vector<Object *> &args, Runtime *rt) {
         rt->signalError("Expected exactly one argument");
     }
     auto arg = args[0];
-    if (!rt->isTypeObject(arg) || rt->isInstanceObject(arg)) {
+    if (!isTypeObject(arg) || isInstanceObject(arg)) {
         rt->signalError("Expected a type object but got " + arg->shortRepr());
     }
 
@@ -44,7 +44,7 @@ static Object *print(const std::vector<Object *> &args, Runtime *rt) {
             std::cout << " ";
         }
         f = true;
-        if (rt->isInstanceObject(arg)) {
+        if (isInstanceObject(arg)) {
             if (arg->type->id == rt->boolean_type->id) {
                 std::cout << (getBooleanValue(arg, rt) ? "true" : "false");
             }

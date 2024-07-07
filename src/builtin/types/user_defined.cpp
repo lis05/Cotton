@@ -151,7 +151,7 @@ std::string UserDefinedType::shortRepr() {
 
 Object *UserDefinedType::copy(Object *obj) {
     ProfilerCAPTURE();
-    if (!rt->isTypeObject(obj)) {
+    if (!isTypeObject(obj)) {
         rt->signalError("Failed to copy an invalid object: " + obj->shortRepr());
     }
     if (obj->instance == NULL) {

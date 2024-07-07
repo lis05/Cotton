@@ -36,6 +36,8 @@ public:
     size_t                getSize();
     std::string           shortRepr();
     std::vector<Object *> getGCReachable();
+    void                  spreadSingleUse();
+    void                  spreadMultiUse();
 };
 
 class StringType: public Type {

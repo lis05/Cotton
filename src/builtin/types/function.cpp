@@ -90,7 +90,7 @@ public:
     Object *operator()(Object *self, const std::vector<Object *> &others) {
         ProfilerCAPTURE();
 
-        if (!rt->isInstanceObject(self)) {
+        if (!isInstanceObject(self)) {
             rt->signalError(self->shortRepr() + " does not support that operator");
         }
         auto f = icast(self->instance, FunctionInstance);
@@ -146,11 +146,11 @@ public:
             return NULL;
         }
         auto &arg1 = others[0];
-        if (!rt->isTypeObject(arg1)) {
+        if (!isTypeObject(arg1)) {
             rt->signalError("Right-side object is invalid: " + arg1->shortRepr());
         }
 
-        bool i1 = rt->isInstanceObject(self);
+        bool i1 = isInstanceObject(self);
         bool i2 = arg1->instance != NULL;
 
         if (i1 && i2) {
@@ -236,7 +236,7 @@ Object *FunctionType::create() {
 
 Object *FunctionType::copy(Object *obj) {
     ProfilerCAPTURE();
-    if (!rt->isTypeObject(obj) || obj->type->id != rt->function_type->id) {
+    if (!isTypeObject(obj) || obj->type->id != rt->function_type->id) {
         rt->signalError("Failed to copy an invalid object: " + obj->shortRepr());
     }
     if (obj->instance == NULL) {

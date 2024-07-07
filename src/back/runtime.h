@@ -62,7 +62,7 @@ public:
     Builtin::CharacterType *character_type;
     Builtin::StringType    *string_type;
 
-    Object                                             *exec_res_default;
+    Object                                      *exec_res_default;
     __gnu_pbds::cc_hash_table<int64_t, Object *> readonly_literals;
 
     Scope *scope;
@@ -73,16 +73,8 @@ public:
 
     GC *gc;
 
-    // checks whether obj is an instance object (is non-NULL and has non-NULL type and non-NULL instance)
-    bool isInstanceObject(Object *obj);
-    bool isInstanceObject(Object *obj, Type *type);
-    // checks whether obj is a type object (is non-NULL and has non-NULL type)
-    bool isTypeObject(Object *obj);
-
     ErrorManager *error_manager;
     Token        *current_token;
-    // marks token as the current token
-    void          highlight(Token *token);
     // signals an error
     [[noreturn]]
     void signalError(const std::string &message, bool include_token = true);
@@ -127,6 +119,14 @@ public:
     // if has method, same as runMethod; otherwise returns NULL
     Object *runIfHasMethodOrNULL(int64_t id, Object *obj, const std::vector<Object *> &args);
 };
+
+#define highlight(rt, token) rt->current_token = token;
+
+// checks whether obj is an instance object (is non-NULL and has non-NULL type and non-NULL instance)
+#define isInstanceObject(obj)             ((obj) != NULL && (obj)->instance != NULL && (obj)->type != NULL)
+#define isInstanceObjectOfType(obj, type) ((obj) != NULL && (obj)->instance != NULL && (obj)->type == (type))
+// checks whether obj is a type object (is non-NULL and has non-NULL type)
+#define isTypeObject(obj)                 (obj != NULL && (obj)->type != NULL)
 
 // tries to create instanc
 

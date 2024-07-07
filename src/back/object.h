@@ -38,11 +38,13 @@ public:
     bool           is_instance : 1;    // otherwise it's type
     bool           gc_mark     : 1;
     bool           can_assign  : 1;
+    bool single_use : 1;    // if object is expected to be used only once (like x + y is going to be used only
+                            // once in an expression)
 
     Instance *instance;
     Type     *type;
 
-    Object(bool is_instance, Instance *instance, Type *type, Runtime *rt, bool can_assign = true);
+    Object(bool is_instance, Instance *instance, Type *type, Runtime *rt);
     ~Object();
 
     std::vector<Object *> getGCReachable();
@@ -51,6 +53,11 @@ public:
 
     void assignTo(Object *obj);
     void assignToCopyOf(Object *obj);
+
+    // marks object with single use, as well as its insides
+    void spreadSingleUse();
+    void spreadMultiUse();
+
 };
 
 std::ostream &operator<<(std::ostream &stream, Object *obj);

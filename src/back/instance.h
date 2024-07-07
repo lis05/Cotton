@@ -20,10 +20,10 @@
  */
 
 #pragma once
-#include <cstdint>
 #include <cstddef>
-#include <vector>
+#include <cstdint>
 #include <string>
+#include <vector>
 
 namespace Cotton {
 
@@ -48,6 +48,9 @@ public:
     virtual Instance             *copy()      = 0;
     virtual size_t                getSize()   = 0;    // in bytes
     virtual std::string           shortRepr() = 0;
+
+    virtual void spreadSingleUse();
+    virtual void spreadMultiUse();
 };
 
 }    // namespace Cotton

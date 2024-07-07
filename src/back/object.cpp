@@ -10,7 +10,7 @@
 namespace Cotton {
 int64_t Object::total_objects = 0;
 
-Object::Object(bool is_instance, Instance *instance, Type *type, Runtime *rt, bool can_assign) {
+Object::Object(bool is_instance, Instance *instance, Type *type, Runtime *rt) {
     ProfilerCAPTURE();
     this->rt          = rt;
     this->is_instance = is_instance;
@@ -18,7 +18,8 @@ Object::Object(bool is_instance, Instance *instance, Type *type, Runtime *rt, bo
     this->type        = type;
     this->gc_mark     = !rt->gc->gc_mark;
     this->id          = ++total_objects;
-    this->can_assign  = can_assign;
+    this->can_assign  = true;
+    this->single_use  = false;
     rt->gc->track(this);
 }
 
@@ -65,7 +66,11 @@ void Object::assignTo(Object *obj) {
     if (!this->can_assign) {
         rt->signalError("Cannot assign to " + this->shortRepr());
     }
-    *this = *obj;
+    auto id          = this->id;
+    auto single_use  = this->single_use;
+    *this            = *obj;
+    this->single_use = single_use;
+    this->id         = id;
 }
 
 void Object::assignToCopyOf(Object *obj) {
@@ -73,13 +78,27 @@ void Object::assignToCopyOf(Object *obj) {
     if (!this->can_assign) {
         rt->signalError("Cannot assign to " + this->shortRepr());
     }
-    if (obj->instance == NULL) {
-        this->instance = NULL;
+    auto id          = this->id;
+    auto single_use  = this->single_use;
+    *this            = *rt->copy(obj);
+    this->single_use = single_use;
+    this->id         = id;
+}
+
+void Object::spreadSingleUse() {
+    ProfilerCAPTURE();
+    this->single_use = true;
+    if (this->instance != NULL) {
+        this->instance->spreadSingleUse();
     }
-    else {
-        this->instance = obj->instance->copy();
+}
+
+void Object::spreadMultiUse() {
+    ProfilerCAPTURE();
+    this->single_use = false;
+    if (this->instance != NULL) {
+        this->instance->spreadMultiUse();
     }
-    this->type = obj->type;
 }
 
 std::ostream &operator<<(std::ostream &stream, Object *obj) {

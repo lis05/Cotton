@@ -89,7 +89,7 @@ Object *Type::getMethod(int64_t id) {
     ProfilerCAPTURE();
     auto it = this->methods.find(id);
     if (it != this->methods.end()) {
-        if (!rt->isInstanceObject(it->second)) {
+        if (!isInstanceObject(it->second)) {
             rt->signalError("Method " + NameId::shortRepr(id) + " from " + this->shortRepr()
                             + " is not an instance object");
         }
@@ -127,7 +127,7 @@ Object *Type::getMethodOrNULL(int64_t id) {
     ProfilerCAPTURE();
     auto it = this->methods.find(id);
     if (it != this->methods.end()) {
-        if (!rt->isInstanceObject(it->second)) {
+        if (!isInstanceObject(it->second)) {
             rt->signalError("Method " + NameId::shortRepr(id) + " from " + this->shortRepr()
                             + " is not an instance object");
         }

@@ -19,6 +19,7 @@
  CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
+#include "string.h"
 #include "../../profiler.h"
 #include "api.h"
 
@@ -68,6 +69,18 @@ std::vector<Object *> StringInstance::getGCReachable() {
     return res;
 }
 
+void StringInstance::spreadSingleUse() {
+    for (auto obj : this->data) {
+        obj->spreadSingleUse();
+    }
+}
+
+void StringInstance::spreadMultiUse() {
+    for (auto obj : this->data) {
+        obj->spreadMultiUse();
+    }
+}
+
 size_t StringType::getInstanceSize() {
     ProfilerCAPTURE();
     return sizeof(StringInstance);
@@ -92,7 +105,7 @@ public:
     Object *operator()(Object *self, const std::vector<Object *> &others) {
         ProfilerCAPTURE();
 
-        if (!rt->isInstanceObject(self)) {
+        if (!isInstanceObject(self)) {
             rt->signalError(self->shortRepr() + " does not support that operator");
         }
         if (others.size() != 1) {
@@ -100,7 +113,7 @@ public:
             return NULL;
         }
         auto &arg1 = others[0];
-        if (!rt->isTypeObject(arg1)) {
+        if (!isTypeObject(arg1)) {
             rt->signalError("Right-side object is invalid: " + arg1->shortRepr());
         }
         if (arg1->instance == NULL || arg1->type->id != rt->integer_type->id) {
@@ -121,7 +134,7 @@ public:
     Object *operator()(Object *self, const std::vector<Object *> &others) {
         ProfilerCAPTURE();
 
-        if (!rt->isInstanceObject(self)) {
+        if (!isInstanceObject(self)) {
             rt->signalError(self->shortRepr() + " does not support that operator");
         }
         if (others.size() != 1) {
@@ -129,7 +142,7 @@ public:
             return NULL;
         }
         auto &arg1 = others[0];
-        if (!rt->isTypeObject(arg1)) {
+        if (!isTypeObject(arg1)) {
             rt->signalError("Right-side object is invalid: " + arg1->shortRepr());
         }
         if (arg1->instance == NULL || arg1->type->id != rt->string_type->id) {
@@ -157,11 +170,11 @@ public:
             return NULL;
         }
         auto &arg1 = others[0];
-        if (!rt->isTypeObject(arg1)) {
+        if (!isTypeObject(arg1)) {
             rt->signalError("Right-side object is invalid: " + arg1->shortRepr());
         }
 
-        bool i1 = rt->isInstanceObject(self);
+        bool i1 = isInstanceObject(self);
         bool i2 = arg1->instance != NULL;
 
         if (i1 && i2) {
@@ -209,7 +222,7 @@ static Object *stringSizeMethod(const std::vector<Object *> &args, Runtime *rt) 
         rt->signalError("Expected a caller object");
     }
     auto self = args[0];
-    if (!rt->isTypeObject(self)) {
+    if (!isTypeObject(self)) {
         rt->signalError("Caller is invalid: " + self->shortRepr());
     }
     if (self->instance == NULL || self->type->id != rt->string_type->id) {
@@ -263,7 +276,7 @@ Object *StringType::create() {
 
 Object *StringType::copy(Object *obj) {
     ProfilerCAPTURE();
-    if (!rt->isTypeObject(obj) || obj->type->id != rt->string_type->id) {
+    if (!isTypeObject(obj) || obj->type->id != rt->string_type->id) {
         rt->signalError("Failed to copy an invalid object: " + obj->shortRepr());
     }
     if (obj->instance == NULL) {
@@ -284,7 +297,7 @@ std::string StringType::shortRepr() {
 
 std::vector<Object *> &getStringData(Object *obj, Runtime *rt) {
     ProfilerCAPTURE();
-    if (!rt->isInstanceObject(obj)) {
+    if (!isInstanceObject(obj)) {
         rt->signalError(obj->shortRepr() + " is not an instance object");
     }
     if (obj->type->id != rt->string_type->id) {

@@ -207,11 +207,13 @@ void GC::untrack(Type *type) {
 void GC::hold(Object *object) {
     ProfilerCAPTURE();
     this->held_objects[object] = true;
+    object->spreadMultiUse();
 }
 
 void GC::release(Object *object) {
     ProfilerCAPTURE();
     this->held_objects.erase(object);
+    object->spreadSingleUse();
 }
 
 void GC::ping() {

@@ -55,4 +55,12 @@ std::vector<Object *> Instance::getGCReachable() {
     ProfilerCAPTURE();
     return {};
 }
+
+void Instance::spreadSingleUse() {
+    ProfilerCAPTURE();
+}
+
+void Instance::spreadMultiUse() {
+    ProfilerCAPTURE();
+}
 };    // namespace Cotton

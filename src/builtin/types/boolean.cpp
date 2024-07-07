@@ -100,10 +100,10 @@ public:
             return NULL;
         }
         auto &arg1 = others[0];
-        if (!rt->isTypeObject(arg1)) {
+        if (!isTypeObject(arg1)) {
             rt->signalError("Right-side object is invalid: " + arg1->shortRepr());
         }
-        auto isSelfI = rt->isInstanceObject(self);
+        auto isSelfI = isInstanceObject(self);
         auto isArg1I = arg1->instance != NULL;
         if (isSelfI && isArg1I) {
             if (self->type->id != arg1->type->id) {
@@ -146,7 +146,7 @@ public:
             return NULL;
         }
         auto &arg1 = others[0];
-        if (!rt->isTypeObject(arg1)) {
+        if (!isTypeObject(arg1)) {
             rt->signalError("Right-side object is invalid: " + arg1->shortRepr());
         }
         if (arg1->type->id != rt->boolean_type->id) {
@@ -173,7 +173,7 @@ public:
             return NULL;
         }
         auto &arg1 = others[0];
-        if (!rt->isTypeObject(arg1)) {
+        if (!isTypeObject(arg1)) {
             rt->signalError("Right-side object is invalid: " + arg1->shortRepr());
         }
         if (arg1->type->id != rt->boolean_type->id) {
@@ -230,7 +230,7 @@ Object *BooleanType::create() {
 
 Object *BooleanType::copy(Object *obj) {
     ProfilerCAPTURE();
-    if (!rt->isTypeObject(obj) || obj->type->id != rt->boolean_type->id) {
+    if (!isTypeObject(obj) || obj->type->id != rt->boolean_type->id) {
         rt->signalError("Failed to copy an invalid object: " + obj->shortRepr());
     }
     if (obj->instance == NULL) {
@@ -251,7 +251,7 @@ std::string BooleanType::shortRepr() {
 
 bool &getBooleanValue(Object *obj, Runtime *rt) {
     ProfilerCAPTURE();
-    if (!rt->isInstanceObject(obj)) {
+    if (!isInstanceObject(obj)) {
         rt->signalError(obj->shortRepr() + " is not an instance object");
     }
     if (obj->type->id != rt->boolean_type->id) {

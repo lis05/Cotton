@@ -23,6 +23,7 @@ Scope::~Scope() {
 void Scope::addVariable(int64_t id, Object *obj, Runtime *rt) {
     ProfilerCAPTURE();
     this->variables[id] = obj;
+    obj->spreadMultiUse();
 }
 
 Object *Scope::getVariable(int64_t id, Runtime *rt) {

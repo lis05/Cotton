@@ -84,11 +84,11 @@ public:
             rt->signalError("Expected exactly one right-side argument");
         }
         auto &arg1 = others[0];
-        if (!rt->isTypeObject(arg1)) {
+        if (!isTypeObject(arg1)) {
             rt->signalError("Right-side object is invalid: " + arg1->shortRepr());
         }
 
-        bool i1 = rt->isInstanceObject(self);
+        bool i1 = isInstanceObject(self);
         bool i2 = arg1->instance != NULL;
 
         if (i1 && i2) {
@@ -173,7 +173,7 @@ std::string NothingType::shortRepr() {
 
 Object *NothingType::copy(Object *obj) {
     ProfilerCAPTURE();
-    if (!rt->isTypeObject(obj) || obj->type->id != rt->nothing_type->id) {
+    if (!isTypeObject(obj) || obj->type->id != rt->nothing_type->id) {
         rt->signalError("Failed to copy an invalid object: " + obj->shortRepr());
     }
     if (obj->instance == NULL) {
