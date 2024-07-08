@@ -67,89 +67,80 @@ void NothingInstance::destroy(Runtime *rt) {
     rt->dealloc(this, sizeof(NothingInstance));
 }
 
-class NothingUnsupportedAdapter: public OperatorAdapter {
-public:
-    Object *operator()(Object *self, const std::vector<Object *> &others, Runtime *rt) {
-        ProfilerCAPTURE();
-        rt->signalError(self->shortRepr() + " does not support that operator");
+static Object *NothingUnsupportedAdapter(Object *self, const std::vector<Object *> &others, Runtime *rt) {
+    ProfilerCAPTURE();
+    rt->signalError(self->shortRepr() + " does not support that operator");
+}
+
+static Object *NothingEqAdapter(Object *self, const std::vector<Object *> &others, Runtime *rt) {
+    ProfilerCAPTURE();
+    if (others.size() != 1) {
+        rt->signalError("Expected exactly one right-side argument");
     }
-};
-
-class NothingEqAdapter: public OperatorAdapter {
-public:
-    Object *operator()(Object *self, const std::vector<Object *> &others, Runtime *rt) {
-        ProfilerCAPTURE();
-        if (others.size() != 1) {
-            rt->signalError("Expected exactly one right-side argument");
-        }
-        auto &arg1 = others[0];
-        if (!isTypeObject(arg1)) {
-            rt->signalError("Right-side object is invalid: " + arg1->shortRepr());
-        }
-
-        bool i1 = isInstanceObject(self);
-        bool i2 = arg1->instance != NULL;
-
-        if (i1 && i2) {
-            auto res                 = rt->make(rt->boolean_type, Runtime::INSTANCE_OBJECT);
-            getBooleanValue(res, rt) = (arg1->type->id == self->type->id);
-            return res;
-        }
-        else if (!i1 && !i2) {
-            auto res                 = rt->make(rt->boolean_type, Runtime::INSTANCE_OBJECT);
-            getBooleanValue(res, rt) = (arg1->type->id == self->type->id);
-            return res;
-        }
-        else {
-            auto res                 = rt->make(rt->boolean_type, Runtime::INSTANCE_OBJECT);
-            getBooleanValue(res, rt) = false;
-            return res;
-        }
+    auto &arg1 = others[0];
+    if (!isTypeObject(arg1)) {
+        rt->signalError("Right-side object is invalid: " + arg1->shortRepr());
     }
-};
 
-class NothingNeqAdapter: public NothingEqAdapter {
-public:
-    Object *operator()(Object *self, const std::vector<Object *> &others, Runtime *rt) {
-        ProfilerCAPTURE();
-        auto res                 = NothingEqAdapter::operator()(self, others, rt);
-        getBooleanValue(res, rt) = !getBooleanValue(res, rt);
+    bool i1 = isInstanceObject(self);
+    bool i2 = arg1->instance != NULL;
+
+    if (i1 && i2) {
+        auto res                 = rt->make(rt->boolean_type, Runtime::INSTANCE_OBJECT);
+        getBooleanValue(res, rt) = (arg1->type->id == self->type->id);
         return res;
     }
-};
+    else if (!i1 && !i2) {
+        auto res                 = rt->make(rt->boolean_type, Runtime::INSTANCE_OBJECT);
+        getBooleanValue(res, rt) = (arg1->type->id == self->type->id);
+        return res;
+    }
+    else {
+        auto res                 = rt->make(rt->boolean_type, Runtime::INSTANCE_OBJECT);
+        getBooleanValue(res, rt) = false;
+        return res;
+    }
+}
+
+static Object *NothingNeqAdapter(Object *self, const std::vector<Object *> &others, Runtime *rt) {
+    ProfilerCAPTURE();
+    auto res                 = NothingEqAdapter(self, others, rt);
+    getBooleanValue(res, rt) = !getBooleanValue(res, rt);
+    return res;
+}
 
 // TODO: add all operators to function and nothing
 NothingType::NothingType(Runtime *rt)
     : Type(rt) {
     ProfilerCAPTURE();
-    this->addOperator(OperatorNode::POST_PLUS_PLUS, new NothingUnsupportedAdapter());
-    this->addOperator(OperatorNode::POST_MINUS_MINUS, new NothingUnsupportedAdapter());
-    this->addOperator(OperatorNode::CALL, new NothingUnsupportedAdapter());
-    this->addOperator(OperatorNode::INDEX, new NothingUnsupportedAdapter());
-    this->addOperator(OperatorNode::PRE_PLUS_PLUS, new NothingUnsupportedAdapter());
-    this->addOperator(OperatorNode::PRE_MINUS_MINUS, new NothingUnsupportedAdapter());
-    this->addOperator(OperatorNode::PRE_PLUS, new NothingUnsupportedAdapter());
-    this->addOperator(OperatorNode::PRE_MINUS, new NothingUnsupportedAdapter());
-    this->addOperator(OperatorNode::NOT, new NothingUnsupportedAdapter());
-    this->addOperator(OperatorNode::INVERSE, new NothingUnsupportedAdapter());
-    this->addOperator(OperatorNode::MULT, new NothingUnsupportedAdapter());
-    this->addOperator(OperatorNode::DIV, new NothingUnsupportedAdapter());
-    this->addOperator(OperatorNode::REM, new NothingUnsupportedAdapter());
-    this->addOperator(OperatorNode::RIGHT_SHIFT, new NothingUnsupportedAdapter());
-    this->addOperator(OperatorNode::LEFT_SHIFT, new NothingUnsupportedAdapter());
-    this->addOperator(OperatorNode::PLUS, new NothingUnsupportedAdapter());
-    this->addOperator(OperatorNode::MINUS, new NothingUnsupportedAdapter());
-    this->addOperator(OperatorNode::LESS, new NothingUnsupportedAdapter());
-    this->addOperator(OperatorNode::LESS_EQUAL, new NothingUnsupportedAdapter());
-    this->addOperator(OperatorNode::GREATER, new NothingUnsupportedAdapter());
-    this->addOperator(OperatorNode::GREATER_EQUAL, new NothingUnsupportedAdapter());
-    this->addOperator(OperatorNode::EQUAL, new NothingEqAdapter());
-    this->addOperator(OperatorNode::NOT_EQUAL, new NothingNeqAdapter());
-    this->addOperator(OperatorNode::BITAND, new NothingUnsupportedAdapter());
-    this->addOperator(OperatorNode::BITXOR, new NothingUnsupportedAdapter());
-    this->addOperator(OperatorNode::BITOR, new NothingUnsupportedAdapter());
-    this->addOperator(OperatorNode::AND, new NothingUnsupportedAdapter());
-    this->addOperator(OperatorNode::OR, new NothingUnsupportedAdapter());
+    this->addOperator(OperatorNode::POST_PLUS_PLUS, NothingUnsupportedAdapter);
+    this->addOperator(OperatorNode::POST_MINUS_MINUS, NothingUnsupportedAdapter);
+    this->addOperator(OperatorNode::CALL, NothingUnsupportedAdapter);
+    this->addOperator(OperatorNode::INDEX, NothingUnsupportedAdapter);
+    this->addOperator(OperatorNode::PRE_PLUS_PLUS, NothingUnsupportedAdapter);
+    this->addOperator(OperatorNode::PRE_MINUS_MINUS, NothingUnsupportedAdapter);
+    this->addOperator(OperatorNode::PRE_PLUS, NothingUnsupportedAdapter);
+    this->addOperator(OperatorNode::PRE_MINUS, NothingUnsupportedAdapter);
+    this->addOperator(OperatorNode::NOT, NothingUnsupportedAdapter);
+    this->addOperator(OperatorNode::INVERSE, NothingUnsupportedAdapter);
+    this->addOperator(OperatorNode::MULT, NothingUnsupportedAdapter);
+    this->addOperator(OperatorNode::DIV, NothingUnsupportedAdapter);
+    this->addOperator(OperatorNode::REM, NothingUnsupportedAdapter);
+    this->addOperator(OperatorNode::RIGHT_SHIFT, NothingUnsupportedAdapter);
+    this->addOperator(OperatorNode::LEFT_SHIFT, NothingUnsupportedAdapter);
+    this->addOperator(OperatorNode::PLUS, NothingUnsupportedAdapter);
+    this->addOperator(OperatorNode::MINUS, NothingUnsupportedAdapter);
+    this->addOperator(OperatorNode::LESS, NothingUnsupportedAdapter);
+    this->addOperator(OperatorNode::LESS_EQUAL, NothingUnsupportedAdapter);
+    this->addOperator(OperatorNode::GREATER, NothingUnsupportedAdapter);
+    this->addOperator(OperatorNode::GREATER_EQUAL, NothingUnsupportedAdapter);
+    this->addOperator(OperatorNode::EQUAL, NothingEqAdapter);
+    this->addOperator(OperatorNode::NOT_EQUAL, NothingNeqAdapter);
+    this->addOperator(OperatorNode::BITAND, NothingUnsupportedAdapter);
+    this->addOperator(OperatorNode::BITXOR, NothingUnsupportedAdapter);
+    this->addOperator(OperatorNode::BITOR, NothingUnsupportedAdapter);
+    this->addOperator(OperatorNode::AND, NothingUnsupportedAdapter);
+    this->addOperator(OperatorNode::OR, NothingUnsupportedAdapter);
 }
 
 Object *NothingType::create(Runtime *rt) {

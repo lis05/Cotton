@@ -33,10 +33,7 @@ class Runtime;
 class NameId;
 class Type;
 
-class OperatorAdapter {
-public:
-    virtual Object *operator()(Object *self, const std::vector<Object *> &others, Runtime *rt) = 0;
-};
+typedef Object *(*OperatorAdapter)(Object *self, const std::vector<Object *> &others, Runtime *rt);
 
 class Type {
 private:
@@ -45,7 +42,7 @@ private:
 public:
     static const int num_operators = OperatorNode::TOTAL_OPERATORS;
     int64_t          id;
-    OperatorAdapter *operators[num_operators];
+    OperatorAdapter operators[num_operators];
     bool             gc_mark : 1;
 
     __gnu_pbds::cc_hash_table<int64_t, Object *> methods;
@@ -54,11 +51,11 @@ public:
     ~Type();
 
     // adds an operator
-    void             addOperator(OperatorNode::OperatorId id, OperatorAdapter *op);
+    void             addOperator(OperatorNode::OperatorId id, OperatorAdapter op);
     // adds a method
     void             addMethod(int64_t id, Object *method);
     // returns a valid(non-NULL) operator adapter, signals and error if it isn't present
-    OperatorAdapter *getOperator(OperatorNode::OperatorId id, Runtime *rt);
+    OperatorAdapter getOperator(OperatorNode::OperatorId id, Runtime *rt);
     // returns a valid(non-NULL, instance object) method object, signals and error if it isn't present
     Object          *getMethod(int64_t id, Runtime *rt);
     // returns whether an operator is present or not

@@ -66,541 +66,469 @@ size_t CharacterType::getInstanceSize() {
     return sizeof(CharacterInstance);
 }
 
-class CharacterPostincAdapter: public OperatorAdapter {
-public:
-    Object *operator()(Object *self, const std::vector<Object *> &others, Runtime *rt) {
-        ProfilerCAPTURE();
+static Object *CharacterPostincAdapter(Object *self, const std::vector<Object *> &others, Runtime *rt) {
+    ProfilerCAPTURE();
 
-        if (!isInstanceObject(self)) {
-            rt->signalError(self->shortRepr() + " does not support that operator");
-        }
-
-        auto res = self->type->copy(self, rt);
-        getCharacterValueFast(self)++;
-        return res;
-    }
-};
-
-class CharacterPostdecAdapter: public OperatorAdapter {
-public:
-    Object *operator()(Object *self, const std::vector<Object *> &others, Runtime *rt) {
-        ProfilerCAPTURE();
-
-        if (!isInstanceObject(self)) {
-            rt->signalError(self->shortRepr() + " does not support that operator");
-        }
-
-        auto res = self->type->copy(self, rt);
-        getCharacterValueFast(self)--;
-        return res;
-    }
-};
-
-class CharacterUnsupportedAdapter: public OperatorAdapter {
-public:
-    Object *operator()(Object *self, const std::vector<Object *> &others, Runtime *rt) {
-        ProfilerCAPTURE();
+    if (!isInstanceObject(self)) {
         rt->signalError(self->shortRepr() + " does not support that operator");
     }
-};
 
-class CharacterPreincAdapter: public OperatorAdapter {
-public:
-    Object *operator()(Object *self, const std::vector<Object *> &others, Runtime *rt) {
-        ProfilerCAPTURE();
+    auto res = self->type->copy(self, rt);
+    getCharacterValueFast(self)++;
+    return res;
+}
 
-        if (!isInstanceObject(self)) {
-            rt->signalError(self->shortRepr() + " does not support that operator");
-        }
+static Object *CharacterPostdecAdapter(Object *self, const std::vector<Object *> &others, Runtime *rt) {
+    ProfilerCAPTURE();
 
-        getCharacterValueFast(self)++;
-        auto res = self->type->copy(self, rt);
-        return res;
+    if (!isInstanceObject(self)) {
+        rt->signalError(self->shortRepr() + " does not support that operator");
     }
-};
 
-class CharacterPredecAdapter: public OperatorAdapter {
-public:
-    Object *operator()(Object *self, const std::vector<Object *> &others, Runtime *rt) {
-        ProfilerCAPTURE();
+    auto res = self->type->copy(self, rt);
+    getCharacterValueFast(self)--;
+    return res;
+}
 
-        if (!isInstanceObject(self)) {
-            rt->signalError(self->shortRepr() + " does not support that operator");
-        }
+static Object *CharacterUnsupportedAdapter(Object *self, const std::vector<Object *> &others, Runtime *rt) {
+    ProfilerCAPTURE();
+    rt->signalError(self->shortRepr() + " does not support that operator");
+}
 
-        getCharacterValueFast(self)--;
-        auto res = self->type->copy(self, rt);
-        return res;
+static Object *CharacterPreincAdapter(Object *self, const std::vector<Object *> &others, Runtime *rt) {
+    ProfilerCAPTURE();
+
+    if (!isInstanceObject(self)) {
+        rt->signalError(self->shortRepr() + " does not support that operator");
     }
-};
 
-class CharacterPositiveAdapter: public OperatorAdapter {
-public:
-    Object *operator()(Object *self, const std::vector<Object *> &others, Runtime *rt) {
-        ProfilerCAPTURE();
+    getCharacterValueFast(self)++;
+    auto res = self->type->copy(self, rt);
+    return res;
+}
 
-        if (!isInstanceObject(self)) {
-            rt->signalError(self->shortRepr() + " does not support that operator");
-        }
+static Object *CharacterPredecAdapter(Object *self, const std::vector<Object *> &others, Runtime *rt) {
+    ProfilerCAPTURE();
 
-        auto res = self->type->copy(self, rt);
-        return res;
+    if (!isInstanceObject(self)) {
+        rt->signalError(self->shortRepr() + " does not support that operator");
     }
-};
 
-class CharacterNegativeAdapter: public OperatorAdapter {
-public:
-    Object *operator()(Object *self, const std::vector<Object *> &others, Runtime *rt) {
-        ProfilerCAPTURE();
+    getCharacterValueFast(self)--;
+    auto res = self->type->copy(self, rt);
+    return res;
+}
 
-        if (!isInstanceObject(self)) {
-            rt->signalError(self->shortRepr() + " does not support that operator");
-        }
+static Object *CharacterPositiveAdapter(Object *self, const std::vector<Object *> &others, Runtime *rt) {
+    ProfilerCAPTURE();
 
-        auto res                    = self->type->copy(self, rt);
-        getCharacterValueFast(res) *= -1;
-        return res;
+    if (!isInstanceObject(self)) {
+        rt->signalError(self->shortRepr() + " does not support that operator");
     }
-};
 
-class CharacterInverseAdapter: public OperatorAdapter {
-public:
-    Object *operator()(Object *self, const std::vector<Object *> &others, Runtime *rt) {
-        ProfilerCAPTURE();
+    auto res = self->type->copy(self, rt);
+    return res;
+}
 
-        if (!isInstanceObject(self)) {
-            rt->signalError(self->shortRepr() + " does not support that operator");
-        }
+static Object *CharacterNegativeAdapter(Object *self, const std::vector<Object *> &others, Runtime *rt) {
+    ProfilerCAPTURE();
 
-        auto res                   = self->type->copy(self, rt);
-        getCharacterValueFast(res) = ~getCharacterValueFast(res);
-        return res;
+    if (!isInstanceObject(self)) {
+        rt->signalError(self->shortRepr() + " does not support that operator");
     }
-};
 
-class CharacterMultAdapter: public OperatorAdapter {
-public:
-    Object *operator()(Object *self, const std::vector<Object *> &others, Runtime *rt) {
-        ProfilerCAPTURE();
+    auto res                    = self->type->copy(self, rt);
+    getCharacterValueFast(res) *= -1;
+    return res;
+}
 
-        if (!isInstanceObject(self)) {
-            rt->signalError(self->shortRepr() + " does not support that operator");
-        }
-        if (others.size() != 1) {
-            rt->signalError("Expected exactly one right-side argument");
-            return NULL;
-        }
-        auto &arg1 = others[0];
-        if (!isTypeObject(arg1)) {
-            rt->signalError("Right-side object is invalid: " + arg1->shortRepr());
-        }
-        if (arg1->instance == NULL || arg1->type->id != rt->character_type->id) {
-            rt->signalError("Right-side object " + arg1->shortRepr() + " must be a Character instance object");
-        }
+static Object *CharacterInverseAdapter(Object *self, const std::vector<Object *> &others, Runtime *rt) {
+    ProfilerCAPTURE();
 
-        auto res = makeCharacterInstanceObject(getCharacterValueFast(self) * getCharacterValueFast(arg1), rt);
-        return res;
+    if (!isInstanceObject(self)) {
+        rt->signalError(self->shortRepr() + " does not support that operator");
     }
-};
 
-class CharacterDivAdapter: public OperatorAdapter {
-public:
-    Object *operator()(Object *self, const std::vector<Object *> &others, Runtime *rt) {
-        ProfilerCAPTURE();
+    auto res                   = self->type->copy(self, rt);
+    getCharacterValueFast(res) = ~getCharacterValueFast(res);
+    return res;
+}
 
-        if (!isInstanceObject(self)) {
-            rt->signalError(self->shortRepr() + " does not support that operator");
-        }
-        if (others.size() != 1) {
-            rt->signalError("Expected exactly one right-side argument");
-            return NULL;
-        }
-        auto &arg1 = others[0];
-        if (!isTypeObject(arg1)) {
-            rt->signalError("Right-side object is invalid: " + arg1->shortRepr());
-        }
-        if (arg1->instance == NULL || arg1->type->id != rt->character_type->id) {
-            rt->signalError("Right-side object " + arg1->shortRepr() + " must be a Character instance object");
-        }
+static Object *CharacterMultAdapter(Object *self, const std::vector<Object *> &others, Runtime *rt) {
+    ProfilerCAPTURE();
 
-        auto res = makeCharacterInstanceObject(getCharacterValueFast(self) / getCharacterValueFast(arg1), rt);
-        return res;
+    if (!isInstanceObject(self)) {
+        rt->signalError(self->shortRepr() + " does not support that operator");
     }
-};
-
-class CharacterRemAdapter: public OperatorAdapter {
-public:
-    Object *operator()(Object *self, const std::vector<Object *> &others, Runtime *rt) {
-        ProfilerCAPTURE();
-
-        if (!isInstanceObject(self)) {
-            rt->signalError(self->shortRepr() + " does not support that operator");
-        }
-        if (others.size() != 1) {
-            rt->signalError("Expected exactly one right-side argument");
-            return NULL;
-        }
-        auto &arg1 = others[0];
-        if (!isTypeObject(arg1)) {
-            rt->signalError("Right-side object is invalid: " + arg1->shortRepr());
-        }
-        if (arg1->instance == NULL || arg1->type->id != rt->character_type->id) {
-            rt->signalError("Right-side object " + arg1->shortRepr() + " must be a Character instance object");
-        }
-
-        auto res = makeCharacterInstanceObject(getCharacterValueFast(self) % getCharacterValueFast(arg1), rt);
-        return res;
+    if (others.size() != 1) {
+        rt->signalError("Expected exactly one right-side argument");
+        return NULL;
     }
-};
-
-class CharacterRshiftAdapter: public OperatorAdapter {
-public:
-    Object *operator()(Object *self, const std::vector<Object *> &others, Runtime *rt) {
-        ProfilerCAPTURE();
-
-        if (!isInstanceObject(self)) {
-            rt->signalError(self->shortRepr() + " does not support that operator");
-        }
-        if (others.size() != 1) {
-            rt->signalError("Expected exactly one right-side argument");
-            return NULL;
-        }
-        auto &arg1 = others[0];
-        if (!isTypeObject(arg1)) {
-            rt->signalError("Right-side object is invalid: " + arg1->shortRepr());
-        }
-        if (arg1->instance == NULL || arg1->type->id != rt->character_type->id) {
-            rt->signalError("Right-side object " + arg1->shortRepr() + " must be a Character instance object");
-        }
-
-        auto res = makeCharacterInstanceObject(getCharacterValueFast(self) >> getCharacterValueFast(arg1), rt);
-        return res;
+    auto &arg1 = others[0];
+    if (!isTypeObject(arg1)) {
+        rt->signalError("Right-side object is invalid: " + arg1->shortRepr());
     }
-};
-
-class CharacterLshiftAdapter: public OperatorAdapter {
-public:
-    Object *operator()(Object *self, const std::vector<Object *> &others, Runtime *rt) {
-        ProfilerCAPTURE();
-
-        if (!isInstanceObject(self)) {
-            rt->signalError(self->shortRepr() + " does not support that operator");
-        }
-        if (others.size() != 1) {
-            rt->signalError("Expected exactly one right-side argument");
-            return NULL;
-        }
-        auto &arg1 = others[0];
-        if (!isTypeObject(arg1)) {
-            rt->signalError("Right-side object is invalid: " + arg1->shortRepr());
-        }
-        if (arg1->instance == NULL || arg1->type->id != rt->character_type->id) {
-            rt->signalError("Right-side object " + arg1->shortRepr() + " must be a Character instance object");
-        }
-
-        auto res = makeCharacterInstanceObject(getCharacterValueFast(self) << getCharacterValueFast(arg1), rt);
-        return res;
+    if (arg1->instance == NULL || arg1->type->id != rt->character_type->id) {
+        rt->signalError("Right-side object " + arg1->shortRepr() + " must be a Character instance object");
     }
-};
 
-class CharacterAddAdapter: public OperatorAdapter {
-public:
-    Object *operator()(Object *self, const std::vector<Object *> &others, Runtime *rt) {
-        ProfilerCAPTURE();
+    auto res = makeCharacterInstanceObject(getCharacterValueFast(self) * getCharacterValueFast(arg1), rt);
+    return res;
+}
 
-        if (!isInstanceObject(self)) {
-            rt->signalError(self->shortRepr() + " does not support that operator");
-        }
-        if (others.size() != 1) {
-            rt->signalError("Expected exactly one right-side argument");
-            return NULL;
-        }
-        auto &arg1 = others[0];
-        if (!isTypeObject(arg1)) {
-            rt->signalError("Right-side object is invalid: " + arg1->shortRepr());
-        }
-        if (arg1->instance == NULL || arg1->type->id != rt->character_type->id) {
-            rt->signalError("Right-side object " + arg1->shortRepr() + " must be a Character instance object");
-        }
+static Object *CharacterDivAdapter(Object *self, const std::vector<Object *> &others, Runtime *rt) {
+    ProfilerCAPTURE();
 
-        auto res = makeCharacterInstanceObject(getCharacterValueFast(self) + getCharacterValueFast(arg1), rt);
-        return res;
+    if (!isInstanceObject(self)) {
+        rt->signalError(self->shortRepr() + " does not support that operator");
     }
-};
-
-class CharacterSubAdapter: public OperatorAdapter {
-public:
-    Object *operator()(Object *self, const std::vector<Object *> &others, Runtime *rt) {
-        ProfilerCAPTURE();
-
-        if (!isInstanceObject(self)) {
-            rt->signalError(self->shortRepr() + " does not support that operator");
-        }
-        if (others.size() != 1) {
-            rt->signalError("Expected exactly one right-side argument");
-            return NULL;
-        }
-        auto &arg1 = others[0];
-        if (!isTypeObject(arg1)) {
-            rt->signalError("Right-side object is invalid: " + arg1->shortRepr());
-        }
-        if (arg1->instance == NULL || arg1->type->id != rt->character_type->id) {
-            rt->signalError("Right-side object " + arg1->shortRepr() + " must be a Character instance object");
-        }
-
-        auto res = makeCharacterInstanceObject(getCharacterValueFast(self) - getCharacterValueFast(arg1), rt);
-        return res;
+    if (others.size() != 1) {
+        rt->signalError("Expected exactly one right-side argument");
+        return NULL;
     }
-};
-
-class CharacterLtAdapter: public OperatorAdapter {
-public:
-    Object *operator()(Object *self, const std::vector<Object *> &others, Runtime *rt) {
-        ProfilerCAPTURE();
-
-        if (!isInstanceObject(self)) {
-            rt->signalError(self->shortRepr() + " does not support that operator");
-        }
-        if (others.size() != 1) {
-            rt->signalError("Expected exactly one right-side argument");
-            return NULL;
-        }
-        auto &arg1 = others[0];
-        if (!isTypeObject(arg1)) {
-            rt->signalError("Right-side object is invalid: " + arg1->shortRepr());
-        }
-        if (arg1->instance == NULL || arg1->type->id != rt->character_type->id) {
-            rt->signalError("Right-side object " + arg1->shortRepr() + " must be a Character instance object");
-        }
-
-        auto res = makeBooleanInstanceObject(getCharacterValueFast(self) < getCharacterValueFast(arg1), rt);
-        return res;
+    auto &arg1 = others[0];
+    if (!isTypeObject(arg1)) {
+        rt->signalError("Right-side object is invalid: " + arg1->shortRepr());
     }
-};
-
-class CharacterLeqAdapter: public OperatorAdapter {
-public:
-    Object *operator()(Object *self, const std::vector<Object *> &others, Runtime *rt) {
-        ProfilerCAPTURE();
-
-        if (!isInstanceObject(self)) {
-            rt->signalError(self->shortRepr() + " does not support that operator");
-        }
-        if (others.size() != 1) {
-            rt->signalError("Expected exactly one right-side argument");
-            return NULL;
-        }
-        auto &arg1 = others[0];
-        if (!isTypeObject(arg1)) {
-            rt->signalError("Right-side object is invalid: " + arg1->shortRepr());
-        }
-        if (arg1->instance == NULL || arg1->type->id != rt->character_type->id) {
-            rt->signalError("Right-side object " + arg1->shortRepr() + " must be a Character instance object");
-        }
-
-        auto res = makeBooleanInstanceObject(getCharacterValueFast(self) <= getCharacterValueFast(arg1), rt);
-        return res;
+    if (arg1->instance == NULL || arg1->type->id != rt->character_type->id) {
+        rt->signalError("Right-side object " + arg1->shortRepr() + " must be a Character instance object");
     }
-};
 
-class CharacterGtAdapter: public OperatorAdapter {
-public:
-    Object *operator()(Object *self, const std::vector<Object *> &others, Runtime *rt) {
-        ProfilerCAPTURE();
+    auto res = makeCharacterInstanceObject(getCharacterValueFast(self) / getCharacterValueFast(arg1), rt);
+    return res;
+}
 
-        if (!isInstanceObject(self)) {
-            rt->signalError(self->shortRepr() + " does not support that operator");
-        }
-        if (others.size() != 1) {
-            rt->signalError("Expected exactly one right-side argument");
-            return NULL;
-        }
-        auto &arg1 = others[0];
-        if (!isTypeObject(arg1)) {
-            rt->signalError("Right-side object is invalid: " + arg1->shortRepr());
-        }
-        if (arg1->instance == NULL || arg1->type->id != rt->character_type->id) {
-            rt->signalError("Right-side object " + arg1->shortRepr() + " must be a Character instance object");
-        }
+static Object *CharacterRemAdapter(Object *self, const std::vector<Object *> &others, Runtime *rt) {
+    ProfilerCAPTURE();
 
-        auto res = makeBooleanInstanceObject(getCharacterValueFast(self) > getCharacterValueFast(arg1), rt);
-        return res;
+    if (!isInstanceObject(self)) {
+        rt->signalError(self->shortRepr() + " does not support that operator");
     }
-};
-
-class CharacterGeqAdapter: public OperatorAdapter {
-public:
-    Object *operator()(Object *self, const std::vector<Object *> &others, Runtime *rt) {
-        ProfilerCAPTURE();
-
-        if (!isInstanceObject(self)) {
-            rt->signalError(self->shortRepr() + " does not support that operator");
-        }
-        if (others.size() != 1) {
-            rt->signalError("Expected exactly one right-side argument");
-            return NULL;
-        }
-        auto &arg1 = others[0];
-        if (!isTypeObject(arg1)) {
-            rt->signalError("Right-side object is invalid: " + arg1->shortRepr());
-        }
-        if (arg1->instance == NULL || arg1->type->id != rt->character_type->id) {
-            rt->signalError("Right-side object " + arg1->shortRepr() + " must be a Character instance object");
-        }
-
-        auto res = makeBooleanInstanceObject(getCharacterValueFast(self) >= getCharacterValueFast(arg1), rt);
-        return res;
+    if (others.size() != 1) {
+        rt->signalError("Expected exactly one right-side argument");
+        return NULL;
     }
-};
+    auto &arg1 = others[0];
+    if (!isTypeObject(arg1)) {
+        rt->signalError("Right-side object is invalid: " + arg1->shortRepr());
+    }
+    if (arg1->instance == NULL || arg1->type->id != rt->character_type->id) {
+        rt->signalError("Right-side object " + arg1->shortRepr() + " must be a Character instance object");
+    }
 
-class CharacterEqAdapter: public OperatorAdapter {
-public:
-    Object *operator()(Object *self, const std::vector<Object *> &others, Runtime *rt) {
-        ProfilerCAPTURE();
+    auto res = makeCharacterInstanceObject(getCharacterValueFast(self) % getCharacterValueFast(arg1), rt);
+    return res;
+}
 
-        if (others.size() != 1) {
-            rt->signalError("Expected exactly one right-side argument");
-            return NULL;
-        }
-        auto &arg1 = others[0];
-        if (!isTypeObject(arg1)) {
-            rt->signalError("Right-side object is invalid: " + arg1->shortRepr());
-        }
-        bool i1 = isInstanceObject(self);
-        bool i2 = arg1->instance != NULL;
+static Object *CharacterRshiftAdapter(Object *self, const std::vector<Object *> &others, Runtime *rt) {
+    ProfilerCAPTURE();
 
-        if (i1 && i2) {
-            if (self->type->id != arg1->type->id) {
-                return makeBooleanInstanceObject(false, rt);
-            }
-            return makeBooleanInstanceObject(getCharacterValueFast(self) == getCharacterValueFast(arg1), rt);
-        }
-        else if (!i1 && !i2) {
-            return makeBooleanInstanceObject(self->type->id == arg1->type->id, rt);
-        }
-        else {
+    if (!isInstanceObject(self)) {
+        rt->signalError(self->shortRepr() + " does not support that operator");
+    }
+    if (others.size() != 1) {
+        rt->signalError("Expected exactly one right-side argument");
+        return NULL;
+    }
+    auto &arg1 = others[0];
+    if (!isTypeObject(arg1)) {
+        rt->signalError("Right-side object is invalid: " + arg1->shortRepr());
+    }
+    if (arg1->instance == NULL || arg1->type->id != rt->character_type->id) {
+        rt->signalError("Right-side object " + arg1->shortRepr() + " must be a Character instance object");
+    }
+
+    auto res = makeCharacterInstanceObject(getCharacterValueFast(self) >> getCharacterValueFast(arg1), rt);
+    return res;
+}
+
+static Object *CharacterLshiftAdapter(Object *self, const std::vector<Object *> &others, Runtime *rt) {
+    ProfilerCAPTURE();
+
+    if (!isInstanceObject(self)) {
+        rt->signalError(self->shortRepr() + " does not support that operator");
+    }
+    if (others.size() != 1) {
+        rt->signalError("Expected exactly one right-side argument");
+        return NULL;
+    }
+    auto &arg1 = others[0];
+    if (!isTypeObject(arg1)) {
+        rt->signalError("Right-side object is invalid: " + arg1->shortRepr());
+    }
+    if (arg1->instance == NULL || arg1->type->id != rt->character_type->id) {
+        rt->signalError("Right-side object " + arg1->shortRepr() + " must be a Character instance object");
+    }
+
+    auto res = makeCharacterInstanceObject(getCharacterValueFast(self) << getCharacterValueFast(arg1), rt);
+    return res;
+}
+
+static Object *CharacterAddAdapter(Object *self, const std::vector<Object *> &others, Runtime *rt) {
+    ProfilerCAPTURE();
+
+    if (!isInstanceObject(self)) {
+        rt->signalError(self->shortRepr() + " does not support that operator");
+    }
+    if (others.size() != 1) {
+        rt->signalError("Expected exactly one right-side argument");
+        return NULL;
+    }
+    auto &arg1 = others[0];
+    if (!isTypeObject(arg1)) {
+        rt->signalError("Right-side object is invalid: " + arg1->shortRepr());
+    }
+    if (arg1->instance == NULL || arg1->type->id != rt->character_type->id) {
+        rt->signalError("Right-side object " + arg1->shortRepr() + " must be a Character instance object");
+    }
+
+    auto res = makeCharacterInstanceObject(getCharacterValueFast(self) + getCharacterValueFast(arg1), rt);
+    return res;
+}
+
+static Object *CharacterSubAdapter(Object *self, const std::vector<Object *> &others, Runtime *rt) {
+    ProfilerCAPTURE();
+
+    if (!isInstanceObject(self)) {
+        rt->signalError(self->shortRepr() + " does not support that operator");
+    }
+    if (others.size() != 1) {
+        rt->signalError("Expected exactly one right-side argument");
+        return NULL;
+    }
+    auto &arg1 = others[0];
+    if (!isTypeObject(arg1)) {
+        rt->signalError("Right-side object is invalid: " + arg1->shortRepr());
+    }
+    if (arg1->instance == NULL || arg1->type->id != rt->character_type->id) {
+        rt->signalError("Right-side object " + arg1->shortRepr() + " must be a Character instance object");
+    }
+
+    auto res = makeCharacterInstanceObject(getCharacterValueFast(self) - getCharacterValueFast(arg1), rt);
+    return res;
+}
+
+static Object *CharacterLtAdapter(Object *self, const std::vector<Object *> &others, Runtime *rt) {
+    ProfilerCAPTURE();
+
+    if (!isInstanceObject(self)) {
+        rt->signalError(self->shortRepr() + " does not support that operator");
+    }
+    if (others.size() != 1) {
+        rt->signalError("Expected exactly one right-side argument");
+        return NULL;
+    }
+    auto &arg1 = others[0];
+    if (!isTypeObject(arg1)) {
+        rt->signalError("Right-side object is invalid: " + arg1->shortRepr());
+    }
+    if (arg1->instance == NULL || arg1->type->id != rt->character_type->id) {
+        rt->signalError("Right-side object " + arg1->shortRepr() + " must be a Character instance object");
+    }
+
+    auto res = makeBooleanInstanceObject(getCharacterValueFast(self) < getCharacterValueFast(arg1), rt);
+    return res;
+}
+
+static Object *CharacterLeqAdapter(Object *self, const std::vector<Object *> &others, Runtime *rt) {
+    ProfilerCAPTURE();
+
+    if (!isInstanceObject(self)) {
+        rt->signalError(self->shortRepr() + " does not support that operator");
+    }
+    if (others.size() != 1) {
+        rt->signalError("Expected exactly one right-side argument");
+        return NULL;
+    }
+    auto &arg1 = others[0];
+    if (!isTypeObject(arg1)) {
+        rt->signalError("Right-side object is invalid: " + arg1->shortRepr());
+    }
+    if (arg1->instance == NULL || arg1->type->id != rt->character_type->id) {
+        rt->signalError("Right-side object " + arg1->shortRepr() + " must be a Character instance object");
+    }
+
+    auto res = makeBooleanInstanceObject(getCharacterValueFast(self) <= getCharacterValueFast(arg1), rt);
+    return res;
+}
+
+static Object *CharacterGtAdapter(Object *self, const std::vector<Object *> &others, Runtime *rt) {
+    ProfilerCAPTURE();
+
+    if (!isInstanceObject(self)) {
+        rt->signalError(self->shortRepr() + " does not support that operator");
+    }
+    if (others.size() != 1) {
+        rt->signalError("Expected exactly one right-side argument");
+        return NULL;
+    }
+    auto &arg1 = others[0];
+    if (!isTypeObject(arg1)) {
+        rt->signalError("Right-side object is invalid: " + arg1->shortRepr());
+    }
+    if (arg1->instance == NULL || arg1->type->id != rt->character_type->id) {
+        rt->signalError("Right-side object " + arg1->shortRepr() + " must be a Character instance object");
+    }
+
+    auto res = makeBooleanInstanceObject(getCharacterValueFast(self) > getCharacterValueFast(arg1), rt);
+    return res;
+}
+
+static Object *CharacterGeqAdapter(Object *self, const std::vector<Object *> &others, Runtime *rt) {
+    ProfilerCAPTURE();
+
+    if (!isInstanceObject(self)) {
+        rt->signalError(self->shortRepr() + " does not support that operator");
+    }
+    if (others.size() != 1) {
+        rt->signalError("Expected exactly one right-side argument");
+        return NULL;
+    }
+    auto &arg1 = others[0];
+    if (!isTypeObject(arg1)) {
+        rt->signalError("Right-side object is invalid: " + arg1->shortRepr());
+    }
+    if (arg1->instance == NULL || arg1->type->id != rt->character_type->id) {
+        rt->signalError("Right-side object " + arg1->shortRepr() + " must be a Character instance object");
+    }
+
+    auto res = makeBooleanInstanceObject(getCharacterValueFast(self) >= getCharacterValueFast(arg1), rt);
+    return res;
+}
+
+static Object *CharacterEqAdapter(Object *self, const std::vector<Object *> &others, Runtime *rt) {
+    ProfilerCAPTURE();
+
+    if (others.size() != 1) {
+        rt->signalError("Expected exactly one right-side argument");
+        return NULL;
+    }
+    auto &arg1 = others[0];
+    if (!isTypeObject(arg1)) {
+        rt->signalError("Right-side object is invalid: " + arg1->shortRepr());
+    }
+    bool i1 = isInstanceObject(self);
+    bool i2 = arg1->instance != NULL;
+
+    if (i1 && i2) {
+        if (self->type->id != arg1->type->id) {
             return makeBooleanInstanceObject(false, rt);
         }
+        return makeBooleanInstanceObject(getCharacterValueFast(self) == getCharacterValueFast(arg1), rt);
     }
-};
-
-class CharacterNeqAdapter: public CharacterEqAdapter {
-public:
-    Object *operator()(Object *self, const std::vector<Object *> &others, Runtime *rt) {
-        ProfilerCAPTURE();
-        auto res                   = CharacterEqAdapter::operator()(self, others, rt);
-        getCharacterValueFast(res) = !getCharacterValueFast(res);
-        return res;
+    else if (!i1 && !i2) {
+        return makeBooleanInstanceObject(self->type->id == arg1->type->id, rt);
     }
-};
-
-class CharacterBitandAdapter: public OperatorAdapter {
-public:
-    Object *operator()(Object *self, const std::vector<Object *> &others, Runtime *rt) {
-        ProfilerCAPTURE();
-
-        if (!isInstanceObject(self)) {
-            rt->signalError(self->shortRepr() + " does not support that operator");
-        }
-        if (others.size() != 1) {
-            rt->signalError("Expected exactly one right-side argument");
-            return NULL;
-        }
-        auto &arg1 = others[0];
-        if (!isTypeObject(arg1)) {
-            rt->signalError("Right-side object is invalid: " + arg1->shortRepr());
-        }
-        if (arg1->instance == NULL || arg1->type->id != rt->character_type->id) {
-            rt->signalError("Right-side object " + arg1->shortRepr() + " must be a Character instance object");
-        }
-
-        auto res = makeCharacterInstanceObject(getCharacterValueFast(self) & getCharacterValueFast(arg1), rt);
-        return res;
+    else {
+        return makeBooleanInstanceObject(false, rt);
     }
-};
+}
 
-class CharacterBitxorAdapter: public OperatorAdapter {
-public:
-    Object *operator()(Object *self, const std::vector<Object *> &others, Runtime *rt) {
-        ProfilerCAPTURE();
+static Object *CharacterNeqAdapter(Object *self, const std::vector<Object *> &others, Runtime *rt) {
+    ProfilerCAPTURE();
+    auto res                   = CharacterEqAdapter(self, others, rt);
+    getCharacterValueFast(res) = !getCharacterValueFast(res);
+    return res;
+}
 
-        if (!isInstanceObject(self)) {
-            rt->signalError(self->shortRepr() + " does not support that operator");
-        }
-        if (others.size() != 1) {
-            rt->signalError("Expected exactly one right-side argument");
-            return NULL;
-        }
-        auto &arg1 = others[0];
-        if (!isTypeObject(arg1)) {
-            rt->signalError("Right-side object is invalid: " + arg1->shortRepr());
-        }
-        if (arg1->instance == NULL || arg1->type->id != rt->character_type->id) {
-            rt->signalError("Right-side object " + arg1->shortRepr() + " must be a Character instance object");
-        }
+static Object *CharacterBitandAdapter(Object *self, const std::vector<Object *> &others, Runtime *rt) {
+    ProfilerCAPTURE();
 
-        auto res = makeCharacterInstanceObject(getCharacterValueFast(self) ^ getCharacterValueFast(arg1), rt);
-        return res;
+    if (!isInstanceObject(self)) {
+        rt->signalError(self->shortRepr() + " does not support that operator");
     }
-};
-
-class CharacterBitorAdapter: public OperatorAdapter {
-public:
-    Object *operator()(Object *self, const std::vector<Object *> &others, Runtime *rt) {
-        ProfilerCAPTURE();
-
-        if (!isInstanceObject(self)) {
-            rt->signalError(self->shortRepr() + " does not support that operator");
-        }
-        if (others.size() != 1) {
-            rt->signalError("Expected exactly one right-side argument");
-            return NULL;
-        }
-        auto &arg1 = others[0];
-        if (!isTypeObject(arg1)) {
-            rt->signalError("Right-side object is invalid: " + arg1->shortRepr());
-        }
-        if (arg1->instance == NULL || arg1->type->id != rt->character_type->id) {
-            rt->signalError("Right-side object " + arg1->shortRepr() + " must be a Character instance object");
-        }
-
-        auto res = makeCharacterInstanceObject(getCharacterValueFast(self) | getCharacterValueFast(arg1), rt);
-        return res;
+    if (others.size() != 1) {
+        rt->signalError("Expected exactly one right-side argument");
+        return NULL;
     }
-};
+    auto &arg1 = others[0];
+    if (!isTypeObject(arg1)) {
+        rt->signalError("Right-side object is invalid: " + arg1->shortRepr());
+    }
+    if (arg1->instance == NULL || arg1->type->id != rt->character_type->id) {
+        rt->signalError("Right-side object " + arg1->shortRepr() + " must be a Character instance object");
+    }
+
+    auto res = makeCharacterInstanceObject(getCharacterValueFast(self) & getCharacterValueFast(arg1), rt);
+    return res;
+}
+
+static Object *CharacterBitxorAdapter(Object *self, const std::vector<Object *> &others, Runtime *rt) {
+    ProfilerCAPTURE();
+
+    if (!isInstanceObject(self)) {
+        rt->signalError(self->shortRepr() + " does not support that operator");
+    }
+    if (others.size() != 1) {
+        rt->signalError("Expected exactly one right-side argument");
+        return NULL;
+    }
+    auto &arg1 = others[0];
+    if (!isTypeObject(arg1)) {
+        rt->signalError("Right-side object is invalid: " + arg1->shortRepr());
+    }
+    if (arg1->instance == NULL || arg1->type->id != rt->character_type->id) {
+        rt->signalError("Right-side object " + arg1->shortRepr() + " must be a Character instance object");
+    }
+
+    auto res = makeCharacterInstanceObject(getCharacterValueFast(self) ^ getCharacterValueFast(arg1), rt);
+    return res;
+}
+
+static Object *CharacterBitorAdapter(Object *self, const std::vector<Object *> &others, Runtime *rt) {
+    ProfilerCAPTURE();
+
+    if (!isInstanceObject(self)) {
+        rt->signalError(self->shortRepr() + " does not support that operator");
+    }
+    if (others.size() != 1) {
+        rt->signalError("Expected exactly one right-side argument");
+        return NULL;
+    }
+    auto &arg1 = others[0];
+    if (!isTypeObject(arg1)) {
+        rt->signalError("Right-side object is invalid: " + arg1->shortRepr());
+    }
+    if (arg1->instance == NULL || arg1->type->id != rt->character_type->id) {
+        rt->signalError("Right-side object " + arg1->shortRepr() + " must be a Character instance object");
+    }
+
+    auto res = makeCharacterInstanceObject(getCharacterValueFast(self) | getCharacterValueFast(arg1), rt);
+    return res;
+}
 
 // TODO: add all operators to function and nothing
 CharacterType::CharacterType(Runtime *rt)
     : Type(rt) {
     ProfilerCAPTURE();
-    this->addOperator(OperatorNode::POST_PLUS_PLUS, new CharacterPostincAdapter());
-    this->addOperator(OperatorNode::POST_MINUS_MINUS, new CharacterPostdecAdapter());
-    this->addOperator(OperatorNode::CALL, new CharacterUnsupportedAdapter());
-    this->addOperator(OperatorNode::INDEX, new CharacterUnsupportedAdapter());
-    this->addOperator(OperatorNode::PRE_PLUS_PLUS, new CharacterPreincAdapter());
-    this->addOperator(OperatorNode::PRE_MINUS_MINUS, new CharacterPredecAdapter());
-    this->addOperator(OperatorNode::PRE_PLUS, new CharacterPositiveAdapter());
-    this->addOperator(OperatorNode::PRE_MINUS, new CharacterNegativeAdapter());
-    this->addOperator(OperatorNode::NOT, new CharacterUnsupportedAdapter());
-    this->addOperator(OperatorNode::INVERSE, new CharacterInverseAdapter());
-    this->addOperator(OperatorNode::MULT, new CharacterMultAdapter());
-    this->addOperator(OperatorNode::DIV, new CharacterDivAdapter());
-    this->addOperator(OperatorNode::REM, new CharacterRemAdapter());
-    this->addOperator(OperatorNode::RIGHT_SHIFT, new CharacterRshiftAdapter());
-    this->addOperator(OperatorNode::LEFT_SHIFT, new CharacterLshiftAdapter());
-    this->addOperator(OperatorNode::PLUS, new CharacterAddAdapter());
-    this->addOperator(OperatorNode::MINUS, new CharacterSubAdapter());
-    this->addOperator(OperatorNode::LESS, new CharacterLtAdapter());
-    this->addOperator(OperatorNode::LESS_EQUAL, new CharacterLeqAdapter());
-    this->addOperator(OperatorNode::GREATER, new CharacterGtAdapter());
-    this->addOperator(OperatorNode::GREATER_EQUAL, new CharacterGeqAdapter());
-    this->addOperator(OperatorNode::EQUAL, new CharacterEqAdapter());
-    this->addOperator(OperatorNode::NOT_EQUAL, new CharacterNeqAdapter());
-    this->addOperator(OperatorNode::BITAND, new CharacterBitandAdapter());
-    this->addOperator(OperatorNode::BITXOR, new CharacterBitxorAdapter());
-    this->addOperator(OperatorNode::BITOR, new CharacterBitorAdapter());
-    this->addOperator(OperatorNode::AND, new CharacterUnsupportedAdapter());
-    this->addOperator(OperatorNode::OR, new CharacterUnsupportedAdapter());
+    this->addOperator(OperatorNode::POST_PLUS_PLUS, CharacterPostincAdapter);
+    this->addOperator(OperatorNode::POST_MINUS_MINUS, CharacterPostdecAdapter);
+    this->addOperator(OperatorNode::CALL, CharacterUnsupportedAdapter);
+    this->addOperator(OperatorNode::INDEX, CharacterUnsupportedAdapter);
+    this->addOperator(OperatorNode::PRE_PLUS_PLUS, CharacterPreincAdapter);
+    this->addOperator(OperatorNode::PRE_MINUS_MINUS, CharacterPredecAdapter);
+    this->addOperator(OperatorNode::PRE_PLUS, CharacterPositiveAdapter);
+    this->addOperator(OperatorNode::PRE_MINUS, CharacterNegativeAdapter);
+    this->addOperator(OperatorNode::NOT, CharacterUnsupportedAdapter);
+    this->addOperator(OperatorNode::INVERSE, CharacterInverseAdapter);
+    this->addOperator(OperatorNode::MULT, CharacterMultAdapter);
+    this->addOperator(OperatorNode::DIV, CharacterDivAdapter);
+    this->addOperator(OperatorNode::REM, CharacterRemAdapter);
+    this->addOperator(OperatorNode::RIGHT_SHIFT, CharacterRshiftAdapter);
+    this->addOperator(OperatorNode::LEFT_SHIFT, CharacterLshiftAdapter);
+    this->addOperator(OperatorNode::PLUS, CharacterAddAdapter);
+    this->addOperator(OperatorNode::MINUS, CharacterSubAdapter);
+    this->addOperator(OperatorNode::LESS, CharacterLtAdapter);
+    this->addOperator(OperatorNode::LESS_EQUAL, CharacterLeqAdapter);
+    this->addOperator(OperatorNode::GREATER, CharacterGtAdapter);
+    this->addOperator(OperatorNode::GREATER_EQUAL, CharacterGeqAdapter);
+    this->addOperator(OperatorNode::EQUAL, CharacterEqAdapter);
+    this->addOperator(OperatorNode::NOT_EQUAL, CharacterNeqAdapter);
+    this->addOperator(OperatorNode::BITAND, CharacterBitandAdapter);
+    this->addOperator(OperatorNode::BITXOR, CharacterBitxorAdapter);
+    this->addOperator(OperatorNode::BITOR, CharacterBitorAdapter);
+    this->addOperator(OperatorNode::AND, CharacterUnsupportedAdapter);
+    this->addOperator(OperatorNode::OR, CharacterUnsupportedAdapter);
 }
 
 Object *CharacterType::create(Runtime *rt) {
@@ -622,7 +550,6 @@ Object *CharacterType::copy(Object *obj, Runtime *rt) {
     auto res = newObject(true, ins, this, rt);
     return res;
 }
-
 
 std::string CharacterType::shortRepr() {
     ProfilerCAPTURE();

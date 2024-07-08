@@ -46,13 +46,12 @@ Type::~Type() {
     ProfilerCAPTURE();
     this->id = -1;
     for (auto &op : this->operators) {
-        delete op;
         op = NULL;
     }
     // we don't do anything else, because the GC will take care of that
 }
 
-void Type::addOperator(OperatorNode::OperatorId id, OperatorAdapter *op) {
+void Type::addOperator(OperatorNode::OperatorId id, OperatorAdapter op) {
     ProfilerCAPTURE();
     this->operators[id] = op;
 }
@@ -62,7 +61,7 @@ void Type::addMethod(int64_t id, Object *method) {
     this->methods[id] = method;
 }
 
-OperatorAdapter *Type::getOperator(OperatorNode::OperatorId id, Runtime *rt) {
+OperatorAdapter Type::getOperator(OperatorNode::OperatorId id, Runtime *rt) {
     ProfilerCAPTURE();
     auto res = this->operators[id];
     if (res == NULL) {

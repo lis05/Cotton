@@ -12,7 +12,7 @@
 namespace Cotton {
 Runtime::Runtime(GCStrategy *gc_strategy, ErrorManager *error_manager) {
     ProfilerCAPTURE();
-    this->object_allocator = new PoolAllocator(64);
+    this->object_allocator = new PoolAllocator(1024);
     for (auto &a : this->array_of_allocators) {
         a = NULL;
     }
@@ -42,9 +42,6 @@ Runtime::Runtime(GCStrategy *gc_strategy, ErrorManager *error_manager) {
 
     Builtin::installBuiltinFunctions(this);
 
-    this->exec_res_default = this->make(this->nothing_type, Runtime::INSTANCE_OBJECT);
-    this->gc->hold(this->exec_res_default);
-
     this->protected_nothing             = this->make(this->nothing_type, Runtime::INSTANCE_OBJECT);
     this->protected_nothing->can_modify = false;
     this->gc->hold(this->protected_nothing);
@@ -55,13 +52,13 @@ PoolAllocator *Runtime::getAllocator(size_t size) {
         if (this->array_of_allocators[size] != NULL) {
             return this->array_of_allocators[size];
         }
-        return this->array_of_allocators[size] = new PoolAllocator(64);
+        return this->array_of_allocators[size] = new PoolAllocator(1024);
     }
     auto it = this->allocators.find(size);
     if (it != this->allocators.end()) {
         return it->second;
     }
-    return this->allocators[size] = new PoolAllocator(64);
+    return this->allocators[size] = new PoolAllocator(1024);
 }
 
 void *Runtime::alloc(size_t size) {
@@ -141,7 +138,7 @@ Object *Runtime::runOperator(OperatorNode::OperatorId id, Object *obj, const std
     }
 
     auto op  = obj->type->getOperator(id, this);
-    auto res = op->operator()(obj, args, this);
+    auto res = op(obj, args, this);
     return res;
 }
 
@@ -321,7 +318,7 @@ Object *Runtime::execute(OperatorNode *node) {
                 args.push_back(r);
             }
 
-            auto res = this->runOperator(node->id, caller, args);
+            auto res = this->runOperator(node->id, selected, args);
             setExecFlagNONE(this);
             return res;
         }

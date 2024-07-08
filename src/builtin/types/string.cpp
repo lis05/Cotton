@@ -91,120 +91,102 @@ size_t StringType::getInstanceSize() {
     return sizeof(StringInstance);
 }
 
-class StringUnsupportedAdapter: public OperatorAdapter {
-public:
-    Object *operator()(Object *self, const std::vector<Object *> &others, Runtime *rt) {
-        ProfilerCAPTURE();
+static Object *StringUnsupportedAdapter(Object *self, const std::vector<Object *> &others, Runtime *rt) {
+    ProfilerCAPTURE();
+    rt->signalError(self->shortRepr() + " does not support that operator");
+}
+
+static Object *StringIndexAdapter(Object *self, const std::vector<Object *> &others, Runtime *rt) {
+    ProfilerCAPTURE();
+
+    if (!isInstanceObject(self)) {
         rt->signalError(self->shortRepr() + " does not support that operator");
     }
-};
-
-class StringIndexAdapter: public OperatorAdapter {
-public:
-    Object *operator()(Object *self, const std::vector<Object *> &others, Runtime *rt) {
-        ProfilerCAPTURE();
-
-        if (!isInstanceObject(self)) {
-            rt->signalError(self->shortRepr() + " does not support that operator");
-        }
-        if (others.size() != 1) {
-            rt->signalError("Expected exactly one right-side argument");
-            return NULL;
-        }
-        auto &arg1 = others[0];
-        if (!isTypeObject(arg1)) {
-            rt->signalError("Right-side object is invalid: " + arg1->shortRepr());
-        }
-        if (arg1->instance == NULL || arg1->type->id != rt->integer_type->id) {
-            rt->signalError("Index " + arg1->shortRepr() + " must be an integer instance object");
-        }
-        if (!(0 <= getIntegerValueFast(arg1) && getIntegerValueFast(arg1) < getStringDataFast(self).size())) {
-            rt->signalError("Index " + arg1->shortRepr() + " is out of string " + self->shortRepr() + " range");
-        }
-        return getStringDataFast(self)[getIntegerValueFast(arg1)];
+    if (others.size() != 1) {
+        rt->signalError("Expected exactly one right-side argument");
+        return NULL;
     }
-};
-
-class StringAddAdapter: public OperatorAdapter {
-public:
-    Object *operator()(Object *self, const std::vector<Object *> &others, Runtime *rt) {
-        ProfilerCAPTURE();
-
-        if (!isInstanceObject(self)) {
-            rt->signalError(self->shortRepr() + " does not support that operator");
-        }
-        if (others.size() != 1) {
-            rt->signalError("Expected exactly one right-side argument");
-            return NULL;
-        }
-        auto &arg1 = others[0];
-        if (!isTypeObject(arg1)) {
-            rt->signalError("Right-side object is invalid: " + arg1->shortRepr());
-        }
-        if (arg1->instance == NULL || arg1->type->id != rt->string_type->id) {
-            rt->signalError("Right-side object " + arg1->shortRepr() + " must be a String instance object");
-        }
-
-        auto res = rt->copy(self);
-        for (auto obj : getStringDataFast(arg1)) {
-            getStringDataFast(res).push_back(obj);
-        }
-
-        return res;
+    auto &arg1 = others[0];
+    if (!isTypeObject(arg1)) {
+        rt->signalError("Right-side object is invalid: " + arg1->shortRepr());
     }
-};
+    if (arg1->instance == NULL || arg1->type->id != rt->integer_type->id) {
+        rt->signalError("Index " + arg1->shortRepr() + " must be an integer instance object");
+    }
+    if (!(0 <= getIntegerValueFast(arg1) && getIntegerValueFast(arg1) < getStringDataFast(self).size())) {
+        rt->signalError("Index " + arg1->shortRepr() + " is out of string " + self->shortRepr() + " range");
+    }
+    return getStringDataFast(self)[getIntegerValueFast(arg1)];
+}
 
-class StringEqAdapter: public OperatorAdapter {
-public:
-    Object *operator()(Object *self, const std::vector<Object *> &others, Runtime *rt) {
-        ProfilerCAPTURE();
-        if (others.size() != 1) {
-            rt->signalError("Expected exactly one right-side argument");
-            return NULL;
-        }
-        auto &arg1 = others[0];
-        if (!isTypeObject(arg1)) {
-            rt->signalError("Right-side object is invalid: " + arg1->shortRepr());
-        }
+static Object *StringAddAdapter(Object *self, const std::vector<Object *> &others, Runtime *rt) {
+    ProfilerCAPTURE();
 
-        bool i1 = isInstanceObject(self);
-        bool i2 = arg1->instance != NULL;
+    if (!isInstanceObject(self)) {
+        rt->signalError(self->shortRepr() + " does not support that operator");
+    }
+    if (others.size() != 1) {
+        rt->signalError("Expected exactly one right-side argument");
+        return NULL;
+    }
+    auto &arg1 = others[0];
+    if (!isTypeObject(arg1)) {
+        rt->signalError("Right-side object is invalid: " + arg1->shortRepr());
+    }
+    if (arg1->instance == NULL || arg1->type->id != rt->string_type->id) {
+        rt->signalError("Right-side object " + arg1->shortRepr() + " must be a String instance object");
+    }
 
-        if (i1 && i2) {
-            if (self->type->id != arg1->type->id) {
-                return makeBooleanInstanceObject(false, rt);
-            }
-            if (getStringDataFast(self).size() != getStringDataFast(arg1).size()) {
-                return makeBooleanInstanceObject(false, rt);
-            }
-            for (int i = 0; i < getStringDataFast(self).size(); i++) {
-                if (!rt->runOperator(OperatorNode::EQUAL,
-                                     getStringDataFast(self)[i],
-                                     {getStringDataFast(arg1)[i]}))
-                {
-                    return makeBooleanInstanceObject(false, rt);
-                }
-            }
-            return makeBooleanInstanceObject(true, rt);
-        }
-        else if (!i1 && !i2) {
-            return makeBooleanInstanceObject(self->type->id == arg1->type->id, rt);
-        }
-        else {
+    auto res = rt->copy(self);
+    for (auto obj : getStringDataFast(arg1)) {
+        getStringDataFast(res).push_back(obj);
+    }
+
+    return res;
+}
+
+static Object *StringEqAdapter(Object *self, const std::vector<Object *> &others, Runtime *rt) {
+    ProfilerCAPTURE();
+    if (others.size() != 1) {
+        rt->signalError("Expected exactly one right-side argument");
+        return NULL;
+    }
+    auto &arg1 = others[0];
+    if (!isTypeObject(arg1)) {
+        rt->signalError("Right-side object is invalid: " + arg1->shortRepr());
+    }
+
+    bool i1 = isInstanceObject(self);
+    bool i2 = arg1->instance != NULL;
+
+    if (i1 && i2) {
+        if (self->type->id != arg1->type->id) {
             return makeBooleanInstanceObject(false, rt);
         }
+        if (getStringDataFast(self).size() != getStringDataFast(arg1).size()) {
+            return makeBooleanInstanceObject(false, rt);
+        }
+        for (int i = 0; i < getStringDataFast(self).size(); i++) {
+            if (!rt->runOperator(OperatorNode::EQUAL, getStringDataFast(self)[i], {getStringDataFast(arg1)[i]})) {
+                return makeBooleanInstanceObject(false, rt);
+            }
+        }
+        return makeBooleanInstanceObject(true, rt);
     }
-};
+    else if (!i1 && !i2) {
+        return makeBooleanInstanceObject(self->type->id == arg1->type->id, rt);
+    }
+    else {
+        return makeBooleanInstanceObject(false, rt);
+    }
+}
 
-class StringNeqAdapter: public StringEqAdapter {
-public:
-    Object *operator()(Object *self, const std::vector<Object *> &others, Runtime *rt) {
-        ProfilerCAPTURE();
-        auto res                 = StringEqAdapter::operator()(self, others, rt);
-        getBooleanValueFast(res) = !getBooleanValueFast(res);
-        return res;
-    }
-};
+static Object *StringNeqAdapter(Object *self, const std::vector<Object *> &others, Runtime *rt) {
+    ProfilerCAPTURE();
+    auto res                 = StringEqAdapter(self, others, rt);
+    getBooleanValueFast(res) = !getBooleanValueFast(res);
+    return res;
+}
 
 static Object *stringSizeMethod(const std::vector<Object *> &args, Runtime *rt) {
     ProfilerCAPTURE();
@@ -225,34 +207,34 @@ static Object *stringSizeMethod(const std::vector<Object *> &args, Runtime *rt) 
 StringType::StringType(Runtime *rt)
     : Type(rt) {
     ProfilerCAPTURE();
-    this->addOperator(OperatorNode::POST_PLUS_PLUS, new StringUnsupportedAdapter());
-    this->addOperator(OperatorNode::POST_MINUS_MINUS, new StringUnsupportedAdapter());
-    this->addOperator(OperatorNode::CALL, new StringUnsupportedAdapter());
-    this->addOperator(OperatorNode::INDEX, new StringIndexAdapter());
-    this->addOperator(OperatorNode::PRE_PLUS_PLUS, new StringUnsupportedAdapter());
-    this->addOperator(OperatorNode::PRE_MINUS_MINUS, new StringUnsupportedAdapter());
-    this->addOperator(OperatorNode::PRE_PLUS, new StringUnsupportedAdapter());
-    this->addOperator(OperatorNode::PRE_MINUS, new StringUnsupportedAdapter());
-    this->addOperator(OperatorNode::NOT, new StringUnsupportedAdapter());
-    this->addOperator(OperatorNode::INVERSE, new StringUnsupportedAdapter());
-    this->addOperator(OperatorNode::MULT, new StringUnsupportedAdapter());
-    this->addOperator(OperatorNode::DIV, new StringUnsupportedAdapter());
-    this->addOperator(OperatorNode::REM, new StringUnsupportedAdapter());
-    this->addOperator(OperatorNode::RIGHT_SHIFT, new StringUnsupportedAdapter());
-    this->addOperator(OperatorNode::LEFT_SHIFT, new StringUnsupportedAdapter());
-    this->addOperator(OperatorNode::PLUS, new StringAddAdapter());
-    this->addOperator(OperatorNode::MINUS, new StringUnsupportedAdapter());
-    this->addOperator(OperatorNode::LESS, new StringUnsupportedAdapter());
-    this->addOperator(OperatorNode::LESS_EQUAL, new StringUnsupportedAdapter());
-    this->addOperator(OperatorNode::GREATER, new StringUnsupportedAdapter());
-    this->addOperator(OperatorNode::GREATER_EQUAL, new StringUnsupportedAdapter());
-    this->addOperator(OperatorNode::EQUAL, new StringEqAdapter());
-    this->addOperator(OperatorNode::NOT_EQUAL, new StringNeqAdapter());
-    this->addOperator(OperatorNode::BITAND, new StringUnsupportedAdapter());
-    this->addOperator(OperatorNode::BITXOR, new StringUnsupportedAdapter());
-    this->addOperator(OperatorNode::BITOR, new StringUnsupportedAdapter());
-    this->addOperator(OperatorNode::AND, new StringUnsupportedAdapter());
-    this->addOperator(OperatorNode::OR, new StringUnsupportedAdapter());
+    this->addOperator(OperatorNode::POST_PLUS_PLUS, StringUnsupportedAdapter);
+    this->addOperator(OperatorNode::POST_MINUS_MINUS, StringUnsupportedAdapter);
+    this->addOperator(OperatorNode::CALL, StringUnsupportedAdapter);
+    this->addOperator(OperatorNode::INDEX, StringIndexAdapter);
+    this->addOperator(OperatorNode::PRE_PLUS_PLUS, StringUnsupportedAdapter);
+    this->addOperator(OperatorNode::PRE_MINUS_MINUS, StringUnsupportedAdapter);
+    this->addOperator(OperatorNode::PRE_PLUS, StringUnsupportedAdapter);
+    this->addOperator(OperatorNode::PRE_MINUS, StringUnsupportedAdapter);
+    this->addOperator(OperatorNode::NOT, StringUnsupportedAdapter);
+    this->addOperator(OperatorNode::INVERSE, StringUnsupportedAdapter);
+    this->addOperator(OperatorNode::MULT, StringUnsupportedAdapter);
+    this->addOperator(OperatorNode::DIV, StringUnsupportedAdapter);
+    this->addOperator(OperatorNode::REM, StringUnsupportedAdapter);
+    this->addOperator(OperatorNode::RIGHT_SHIFT, StringUnsupportedAdapter);
+    this->addOperator(OperatorNode::LEFT_SHIFT, StringUnsupportedAdapter);
+    this->addOperator(OperatorNode::PLUS, StringAddAdapter);
+    this->addOperator(OperatorNode::MINUS, StringUnsupportedAdapter);
+    this->addOperator(OperatorNode::LESS, StringUnsupportedAdapter);
+    this->addOperator(OperatorNode::LESS_EQUAL, StringUnsupportedAdapter);
+    this->addOperator(OperatorNode::GREATER, StringUnsupportedAdapter);
+    this->addOperator(OperatorNode::GREATER_EQUAL, StringUnsupportedAdapter);
+    this->addOperator(OperatorNode::EQUAL, StringEqAdapter);
+    this->addOperator(OperatorNode::NOT_EQUAL, StringNeqAdapter);
+    this->addOperator(OperatorNode::BITAND, StringUnsupportedAdapter);
+    this->addOperator(OperatorNode::BITXOR, StringUnsupportedAdapter);
+    this->addOperator(OperatorNode::BITOR, StringUnsupportedAdapter);
+    this->addOperator(OperatorNode::AND, StringUnsupportedAdapter);
+    this->addOperator(OperatorNode::OR, StringUnsupportedAdapter);
 
     this->addMethod(NameId("size").id, makeFunctionInstanceObject(true, stringSizeMethod, NULL, rt));
 }

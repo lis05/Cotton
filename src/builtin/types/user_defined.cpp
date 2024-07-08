@@ -90,45 +90,42 @@ std::vector<Object *> UserDefinedInstance::getGCReachable() {
     return res;
 }
 
-class UserDefinedDefaultAdapter: public OperatorAdapter {
-public:
-    Object *operator()(Object *self, const std::vector<Object *> &others, Runtime *rt) {
-        ProfilerCAPTURE();
-        rt->signalError(self->shortRepr() + " does not support that operator");
-    }
-};
+static Object *UserDefinedDefaultAdapter(Object *self, const std::vector<Object *> &others, Runtime *rt) {
+    ProfilerCAPTURE();
+    rt->signalError(self->shortRepr() + " does not support that operator");
+}
 
 UserDefinedType::UserDefinedType(Runtime *rt)
     : Type(rt) {
     ProfilerCAPTURE();
-    this->addOperator(OperatorNode::POST_PLUS_PLUS, new UserDefinedDefaultAdapter());
-    this->addOperator(OperatorNode::POST_MINUS_MINUS, new UserDefinedDefaultAdapter());
-    this->addOperator(OperatorNode::CALL, new UserDefinedDefaultAdapter());
-    this->addOperator(OperatorNode::INDEX, new UserDefinedDefaultAdapter());
-    this->addOperator(OperatorNode::PRE_PLUS_PLUS, new UserDefinedDefaultAdapter());
-    this->addOperator(OperatorNode::PRE_MINUS_MINUS, new UserDefinedDefaultAdapter());
-    this->addOperator(OperatorNode::PRE_PLUS, new UserDefinedDefaultAdapter());
-    this->addOperator(OperatorNode::PRE_MINUS, new UserDefinedDefaultAdapter());
-    this->addOperator(OperatorNode::NOT, new UserDefinedDefaultAdapter());
-    this->addOperator(OperatorNode::INVERSE, new UserDefinedDefaultAdapter());
-    this->addOperator(OperatorNode::MULT, new UserDefinedDefaultAdapter());
-    this->addOperator(OperatorNode::DIV, new UserDefinedDefaultAdapter());
-    this->addOperator(OperatorNode::REM, new UserDefinedDefaultAdapter());
-    this->addOperator(OperatorNode::RIGHT_SHIFT, new UserDefinedDefaultAdapter());
-    this->addOperator(OperatorNode::LEFT_SHIFT, new UserDefinedDefaultAdapter());
-    this->addOperator(OperatorNode::PLUS, new UserDefinedDefaultAdapter());
-    this->addOperator(OperatorNode::MINUS, new UserDefinedDefaultAdapter());
-    this->addOperator(OperatorNode::LESS, new UserDefinedDefaultAdapter());
-    this->addOperator(OperatorNode::LESS_EQUAL, new UserDefinedDefaultAdapter());
-    this->addOperator(OperatorNode::GREATER, new UserDefinedDefaultAdapter());
-    this->addOperator(OperatorNode::GREATER_EQUAL, new UserDefinedDefaultAdapter());
-    this->addOperator(OperatorNode::EQUAL, new UserDefinedDefaultAdapter());
-    this->addOperator(OperatorNode::NOT_EQUAL, new UserDefinedDefaultAdapter());
-    this->addOperator(OperatorNode::BITAND, new UserDefinedDefaultAdapter());
-    this->addOperator(OperatorNode::BITXOR, new UserDefinedDefaultAdapter());
-    this->addOperator(OperatorNode::BITOR, new UserDefinedDefaultAdapter());
-    this->addOperator(OperatorNode::AND, new UserDefinedDefaultAdapter());
-    this->addOperator(OperatorNode::OR, new UserDefinedDefaultAdapter());
+    this->addOperator(OperatorNode::POST_PLUS_PLUS,  UserDefinedDefaultAdapter);
+    this->addOperator(OperatorNode::POST_MINUS_MINUS,  UserDefinedDefaultAdapter);
+    this->addOperator(OperatorNode::CALL,  UserDefinedDefaultAdapter);
+    this->addOperator(OperatorNode::INDEX,  UserDefinedDefaultAdapter);
+    this->addOperator(OperatorNode::PRE_PLUS_PLUS,  UserDefinedDefaultAdapter);
+    this->addOperator(OperatorNode::PRE_MINUS_MINUS,  UserDefinedDefaultAdapter);
+    this->addOperator(OperatorNode::PRE_PLUS,  UserDefinedDefaultAdapter);
+    this->addOperator(OperatorNode::PRE_MINUS,  UserDefinedDefaultAdapter);
+    this->addOperator(OperatorNode::NOT,  UserDefinedDefaultAdapter);
+    this->addOperator(OperatorNode::INVERSE,  UserDefinedDefaultAdapter);
+    this->addOperator(OperatorNode::MULT,  UserDefinedDefaultAdapter);
+    this->addOperator(OperatorNode::DIV,  UserDefinedDefaultAdapter);
+    this->addOperator(OperatorNode::REM,  UserDefinedDefaultAdapter);
+    this->addOperator(OperatorNode::RIGHT_SHIFT,  UserDefinedDefaultAdapter);
+    this->addOperator(OperatorNode::LEFT_SHIFT,  UserDefinedDefaultAdapter);
+    this->addOperator(OperatorNode::PLUS,  UserDefinedDefaultAdapter);
+    this->addOperator(OperatorNode::MINUS,  UserDefinedDefaultAdapter);
+    this->addOperator(OperatorNode::LESS,  UserDefinedDefaultAdapter);
+    this->addOperator(OperatorNode::LESS_EQUAL,  UserDefinedDefaultAdapter);
+    this->addOperator(OperatorNode::GREATER,  UserDefinedDefaultAdapter);
+    this->addOperator(OperatorNode::GREATER_EQUAL,  UserDefinedDefaultAdapter);
+    this->addOperator(OperatorNode::EQUAL,  UserDefinedDefaultAdapter);
+    this->addOperator(OperatorNode::NOT_EQUAL,  UserDefinedDefaultAdapter);
+    this->addOperator(OperatorNode::BITAND,  UserDefinedDefaultAdapter);
+    this->addOperator(OperatorNode::BITXOR,  UserDefinedDefaultAdapter);
+    this->addOperator(OperatorNode::BITOR,  UserDefinedDefaultAdapter);
+    this->addOperator(OperatorNode::AND,  UserDefinedDefaultAdapter);
+    this->addOperator(OperatorNode::OR,  UserDefinedDefaultAdapter);
 }
 
 Object *UserDefinedType::create(Runtime *rt) {
