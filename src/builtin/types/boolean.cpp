@@ -67,13 +67,13 @@ size_t BooleanType::getInstanceSize() {
     return sizeof(BooleanInstance);
 }
 
-static Object *BooleanNotAdapter(Object *self, Runtime *rt) {
+static Object *BooleanNotAdapter(Object *self, Runtime *rt, bool execution_result_matters) {
     ProfilerCAPTURE();
 
     return (getBooleanValue(self, rt)) ? rt->protected_true : rt->protected_false;
 }
 
-static Object *BooleanEqAdapter(Object *self, Object *arg, Runtime *rt) {
+static Object *BooleanEqAdapter(Object *self, Object *arg, Runtime *rt, bool execution_result_matters) {
     ProfilerCAPTURE();
     if (!isTypeObject(arg)) {
         rt->signalError("Right-side object is invalid: " + arg->shortRepr());
@@ -94,13 +94,13 @@ static Object *BooleanEqAdapter(Object *self, Object *arg, Runtime *rt) {
     }
 }
 
-static Object *BooleanNeqAdapter(Object *self, Object *arg, Runtime *rt) {
+static Object *BooleanNeqAdapter(Object *self, Object *arg, Runtime *rt, bool execution_result_matters) {
     ProfilerCAPTURE();
-    auto res = BooleanEqAdapter(self, arg, rt);
+    auto res = BooleanEqAdapter(self, arg, rt, execution_result_matters);
     return (!getBooleanValue(res, rt)) ? rt->protected_true : rt->protected_false;
 }
 
-static Object *BooleanAndAdapter(Object *self, Object *arg, Runtime *rt) {
+static Object *BooleanAndAdapter(Object *self, Object *arg, Runtime *rt, bool execution_result_matters) {
     ProfilerCAPTURE();
 
     if (!isTypeObject(arg)) {
@@ -116,7 +116,7 @@ static Object *BooleanAndAdapter(Object *self, Object *arg, Runtime *rt) {
     return (getBooleanValue(self, rt) && getBooleanValue(arg, rt)) ? rt->protected_true : rt->protected_false;
 }
 
-static Object *BooleanOrAdapter(Object *self, Object *arg, Runtime *rt) {
+static Object *BooleanOrAdapter(Object *self, Object *arg, Runtime *rt, bool execution_result_matters) {
     ProfilerCAPTURE();
 
     if (!isTypeObject(arg)) {

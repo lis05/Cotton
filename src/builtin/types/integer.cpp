@@ -66,11 +66,16 @@ size_t IntegerType::getInstanceSize() {
     return sizeof(IntegerInstance);
 }
 
-static Object *IntegerPostincAdapter(Object *self, Runtime *rt) {
+static Object *IntegerPostincAdapter(Object *self, Runtime *rt, bool execution_result_matters) {
     ProfilerCAPTURE();
 
     if (!isInstanceObject(self)) {
         rt->signalError(self->shortRepr() + " does not support that operator");
+    }
+
+    if (!execution_result_matters) {
+        getIntegerValueFast(self)++;
+        return NULL;
     }
 
     auto res = self->type->copy(self, rt);
@@ -78,11 +83,16 @@ static Object *IntegerPostincAdapter(Object *self, Runtime *rt) {
     return res;
 }
 
-static Object *IntegerPostdecAdapter(Object *self, Runtime *rt) {
+static Object *IntegerPostdecAdapter(Object *self, Runtime *rt, bool execution_result_matters) {
     ProfilerCAPTURE();
 
     if (!isInstanceObject(self)) {
         rt->signalError(self->shortRepr() + " does not support that operator");
+    }
+
+    if (!execution_result_matters) {
+        getIntegerValueFast(self)--;
+        return NULL;
     }
 
     auto res = self->type->copy(self, rt);
@@ -90,11 +100,16 @@ static Object *IntegerPostdecAdapter(Object *self, Runtime *rt) {
     return res;
 }
 
-static Object *IntegerPreincAdapter(Object *self, Runtime *rt) {
+static Object *IntegerPreincAdapter(Object *self, Runtime *rt, bool execution_result_matters) {
     ProfilerCAPTURE();
 
     if (!isInstanceObject(self)) {
         rt->signalError(self->shortRepr() + " does not support that operator");
+    }
+
+    if (!execution_result_matters) {
+        getIntegerValueFast(self)++;
+        return NULL;
     }
 
     getIntegerValueFast(self)++;
@@ -102,11 +117,16 @@ static Object *IntegerPreincAdapter(Object *self, Runtime *rt) {
     return res;
 }
 
-static Object *IntegerPredecAdapter(Object *self, Runtime *rt) {
+static Object *IntegerPredecAdapter(Object *self, Runtime *rt, bool execution_result_matters) {
     ProfilerCAPTURE();
 
     if (!isInstanceObject(self)) {
         rt->signalError(self->shortRepr() + " does not support that operator");
+    }
+
+    if (!execution_result_matters) {
+        getIntegerValueFast(self)--;
+        return NULL;
     }
 
     getIntegerValueFast(self)--;
@@ -114,22 +134,30 @@ static Object *IntegerPredecAdapter(Object *self, Runtime *rt) {
     return res;
 }
 
-static Object *IntegerPositiveAdapter(Object *self, Runtime *rt) {
+static Object *IntegerPositiveAdapter(Object *self, Runtime *rt, bool execution_result_matters) {
     ProfilerCAPTURE();
 
     if (!isInstanceObject(self)) {
         rt->signalError(self->shortRepr() + " does not support that operator");
     }
 
+    if (!execution_result_matters) {
+        return NULL;
+    }
+
     auto res = self->type->copy(self, rt);
     return res;
 }
 
-static Object *IntegerNegativeAdapter(Object *self, Runtime *rt) {
+static Object *IntegerNegativeAdapter(Object *self, Runtime *rt, bool execution_result_matters) {
     ProfilerCAPTURE();
 
     if (!isInstanceObject(self)) {
         rt->signalError(self->shortRepr() + " does not support that operator");
+    }
+
+    if (!execution_result_matters) {
+        return NULL;
     }
 
     auto res                  = self->type->copy(self, rt);
@@ -137,11 +165,15 @@ static Object *IntegerNegativeAdapter(Object *self, Runtime *rt) {
     return res;
 }
 
-static Object *IntegerInverseAdapter(Object *self, Runtime *rt) {
+static Object *IntegerInverseAdapter(Object *self, Runtime *rt, bool execution_result_matters) {
     ProfilerCAPTURE();
 
     if (!isInstanceObject(self)) {
         rt->signalError(self->shortRepr() + " does not support that operator");
+    }
+
+    if (!execution_result_matters) {
+        return NULL;
     }
 
     auto res                 = self->type->copy(self, rt);
@@ -149,7 +181,7 @@ static Object *IntegerInverseAdapter(Object *self, Runtime *rt) {
     return res;
 }
 
-static Object *IntegerMultAdapter(Object *self, Object *arg, Runtime *rt) {
+static Object *IntegerMultAdapter(Object *self, Object *arg, Runtime *rt, bool execution_result_matters) {
     ProfilerCAPTURE();
 
     if (!isInstanceObject(self)) {
@@ -161,13 +193,17 @@ static Object *IntegerMultAdapter(Object *self, Object *arg, Runtime *rt) {
     }
     if (arg->instance == NULL || arg->type->id != rt->integer_type->id) {
         rt->signalError("Right-side object " + arg->shortRepr() + " must be an integer instance object");
+    }
+
+    if (!execution_result_matters) {
+        return NULL;
     }
 
     auto res = makeIntegerInstanceObject(getIntegerValueFast(self) * getIntegerValueFast(arg), rt);
     return res;
 }
 
-static Object *IntegerDivAdapter(Object *self, Object *arg, Runtime *rt) {
+static Object *IntegerDivAdapter(Object *self, Object *arg, Runtime *rt, bool execution_result_matters) {
     ProfilerCAPTURE();
 
     if (!isInstanceObject(self)) {
@@ -179,13 +215,17 @@ static Object *IntegerDivAdapter(Object *self, Object *arg, Runtime *rt) {
     }
     if (arg->instance == NULL || arg->type->id != rt->integer_type->id) {
         rt->signalError("Right-side object " + arg->shortRepr() + " must be an integer instance object");
+    }
+
+    if (!execution_result_matters) {
+        return NULL;
     }
 
     auto res = makeIntegerInstanceObject(getIntegerValueFast(self) / getIntegerValueFast(arg), rt);
     return res;
 }
 
-static Object *IntegerRemAdapter(Object *self, Object *arg, Runtime *rt) {
+static Object *IntegerRemAdapter(Object *self, Object *arg, Runtime *rt, bool execution_result_matters) {
     ProfilerCAPTURE();
 
     if (!isInstanceObject(self)) {
@@ -197,13 +237,17 @@ static Object *IntegerRemAdapter(Object *self, Object *arg, Runtime *rt) {
     }
     if (arg->instance == NULL || arg->type->id != rt->integer_type->id) {
         rt->signalError("Right-side object " + arg->shortRepr() + " must be an integer instance object");
+    }
+
+    if (!execution_result_matters) {
+        return NULL;
     }
 
     auto res = makeIntegerInstanceObject(getIntegerValueFast(self) % getIntegerValueFast(arg), rt);
     return res;
 }
 
-static Object *IntegerRshiftAdapter(Object *self, Object *arg, Runtime *rt) {
+static Object *IntegerRshiftAdapter(Object *self, Object *arg, Runtime *rt, bool execution_result_matters) {
     ProfilerCAPTURE();
 
     if (!isInstanceObject(self)) {
@@ -215,13 +259,17 @@ static Object *IntegerRshiftAdapter(Object *self, Object *arg, Runtime *rt) {
     }
     if (arg->instance == NULL || arg->type->id != rt->integer_type->id) {
         rt->signalError("Right-side object " + arg->shortRepr() + " must be an integer instance object");
+    }
+
+    if (!execution_result_matters) {
+        return NULL;
     }
 
     auto res = makeIntegerInstanceObject(getIntegerValueFast(self) >> getIntegerValueFast(arg), rt);
     return res;
 }
 
-static Object *IntegerLshiftAdapter(Object *self, Object *arg, Runtime *rt) {
+static Object *IntegerLshiftAdapter(Object *self, Object *arg, Runtime *rt, bool execution_result_matters) {
     ProfilerCAPTURE();
 
     if (!isInstanceObject(self)) {
@@ -233,13 +281,17 @@ static Object *IntegerLshiftAdapter(Object *self, Object *arg, Runtime *rt) {
     }
     if (arg->instance == NULL || arg->type->id != rt->integer_type->id) {
         rt->signalError("Right-side object " + arg->shortRepr() + " must be an integer instance object");
+    }
+
+    if (!execution_result_matters) {
+        return NULL;
     }
 
     auto res = makeIntegerInstanceObject(getIntegerValueFast(self) << getIntegerValueFast(arg), rt);
     return res;
 }
 
-static Object *IntegerAddAdapter(Object *self, Object *arg, Runtime *rt) {
+static Object *IntegerAddAdapter(Object *self, Object *arg, Runtime *rt, bool execution_result_matters) {
     ProfilerCAPTURE();
 
     if (!isInstanceObject(self)) {
@@ -251,13 +303,17 @@ static Object *IntegerAddAdapter(Object *self, Object *arg, Runtime *rt) {
     }
     if (arg->instance == NULL || arg->type->id != rt->integer_type->id) {
         rt->signalError("Right-side object " + arg->shortRepr() + " must be an integer instance object");
+    }
+
+    if (!execution_result_matters) {
+        return NULL;
     }
 
     auto res = makeIntegerInstanceObject(getIntegerValueFast(self) + getIntegerValueFast(arg), rt);
     return res;
 }
 
-static Object *IntegerSubAdapter(Object *self, Object *arg, Runtime *rt) {
+static Object *IntegerSubAdapter(Object *self, Object *arg, Runtime *rt, bool execution_result_matters) {
     ProfilerCAPTURE();
 
     if (!isInstanceObject(self)) {
@@ -271,11 +327,15 @@ static Object *IntegerSubAdapter(Object *self, Object *arg, Runtime *rt) {
         rt->signalError("Right-side object " + arg->shortRepr() + " must be an integer instance object");
     }
 
+    if (!execution_result_matters) {
+        return NULL;
+    }
+
     auto res = makeIntegerInstanceObject(getIntegerValueFast(self) - getIntegerValueFast(arg), rt);
     return res;
 }
 
-static Object *IntegerLtAdapter(Object *self, Object *arg, Runtime *rt) {
+static Object *IntegerLtAdapter(Object *self, Object *arg, Runtime *rt, bool execution_result_matters) {
     ProfilerCAPTURE();
 
     if (!isInstanceObject(self)) {
@@ -292,7 +352,7 @@ static Object *IntegerLtAdapter(Object *self, Object *arg, Runtime *rt) {
     return (getIntegerValueFast(self) < getIntegerValueFast(arg)) ? rt->protected_true : rt->protected_false;
 }
 
-static Object *IntegerLeqAdapter(Object *self, Object *arg, Runtime *rt) {
+static Object *IntegerLeqAdapter(Object *self, Object *arg, Runtime *rt, bool execution_result_matters) {
     ProfilerCAPTURE();
 
     if (!isInstanceObject(self)) {
@@ -309,7 +369,7 @@ static Object *IntegerLeqAdapter(Object *self, Object *arg, Runtime *rt) {
     return (getIntegerValueFast(self) <= getIntegerValueFast(arg)) ? rt->protected_true : rt->protected_false;
 }
 
-static Object *IntegerGtAdapter(Object *self, Object *arg, Runtime *rt) {
+static Object *IntegerGtAdapter(Object *self, Object *arg, Runtime *rt, bool execution_result_matters) {
     ProfilerCAPTURE();
 
     if (!isInstanceObject(self)) {
@@ -326,7 +386,7 @@ static Object *IntegerGtAdapter(Object *self, Object *arg, Runtime *rt) {
     return (getIntegerValueFast(self) > getIntegerValueFast(arg)) ? rt->protected_true : rt->protected_false;
 }
 
-static Object *IntegerGeqAdapter(Object *self, Object *arg, Runtime *rt) {
+static Object *IntegerGeqAdapter(Object *self, Object *arg, Runtime *rt, bool execution_result_matters) {
     ProfilerCAPTURE();
 
     if (!isInstanceObject(self)) {
@@ -343,7 +403,7 @@ static Object *IntegerGeqAdapter(Object *self, Object *arg, Runtime *rt) {
     return (getIntegerValueFast(self) >= getIntegerValueFast(arg)) ? rt->protected_true : rt->protected_false;
 }
 
-static Object *IntegerEqAdapter(Object *self, Object *arg, Runtime *rt) {
+static Object *IntegerEqAdapter(Object *self, Object *arg, Runtime *rt, bool execution_result_matters) {
     ProfilerCAPTURE();
 
     if (!isTypeObject(arg)) {
@@ -367,13 +427,13 @@ static Object *IntegerEqAdapter(Object *self, Object *arg, Runtime *rt) {
     }
 }
 
-static Object *IntegerNeqAdapter(Object *self, Object *arg, Runtime *rt) {
+static Object *IntegerNeqAdapter(Object *self, Object *arg, Runtime *rt, bool execution_result_matters) {
     ProfilerCAPTURE();
-    auto res = IntegerEqAdapter(self, arg, rt);
+    auto res = IntegerEqAdapter(self, arg, rt, execution_result_matters);
     return (!getBooleanValueFast(res)) ? rt->protected_true : rt->protected_false;
 }
 
-static Object *IntegerBitandAdapter(Object *self, Object *arg, Runtime *rt) {
+static Object *IntegerBitandAdapter(Object *self, Object *arg, Runtime *rt, bool execution_result_matters) {
     ProfilerCAPTURE();
 
     if (!isInstanceObject(self)) {
@@ -385,13 +445,17 @@ static Object *IntegerBitandAdapter(Object *self, Object *arg, Runtime *rt) {
     }
     if (arg->instance == NULL || arg->type->id != rt->integer_type->id) {
         rt->signalError("Right-side object " + arg->shortRepr() + " must be an integer instance object");
+    }
+
+    if (!execution_result_matters) {
+        return NULL;
     }
 
     auto res = makeIntegerInstanceObject(getIntegerValueFast(self) & getIntegerValueFast(arg), rt);
     return res;
 }
 
-static Object *IntegerBitxorAdapter(Object *self, Object *arg, Runtime *rt) {
+static Object *IntegerBitxorAdapter(Object *self, Object *arg, Runtime *rt, bool execution_result_matters) {
     ProfilerCAPTURE();
 
     if (!isInstanceObject(self)) {
@@ -403,13 +467,17 @@ static Object *IntegerBitxorAdapter(Object *self, Object *arg, Runtime *rt) {
     }
     if (arg->instance == NULL || arg->type->id != rt->integer_type->id) {
         rt->signalError("Right-side object " + arg->shortRepr() + " must be an integer instance object");
+    }
+
+    if (!execution_result_matters) {
+        return NULL;
     }
 
     auto res = makeIntegerInstanceObject(getIntegerValueFast(self) ^ getIntegerValueFast(arg), rt);
     return res;
 }
 
-static Object *IntegerBitorAdapter(Object *self, Object *arg, Runtime *rt) {
+static Object *IntegerBitorAdapter(Object *self, Object *arg, Runtime *rt, bool execution_result_matters) {
     ProfilerCAPTURE();
 
     if (!isInstanceObject(self)) {
@@ -421,6 +489,10 @@ static Object *IntegerBitorAdapter(Object *self, Object *arg, Runtime *rt) {
     }
     if (arg->instance == NULL || arg->type->id != rt->integer_type->id) {
         rt->signalError("Right-side object " + arg->shortRepr() + " must be an integer instance object");
+    }
+
+    if (!execution_result_matters) {
+        return NULL;
     }
 
     auto res = makeIntegerInstanceObject(getIntegerValueFast(self) | getIntegerValueFast(arg), rt);

@@ -66,22 +66,30 @@ size_t RealType::getInstanceSize() {
     return sizeof(RealInstance);
 }
 
-static Object *RealPositiveAdapter(Object *self, Runtime *rt) {
+static Object *RealPositiveAdapter(Object *self, Runtime *rt, bool execution_result_matters) {
     ProfilerCAPTURE();
 
     if (!isInstanceObject(self)) {
         rt->signalError(self->shortRepr() + " does not support that operator");
     }
 
+    if (!execution_result_matters) {
+        return NULL;
+    }
+
     auto res = self->type->copy(self, rt);
     return res;
 }
 
-static Object *RealNegativeAdapter(Object *self, Runtime *rt) {
+static Object *RealNegativeAdapter(Object *self, Runtime *rt, bool execution_result_matters) {
     ProfilerCAPTURE();
 
     if (!isInstanceObject(self)) {
         rt->signalError(self->shortRepr() + " does not support that operator");
+    }
+
+    if (!execution_result_matters) {
+        return NULL;
     }
 
     auto res               = self->type->copy(self, rt);
@@ -89,7 +97,7 @@ static Object *RealNegativeAdapter(Object *self, Runtime *rt) {
     return res;
 }
 
-static Object *RealMultAdapter(Object *self, Object *arg, Runtime *rt) {
+static Object *RealMultAdapter(Object *self, Object *arg, Runtime *rt, bool execution_result_matters) {
     ProfilerCAPTURE();
 
     if (!isInstanceObject(self)) {
@@ -101,13 +109,17 @@ static Object *RealMultAdapter(Object *self, Object *arg, Runtime *rt) {
     }
     if (arg->instance == NULL || arg->type->id != rt->real_type->id) {
         rt->signalError("Right-side object " + arg->shortRepr() + " must be a Real instance object");
+    }
+
+    if (!execution_result_matters) {
+        return NULL;
     }
 
     auto res = makeRealInstanceObject(getRealValueFast(self) * getRealValueFast(arg), rt);
     return res;
 }
 
-static Object *RealDivAdapter(Object *self, Object *arg, Runtime *rt) {
+static Object *RealDivAdapter(Object *self, Object *arg, Runtime *rt, bool execution_result_matters) {
     ProfilerCAPTURE();
 
     if (!isInstanceObject(self)) {
@@ -119,13 +131,17 @@ static Object *RealDivAdapter(Object *self, Object *arg, Runtime *rt) {
     }
     if (arg->instance == NULL || arg->type->id != rt->real_type->id) {
         rt->signalError("Right-side object " + arg->shortRepr() + " must be a Real instance object");
+    }
+
+    if (!execution_result_matters) {
+        return NULL;
     }
 
     auto res = makeRealInstanceObject(getRealValueFast(self) / getRealValueFast(arg), rt);
     return res;
 }
 
-static Object *RealAddAdapter(Object *self, Object *arg, Runtime *rt) {
+static Object *RealAddAdapter(Object *self, Object *arg, Runtime *rt, bool execution_result_matters) {
     ProfilerCAPTURE();
 
     if (!isInstanceObject(self)) {
@@ -137,13 +153,17 @@ static Object *RealAddAdapter(Object *self, Object *arg, Runtime *rt) {
     }
     if (arg->instance == NULL || arg->type->id != rt->real_type->id) {
         rt->signalError("Right-side object " + arg->shortRepr() + " must be a Real instance object");
+    }
+
+    if (!execution_result_matters) {
+        return NULL;
     }
 
     auto res = makeRealInstanceObject(getRealValueFast(self) + getRealValueFast(arg), rt);
     return res;
 }
 
-static Object *RealSubAdapter(Object *self, Object *arg, Runtime *rt) {
+static Object *RealSubAdapter(Object *self, Object *arg, Runtime *rt, bool execution_result_matters) {
     ProfilerCAPTURE();
 
     if (!isInstanceObject(self)) {
@@ -155,13 +175,17 @@ static Object *RealSubAdapter(Object *self, Object *arg, Runtime *rt) {
     }
     if (arg->instance == NULL || arg->type->id != rt->real_type->id) {
         rt->signalError("Right-side object " + arg->shortRepr() + " must be a Real instance object");
+    }
+
+    if (!execution_result_matters) {
+        return NULL;
     }
 
     auto res = makeRealInstanceObject(getRealValueFast(self) - getRealValueFast(arg), rt);
     return res;
 }
 
-static Object *RealLtAdapter(Object *self, Object *arg, Runtime *rt) {
+static Object *RealLtAdapter(Object *self, Object *arg, Runtime *rt, bool execution_result_matters) {
     ProfilerCAPTURE();
 
     if (!isInstanceObject(self)) {
@@ -175,10 +199,14 @@ static Object *RealLtAdapter(Object *self, Object *arg, Runtime *rt) {
         rt->signalError("Right-side object " + arg->shortRepr() + " must be a Real instance object");
     }
 
+    if (!execution_result_matters) {
+        return NULL;
+    }
+
     return (getRealValueFast(self) < getRealValueFast(arg)) ? rt->protected_true : rt->protected_false;
 }
 
-static Object *RealLeqAdapter(Object *self, Object *arg, Runtime *rt) {
+static Object *RealLeqAdapter(Object *self, Object *arg, Runtime *rt, bool execution_result_matters) {
     ProfilerCAPTURE();
 
     if (!isInstanceObject(self)) {
@@ -195,7 +223,7 @@ static Object *RealLeqAdapter(Object *self, Object *arg, Runtime *rt) {
     return (getRealValueFast(self) <= getRealValueFast(arg)) ? rt->protected_true : rt->protected_false;
 }
 
-static Object *RealGtAdapter(Object *self, Object *arg, Runtime *rt) {
+static Object *RealGtAdapter(Object *self, Object *arg, Runtime *rt, bool execution_result_matters) {
     ProfilerCAPTURE();
 
     if (!isInstanceObject(self)) {
@@ -212,7 +240,7 @@ static Object *RealGtAdapter(Object *self, Object *arg, Runtime *rt) {
     return (getRealValueFast(self) > getRealValueFast(arg)) ? rt->protected_true : rt->protected_false;
 }
 
-static Object *RealGeqAdapter(Object *self, Object *arg, Runtime *rt) {
+static Object *RealGeqAdapter(Object *self, Object *arg, Runtime *rt, bool execution_result_matters) {
     ProfilerCAPTURE();
 
     if (!isInstanceObject(self)) {
@@ -229,7 +257,7 @@ static Object *RealGeqAdapter(Object *self, Object *arg, Runtime *rt) {
     return (getRealValueFast(self) >= getRealValueFast(arg)) ? rt->protected_true : rt->protected_false;
 }
 
-static Object *RealEqAdapter(Object *self, Object *arg, Runtime *rt) {
+static Object *RealEqAdapter(Object *self, Object *arg, Runtime *rt, bool execution_result_matters) {
     ProfilerCAPTURE();
 
     if (!isTypeObject(arg)) {
@@ -253,9 +281,9 @@ static Object *RealEqAdapter(Object *self, Object *arg, Runtime *rt) {
     }
 }
 
-static Object *RealNeqAdapter(Object *self, Object *arg, Runtime *rt) {
+static Object *RealNeqAdapter(Object *self, Object *arg, Runtime *rt, bool execution_result_matters) {
     ProfilerCAPTURE();
-    auto res = RealEqAdapter(self, arg, rt);
+    auto res = RealEqAdapter(self, arg, rt, execution_result_matters);
     return (!getBooleanValueFast(res)) ? rt->protected_true : rt->protected_false;
 }
 

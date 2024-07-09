@@ -23,7 +23,7 @@
 
 namespace Cotton::Builtin {
 
-static Object *make(const std::vector<Object *> &args, Runtime *rt) {
+static Object *make(const std::vector<Object *> &args, Runtime *rt, bool execution_result_matters) {
     ProfilerCAPTURE();
     if (args.size() != 1) {
         rt->signalError("Expected exactly one argument");
@@ -33,10 +33,14 @@ static Object *make(const std::vector<Object *> &args, Runtime *rt) {
         rt->signalError("Expected a type object but got " + arg->shortRepr());
     }
 
+    if (!execution_result_matters) {
+        return NULL;
+    }
+
     return rt->make(arg->type, Runtime::INSTANCE_OBJECT);
 }
 
-static Object *print(const std::vector<Object *> &args, Runtime *rt) {
+static Object *print(const std::vector<Object *> &args, Runtime *rt, bool execution_result_matters) {
     ProfilerCAPTURE();
     bool f = false;
     for (auto arg : args) {

@@ -25,7 +25,7 @@
 
 namespace Cotton::Builtin {
 
-typedef Object *(*InternalFunction)(const std::vector<Object *> &args, Runtime *rt);
+typedef Object *(*InternalFunction)(const std::vector<Object *> &args, Runtime *rt, bool execution_result_matters);
 
 class FunctionInstance: public Instance {
 public:
@@ -40,7 +40,7 @@ public:
     Instance   *copy(Runtime *rt);
     size_t      getSize();
     std::string shortRepr();
-    void destroy(Runtime *rt);
+    void        destroy(Runtime *rt);
 };
 
 class FunctionType: public Type {

@@ -67,7 +67,7 @@ void NothingInstance::destroy(Runtime *rt) {
     rt->dealloc(this, sizeof(NothingInstance));
 }
 
-static Object *NothingEqAdapter(Object *self, Object *arg, Runtime *rt) {
+static Object *NothingEqAdapter(Object *self, Object *arg, Runtime *rt, bool execution_result_matters) {
     ProfilerCAPTURE();
     if (!isTypeObject(arg)) {
         rt->signalError("Right-side object is invalid: " + arg->shortRepr());
@@ -87,10 +87,10 @@ static Object *NothingEqAdapter(Object *self, Object *arg, Runtime *rt) {
     }
 }
 
-static Object *NothingNeqAdapter(Object *self, Object *arg, Runtime *rt) {
+static Object *NothingNeqAdapter(Object *self, Object *arg, Runtime *rt, bool execution_result_matters) {
     ProfilerCAPTURE();
-    auto res = NothingEqAdapter(self, arg, rt);
-    return (!getBooleanValue(res, rt)) ? rt->protected_true : rt->protected_false;
+    auto res = NothingEqAdapter(self, arg, rt, execution_result_matters);
+    return (!getBooleanValueFast(res)) ? rt->protected_true : rt->protected_false;
 }
 
 // TODO: add all operators to function and nothing

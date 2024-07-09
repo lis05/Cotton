@@ -75,7 +75,8 @@ size_t FunctionType::getInstanceSize() {
     return sizeof(FunctionInstance);
 }
 
-static Object *FunctionCallAdapter(Object *self, const std::vector<Object *> &others, Runtime *rt) {
+static Object *
+FunctionCallAdapter(Object *self, const std::vector<Object *> &args, Runtime *rt, bool execution_result_matters) {
     ProfilerCAPTURE();
 
     if (!isInstanceObject(self)) {
@@ -86,7 +87,7 @@ static Object *FunctionCallAdapter(Object *self, const std::vector<Object *> &ot
         if (f->internal_ptr == NULL) {
             rt->signalError("Failed to execute NULL internal function " + self->shortRepr());
         }
-        auto res = f->internal_ptr(others, rt);
+        auto res = f->internal_ptr(args, rt, execution_result_matters);
         if (res == NULL) {
             rt->signalError("Execution of internal function " + self->shortRepr() + " has failed");
         }
@@ -98,20 +99,20 @@ static Object *FunctionCallAdapter(Object *self, const std::vector<Object *> &ot
         }
         rt->newFrame(false);
         rt->scope->arguments.push_back(self);
-        for (auto arg : others) {
+        for (auto arg : args) {
             rt->scope->arguments.push_back(arg);
         }
         if (f->cotton_ptr->params != NULL) {
             int i = 0;
             for (auto token : f->cotton_ptr->params->list) {
-                if (i >= others.size()) {
+                if (i >= args.size()) {
                     break;
                 }
-                rt->scope->addVariable(token->nameid, others[i], rt);
+                rt->scope->addVariable(token->nameid, args[i], rt);
                 i++;
             }
         }
-        auto res = rt->execute(f->cotton_ptr->body);
+        auto res = rt->execute(f->cotton_ptr->body, execution_result_matters);
         rt->popFrame();
         if (res == NULL) {
             rt->signalError("Execution of function " + self->shortRepr() + " has failed");
@@ -120,7 +121,7 @@ static Object *FunctionCallAdapter(Object *self, const std::vector<Object *> &ot
     }
 }
 
-static Object *FunctionEqAdapter(Object *self, Object *arg, Runtime *rt) {
+static Object *FunctionEqAdapter(Object *self, Object *arg, Runtime *rt, bool execution_result_matters) {
     ProfilerCAPTURE();
 
     if (!isTypeObject(arg)) {
@@ -150,10 +151,10 @@ static Object *FunctionEqAdapter(Object *self, Object *arg, Runtime *rt) {
     }
 }
 
-static Object *FunctionNeqAdapter(Object *self, Object *arg, Runtime *rt) {
+static Object *FunctionNeqAdapter(Object *self, Object *arg, Runtime *rt, bool execution_result_matters) {
     ProfilerCAPTURE();
-    auto res = FunctionEqAdapter(self, arg, rt);
-    return (!getBooleanValue(res, rt)) ? rt->protected_true : rt->protected_false;
+    auto res = FunctionEqAdapter(self, arg, rt, execution_result_matters);
+    return (!getBooleanValueFast(res)) ? rt->protected_true : rt->protected_false;
 }
 
 // TODO: add all operators to function and nothing

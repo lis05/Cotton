@@ -136,7 +136,7 @@ Object *Runtime::copy(Object *obj) {
     return res;
 }
 
-Object *Runtime::runOperator(OperatorNode::OperatorId id, Object *obj) {
+Object *Runtime::runOperator(OperatorNode::OperatorId id, Object *obj, bool execution_result_matters) {
     ProfilerCAPTURE();
     if (!isInstanceObject(obj)) {
         this->signalError("Failed to run operator " + std::to_string(id) + " on " + obj->shortRepr());
@@ -150,54 +150,55 @@ Object *Runtime::runOperator(OperatorNode::OperatorId id, Object *obj) {
         if (op == NULL) {
             this->signalError(obj->shortRepr() + " doesn't support that operator");
         }
-        return op(obj, this);
+        return op(obj, this, execution_result_matters);
     case OperatorNode::POST_MINUS_MINUS :
         op = obj->type->postdec_op;
         if (op == NULL) {
             this->signalError(obj->shortRepr() + " doesn't support that operator");
         }
-        return op(obj, this);
+        return op(obj, this, execution_result_matters);
     case OperatorNode::PRE_PLUS_PLUS :
         op = obj->type->preinc_op;
         if (op == NULL) {
             this->signalError(obj->shortRepr() + " doesn't support that operator");
         }
-        return op(obj, this);
+        return op(obj, this, execution_result_matters);
     case OperatorNode::PRE_MINUS_MINUS :
         op = obj->type->predec_op;
         if (op == NULL) {
             this->signalError(obj->shortRepr() + " doesn't support that operator");
         }
-        return op(obj, this);
+        return op(obj, this, execution_result_matters);
     case OperatorNode::PRE_PLUS :
         op = obj->type->positive_op;
         if (op == NULL) {
             this->signalError(obj->shortRepr() + " doesn't support that operator");
         }
-        return op(obj, this);
+        return op(obj, this, execution_result_matters);
     case OperatorNode::PRE_MINUS :
         op = obj->type->negative_op;
         if (op == NULL) {
             this->signalError(obj->shortRepr() + " doesn't support that operator");
         }
-        return op(obj, this);
+        return op(obj, this, execution_result_matters);
     case OperatorNode::NOT :
         op = obj->type->not_op;
         if (op == NULL) {
             this->signalError(obj->shortRepr() + " doesn't support that operator");
         }
-        return op(obj, this);
+        return op(obj, this, execution_result_matters);
     case OperatorNode::INVERSE :
         op = obj->type->inverse_op;
         if (op == NULL) {
             this->signalError(obj->shortRepr() + " doesn't support that operator");
         }
-        return op(obj, this);
+        return op(obj, this, execution_result_matters);
     default : this->signalError(obj->shortRepr() + " doesn't support that operator");
     }
 }
 
-Object *Runtime::runOperator(OperatorNode::OperatorId id, Object *obj, Object *arg) {
+Object *
+Runtime::runOperator(OperatorNode::OperatorId id, Object *obj, Object *arg, bool execution_result_matters) {
     ProfilerCAPTURE();
     if (!isInstanceObject(obj)) {
         this->signalError("Failed to run operator " + std::to_string(id) + " on " + obj->shortRepr());
@@ -211,131 +212,134 @@ Object *Runtime::runOperator(OperatorNode::OperatorId id, Object *obj, Object *a
         if (op == NULL) {
             this->signalError(obj->shortRepr() + " doesn't support that operator");
         }
-        return op(obj, arg, this);
+        return op(obj, arg, this, execution_result_matters);
     case OperatorNode::DIV :
         op = obj->type->div_op;
         if (op == NULL) {
             this->signalError(obj->shortRepr() + " doesn't support that operator");
         }
 
-        return op(obj, arg, this);
+        return op(obj, arg, this, execution_result_matters);
     case OperatorNode::REM :
         op = obj->type->rem_op;
         if (op == NULL) {
             this->signalError(obj->shortRepr() + " doesn't support that operator");
         }
 
-        return op(obj, arg, this);
+        return op(obj, arg, this, execution_result_matters);
     case OperatorNode::RIGHT_SHIFT :
         op = obj->type->rshift_op;
         if (op == NULL) {
             this->signalError(obj->shortRepr() + " doesn't support that operator");
         }
 
-        return op(obj, arg, this);
+        return op(obj, arg, this, execution_result_matters);
     case OperatorNode::LEFT_SHIFT :
         op = obj->type->lshift_op;
         if (op == NULL) {
             this->signalError(obj->shortRepr() + " doesn't support that operator");
         }
 
-        return op(obj, arg, this);
+        return op(obj, arg, this, execution_result_matters);
     case OperatorNode::PLUS :
         op = obj->type->add_op;
         if (op == NULL) {
             this->signalError(obj->shortRepr() + " doesn't support that operator");
         }
 
-        return op(obj, arg, this);
+        return op(obj, arg, this, execution_result_matters);
     case OperatorNode::MINUS :
         op = obj->type->sub_op;
         if (op == NULL) {
             this->signalError(obj->shortRepr() + " doesn't support that operator");
         }
 
-        return op(obj, arg, this);
+        return op(obj, arg, this, execution_result_matters);
     case OperatorNode::LESS :
         op = obj->type->lt_op;
         if (op == NULL) {
             this->signalError(obj->shortRepr() + " doesn't support that operator");
         }
 
-        return op(obj, arg, this);
+        return op(obj, arg, this, execution_result_matters);
     case OperatorNode::LESS_EQUAL :
         op = obj->type->leq_op;
         if (op == NULL) {
             this->signalError(obj->shortRepr() + " doesn't support that operator");
         }
 
-        return op(obj, arg, this);
+        return op(obj, arg, this, execution_result_matters);
     case OperatorNode::GREATER :
         op = obj->type->gt_op;
         if (op == NULL) {
             this->signalError(obj->shortRepr() + " doesn't support that operator");
         }
 
-        return op(obj, arg, this);
+        return op(obj, arg, this, execution_result_matters);
     case OperatorNode::GREATER_EQUAL :
         op = obj->type->geq_op;
         if (op == NULL) {
             this->signalError(obj->shortRepr() + " doesn't support that operator");
         }
 
-        return op(obj, arg, this);
+        return op(obj, arg, this, execution_result_matters);
     case OperatorNode::EQUAL :
         op = obj->type->eq_op;
         if (op == NULL) {
             this->signalError(obj->shortRepr() + " doesn't support that operator");
         }
 
-        return op(obj, arg, this);
+        return op(obj, arg, this, execution_result_matters);
     case OperatorNode::NOT_EQUAL :
         op = obj->type->neq_op;
         if (op == NULL) {
             this->signalError(obj->shortRepr() + " doesn't support that operator");
         }
 
-        return op(obj, arg, this);
+        return op(obj, arg, this, execution_result_matters);
     case OperatorNode::BITAND :
         op = obj->type->bitand_op;
         if (op == NULL) {
             this->signalError(obj->shortRepr() + " doesn't support that operator");
         }
 
-        return op(obj, arg, this);
+        return op(obj, arg, this, execution_result_matters);
     case OperatorNode::BITXOR :
         op = obj->type->bitxor_op;
         if (op == NULL) {
             this->signalError(obj->shortRepr() + " doesn't support that operator");
         }
 
-        return op(obj, arg, this);
+        return op(obj, arg, this, execution_result_matters);
     case OperatorNode::BITOR :
         op = obj->type->bitor_op;
         if (op == NULL) {
             this->signalError(obj->shortRepr() + " doesn't support that operator");
         }
 
-        return op(obj, arg, this);
+        return op(obj, arg, this, execution_result_matters);
     case OperatorNode::AND :
         op = obj->type->and_op;
         if (op == NULL) {
             this->signalError(obj->shortRepr() + " doesn't support that operator");
         }
 
-        return op(obj, arg, this);
+        return op(obj, arg, this, execution_result_matters);
     case OperatorNode::OR :
         op = obj->type->or_op;
         if (op == NULL) {
             this->signalError(obj->shortRepr() + " doesn't support that operator");
         }
 
-        return op(obj, arg, this);
+        return op(obj, arg, this, execution_result_matters);
     default : this->signalError(obj->shortRepr() + " doesn't support that operator");
     }
 }
 
-Object *Runtime::runOperator(OperatorNode::OperatorId id, Object *obj, const std::vector<Object *> &args) {
+Object *Runtime::runOperator(OperatorNode::OperatorId     id,
+                             Object                      *obj,
+                             const std::vector<Object *> &args,
+                             bool                         execution_result_matters) {
     ProfilerCAPTURE();
     if (!isInstanceObject(obj)) {
         this->signalError("Failed to run operator " + std::to_string(id) + " on " + obj->shortRepr());
@@ -347,7 +351,7 @@ Object *Runtime::runOperator(OperatorNode::OperatorId id, Object *obj, const std
             this->signalError(obj->shortRepr() + " doesn't support that operator");
         }
 
-        return op(obj, args, this);
+        return op(obj, args, this, execution_result_matters);
     }
     else if (id == OperatorNode::INDEX) {
         auto op = obj->type->index_op;
@@ -355,19 +359,20 @@ Object *Runtime::runOperator(OperatorNode::OperatorId id, Object *obj, const std
             this->signalError(obj->shortRepr() + " doesn't support that operator");
         }
 
-        return op(obj, args, this);
+        return op(obj, args, this, execution_result_matters);
     }
     this->signalError(obj->shortRepr() + " doesn't support that operator");
 }
 
-Object *Runtime::runMethod(int64_t id, Object *obj, const std::vector<Object *> &args) {
+Object *
+Runtime::runMethod(int64_t id, Object *obj, const std::vector<Object *> &args, bool execution_result_matters) {
     ProfilerCAPTURE();
     if (!isInstanceObject(obj)) {
         this->signalError("Failed to run method " + NameId::shortRepr(id) + " on " + obj->shortRepr());
     }
 
     auto method = obj->type->getMethod(id, this);
-    return this->runOperator(OperatorNode::CALL, method, args);
+    return this->runOperator(OperatorNode::CALL, method, args, execution_result_matters);
 }
 
 void Runtime::signalError(const std::string &message, bool include_token) {
@@ -380,7 +385,7 @@ void Runtime::signalError(const std::string &message, bool include_token) {
     }
 }
 
-Object *Runtime::execute(ExprNode *node) {
+Object *Runtime::execute(ExprNode *node, bool execution_result_matters) {
     ProfilerCAPTURE();
     if (node == NULL) {
         this->signalError("Failed to execute NULL AST node");
@@ -388,25 +393,25 @@ Object *Runtime::execute(ExprNode *node) {
 
     switch (node->id) {
     case ExprNode::FUNCTION_DEFINITION : {
-        return this->execute(node->func_def);
+        return this->execute(node->func_def, execution_result_matters);
     }
     case ExprNode::TYPE_DEFINITION : {
-        return this->execute(node->type_def);
+        return this->execute(node->type_def, execution_result_matters);
     }
     case ExprNode::OPERATOR : {
-        return this->execute(node->op);
+        return this->execute(node->op, execution_result_matters);
     }
     case ExprNode::ATOM : {
-        return this->execute(node->atom);
+        return this->execute(node->atom, execution_result_matters);
     }
     case ExprNode::PARENTHESES_EXPRESSION : {
-        return this->execute(node->par_expr);
+        return this->execute(node->par_expr, execution_result_matters);
     }
     default : this->signalError("Failed to execute unknown AST node");
     }
 }
 
-Object *Runtime::execute(FuncDefNode *node) {
+Object *Runtime::execute(FuncDefNode *node, bool execution_result_matters) {
     ProfilerCAPTURE();
     if (node == NULL) {
         this->signalError("Failed to execute NULL AST node");
@@ -420,7 +425,7 @@ Object *Runtime::execute(FuncDefNode *node) {
     return func;
 }
 
-Object *Runtime::execute(TypeDefNode *node) {
+Object *Runtime::execute(TypeDefNode *node, bool execution_result_matters) {
     ProfilerCAPTURE();
     if (node == NULL) {
         this->signalError("Failed to execute NULL AST node");
@@ -449,7 +454,7 @@ static std::vector<Object *> getList(ExprNode *expr, Runtime *rt) {
     std::vector<Object *> res;
     while (expr != NULL) {
         if (expr->id == ExprNode::OPERATOR && expr->op->id == OperatorNode::COMMA) {
-            auto r = rt->execute(expr->op->first);
+            auto r = rt->execute(expr->op->first, true);
             if (isExecFlagDIRECT_PASS(rt)) {
                 res.push_back(r);
             }
@@ -459,7 +464,7 @@ static std::vector<Object *> getList(ExprNode *expr, Runtime *rt) {
             expr = expr->op->second;
         }
         else {
-            auto r = rt->execute(expr);
+            auto r = rt->execute(expr, true);
             if (isExecFlagDIRECT_PASS(rt)) {
                 res.push_back(r);
             }
@@ -472,7 +477,7 @@ static std::vector<Object *> getList(ExprNode *expr, Runtime *rt) {
     return res;
 }
 
-Object *Runtime::execute(OperatorNode *node) {
+Object *Runtime::execute(OperatorNode *node, bool execution_result_matters) {
     ProfilerCAPTURE();
     if (node == NULL) {
         this->signalError("Failed to execute NULL AST node");
@@ -488,15 +493,15 @@ Object *Runtime::execute(OperatorNode *node) {
         }
     }
     else if (node->id == OperatorNode::COMMA) {
-        auto res  = this->execute(node->first);
+        auto res  = this->execute(node->first, execution_result_matters);
         auto expr = node->second;
         while (expr != NULL) {
             if (expr->id == ExprNode::OPERATOR && expr->op->id == OperatorNode::COMMA) {
-                auto r = this->execute(expr->op->first);
+                auto r = this->execute(expr->op->first, false);
                 expr   = expr->op->second;
             }
             else {
-                auto r = this->execute(expr);
+                auto r = this->execute(expr, false);
                 break;
             }
         }
@@ -504,7 +509,7 @@ Object *Runtime::execute(OperatorNode *node) {
     }
     else if (node->id == OperatorNode::CALL) {
         if (node->first->id == ExprNode::OPERATOR && node->first->op->id == OperatorNode::DOT) {
-            auto    caller   = this->execute(node->first->op->first);
+            auto    caller   = this->execute(node->first->op->first, true);
             Object *selected = NULL;
 
             auto dot = node->first->op;
@@ -536,12 +541,12 @@ Object *Runtime::execute(OperatorNode *node) {
                 args.push_back(r);
             }
 
-            auto res = this->runOperator(node->id, selected, args);
+            auto res = this->runOperator(node->id, selected, args, execution_result_matters);
             setExecFlagNONE(this);
             return res;
         }
         else {
-            Object *self = this->execute(node->first);
+            Object *self = this->execute(node->first, true);
             highlight(this, node->op);
             std::vector<Object *> args;
             auto                  list = getList(node->second, this);
@@ -551,13 +556,13 @@ Object *Runtime::execute(OperatorNode *node) {
                 args.push_back(r);
             }
 
-            auto res = this->runOperator(node->id, self, args);
+            auto res = this->runOperator(node->id, self, args, execution_result_matters);
             setExecFlagNONE(this);
             return res;
         }
     }
 
-    Object *self  = this->execute(node->first);
+    Object *self  = this->execute(node->first, true);
     Object *other = NULL;
 
     highlight(this, node->op);
@@ -593,7 +598,7 @@ Object *Runtime::execute(OperatorNode *node) {
         return self;
     }
     case OperatorNode::ASSIGN : {
-        other = this->execute(node->second);
+        other = this->execute(node->second, true);
         highlight(this, node->op);
         if (isExecFlagDIRECT_PASS(this)) {
             self->assignTo(other, this);
@@ -606,41 +611,41 @@ Object *Runtime::execute(OperatorNode *node) {
         return self;
     }
     case OperatorNode::PLUS_ASSIGN : {
-        other = this->execute(node->second);
+        other = this->execute(node->second, true);
         highlight(this, node->op);
-        self->assignToCopyOf(this->runOperator(OperatorNode::PLUS, self, {other}), this);
+        self->assignToCopyOf(this->runOperator(OperatorNode::PLUS, self, other, true), this);
 
         setExecFlagNONE(this);
         return self;
     }
     case OperatorNode::MINUS_ASSIGN : {
-        other = this->execute(node->second);
+        other = this->execute(node->second, true);
         highlight(this, node->op);
-        self->assignToCopyOf(this->runOperator(OperatorNode::MINUS, self, {other}), this);
+        self->assignToCopyOf(this->runOperator(OperatorNode::MINUS, self, other, true), this);
 
         setExecFlagNONE(this);
         return self;
     }
     case OperatorNode::MULT_ASSIGN : {
-        other = this->execute(node->second);
+        other = this->execute(node->second, true);
         highlight(this, node->op);
-        self->assignToCopyOf(this->runOperator(OperatorNode::MULT, self, {other}), this);
+        self->assignToCopyOf(this->runOperator(OperatorNode::MULT, self, other, true), this);
 
         setExecFlagNONE(this);
         return self;
     }
     case OperatorNode::DIV_ASSIGN : {
-        other = this->execute(node->second);
+        other = this->execute(node->second, true);
         highlight(this, node->op);
-        self->assignToCopyOf(this->runOperator(OperatorNode::DIV, self, {other}), this);
+        self->assignToCopyOf(this->runOperator(OperatorNode::DIV, self, other, true), this);
 
         setExecFlagNONE(this);
         return self;
     }
     case OperatorNode::REM_ASSIGN : {
-        other = this->execute(node->second);
+        other = this->execute(node->second, true);
         highlight(this, node->op);
-        self->assignToCopyOf(this->runOperator(OperatorNode::REM, self, {other}), this);
+        self->assignToCopyOf(this->runOperator(OperatorNode::REM, self, other, true), this);
 
         setExecFlagNONE(this);
         return self;
@@ -656,18 +661,18 @@ Object *Runtime::execute(OperatorNode *node) {
     case OperatorNode::PRE_MINUS :
     case OperatorNode::NOT :
     case OperatorNode::INVERSE :
-        auto res = this->runOperator(node->id, self);
+        auto res = this->runOperator(node->id, self, execution_result_matters);
         setExecFlagNONE(this);
         return res;
     }
 
-    auto arg = this->execute(node->second);
-    auto res = this->runOperator(node->id, self, arg);
+    auto arg = this->execute(node->second, true);
+    auto res = this->runOperator(node->id, self, arg, execution_result_matters);
     setExecFlagNONE(this);
     return res;
 }
 
-Object *Runtime::execute(AtomNode *node) {
+Object *Runtime::execute(AtomNode *node, bool execution_result_matters) {
     ProfilerCAPTURE();
     if (node == NULL) {
         this->signalError("Failed to execute NULL AST node");
@@ -677,6 +682,10 @@ Object *Runtime::execute(AtomNode *node) {
 
     switch (node->id) {
     case AtomNode::BOOLEAN : {
+        if (!execution_result_matters) {
+            setExecFlagNONE(this);
+            return NULL;
+        }
         if (node->lit_obj != NULL) {
             setExecFlagNONE(this);
             return node->lit_obj;
@@ -695,6 +704,10 @@ Object *Runtime::execute(AtomNode *node) {
         return node->lit_obj = lit;
     }
     case AtomNode::CHARACTER : {
+        if (!execution_result_matters) {
+            setExecFlagNONE(this);
+            return NULL;
+        }
         if (node->lit_obj != NULL) {
             setExecFlagNONE(this);
             return node->lit_obj;
@@ -714,6 +727,10 @@ Object *Runtime::execute(AtomNode *node) {
         return node->lit_obj = lit;
     }
     case AtomNode::INTEGER : {
+        if (!execution_result_matters) {
+            setExecFlagNONE(this);
+            return NULL;
+        }
         if (node->lit_obj != NULL) {
             setExecFlagNONE(this);
             return node->lit_obj;
@@ -733,6 +750,10 @@ Object *Runtime::execute(AtomNode *node) {
         return node->lit_obj = lit;
     }
     case AtomNode::REAL : {
+        if (!execution_result_matters) {
+            setExecFlagNONE(this);
+            return NULL;
+        }
         if (node->lit_obj != NULL) {
             setExecFlagNONE(this);
             return node->lit_obj;
@@ -752,6 +773,10 @@ Object *Runtime::execute(AtomNode *node) {
         return node->lit_obj = lit;
     }
     case AtomNode::STRING : {
+        if (!execution_result_matters) {
+            setExecFlagNONE(this);
+            return NULL;
+        }
         if (node->lit_obj != NULL) {
             setExecFlagNONE(this);
             return node->lit_obj;
@@ -771,6 +796,10 @@ Object *Runtime::execute(AtomNode *node) {
         return node->lit_obj = lit;
     }
     case AtomNode::NOTHING : {
+        if (!execution_result_matters) {
+            setExecFlagNONE(this);
+            return NULL;
+        }
         if (node->lit_obj != NULL) {
             setExecFlagNONE(this);
             return node->lit_obj;
@@ -797,15 +826,15 @@ Object *Runtime::execute(AtomNode *node) {
     }
 }
 
-Object *Runtime::execute(ParExprNode *node) {
+Object *Runtime::execute(ParExprNode *node, bool execution_result_matters) {
     ProfilerCAPTURE();
     if (node == NULL) {
         this->signalError("Failed to execute NULL AST node");
     }
-    return this->execute(node->expr);
+    return this->execute(node->expr, execution_result_matters);
 }
 
-Object *Runtime::execute(StmtNode *node) {
+Object *Runtime::execute(StmtNode *node, bool execution_result_matters) {
     ProfilerCAPTURE();
     if (node == NULL) {
         this->signalError("Failed to execute NULL AST node");
@@ -813,13 +842,13 @@ Object *Runtime::execute(StmtNode *node) {
     this->gc->ping(this);
     switch (node->id) {
     case StmtNode::WHILE : {
-        return this->execute(node->while_stmt);
+        return this->execute(node->while_stmt, execution_result_matters);
     }
     case StmtNode::FOR : {
-        return this->execute(node->for_stmt);
+        return this->execute(node->for_stmt, execution_result_matters);
     }
     case StmtNode::IF : {
-        return this->execute(node->if_stmt);
+        return this->execute(node->if_stmt, execution_result_matters);
     }
     case StmtNode::CONTINUE : {
         setExecFlagCONTINUE(this);
@@ -830,13 +859,13 @@ Object *Runtime::execute(StmtNode *node) {
         return this->protected_nothing;
     }
     case StmtNode::RETURN : {
-        return this->execute(node->return_stmt);
+        return this->execute(node->return_stmt, execution_result_matters);
     }
     case StmtNode::BLOCK : {
-        return this->execute(node->block_stmt);
+        return this->execute(node->block_stmt, execution_result_matters);
     }
     case StmtNode::EXPR : {
-        return this->execute(node->expr);
+        return this->execute(node->expr, execution_result_matters);
     }
     default : {
         this->signalError("Unknown node");
@@ -844,7 +873,7 @@ Object *Runtime::execute(StmtNode *node) {
     }
 }
 
-Object *Runtime::execute(WhileStmtNode *node) {
+Object *Runtime::execute(WhileStmtNode *node, bool execution_result_matters) {
     ProfilerCAPTURE();
     if (node == NULL) {
         this->signalError("Failed to execute NULL AST node");
@@ -854,7 +883,7 @@ Object *Runtime::execute(WhileStmtNode *node) {
         highlight(this, node->while_token);
 
         if (node->cond != NULL) {
-            auto cond = this->execute(node->cond);
+            auto cond = this->execute(node->cond, true);
 
             if (!Builtin::getBooleanValue(cond, this)) {
                 this->popFrame();
@@ -863,7 +892,7 @@ Object *Runtime::execute(WhileStmtNode *node) {
         }
 
         if (node->body != NULL) {
-            auto body = this->execute(node->body);
+            auto body = this->execute(node->body, execution_result_matters);
             if (isExecFlagBREAK(this)) {
                 this->popFrame();
                 break;
@@ -879,7 +908,7 @@ Object *Runtime::execute(WhileStmtNode *node) {
                 }
                 setExecFlagRETURN(this);
                 this->popFrame();
-                return this->copy(body);
+                return (execution_result_matters) ? this->copy(body) : NULL;
             };
         }
         this->popFrame();
@@ -888,7 +917,7 @@ Object *Runtime::execute(WhileStmtNode *node) {
     return this->protected_nothing;
 }
 
-Object *Runtime::execute(ForStmtNode *node) {
+Object *Runtime::execute(ForStmtNode *node, bool execution_result_matters) {
     ProfilerCAPTURE();
     if (node == NULL) {
         this->signalError("Failed to execute NULL AST node");
@@ -896,7 +925,7 @@ Object *Runtime::execute(ForStmtNode *node) {
     highlight(this, node->for_token);
 
     if (node->init != NULL) {
-        this->execute(node->init);
+        this->execute(node->init, false);
     }
 
     while (true) {
@@ -904,7 +933,7 @@ Object *Runtime::execute(ForStmtNode *node) {
         highlight(this, node->for_token);
 
         if (node->cond != NULL) {
-            auto cond = this->execute(node->cond);
+            auto cond = this->execute(node->cond, true);
 
             if (!Builtin::getBooleanValue(cond, this)) {
                 this->popFrame();
@@ -913,7 +942,7 @@ Object *Runtime::execute(ForStmtNode *node) {
         }
 
         if (node->body != NULL) {
-            auto body = this->execute(node->body);
+            auto body = this->execute(node->body, execution_result_matters);
             if (isExecFlagBREAK(this)) {
                 this->popFrame();
                 break;
@@ -929,12 +958,12 @@ Object *Runtime::execute(ForStmtNode *node) {
                 }
                 setExecFlagRETURN(this);
                 this->popFrame();
-                return this->copy(body);
+                return (execution_result_matters) ? this->copy(body) : NULL;
             };
         }
 
         if (node->step != NULL) {
-            this->execute(node->step);
+            this->execute(node->step, false);
         }
         this->popFrame();
     }
@@ -942,42 +971,42 @@ Object *Runtime::execute(ForStmtNode *node) {
     return this->protected_nothing;
 }
 
-Object *Runtime::execute(IfStmtNode *node) {
+Object *Runtime::execute(IfStmtNode *node, bool execution_result_matters) {
     ProfilerCAPTURE();
     if (node == NULL) {
         this->signalError("Failed to execute NULL AST node");
     }
     highlight(this, node->if_token);
 
-    auto cond = this->execute(node->cond);
+    auto cond = this->execute(node->cond, true);
     highlight(this, node->if_token);
 
     if (Builtin::getBooleanValue(cond, this)) {
-        return this->execute(node->body);
+        return this->execute(node->body, execution_result_matters);
     }
     else if (node->else_body != NULL) {
-        return this->execute(node->else_body);
+        return this->execute(node->else_body, execution_result_matters);
     }
     setExecFlagNONE(this);
     return this->protected_nothing;
 }
 
-Object *Runtime::execute(ReturnStmtNode *node) {
+Object *Runtime::execute(ReturnStmtNode *node, bool execution_result_matters) {
     ProfilerCAPTURE();
     if (node == NULL) {
         this->signalError("Failed to execute NULL AST node");
     }
     highlight(this, node->return_token);
-    auto res = this->execute(node->value);
+    auto res = this->execute(node->value, execution_result_matters);
     if (isExecFlagDIRECT_PASS(this)) {
         setExecFlagRETURN(this);
         return res;
     }
     setExecFlagRETURN(this);
-    return this->copy(res);
+    return (execution_result_matters) ? this->copy(res) : NULL;
 }
 
-Object *Runtime::execute(BlockStmtNode *node) {
+Object *Runtime::execute(BlockStmtNode *node, bool execution_result_matters) {
     ProfilerCAPTURE();
     if (node == NULL) {
         this->signalError("Failed to execute NULL AST node");
@@ -989,7 +1018,7 @@ Object *Runtime::execute(BlockStmtNode *node) {
         if (stmt == NULL) {
             continue;
         }
-        auto res = this->execute(stmt);
+        auto res = this->execute(stmt, execution_result_matters);
         if (!isExecFlagNONE(this)) {
             if (!node->is_unscoped) {
                 this->popFrame();

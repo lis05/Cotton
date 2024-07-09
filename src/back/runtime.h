@@ -98,18 +98,18 @@ public:
 
     uint8_t execution_flags;
 
-    Object *execute(ExprNode *node);
-    Object *execute(FuncDefNode *node);
-    Object *execute(TypeDefNode *node);
-    Object *execute(OperatorNode *node);
-    Object *execute(AtomNode *node);
-    Object *execute(ParExprNode *node);
-    Object *execute(StmtNode *node);
-    Object *execute(WhileStmtNode *node);
-    Object *execute(ForStmtNode *node);
-    Object *execute(IfStmtNode *node);
-    Object *execute(ReturnStmtNode *node);
-    Object *execute(BlockStmtNode *node);
+    Object *execute(ExprNode *node, bool execution_result_matters);
+    Object *execute(FuncDefNode *node, bool execution_result_matters);
+    Object *execute(TypeDefNode *node, bool execution_result_matters);
+    Object *execute(OperatorNode *node, bool execution_result_matters);
+    Object *execute(AtomNode *node, bool execution_result_matters);
+    Object *execute(ParExprNode *node, bool execution_result_matters);
+    Object *execute(StmtNode *node, bool execution_result_matters);
+    Object *execute(WhileStmtNode *node, bool execution_result_matters);
+    Object *execute(ForStmtNode *node, bool execution_result_matters);
+    Object *execute(IfStmtNode *node, bool execution_result_matters);
+    Object *execute(ReturnStmtNode *node, bool execution_result_matters);
+    Object *execute(BlockStmtNode *node, bool execution_result_matters);
 
     enum ObjectOptions { INSTANCE_OBJECT, TYPE_OBJECT };
 
@@ -120,11 +120,14 @@ public:
     // if fails, signals an error. therefore, returns a valid object (non-null, is a copy of obj)
     Object *copy(Object *obj);
     // runs operator on the object. returns a valid object(non-null); if fails, signals an error
-    Object *runOperator(OperatorNode::OperatorId id, Object *obj);
-    Object *runOperator(OperatorNode::OperatorId id, Object *obj, Object *arg);
-    Object *runOperator(OperatorNode::OperatorId id, Object *obj, const std::vector<Object *> &args);
+    Object *runOperator(OperatorNode::OperatorId id, Object *obj, bool execution_result_matters);
+    Object *runOperator(OperatorNode::OperatorId id, Object *obj, Object *arg, bool execution_result_matters);
+    Object *runOperator(OperatorNode::OperatorId     id,
+                        Object                      *obj,
+                        const std::vector<Object *> &args,
+                        bool                         execution_result_matters);
     // runs method on the object. returns a valid object(non-null); if fails, signals an error
-    Object *runMethod(int64_t id, Object *obj, const std::vector<Object *> &args);
+    Object *runMethod(int64_t id, Object *obj, const std::vector<Object *> &args, bool execution_result_matters);
 };
 
 #define newObject(is_instance, instance, type, rt)                                                                \

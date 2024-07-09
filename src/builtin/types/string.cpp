@@ -91,7 +91,8 @@ size_t StringType::getInstanceSize() {
     return sizeof(StringInstance);
 }
 
-static Object *StringIndexAdapter(Object *self, const std::vector<Object *> &args, Runtime *rt) {
+static Object *
+StringIndexAdapter(Object *self, const std::vector<Object *> &args, Runtime *rt, bool execution_result_matters) {
     ProfilerCAPTURE();
 
     if (!isInstanceObject(self)) {
@@ -114,7 +115,7 @@ static Object *StringIndexAdapter(Object *self, const std::vector<Object *> &arg
     return getStringDataFast(self)[getIntegerValueFast(arg)];
 }
 
-static Object *StringAddAdapter(Object *self, Object *arg, Runtime *rt) {
+static Object *StringAddAdapter(Object *self, Object *arg, Runtime *rt, bool execution_result_matters) {
     ProfilerCAPTURE();
 
     if (!isInstanceObject(self)) {
@@ -128,6 +129,10 @@ static Object *StringAddAdapter(Object *self, Object *arg, Runtime *rt) {
         rt->signalError("Right-side object " + arg->shortRepr() + " must be a String instance object");
     }
 
+    if (!execution_result_matters) {
+        return NULL;
+    }
+
     auto res = rt->copy(self);
     for (auto obj : getStringDataFast(arg)) {
         getStringDataFast(res).push_back(obj);
@@ -136,11 +141,15 @@ static Object *StringAddAdapter(Object *self, Object *arg, Runtime *rt) {
     return res;
 }
 
-static Object *StringEqAdapter(Object *self, Object *arg, Runtime *rt) {
+static Object *StringEqAdapter(Object *self, Object *arg, Runtime *rt, bool execution_result_matters) {
     ProfilerCAPTURE();
 
     if (!isTypeObject(arg)) {
         rt->signalError("Right-side object is invalid: " + arg->shortRepr());
+    }
+
+    if (!execution_result_matters) {
+        return NULL;
     }
 
     bool i1 = isInstanceObject(self);
@@ -154,7 +163,8 @@ static Object *StringEqAdapter(Object *self, Object *arg, Runtime *rt) {
             return rt->protected_false;
         }
         for (int i = 0; i < getStringDataFast(self).size(); i++) {
-            if (!rt->runOperator(OperatorNode::EQUAL, getStringDataFast(self)[i], {getStringDataFast(arg)[i]})) {
+            if (!rt->runOperator(OperatorNode::EQUAL, getStringDataFast(self)[i], getStringDataFast(arg)[i], true))
+            {
                 return rt->protected_false;
             }
         }
@@ -168,13 +178,13 @@ static Object *StringEqAdapter(Object *self, Object *arg, Runtime *rt) {
     }
 }
 
-static Object *StringNeqAdapter(Object *self, Object *arg, Runtime *rt) {
+static Object *StringNeqAdapter(Object *self, Object *arg, Runtime *rt, bool execution_result_matters) {
     ProfilerCAPTURE();
-    auto res = StringEqAdapter(self, arg, rt);
+    auto res = StringEqAdapter(self, arg, rt, execution_result_matters);
     return (!getBooleanValueFast(res)) ? rt->protected_true : rt->protected_false;
 }
 
-static Object *stringSizeMethod(const std::vector<Object *> &args, Runtime *rt) {
+static Object *stringSizeMethod(const std::vector<Object *> &args, Runtime *rt, bool execution_result_matters) {
     ProfilerCAPTURE();
     if (args.size() < 1) {
         rt->signalError("Expected a caller object");
@@ -186,6 +196,11 @@ static Object *stringSizeMethod(const std::vector<Object *> &args, Runtime *rt) 
     if (self->instance == NULL || self->type->id != rt->string_type->id) {
         rt->signalError("Caller must be a String instance object: " + self->shortRepr());
     }
+
+    if (!execution_result_matters) {
+        return NULL;
+    }
+    
     return makeIntegerInstanceObject(getStringDataFast(self).size(), rt);
 }
 

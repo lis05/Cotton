@@ -33,9 +33,9 @@ class Runtime;
 class NameId;
 class Type;
 
-typedef Object *(*UnaryOperatorAdapter)(Object *self, Runtime *rt);
-typedef Object *(*BinaryOperatorAdapter)(Object *self, Object *arg, Runtime *rt);
-typedef Object *(*NaryOperatorAdapter)(Object *self, const std::vector<Object *> &args, Runtime *rt);
+typedef Object *(*UnaryOperatorAdapter)(Object *self, Runtime *rt, bool execution_result_matters);
+typedef Object *(*BinaryOperatorAdapter)(Object *self, Object *arg, Runtime *rt, bool execution_result_matters);
+typedef Object *(*NaryOperatorAdapter)(Object *self, const std::vector<Object *> &args, Runtime *rt, bool execution_result_matters);
 
 class Type {
 private:
