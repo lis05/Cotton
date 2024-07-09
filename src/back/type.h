@@ -33,35 +33,37 @@ class Runtime;
 class NameId;
 class Type;
 
-typedef Object *(*OperatorAdapter)(Object *self, const std::vector<Object *> &others, Runtime *rt);
+typedef Object *(*UnaryOperatorAdapter)(Object *self, Runtime *rt);
+typedef Object *(*BinaryOperatorAdapter)(Object *self, Object *arg, Runtime *rt);
+typedef Object *(*NaryOperatorAdapter)(Object *self, const std::vector<Object *> &args, Runtime *rt);
 
 class Type {
 private:
     static int64_t total_types;
 
 public:
-    static const int num_operators = OperatorNode::TOTAL_OPERATORS;
-    int64_t          id;
-    OperatorAdapter operators[num_operators];
-    bool             gc_mark : 1;
+    UnaryOperatorAdapter postinc_op, postdec_op, preinc_op, predec_op, positive_op, negative_op, not_op,
+    inverse_op;
+
+    BinaryOperatorAdapter mult_op, div_op, rem_op, rshift_op, lshift_op, add_op, sub_op, lt_op, leq_op, gt_op,
+    geq_op, eq_op, neq_op, bitand_op, bitxor_op, bitor_op, and_op, or_op;
+
+    NaryOperatorAdapter call_op, index_op;
+
+    int64_t id;
+    bool    gc_mark : 1;
 
     __gnu_pbds::cc_hash_table<int64_t, Object *> methods;
 
     Type(Runtime *rt);
     ~Type();
 
-    // adds an operator
-    void             addOperator(OperatorNode::OperatorId id, OperatorAdapter op);
     // adds a method
-    void             addMethod(int64_t id, Object *method);
-    // returns a valid(non-NULL) operator adapter, signals and error if it isn't present
-    OperatorAdapter getOperator(OperatorNode::OperatorId id, Runtime *rt);
+    void    addMethod(int64_t id, Object *method);
     // returns a valid(non-NULL, instance object) method object, signals and error if it isn't present
-    Object          *getMethod(int64_t id, Runtime *rt);
-    // returns whether an operator is present or not
-    bool             hasOperator(OperatorNode::OperatorId id, Runtime *rt);
+    Object *getMethod(int64_t id, Runtime *rt);
     // returns whether a method is present or not
-    bool             hasMethod(int64_t id);
+    bool    hasMethod(int64_t id);
 
     virtual std::vector<Object *> getGCReachable();
     virtual size_t                getInstanceSize() = 0;    // for placement on stack in case of is_simple
@@ -73,41 +75,5 @@ public:
 
     virtual std::string shortRepr() = 0;
 };
-
-namespace MagicMethods {
-    int64_t __make__();
-    int64_t __print__();
-    // operators
-    int64_t __postinc__();
-    int64_t __postdec__();
-    int64_t __call__();
-    int64_t __index__();
-    int64_t __preinc__();
-    int64_t __predec__();
-    int64_t __positive__();
-    int64_t __negative__();
-    int64_t __not__();
-    int64_t __inverse__();
-    int64_t __mult__();
-    int64_t __div__();
-    int64_t __rem__();
-    int64_t __rshift__();
-    int64_t __lshift__();
-    int64_t __add__();
-    int64_t __sub__();
-    int64_t __lt__();
-    int64_t __leq__();
-    int64_t __gt__();
-    int64_t __geq__();
-    int64_t __eq__();
-    int64_t __neq__();
-    int64_t __bitand__();
-    int64_t __bitxor__();
-    int64_t __bitor__();
-    int64_t __and__();
-    int64_t __or__();
-
-    int64_t getMagicOperator(OperatorNode::OperatorId id);
-}    // namespace MagicMethods
 
 };    // namespace Cotton

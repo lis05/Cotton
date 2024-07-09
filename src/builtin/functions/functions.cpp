@@ -69,7 +69,7 @@ static Object *print(const std::vector<Object *> &args, Runtime *rt) {
                 }
             }
             else {
-                rt->runMethod(MagicMethods::__print__(), arg, {arg});
+                rt->signalError("Cannot print " + arg->shortRepr());
             }
         }
         else {

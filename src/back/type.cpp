@@ -33,54 +33,33 @@ int64_t Type::total_types = 0;
 
 Type::Type(Runtime *rt) {
     ProfilerCAPTURE();
-    this->id = ++Type::total_types;
-    for (auto &op : this->operators) {
-        op = NULL;
-    }
-    this->gc_mark = !rt->gc->gc_mark;
+    this->id   = ++Type::total_types;
+    postinc_op = postdec_op = preinc_op = predec_op = positive_op = negative_op = not_op = inverse_op = NULL;
+
+    mult_op = div_op = rem_op = rshift_op = lshift_op = add_op = sub_op = lt_op = leq_op = gt_op = geq_op = eq_op
+    = neq_op = bitand_op = bitxor_op = bitor_op = and_op = or_op = NULL;
+
+    call_op = index_op = NULL;
+    this->gc_mark      = !rt->gc->gc_mark;
 
     rt->gc->track(this);
 }
 
 Type::~Type() {
     ProfilerCAPTURE();
-    this->id = -1;
-    for (auto &op : this->operators) {
-        op = NULL;
-    }
-    // we don't do anything else, because the GC will take care of that
-}
+    this->id   = -1;
+    postinc_op = postdec_op = preinc_op = predec_op = positive_op = negative_op = not_op = inverse_op = NULL;
 
-void Type::addOperator(OperatorNode::OperatorId id, OperatorAdapter op) {
-    ProfilerCAPTURE();
-    this->operators[id] = op;
+    mult_op = div_op = rem_op = rshift_op = lshift_op = add_op = sub_op = lt_op = leq_op = gt_op = geq_op = eq_op
+    = neq_op = bitand_op = bitxor_op = bitor_op = and_op = or_op = NULL;
+
+    call_op = index_op = NULL;
+    // we don't do anything else, because the GC will take care of that
 }
 
 void Type::addMethod(int64_t id, Object *method) {
     ProfilerCAPTURE();
     this->methods[id] = method;
-}
-
-OperatorAdapter Type::getOperator(OperatorNode::OperatorId id, Runtime *rt) {
-    ProfilerCAPTURE();
-    auto res = this->operators[id];
-    if (res == NULL) {
-        auto method_id = MagicMethods::getMagicOperator(id);
-        if (method_id == -1) {
-            rt->signalError("Failed to get operator " + std::to_string(id) + " in " + this->shortRepr()
-                            + " because the appropriate magic method could not be found");
-        }
-        auto method = this->getMethod(method_id, rt);
-        if (method->type == NULL) {
-            rt->signalError("Failed to get operator " + std::to_string(id) + " in " + this->shortRepr()
-                            + " because the appropriate magic method is an invalid object");
-        }
-        auto res = method->type->getOperator(OperatorNode::CALL, rt);
-        return res;
-    }
-    else {
-        return res;
-    }
 }
 
 Object *Type::getMethod(int64_t id, Runtime *rt) {
@@ -94,25 +73,6 @@ Object *Type::getMethod(int64_t id, Runtime *rt) {
         return it->second;
     }
     rt->signalError(this->shortRepr() + " doesn't have method " + NameId::shortRepr(id));
-}
-
-bool Type::hasOperator(OperatorNode::OperatorId id, Runtime *rt) {
-    ProfilerCAPTURE();
-    auto res = this->operators[id];
-    if (res == NULL) {
-        auto method_id = MagicMethods::getMagicOperator(id);
-        if (method_id == -1) {
-            rt->signalError("Invalid operator");
-        }
-        if (!this->hasMethod(method_id)) {
-            return false;
-        }
-        auto method = this->getMethod(method_id, rt);
-        return method->type->getOperator(OperatorNode::CALL, rt);
-    }
-    else {
-        return true;
-    }
 }
 
 bool Type::hasMethod(int64_t id) {
@@ -129,223 +89,5 @@ std::vector<Object *> Type::getGCReachable() {
     }
     return res;
 }
-
-namespace MagicMethods {
-    int64_t __make__() {
-        ProfilerCAPTURE();
-        static NameId res("__make__");
-        return res.id;
-    }
-
-    int64_t __print__() {
-        ProfilerCAPTURE();
-        static NameId res("__print__");
-        return res.id;
-    }
-
-    // operators
-    int64_t __postinc__() {
-        ProfilerCAPTURE();
-        static NameId res("__postinc__");
-        return res.id;
-    }
-
-    int64_t __postdec__() {
-        ProfilerCAPTURE();
-        static NameId res("__postdec__");
-        return res.id;
-    }
-
-    int64_t __call__() {
-        ProfilerCAPTURE();
-        static NameId res("__call__");
-        return res.id;
-    }
-
-    int64_t __index__() {
-        ProfilerCAPTURE();
-        static NameId res("__index__");
-        return res.id;
-    }
-
-    int64_t __preinc__() {
-        ProfilerCAPTURE();
-        static NameId res("__preinc__");
-        return res.id;
-    }
-
-    int64_t __predec__() {
-        ProfilerCAPTURE();
-        static NameId res("__predec__");
-        return res.id;
-    }
-
-    int64_t __positive__() {
-        ProfilerCAPTURE();
-        static NameId res("__positive__");
-        return res.id;
-    }
-
-    int64_t __negative__() {
-        ProfilerCAPTURE();
-        static NameId res("__negative__");
-        return res.id;
-    }
-
-    int64_t __not__() {
-        ProfilerCAPTURE();
-        static NameId res("__not__");
-        return res.id;
-    }
-
-    int64_t __inverse__() {
-        ProfilerCAPTURE();
-        static NameId res("__inverse__");
-        return res.id;
-    }
-
-    int64_t __mult__() {
-        ProfilerCAPTURE();
-        static NameId res("__mult__");
-        return res.id;
-    }
-
-    int64_t __div__() {
-        ProfilerCAPTURE();
-        static NameId res("__div__");
-        return res.id;
-    }
-
-    int64_t __rem__() {
-        ProfilerCAPTURE();
-        static NameId res("__rem__");
-        return res.id;
-    }
-
-    int64_t __rshift__() {
-        ProfilerCAPTURE();
-        static NameId res("__rshift__");
-        return res.id;
-    }
-
-    int64_t __lshift__() {
-        ProfilerCAPTURE();
-        static NameId res("__lshift__");
-        return res.id;
-    }
-
-    int64_t __add__() {
-        ProfilerCAPTURE();
-        static NameId res("__add__");
-        return res.id;
-    }
-
-    int64_t __sub__() {
-        ProfilerCAPTURE();
-        static NameId res("__sub__");
-        return res.id;
-    }
-
-    int64_t __lt__() {
-        ProfilerCAPTURE();
-        static NameId res("__lt__");
-        return res.id;
-    }
-
-    int64_t __leq__() {
-        ProfilerCAPTURE();
-        static NameId res("__leq__");
-        return res.id;
-    }
-
-    int64_t __gt__() {
-        ProfilerCAPTURE();
-        static NameId res("__gt__");
-        return res.id;
-    }
-
-    int64_t __geq__() {
-        ProfilerCAPTURE();
-        static NameId res("__geq__");
-        return res.id;
-    }
-
-    int64_t __eq__() {
-        ProfilerCAPTURE();
-        static NameId res("__eq__");
-        return res.id;
-    }
-
-    int64_t __neq__() {
-        ProfilerCAPTURE();
-        static NameId res("__neq__");
-        return res.id;
-    }
-
-    int64_t __bitand__() {
-        ProfilerCAPTURE();
-        static NameId res("__bitand__");
-        return res.id;
-    }
-
-    int64_t __bitxor__() {
-        ProfilerCAPTURE();
-        static NameId res("__bitxor__");
-        return res.id;
-    }
-
-    int64_t __bitor__() {
-        ProfilerCAPTURE();
-        static NameId res("__bitor__");
-        return res.id;
-    }
-
-    int64_t __and__() {
-        ProfilerCAPTURE();
-        static NameId res("__and__");
-        return res.id;
-    }
-
-    int64_t __or__() {
-        ProfilerCAPTURE();
-        static NameId res("__or__");
-        return res.id;
-    }
-
-    int64_t getMagicOperator(OperatorNode::OperatorId id) {
-        ProfilerCAPTURE();
-        switch (id) {
-        case OperatorNode::POST_PLUS_PLUS   : return __postinc__();
-        case OperatorNode::POST_MINUS_MINUS : return __postdec__();
-        case OperatorNode::CALL             : return __call__();
-        case OperatorNode::INDEX            : return __index__();
-        case OperatorNode::PRE_PLUS_PLUS    : return __preinc__();
-        case OperatorNode::PRE_MINUS_MINUS  : return __predec__();
-        case OperatorNode::PRE_PLUS         : return __positive__();
-        case OperatorNode::PRE_MINUS        : return __negative__();
-        case OperatorNode::NOT              : return __not__();
-        case OperatorNode::INVERSE          : return __inverse__();
-        case OperatorNode::MULT             : return __mult__();
-        case OperatorNode::DIV              : return __div__();
-        case OperatorNode::REM              : return __rem__();
-        case OperatorNode::RIGHT_SHIFT      : return __rshift__();
-        case OperatorNode::LEFT_SHIFT       : return __lshift__();
-        case OperatorNode::PLUS             : return __add__();
-        case OperatorNode::MINUS            : return __sub__();
-        case OperatorNode::LESS             : return __lt__();
-        case OperatorNode::LESS_EQUAL       : return __leq__();
-        case OperatorNode::GREATER          : return __gt__();
-        case OperatorNode::GREATER_EQUAL    : return __geq__();
-        case OperatorNode::EQUAL            : return __eq__();
-        case OperatorNode::NOT_EQUAL        : return __neq__();
-        case OperatorNode::BITAND           : return __bitand__();
-        case OperatorNode::BITXOR           : return __bitxor__();
-        case OperatorNode::BITOR            : return __bitor__();
-        case OperatorNode::AND              : return __and__();
-        case OperatorNode::OR               : return __or__();
-        default                             : return -1;
-        }
-    }
-}    // namespace MagicMethods
 
 };    // namespace Cotton

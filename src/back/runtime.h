@@ -65,7 +65,7 @@ public:
 
     PoolAllocator                                     *object_allocator;
     __gnu_pbds::cc_hash_table<size_t, PoolAllocator *> allocators;
-    PoolAllocator *array_of_allocators[4096]; // for small objects
+    PoolAllocator                                     *array_of_allocators[4096];    // for small objects
 
     PoolAllocator *getAllocator(size_t size);
 
@@ -120,6 +120,8 @@ public:
     // if fails, signals an error. therefore, returns a valid object (non-null, is a copy of obj)
     Object *copy(Object *obj);
     // runs operator on the object. returns a valid object(non-null); if fails, signals an error
+    Object *runOperator(OperatorNode::OperatorId id, Object *obj);
+    Object *runOperator(OperatorNode::OperatorId id, Object *obj, Object *arg);
     Object *runOperator(OperatorNode::OperatorId id, Object *obj, const std::vector<Object *> &args);
     // runs method on the object. returns a valid object(non-null); if fails, signals an error
     Object *runMethod(int64_t id, Object *obj, const std::vector<Object *> &args);

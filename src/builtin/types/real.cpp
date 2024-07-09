@@ -66,12 +66,7 @@ size_t RealType::getInstanceSize() {
     return sizeof(RealInstance);
 }
 
-static Object *RealUnsupportedAdapter(Object *self, const std::vector<Object *> &others, Runtime *rt) {
-    ProfilerCAPTURE();
-    rt->signalError(self->shortRepr() + " does not support that operator");
-}
-
-static Object *RealPositiveAdapter(Object *self, const std::vector<Object *> &others, Runtime *rt) {
+static Object *RealPositiveAdapter(Object *self, Runtime *rt) {
     ProfilerCAPTURE();
 
     if (!isInstanceObject(self)) {
@@ -82,7 +77,7 @@ static Object *RealPositiveAdapter(Object *self, const std::vector<Object *> &ot
     return res;
 }
 
-static Object *RealNegativeAdapter(Object *self, const std::vector<Object *> &others, Runtime *rt) {
+static Object *RealNegativeAdapter(Object *self, Runtime *rt) {
     ProfilerCAPTURE();
 
     if (!isInstanceObject(self)) {
@@ -94,250 +89,192 @@ static Object *RealNegativeAdapter(Object *self, const std::vector<Object *> &ot
     return res;
 }
 
-static Object *RealMultAdapter(Object *self, const std::vector<Object *> &others, Runtime *rt) {
+static Object *RealMultAdapter(Object *self, Object *arg, Runtime *rt) {
     ProfilerCAPTURE();
 
     if (!isInstanceObject(self)) {
         rt->signalError(self->shortRepr() + " does not support that operator");
     }
-    if (others.size() != 1) {
-        rt->signalError("Expected exactly one right-side argument");
-        return NULL;
+
+    if (!isTypeObject(arg)) {
+        rt->signalError("Right-side object is invalid: " + arg->shortRepr());
     }
-    auto &arg1 = others[0];
-    if (!isTypeObject(arg1)) {
-        rt->signalError("Right-side object is invalid: " + arg1->shortRepr());
-    }
-    if (arg1->instance == NULL || arg1->type->id != rt->real_type->id) {
-        rt->signalError("Right-side object " + arg1->shortRepr() + " must be a Real instance object");
+    if (arg->instance == NULL || arg->type->id != rt->real_type->id) {
+        rt->signalError("Right-side object " + arg->shortRepr() + " must be a Real instance object");
     }
 
-    auto res = makeRealInstanceObject(getRealValueFast(self) * getRealValueFast(arg1), rt);
+    auto res = makeRealInstanceObject(getRealValueFast(self) * getRealValueFast(arg), rt);
     return res;
 }
 
-static Object *RealDivAdapter(Object *self, const std::vector<Object *> &others, Runtime *rt) {
+static Object *RealDivAdapter(Object *self, Object *arg, Runtime *rt) {
     ProfilerCAPTURE();
 
     if (!isInstanceObject(self)) {
         rt->signalError(self->shortRepr() + " does not support that operator");
     }
-    if (others.size() != 1) {
-        rt->signalError("Expected exactly one right-side argument");
-        return NULL;
+
+    if (!isTypeObject(arg)) {
+        rt->signalError("Right-side object is invalid: " + arg->shortRepr());
     }
-    auto &arg1 = others[0];
-    if (!isTypeObject(arg1)) {
-        rt->signalError("Right-side object is invalid: " + arg1->shortRepr());
-    }
-    if (arg1->instance == NULL || arg1->type->id != rt->real_type->id) {
-        rt->signalError("Right-side object " + arg1->shortRepr() + " must be a Real instance object");
+    if (arg->instance == NULL || arg->type->id != rt->real_type->id) {
+        rt->signalError("Right-side object " + arg->shortRepr() + " must be a Real instance object");
     }
 
-    auto res = makeRealInstanceObject(getRealValueFast(self) / getRealValueFast(arg1), rt);
+    auto res = makeRealInstanceObject(getRealValueFast(self) / getRealValueFast(arg), rt);
     return res;
 }
 
-static Object *RealAddAdapter(Object *self, const std::vector<Object *> &others, Runtime *rt) {
+static Object *RealAddAdapter(Object *self, Object *arg, Runtime *rt) {
     ProfilerCAPTURE();
 
     if (!isInstanceObject(self)) {
         rt->signalError(self->shortRepr() + " does not support that operator");
     }
-    if (others.size() != 1) {
-        rt->signalError("Expected exactly one right-side argument");
-        return NULL;
+
+    if (!isTypeObject(arg)) {
+        rt->signalError("Right-side object is invalid: " + arg->shortRepr());
     }
-    auto &arg1 = others[0];
-    if (!isTypeObject(arg1)) {
-        rt->signalError("Right-side object is invalid: " + arg1->shortRepr());
-    }
-    if (arg1->instance == NULL || arg1->type->id != rt->real_type->id) {
-        rt->signalError("Right-side object " + arg1->shortRepr() + " must be a Real instance object");
+    if (arg->instance == NULL || arg->type->id != rt->real_type->id) {
+        rt->signalError("Right-side object " + arg->shortRepr() + " must be a Real instance object");
     }
 
-    auto res = makeRealInstanceObject(getRealValueFast(self) + getRealValueFast(arg1), rt);
+    auto res = makeRealInstanceObject(getRealValueFast(self) + getRealValueFast(arg), rt);
     return res;
 }
 
-static Object *RealSubAdapter(Object *self, const std::vector<Object *> &others, Runtime *rt) {
+static Object *RealSubAdapter(Object *self, Object *arg, Runtime *rt) {
     ProfilerCAPTURE();
 
     if (!isInstanceObject(self)) {
         rt->signalError(self->shortRepr() + " does not support that operator");
     }
-    if (others.size() != 1) {
-        rt->signalError("Expected exactly one right-side argument");
-        return NULL;
+
+    if (!isTypeObject(arg)) {
+        rt->signalError("Right-side object is invalid: " + arg->shortRepr());
     }
-    auto &arg1 = others[0];
-    if (!isTypeObject(arg1)) {
-        rt->signalError("Right-side object is invalid: " + arg1->shortRepr());
-    }
-    if (arg1->instance == NULL || arg1->type->id != rt->real_type->id) {
-        rt->signalError("Right-side object " + arg1->shortRepr() + " must be a Real instance object");
+    if (arg->instance == NULL || arg->type->id != rt->real_type->id) {
+        rt->signalError("Right-side object " + arg->shortRepr() + " must be a Real instance object");
     }
 
-    auto res = makeRealInstanceObject(getRealValueFast(self) - getRealValueFast(arg1), rt);
+    auto res = makeRealInstanceObject(getRealValueFast(self) - getRealValueFast(arg), rt);
     return res;
 }
 
-static Object *RealLtAdapter(Object *self, const std::vector<Object *> &others, Runtime *rt) {
+static Object *RealLtAdapter(Object *self, Object *arg, Runtime *rt) {
     ProfilerCAPTURE();
 
     if (!isInstanceObject(self)) {
         rt->signalError(self->shortRepr() + " does not support that operator");
     }
-    if (others.size() != 1) {
-        rt->signalError("Expected exactly one right-side argument");
-        return NULL;
+
+    if (!isTypeObject(arg)) {
+        rt->signalError("Right-side object is invalid: " + arg->shortRepr());
     }
-    auto &arg1 = others[0];
-    if (!isTypeObject(arg1)) {
-        rt->signalError("Right-side object is invalid: " + arg1->shortRepr());
-    }
-    if (arg1->instance == NULL || arg1->type->id != rt->real_type->id) {
-        rt->signalError("Right-side object " + arg1->shortRepr() + " must be a Real instance object");
+    if (arg->instance == NULL || arg->type->id != rt->real_type->id) {
+        rt->signalError("Right-side object " + arg->shortRepr() + " must be a Real instance object");
     }
 
-    auto res = makeBooleanInstanceObject(getRealValueFast(self) < getRealValueFast(arg1), rt);
-    return res;
+    return (getRealValueFast(self) < getRealValueFast(arg)) ? rt->protected_true : rt->protected_false;
 }
 
-static Object *RealLeqAdapter(Object *self, const std::vector<Object *> &others, Runtime *rt) {
+static Object *RealLeqAdapter(Object *self, Object *arg, Runtime *rt) {
     ProfilerCAPTURE();
 
     if (!isInstanceObject(self)) {
         rt->signalError(self->shortRepr() + " does not support that operator");
     }
-    if (others.size() != 1) {
-        rt->signalError("Expected exactly one right-side argument");
-        return NULL;
+
+    if (!isTypeObject(arg)) {
+        rt->signalError("Right-side object is invalid: " + arg->shortRepr());
     }
-    auto &arg1 = others[0];
-    if (!isTypeObject(arg1)) {
-        rt->signalError("Right-side object is invalid: " + arg1->shortRepr());
-    }
-    if (arg1->instance == NULL || arg1->type->id != rt->real_type->id) {
-        rt->signalError("Right-side object " + arg1->shortRepr() + " must be a Real instance object");
+    if (arg->instance == NULL || arg->type->id != rt->real_type->id) {
+        rt->signalError("Right-side object " + arg->shortRepr() + " must be a Real instance object");
     }
 
-    auto res = makeBooleanInstanceObject(getRealValueFast(self) <= getRealValueFast(arg1), rt);
-    return res;
+    return (getRealValueFast(self) <= getRealValueFast(arg)) ? rt->protected_true : rt->protected_false;
 }
 
-static Object *RealGtAdapter(Object *self, const std::vector<Object *> &others, Runtime *rt) {
+static Object *RealGtAdapter(Object *self, Object *arg, Runtime *rt) {
     ProfilerCAPTURE();
 
     if (!isInstanceObject(self)) {
         rt->signalError(self->shortRepr() + " does not support that operator");
     }
-    if (others.size() != 1) {
-        rt->signalError("Expected exactly one right-side argument");
-        return NULL;
+
+    if (!isTypeObject(arg)) {
+        rt->signalError("Right-side object is invalid: " + arg->shortRepr());
     }
-    auto &arg1 = others[0];
-    if (!isTypeObject(arg1)) {
-        rt->signalError("Right-side object is invalid: " + arg1->shortRepr());
-    }
-    if (arg1->instance == NULL || arg1->type->id != rt->real_type->id) {
-        rt->signalError("Right-side object " + arg1->shortRepr() + " must be a Real instance object");
+    if (arg->instance == NULL || arg->type->id != rt->real_type->id) {
+        rt->signalError("Right-side object " + arg->shortRepr() + " must be a Real instance object");
     }
 
-    auto res = makeBooleanInstanceObject(getRealValueFast(self) > getRealValueFast(arg1), rt);
-    return res;
+    return (getRealValueFast(self) > getRealValueFast(arg)) ? rt->protected_true : rt->protected_false;
 }
 
-static Object *RealGeqAdapter(Object *self, const std::vector<Object *> &others, Runtime *rt) {
+static Object *RealGeqAdapter(Object *self, Object *arg, Runtime *rt) {
     ProfilerCAPTURE();
 
     if (!isInstanceObject(self)) {
         rt->signalError(self->shortRepr() + " does not support that operator");
     }
-    if (others.size() != 1) {
-        rt->signalError("Expected exactly one right-side argument");
-        return NULL;
+
+    if (!isTypeObject(arg)) {
+        rt->signalError("Right-side object is invalid: " + arg->shortRepr());
     }
-    auto &arg1 = others[0];
-    if (!isTypeObject(arg1)) {
-        rt->signalError("Right-side object is invalid: " + arg1->shortRepr());
-    }
-    if (arg1->instance == NULL || arg1->type->id != rt->real_type->id) {
-        rt->signalError("Right-side object " + arg1->shortRepr() + " must be a Real instance object");
+    if (arg->instance == NULL || arg->type->id != rt->real_type->id) {
+        rt->signalError("Right-side object " + arg->shortRepr() + " must be a Real instance object");
     }
 
-    auto res = makeBooleanInstanceObject(getRealValueFast(self) >= getRealValueFast(arg1), rt);
-    return res;
+    return (getRealValueFast(self) >= getRealValueFast(arg)) ? rt->protected_true : rt->protected_false;
 }
 
-static Object *RealEqAdapter(Object *self, const std::vector<Object *> &others, Runtime *rt) {
+static Object *RealEqAdapter(Object *self, Object *arg, Runtime *rt) {
     ProfilerCAPTURE();
 
-    if (others.size() != 1) {
-        rt->signalError("Expected exactly one right-side argument");
-        return NULL;
-    }
-    auto &arg1 = others[0];
-    if (!isTypeObject(arg1)) {
-        rt->signalError("Right-side object is invalid: " + arg1->shortRepr());
+    if (!isTypeObject(arg)) {
+        rt->signalError("Right-side object is invalid: " + arg->shortRepr());
     }
 
     bool i1 = isInstanceObject(self);
-    bool i2 = arg1->instance != NULL;
+    bool i2 = arg->instance != NULL;
 
     if (i1 && i2) {
-        if (self->type->id != arg1->type->id) {
-            return makeBooleanInstanceObject(false, rt);
+        if (self->type->id != arg->type->id) {
+            return rt->protected_false;
         }
-        return makeBooleanInstanceObject(getRealValueFast(self) == getRealValueFast(arg1), rt);
+        return (getRealValueFast(self) == getRealValueFast(arg)) ? rt->protected_true : rt->protected_false;
     }
     else if (!i1 && !i2) {
-        return makeBooleanInstanceObject(self->type->id == arg1->type->id, rt);
+        return (self->type->id == arg->type->id) ? rt->protected_true : rt->protected_false;
     }
     else {
-        return makeBooleanInstanceObject(false, rt);
+        return rt->protected_false;
     }
 }
 
-static Object *RealNeqAdapter(Object *self, const std::vector<Object *> &others, Runtime *rt) {
+static Object *RealNeqAdapter(Object *self, Object *arg, Runtime *rt) {
     ProfilerCAPTURE();
-    auto res              = RealEqAdapter(self, others, rt);
-    getRealValueFast(res) = !getRealValueFast(res);
-    return res;
+    auto res = RealEqAdapter(self, arg, rt);
+    return (!getBooleanValueFast(res)) ? rt->protected_true : rt->protected_false;
 }
 
 // TODO: add all operators to function and nothing
 RealType::RealType(Runtime *rt)
     : Type(rt) {
     ProfilerCAPTURE();
-    this->addOperator(OperatorNode::POST_PLUS_PLUS, RealUnsupportedAdapter);
-    this->addOperator(OperatorNode::POST_MINUS_MINUS, RealUnsupportedAdapter);
-    this->addOperator(OperatorNode::CALL, RealUnsupportedAdapter);
-    this->addOperator(OperatorNode::INDEX, RealUnsupportedAdapter);
-    this->addOperator(OperatorNode::PRE_PLUS_PLUS, RealUnsupportedAdapter);
-    this->addOperator(OperatorNode::PRE_MINUS_MINUS, RealUnsupportedAdapter);
-    this->addOperator(OperatorNode::PRE_PLUS, RealPositiveAdapter);
-    this->addOperator(OperatorNode::PRE_MINUS, RealNegativeAdapter);
-    this->addOperator(OperatorNode::NOT, RealUnsupportedAdapter);
-    this->addOperator(OperatorNode::INVERSE, RealUnsupportedAdapter);
-    this->addOperator(OperatorNode::MULT, RealMultAdapter);
-    this->addOperator(OperatorNode::DIV, RealDivAdapter);
-    this->addOperator(OperatorNode::REM, RealUnsupportedAdapter);
-    this->addOperator(OperatorNode::RIGHT_SHIFT, RealUnsupportedAdapter);
-    this->addOperator(OperatorNode::LEFT_SHIFT, RealUnsupportedAdapter);
-    this->addOperator(OperatorNode::PLUS, RealAddAdapter);
-    this->addOperator(OperatorNode::MINUS, RealSubAdapter);
-    this->addOperator(OperatorNode::LESS, RealLtAdapter);
-    this->addOperator(OperatorNode::LESS_EQUAL, RealLeqAdapter);
-    this->addOperator(OperatorNode::GREATER, RealGtAdapter);
-    this->addOperator(OperatorNode::GREATER_EQUAL, RealGeqAdapter);
-    this->addOperator(OperatorNode::EQUAL, RealEqAdapter);
-    this->addOperator(OperatorNode::NOT_EQUAL, RealNeqAdapter);
-    this->addOperator(OperatorNode::BITAND, RealUnsupportedAdapter);
-    this->addOperator(OperatorNode::BITXOR, RealUnsupportedAdapter);
-    this->addOperator(OperatorNode::BITOR, RealUnsupportedAdapter);
-    this->addOperator(OperatorNode::AND, RealUnsupportedAdapter);
-    this->addOperator(OperatorNode::OR, RealUnsupportedAdapter);
+    this->positive_op = RealPositiveAdapter;
+    this->negative_op = RealNegativeAdapter;
+    this->mult_op     = RealMultAdapter;
+    this->div_op      = RealDivAdapter;
+    this->add_op      = RealAddAdapter;
+    this->sub_op      = RealSubAdapter;
+    this->lt_op       = RealLtAdapter;
+    this->leq_op      = RealLeqAdapter;
+    this->gt_op       = RealGtAdapter;
+    this->geq_op      = RealGeqAdapter;
+    this->eq_op       = RealEqAdapter;
+    this->neq_op      = RealNeqAdapter;
 }
 
 Object *RealType::create(Runtime *rt) {

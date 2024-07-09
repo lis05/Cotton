@@ -75,11 +75,6 @@ size_t FunctionType::getInstanceSize() {
     return sizeof(FunctionInstance);
 }
 
-static Object *FunctionUnsupportedAdapter(Object *self, const std::vector<Object *> &others, Runtime *rt) {
-    ProfilerCAPTURE();
-    rt->signalError(self->shortRepr() + " does not support that operator");
-}
-
 static Object *FunctionCallAdapter(Object *self, const std::vector<Object *> &others, Runtime *rt) {
     ProfilerCAPTURE();
 
@@ -125,86 +120,49 @@ static Object *FunctionCallAdapter(Object *self, const std::vector<Object *> &ot
     }
 }
 
-static Object *FunctionEqAdapter(Object *self, const std::vector<Object *> &others, Runtime *rt) {
+static Object *FunctionEqAdapter(Object *self, Object *arg, Runtime *rt) {
     ProfilerCAPTURE();
 
-    if (others.size() != 1) {
-        rt->signalError("Expected exactly one right-side argument");
-        return NULL;
-    }
-    auto &arg1 = others[0];
-    if (!isTypeObject(arg1)) {
-        rt->signalError("Right-side object is invalid: " + arg1->shortRepr());
+    if (!isTypeObject(arg)) {
+        rt->signalError("Right-side object is invalid: " + arg->shortRepr());
     }
 
     bool i1 = isInstanceObject(self);
-    bool i2 = arg1->instance != NULL;
+    bool i2 = arg->instance != NULL;
 
     if (i1 && i2) {
-        auto res                 = rt->make(rt->boolean_type, Runtime::INSTANCE_OBJECT);
-        getBooleanValue(res, rt) = false;
-        if (self->type->id == arg1->type->id) {
+        if (self->type->id == arg->type->id) {
             auto f1 = icast(self->instance, FunctionInstance);
-            auto f2 = icast(arg1->instance, FunctionInstance);
+            auto f2 = icast(arg->instance, FunctionInstance);
             if (f1->is_internal == f2->is_internal && f1->internal_ptr == f2->internal_ptr
                 && f1->cotton_ptr == f2->cotton_ptr)
             {
-                getBooleanValue(res, rt) = true;
+                return rt->protected_true;
             }
         }
-        return res;
+        return rt->protected_false;
     }
     else if (!i1 && !i2) {
-        auto res                 = rt->make(rt->boolean_type, Runtime::INSTANCE_OBJECT);
-        getBooleanValue(res, rt) = self->type->id == arg1->type->id;
-        return res;
+        return (self->type->id == arg->type->id) ? rt->protected_true : rt->protected_false;
     }
     else {
-        auto res                 = rt->make(rt->boolean_type, Runtime::INSTANCE_OBJECT);
-        getBooleanValue(res, rt) = false;
-        return res;
+        return rt->protected_false;
     }
 }
 
-static Object *FunctionNeqAdapter(Object *self, const std::vector<Object *> &others, Runtime *rt) {
+static Object *FunctionNeqAdapter(Object *self, Object *arg, Runtime *rt) {
     ProfilerCAPTURE();
-    auto res                 = FunctionEqAdapter(self, others, rt);
-    getBooleanValue(res, rt) = !getBooleanValue(res, rt);
-    return res;
+    auto res = FunctionEqAdapter(self, arg, rt);
+    return (!getBooleanValue(res, rt)) ? rt->protected_true : rt->protected_false;
 }
 
 // TODO: add all operators to function and nothing
 FunctionType::FunctionType(Runtime *rt)
     : Type(rt) {
     ProfilerCAPTURE();
-    this->addOperator(OperatorNode::POST_PLUS_PLUS, FunctionUnsupportedAdapter);
-    this->addOperator(OperatorNode::POST_MINUS_MINUS, FunctionUnsupportedAdapter);
-    this->addOperator(OperatorNode::CALL, FunctionCallAdapter);
-    this->addOperator(OperatorNode::INDEX, FunctionUnsupportedAdapter);
-    this->addOperator(OperatorNode::PRE_PLUS_PLUS, FunctionUnsupportedAdapter);
-    this->addOperator(OperatorNode::PRE_MINUS_MINUS, FunctionUnsupportedAdapter);
-    this->addOperator(OperatorNode::PRE_PLUS, FunctionUnsupportedAdapter);
-    this->addOperator(OperatorNode::PRE_MINUS, FunctionUnsupportedAdapter);
-    this->addOperator(OperatorNode::NOT, FunctionUnsupportedAdapter);
-    this->addOperator(OperatorNode::INVERSE, FunctionUnsupportedAdapter);
-    this->addOperator(OperatorNode::MULT, FunctionUnsupportedAdapter);
-    this->addOperator(OperatorNode::DIV, FunctionUnsupportedAdapter);
-    this->addOperator(OperatorNode::REM, FunctionUnsupportedAdapter);
-    this->addOperator(OperatorNode::RIGHT_SHIFT, FunctionUnsupportedAdapter);
-    this->addOperator(OperatorNode::LEFT_SHIFT, FunctionUnsupportedAdapter);
-    this->addOperator(OperatorNode::PLUS, FunctionUnsupportedAdapter);
-    this->addOperator(OperatorNode::MINUS, FunctionUnsupportedAdapter);
-    this->addOperator(OperatorNode::LESS, FunctionUnsupportedAdapter);
-    this->addOperator(OperatorNode::LESS_EQUAL, FunctionUnsupportedAdapter);
-    this->addOperator(OperatorNode::GREATER, FunctionUnsupportedAdapter);
-    this->addOperator(OperatorNode::GREATER_EQUAL, FunctionUnsupportedAdapter);
-    this->addOperator(OperatorNode::EQUAL, FunctionEqAdapter);
-    this->addOperator(OperatorNode::NOT_EQUAL, FunctionNeqAdapter);
-    this->addOperator(OperatorNode::BITAND, FunctionUnsupportedAdapter);
-    this->addOperator(OperatorNode::BITXOR, FunctionUnsupportedAdapter);
-    this->addOperator(OperatorNode::BITOR, FunctionUnsupportedAdapter);
-    this->addOperator(OperatorNode::AND, FunctionUnsupportedAdapter);
-    this->addOperator(OperatorNode::OR, FunctionUnsupportedAdapter);
+    this->call_op = FunctionCallAdapter;
+    this->eq_op   = FunctionEqAdapter;
+    this->neq_op  = FunctionNeqAdapter;
 }
 
 Object *FunctionType::create(Runtime *rt) {

@@ -67,127 +67,81 @@ size_t BooleanType::getInstanceSize() {
     return sizeof(BooleanInstance);
 }
 
-static Object *BooleanUnsupportedAdapter(Object *self, const std::vector<Object *> &others, Runtime *rt) {
+static Object *BooleanNotAdapter(Object *self, Runtime *rt) {
     ProfilerCAPTURE();
-    rt->signalError(self->shortRepr() + " does not support that operator");
+
+    return (getBooleanValue(self, rt)) ? rt->protected_true : rt->protected_false;
 }
 
-static Object *BooleanNotAdapter(Object *self, const std::vector<Object *> &others, Runtime *rt) {
+static Object *BooleanEqAdapter(Object *self, Object *arg, Runtime *rt) {
     ProfilerCAPTURE();
-
-    auto res                 = rt->make(rt->boolean_type, Runtime::INSTANCE_OBJECT);
-    getBooleanValue(res, rt) = !getBooleanValue(self, rt);
-    return res;
-}
-
-static Object *BooleanEqAdapter(Object *self, const std::vector<Object *> &others, Runtime *rt) {
-    ProfilerCAPTURE();
-
-    if (others.size() != 1) {
-        rt->signalError("Expected exactly one right-side argument");
-        return NULL;
-    }
-    auto &arg1 = others[0];
-    if (!isTypeObject(arg1)) {
-        rt->signalError("Right-side object is invalid: " + arg1->shortRepr());
+    if (!isTypeObject(arg)) {
+        rt->signalError("Right-side object is invalid: " + arg->shortRepr());
     }
     auto isSelfI = isInstanceObject(self);
-    auto isArg1I = arg1->instance != NULL;
+    auto isArg1I = arg->instance != NULL;
     if (isSelfI && isArg1I) {
-        if (self->type->id != arg1->type->id) {
-            return makeBooleanInstanceObject(false, rt);
+        if (self->type->id != arg->type->id) {
+            return rt->protected_false;
         }
-        return makeBooleanInstanceObject(getBooleanValueFast(self) == getBooleanValueFast(arg1), rt);
+        return (getBooleanValueFast(self) == getBooleanValueFast(arg)) ? rt->protected_true : rt->protected_false;
     }
     else if (!isSelfI && !isArg1I) {
-        return makeBooleanInstanceObject(self->type->id == arg1->type->id, rt);
+        return (self->type->id == arg->type->id) ? rt->protected_true : rt->protected_false;
     }
     else {
-        return makeBooleanInstanceObject(false, rt);
+        return rt->protected_false;
     }
 }
 
-static Object *BooleanNeqAdapter(Object *self, const std::vector<Object *> &others, Runtime *rt) {
+static Object *BooleanNeqAdapter(Object *self, Object *arg, Runtime *rt) {
     ProfilerCAPTURE();
-    auto res                 = BooleanEqAdapter(self, others, rt);
-    getBooleanValue(res, rt) = !getBooleanValue(res, rt);
-    return res;
+    auto res = BooleanEqAdapter(self, arg, rt);
+    return (!getBooleanValue(res, rt)) ? rt->protected_true : rt->protected_false;
 }
 
-static Object *BooleanAndAdapter(Object *self, const std::vector<Object *> &others, Runtime *rt) {
+static Object *BooleanAndAdapter(Object *self, Object *arg, Runtime *rt) {
     ProfilerCAPTURE();
 
-    if (others.size() != 1) {
-        rt->signalError("Expected exactly one right-side argument");
-        return NULL;
+    if (!isTypeObject(arg)) {
+        rt->signalError("Right-side object is invalid: " + arg->shortRepr());
     }
-    auto &arg1 = others[0];
-    if (!isTypeObject(arg1)) {
-        rt->signalError("Right-side object is invalid: " + arg1->shortRepr());
+    if (arg->type->id != rt->boolean_type->id) {
+        rt->signalError("Right-side object is not Boolean: " + arg->shortRepr());
     }
-    if (arg1->type->id != rt->boolean_type->id) {
-        rt->signalError("Right-side object is not Boolean: " + arg1->shortRepr());
-    }
-    if (arg1->instance == NULL) {
-        rt->signalError("Right-side object is not an instance object: " + arg1->shortRepr());
+    if (arg->instance == NULL) {
+        rt->signalError("Right-side object is not an instance object: " + arg->shortRepr());
     }
 
-    return makeBooleanInstanceObject(getBooleanValue(self, rt) && getBooleanValue(arg1, rt), rt);
+    return (getBooleanValue(self, rt) && getBooleanValue(arg, rt)) ? rt->protected_true : rt->protected_false;
 }
 
-static Object *BooleanOrAdapter(Object *self, const std::vector<Object *> &others, Runtime *rt) {
+static Object *BooleanOrAdapter(Object *self, Object *arg, Runtime *rt) {
     ProfilerCAPTURE();
 
-    if (others.size() != 1) {
-        rt->signalError("Expected exactly one right-side argument");
-        return NULL;
+    if (!isTypeObject(arg)) {
+        rt->signalError("Right-side object is invalid: " + arg->shortRepr());
     }
-    auto &arg1 = others[0];
-    if (!isTypeObject(arg1)) {
-        rt->signalError("Right-side object is invalid: " + arg1->shortRepr());
+    if (arg->type->id != rt->boolean_type->id) {
+        rt->signalError("Right-side object is not Boolean: " + arg->shortRepr());
     }
-    if (arg1->type->id != rt->boolean_type->id) {
-        rt->signalError("Right-side object is not Boolean: " + arg1->shortRepr());
-    }
-    if (arg1->instance == NULL) {
-        rt->signalError("Right-side object is not an instance object: " + arg1->shortRepr());
+    if (arg->instance == NULL) {
+        rt->signalError("Right-side object is not an instance object: " + arg->shortRepr());
     }
 
-    return makeBooleanInstanceObject(getBooleanValue(self, rt) || getBooleanValue(arg1, rt), rt);
+    return (getBooleanValue(self, rt) || getBooleanValue(arg, rt)) ? rt->protected_true : rt->protected_false;
 }
 
 // TODO: add all operators to function and nothing
 BooleanType::BooleanType(Runtime *rt)
     : Type(rt) {
     ProfilerCAPTURE();
-    this->addOperator(OperatorNode::POST_PLUS_PLUS, BooleanUnsupportedAdapter);
-    this->addOperator(OperatorNode::POST_MINUS_MINUS, BooleanUnsupportedAdapter);
-    this->addOperator(OperatorNode::CALL, BooleanUnsupportedAdapter);
-    this->addOperator(OperatorNode::INDEX, BooleanUnsupportedAdapter);
-    this->addOperator(OperatorNode::PRE_PLUS_PLUS, BooleanUnsupportedAdapter);
-    this->addOperator(OperatorNode::PRE_MINUS_MINUS, BooleanUnsupportedAdapter);
-    this->addOperator(OperatorNode::PRE_PLUS, BooleanUnsupportedAdapter);
-    this->addOperator(OperatorNode::PRE_MINUS, BooleanUnsupportedAdapter);
-    this->addOperator(OperatorNode::NOT, BooleanNotAdapter);
-    this->addOperator(OperatorNode::INVERSE, BooleanUnsupportedAdapter);
-    this->addOperator(OperatorNode::MULT, BooleanUnsupportedAdapter);
-    this->addOperator(OperatorNode::DIV, BooleanUnsupportedAdapter);
-    this->addOperator(OperatorNode::REM, BooleanUnsupportedAdapter);
-    this->addOperator(OperatorNode::RIGHT_SHIFT, BooleanUnsupportedAdapter);
-    this->addOperator(OperatorNode::LEFT_SHIFT, BooleanUnsupportedAdapter);
-    this->addOperator(OperatorNode::PLUS, BooleanUnsupportedAdapter);
-    this->addOperator(OperatorNode::MINUS, BooleanUnsupportedAdapter);
-    this->addOperator(OperatorNode::LESS, BooleanUnsupportedAdapter);
-    this->addOperator(OperatorNode::LESS_EQUAL, BooleanUnsupportedAdapter);
-    this->addOperator(OperatorNode::GREATER, BooleanUnsupportedAdapter);
-    this->addOperator(OperatorNode::GREATER_EQUAL, BooleanUnsupportedAdapter);
-    this->addOperator(OperatorNode::EQUAL, BooleanEqAdapter);
-    this->addOperator(OperatorNode::NOT_EQUAL, BooleanNeqAdapter);
-    this->addOperator(OperatorNode::BITAND, BooleanUnsupportedAdapter);
-    this->addOperator(OperatorNode::BITXOR, BooleanUnsupportedAdapter);
-    this->addOperator(OperatorNode::BITOR, BooleanUnsupportedAdapter);
-    this->addOperator(OperatorNode::AND, BooleanAndAdapter);
-    this->addOperator(OperatorNode::OR, BooleanOrAdapter);
+
+    this->not_op = BooleanNotAdapter;
+    this->eq_op  = BooleanEqAdapter;
+    this->neq_op = BooleanNeqAdapter;
+    this->and_op = BooleanAndAdapter;
+    this->or_op  = BooleanOrAdapter;
 }
 
 Object *BooleanType::create(Runtime *rt) {

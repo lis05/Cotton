@@ -66,542 +66,394 @@ size_t IntegerType::getInstanceSize() {
     return sizeof(IntegerInstance);
 }
 
+static Object *IntegerPostincAdapter(Object *self, Runtime *rt) {
+    ProfilerCAPTURE();
 
-
-    static Object *IntegerPostincAdapter(Object *self, const std::vector<Object *> &others, Runtime *rt) {
-        ProfilerCAPTURE();
-
-        if (!isInstanceObject(self)) {
-            rt->signalError(self->shortRepr() + " does not support that operator");
-        }
-
-        auto res = self->type->copy(self, rt);
-        getIntegerValueFast(self)++;
-        return res;
-    }
-
-
-
-
-    static Object *IntegerPostdecAdapter(Object *self, const std::vector<Object *> &others, Runtime *rt) {
-        ProfilerCAPTURE();
-
-        if (!isInstanceObject(self)) {
-            rt->signalError(self->shortRepr() + " does not support that operator");
-        }
-
-        auto res = self->type->copy(self, rt);
-        getIntegerValueFast(self)--;
-        return res;
-    }
-
-
-
-
-    static Object *IntegerUnsupportedAdapter(Object *self, const std::vector<Object *> &others, Runtime *rt) {
-        ProfilerCAPTURE();
+    if (!isInstanceObject(self)) {
         rt->signalError(self->shortRepr() + " does not support that operator");
     }
 
+    auto res = self->type->copy(self, rt);
+    getIntegerValueFast(self)++;
+    return res;
+}
 
+static Object *IntegerPostdecAdapter(Object *self, Runtime *rt) {
+    ProfilerCAPTURE();
 
-
-    static Object *IntegerPreincAdapter(Object *self, const std::vector<Object *> &others, Runtime *rt) {
-        ProfilerCAPTURE();
-
-        if (!isInstanceObject(self)) {
-            rt->signalError(self->shortRepr() + " does not support that operator");
-        }
-
-        getIntegerValueFast(self)++;
-        auto res = self->type->copy(self, rt);
-        return res;
+    if (!isInstanceObject(self)) {
+        rt->signalError(self->shortRepr() + " does not support that operator");
     }
 
+    auto res = self->type->copy(self, rt);
+    getIntegerValueFast(self)--;
+    return res;
+}
 
+static Object *IntegerPreincAdapter(Object *self, Runtime *rt) {
+    ProfilerCAPTURE();
 
-
-    static Object *IntegerPredecAdapter(Object *self, const std::vector<Object *> &others, Runtime *rt) {
-        ProfilerCAPTURE();
-
-        if (!isInstanceObject(self)) {
-            rt->signalError(self->shortRepr() + " does not support that operator");
-        }
-
-        getIntegerValueFast(self)--;
-        auto res = self->type->copy(self, rt);
-        return res;
+    if (!isInstanceObject(self)) {
+        rt->signalError(self->shortRepr() + " does not support that operator");
     }
 
+    getIntegerValueFast(self)++;
+    auto res = self->type->copy(self, rt);
+    return res;
+}
 
+static Object *IntegerPredecAdapter(Object *self, Runtime *rt) {
+    ProfilerCAPTURE();
 
-
-    static Object *IntegerPositiveAdapter(Object *self, const std::vector<Object *> &others, Runtime *rt) {
-        ProfilerCAPTURE();
-
-        if (!isInstanceObject(self)) {
-            rt->signalError(self->shortRepr() + " does not support that operator");
-        }
-
-        auto res = self->type->copy(self, rt);
-        return res;
+    if (!isInstanceObject(self)) {
+        rt->signalError(self->shortRepr() + " does not support that operator");
     }
 
+    getIntegerValueFast(self)--;
+    auto res = self->type->copy(self, rt);
+    return res;
+}
 
+static Object *IntegerPositiveAdapter(Object *self, Runtime *rt) {
+    ProfilerCAPTURE();
 
-
-    static Object *IntegerNegativeAdapter(Object *self, const std::vector<Object *> &others, Runtime *rt) {
-        ProfilerCAPTURE();
-
-        if (!isInstanceObject(self)) {
-            rt->signalError(self->shortRepr() + " does not support that operator");
-        }
-
-        auto res                  = self->type->copy(self, rt);
-        getIntegerValueFast(res) *= -1;
-        return res;
+    if (!isInstanceObject(self)) {
+        rt->signalError(self->shortRepr() + " does not support that operator");
     }
 
+    auto res = self->type->copy(self, rt);
+    return res;
+}
 
+static Object *IntegerNegativeAdapter(Object *self, Runtime *rt) {
+    ProfilerCAPTURE();
 
-
-    static Object *IntegerInverseAdapter(Object *self, const std::vector<Object *> &others, Runtime *rt) {
-        ProfilerCAPTURE();
-
-        if (!isInstanceObject(self)) {
-            rt->signalError(self->shortRepr() + " does not support that operator");
-        }
-
-        auto res                 = self->type->copy(self, rt);
-        getIntegerValueFast(res) = ~getIntegerValueFast(res);
-        return res;
+    if (!isInstanceObject(self)) {
+        rt->signalError(self->shortRepr() + " does not support that operator");
     }
 
+    auto res                  = self->type->copy(self, rt);
+    getIntegerValueFast(res) *= -1;
+    return res;
+}
 
+static Object *IntegerInverseAdapter(Object *self, Runtime *rt) {
+    ProfilerCAPTURE();
 
-
-    static Object *IntegerMultAdapter(Object *self, const std::vector<Object *> &others, Runtime *rt) {
-        ProfilerCAPTURE();
-
-        if (!isInstanceObject(self)) {
-            rt->signalError(self->shortRepr() + " does not support that operator");
-        }
-        if (others.size() != 1) {
-            rt->signalError("Expected exactly one right-side argument");
-            return NULL;
-        }
-        auto &arg1 = others[0];
-        if (!isTypeObject(arg1)) {
-            rt->signalError("Right-side object is invalid: " + arg1->shortRepr());
-        }
-        if (arg1->instance == NULL || arg1->type->id != rt->integer_type->id) {
-            rt->signalError("Right-side object " + arg1->shortRepr() + " must be an integer instance object");
-        }
-
-        auto res = makeIntegerInstanceObject(getIntegerValueFast(self) * getIntegerValueFast(arg1), rt);
-        return res;
+    if (!isInstanceObject(self)) {
+        rt->signalError(self->shortRepr() + " does not support that operator");
     }
 
+    auto res                 = self->type->copy(self, rt);
+    getIntegerValueFast(res) = ~getIntegerValueFast(res);
+    return res;
+}
 
+static Object *IntegerMultAdapter(Object *self, Object *arg, Runtime *rt) {
+    ProfilerCAPTURE();
 
-
-    static Object *IntegerDivAdapter(Object *self, const std::vector<Object *> &others, Runtime *rt) {
-        ProfilerCAPTURE();
-
-        if (!isInstanceObject(self)) {
-            rt->signalError(self->shortRepr() + " does not support that operator");
-        }
-        if (others.size() != 1) {
-            rt->signalError("Expected exactly one right-side argument");
-            return NULL;
-        }
-        auto &arg1 = others[0];
-        if (!isTypeObject(arg1)) {
-            rt->signalError("Right-side object is invalid: " + arg1->shortRepr());
-        }
-        if (arg1->instance == NULL || arg1->type->id != rt->integer_type->id) {
-            rt->signalError("Right-side object " + arg1->shortRepr() + " must be an integer instance object");
-        }
-
-        auto res = makeIntegerInstanceObject(getIntegerValueFast(self) / getIntegerValueFast(arg1), rt);
-        return res;
+    if (!isInstanceObject(self)) {
+        rt->signalError(self->shortRepr() + " does not support that operator");
     }
 
-
-
-
-    static Object *IntegerRemAdapter(Object *self, const std::vector<Object *> &others, Runtime *rt) {
-        ProfilerCAPTURE();
-
-        if (!isInstanceObject(self)) {
-            rt->signalError(self->shortRepr() + " does not support that operator");
-        }
-        if (others.size() != 1) {
-            rt->signalError("Expected exactly one right-side argument");
-            return NULL;
-        }
-        auto &arg1 = others[0];
-        if (!isTypeObject(arg1)) {
-            rt->signalError("Right-side object is invalid: " + arg1->shortRepr());
-        }
-        if (arg1->instance == NULL || arg1->type->id != rt->integer_type->id) {
-            rt->signalError("Right-side object " + arg1->shortRepr() + " must be an integer instance object");
-        }
-
-        auto res = makeIntegerInstanceObject(getIntegerValueFast(self) % getIntegerValueFast(arg1), rt);
-        return res;
+    if (!isTypeObject(arg)) {
+        rt->signalError("Right-side object is invalid: " + arg->shortRepr());
+    }
+    if (arg->instance == NULL || arg->type->id != rt->integer_type->id) {
+        rt->signalError("Right-side object " + arg->shortRepr() + " must be an integer instance object");
     }
 
+    auto res = makeIntegerInstanceObject(getIntegerValueFast(self) * getIntegerValueFast(arg), rt);
+    return res;
+}
 
+static Object *IntegerDivAdapter(Object *self, Object *arg, Runtime *rt) {
+    ProfilerCAPTURE();
 
-
-    static Object *IntegerRshiftAdapter(Object *self, const std::vector<Object *> &others, Runtime *rt) {
-        ProfilerCAPTURE();
-
-        if (!isInstanceObject(self)) {
-            rt->signalError(self->shortRepr() + " does not support that operator");
-        }
-        if (others.size() != 1) {
-            rt->signalError("Expected exactly one right-side argument");
-            return NULL;
-        }
-        auto &arg1 = others[0];
-        if (!isTypeObject(arg1)) {
-            rt->signalError("Right-side object is invalid: " + arg1->shortRepr());
-        }
-        if (arg1->instance == NULL || arg1->type->id != rt->integer_type->id) {
-            rt->signalError("Right-side object " + arg1->shortRepr() + " must be an integer instance object");
-        }
-
-        auto res = makeIntegerInstanceObject(getIntegerValueFast(self) >> getIntegerValueFast(arg1), rt);
-        return res;
+    if (!isInstanceObject(self)) {
+        rt->signalError(self->shortRepr() + " does not support that operator");
     }
 
-
-
-
-    static Object *IntegerLshiftAdapter(Object *self, const std::vector<Object *> &others, Runtime *rt) {
-        ProfilerCAPTURE();
-
-        if (!isInstanceObject(self)) {
-            rt->signalError(self->shortRepr() + " does not support that operator");
-        }
-        if (others.size() != 1) {
-            rt->signalError("Expected exactly one right-side argument");
-            return NULL;
-        }
-        auto &arg1 = others[0];
-        if (!isTypeObject(arg1)) {
-            rt->signalError("Right-side object is invalid: " + arg1->shortRepr());
-        }
-        if (arg1->instance == NULL || arg1->type->id != rt->integer_type->id) {
-            rt->signalError("Right-side object " + arg1->shortRepr() + " must be an integer instance object");
-        }
-
-        auto res = makeIntegerInstanceObject(getIntegerValueFast(self) << getIntegerValueFast(arg1), rt);
-        return res;
+    if (!isTypeObject(arg)) {
+        rt->signalError("Right-side object is invalid: " + arg->shortRepr());
+    }
+    if (arg->instance == NULL || arg->type->id != rt->integer_type->id) {
+        rt->signalError("Right-side object " + arg->shortRepr() + " must be an integer instance object");
     }
 
+    auto res = makeIntegerInstanceObject(getIntegerValueFast(self) / getIntegerValueFast(arg), rt);
+    return res;
+}
 
+static Object *IntegerRemAdapter(Object *self, Object *arg, Runtime *rt) {
+    ProfilerCAPTURE();
 
-
-    static Object *IntegerAddAdapter(Object *self, const std::vector<Object *> &others, Runtime *rt) {
-        ProfilerCAPTURE();
-
-        if (!isInstanceObject(self)) {
-            rt->signalError(self->shortRepr() + " does not support that operator");
-        }
-        if (others.size() != 1) {
-            rt->signalError("Expected exactly one right-side argument");
-            return NULL;
-        }
-        auto &arg1 = others[0];
-        if (!isTypeObject(arg1)) {
-            rt->signalError("Right-side object is invalid: " + arg1->shortRepr());
-        }
-        if (arg1->instance == NULL || arg1->type->id != rt->integer_type->id) {
-            rt->signalError("Right-side object " + arg1->shortRepr() + " must be an integer instance object");
-        }
-
-        auto res = makeIntegerInstanceObject(getIntegerValueFast(self) + getIntegerValueFast(arg1), rt);
-        return res;
+    if (!isInstanceObject(self)) {
+        rt->signalError(self->shortRepr() + " does not support that operator");
     }
 
-
-
-
-    static Object *IntegerSubAdapter(Object *self, const std::vector<Object *> &others, Runtime *rt) {
-        ProfilerCAPTURE();
-
-        if (!isInstanceObject(self)) {
-            rt->signalError(self->shortRepr() + " does not support that operator");
-        }
-        if (others.size() != 1) {
-            rt->signalError("Expected exactly one right-side argument");
-            return NULL;
-        }
-        auto &arg1 = others[0];
-        if (!isTypeObject(arg1)) {
-            rt->signalError("Right-side object is invalid: " + arg1->shortRepr());
-        }
-        if (arg1->instance == NULL || arg1->type->id != rt->integer_type->id) {
-            rt->signalError("Right-side object " + arg1->shortRepr() + " must be an integer instance object");
-        }
-
-        auto res = makeIntegerInstanceObject(getIntegerValueFast(self) - getIntegerValueFast(arg1), rt);
-        return res;
+    if (!isTypeObject(arg)) {
+        rt->signalError("Right-side object is invalid: " + arg->shortRepr());
+    }
+    if (arg->instance == NULL || arg->type->id != rt->integer_type->id) {
+        rt->signalError("Right-side object " + arg->shortRepr() + " must be an integer instance object");
     }
 
+    auto res = makeIntegerInstanceObject(getIntegerValueFast(self) % getIntegerValueFast(arg), rt);
+    return res;
+}
 
+static Object *IntegerRshiftAdapter(Object *self, Object *arg, Runtime *rt) {
+    ProfilerCAPTURE();
 
-
-    static Object *IntegerLtAdapter(Object *self, const std::vector<Object *> &others, Runtime *rt) {
-        ProfilerCAPTURE();
-
-        if (!isInstanceObject(self)) {
-            rt->signalError(self->shortRepr() + " does not support that operator");
-        }
-        if (others.size() != 1) {
-            rt->signalError("Expected exactly one right-side argument");
-            return NULL;
-        }
-        auto &arg1 = others[0];
-        if (!isTypeObject(arg1)) {
-            rt->signalError("Right-side object is invalid: " + arg1->shortRepr());
-        }
-        if (arg1->instance == NULL || arg1->type->id != rt->integer_type->id) {
-            rt->signalError("Right-side object " + arg1->shortRepr() + " must be an integer instance object");
-        }
-
-        auto res = makeBooleanInstanceObject(getIntegerValueFast(self) < getIntegerValueFast(arg1), rt);
-        return res;
+    if (!isInstanceObject(self)) {
+        rt->signalError(self->shortRepr() + " does not support that operator");
     }
 
-
-
-
-    static Object *IntegerLeqAdapter(Object *self, const std::vector<Object *> &others, Runtime *rt) {
-        ProfilerCAPTURE();
-
-        if (!isInstanceObject(self)) {
-            rt->signalError(self->shortRepr() + " does not support that operator");
-        }
-        if (others.size() != 1) {
-            rt->signalError("Expected exactly one right-side argument");
-            return NULL;
-        }
-        auto &arg1 = others[0];
-        if (!isTypeObject(arg1)) {
-            rt->signalError("Right-side object is invalid: " + arg1->shortRepr());
-        }
-        if (arg1->instance == NULL || arg1->type->id != rt->integer_type->id) {
-            rt->signalError("Right-side object " + arg1->shortRepr() + " must be an integer instance object");
-        }
-
-        auto res = makeBooleanInstanceObject(getIntegerValueFast(self) <= getIntegerValueFast(arg1), rt);
-        return res;
+    if (!isTypeObject(arg)) {
+        rt->signalError("Right-side object is invalid: " + arg->shortRepr());
+    }
+    if (arg->instance == NULL || arg->type->id != rt->integer_type->id) {
+        rt->signalError("Right-side object " + arg->shortRepr() + " must be an integer instance object");
     }
 
+    auto res = makeIntegerInstanceObject(getIntegerValueFast(self) >> getIntegerValueFast(arg), rt);
+    return res;
+}
 
+static Object *IntegerLshiftAdapter(Object *self, Object *arg, Runtime *rt) {
+    ProfilerCAPTURE();
 
-
-    static Object *IntegerGtAdapter(Object *self, const std::vector<Object *> &others, Runtime *rt) {
-        ProfilerCAPTURE();
-
-        if (!isInstanceObject(self)) {
-            rt->signalError(self->shortRepr() + " does not support that operator");
-        }
-        if (others.size() != 1) {
-            rt->signalError("Expected exactly one right-side argument");
-            return NULL;
-        }
-        auto &arg1 = others[0];
-        if (!isTypeObject(arg1)) {
-            rt->signalError("Right-side object is invalid: " + arg1->shortRepr());
-        }
-        if (arg1->instance == NULL || arg1->type->id != rt->integer_type->id) {
-            rt->signalError("Right-side object " + arg1->shortRepr() + " must be an integer instance object");
-        }
-
-        auto res = makeBooleanInstanceObject(getIntegerValueFast(self) > getIntegerValueFast(arg1), rt);
-        return res;
+    if (!isInstanceObject(self)) {
+        rt->signalError(self->shortRepr() + " does not support that operator");
     }
 
-
-
-
-    static Object *IntegerGeqAdapter(Object *self, const std::vector<Object *> &others, Runtime *rt) {
-        ProfilerCAPTURE();
-
-        if (!isInstanceObject(self)) {
-            rt->signalError(self->shortRepr() + " does not support that operator");
-        }
-        if (others.size() != 1) {
-            rt->signalError("Expected exactly one right-side argument");
-            return NULL;
-        }
-        auto &arg1 = others[0];
-        if (!isTypeObject(arg1)) {
-            rt->signalError("Right-side object is invalid: " + arg1->shortRepr());
-        }
-        if (arg1->instance == NULL || arg1->type->id != rt->integer_type->id) {
-            rt->signalError("Right-side object " + arg1->shortRepr() + " must be an integer instance object");
-        }
-
-        auto res = makeBooleanInstanceObject(getIntegerValueFast(self) >= getIntegerValueFast(arg1), rt);
-        return res;
+    if (!isTypeObject(arg)) {
+        rt->signalError("Right-side object is invalid: " + arg->shortRepr());
+    }
+    if (arg->instance == NULL || arg->type->id != rt->integer_type->id) {
+        rt->signalError("Right-side object " + arg->shortRepr() + " must be an integer instance object");
     }
 
+    auto res = makeIntegerInstanceObject(getIntegerValueFast(self) << getIntegerValueFast(arg), rt);
+    return res;
+}
 
+static Object *IntegerAddAdapter(Object *self, Object *arg, Runtime *rt) {
+    ProfilerCAPTURE();
 
-
-    static Object *IntegerEqAdapter(Object *self, const std::vector<Object *> &others, Runtime *rt) {
-        ProfilerCAPTURE();
-
-        if (others.size() != 1) {
-            rt->signalError("Expected exactly one right-side argument");
-            return NULL;
-        }
-        auto &arg1 = others[0];
-        if (!isTypeObject(arg1)) {
-            rt->signalError("Right-side object is invalid: " + arg1->shortRepr());
-        }
-
-        bool i1 = isInstanceObject(self);
-        bool i2 = arg1->instance != NULL;
-
-        if (i1 && i2) {
-            if (self->type->id != arg1->type->id) {
-                return makeBooleanInstanceObject(false, rt);
-            }
-            return makeBooleanInstanceObject(getIntegerValueFast(self) == getIntegerValueFast(arg1), rt);
-        }
-        else if (!i1 && !i2) {
-            return makeBooleanInstanceObject(self->type->id == arg1->type->id, rt);
-        }
-        else {
-            return makeBooleanInstanceObject(false, rt);
-        }
+    if (!isInstanceObject(self)) {
+        rt->signalError(self->shortRepr() + " does not support that operator");
     }
 
-
-
-
-    static Object *IntegerNeqAdapter(Object *self, const std::vector<Object *> &others, Runtime *rt) {
-        ProfilerCAPTURE();
-        auto res                 = IntegerEqAdapter(self, others, rt);
-        getBooleanValueFast(res) = !getBooleanValueFast(res);
-        return res;
+    if (!isTypeObject(arg)) {
+        rt->signalError("Right-side object is invalid: " + arg->shortRepr());
+    }
+    if (arg->instance == NULL || arg->type->id != rt->integer_type->id) {
+        rt->signalError("Right-side object " + arg->shortRepr() + " must be an integer instance object");
     }
 
+    auto res = makeIntegerInstanceObject(getIntegerValueFast(self) + getIntegerValueFast(arg), rt);
+    return res;
+}
 
+static Object *IntegerSubAdapter(Object *self, Object *arg, Runtime *rt) {
+    ProfilerCAPTURE();
 
-
-    static Object *IntegerBitandAdapter(Object *self, const std::vector<Object *> &others, Runtime *rt) {
-        ProfilerCAPTURE();
-
-        if (!isInstanceObject(self)) {
-            rt->signalError(self->shortRepr() + " does not support that operator");
-        }
-        if (others.size() != 1) {
-            rt->signalError("Expected exactly one right-side argument");
-            return NULL;
-        }
-        auto &arg1 = others[0];
-        if (!isTypeObject(arg1)) {
-            rt->signalError("Right-side object is invalid: " + arg1->shortRepr());
-        }
-        if (arg1->instance == NULL || arg1->type->id != rt->integer_type->id) {
-            rt->signalError("Right-side object " + arg1->shortRepr() + " must be an integer instance object");
-        }
-
-        auto res = makeIntegerInstanceObject(getIntegerValueFast(self) & getIntegerValueFast(arg1), rt);
-        return res;
+    if (!isInstanceObject(self)) {
+        rt->signalError(self->shortRepr() + " does not support that operator");
     }
 
-
-
-
-    static Object *IntegerBitxorAdapter(Object *self, const std::vector<Object *> &others, Runtime *rt) {
-        ProfilerCAPTURE();
-
-        if (!isInstanceObject(self)) {
-            rt->signalError(self->shortRepr() + " does not support that operator");
-        }
-        if (others.size() != 1) {
-            rt->signalError("Expected exactly one right-side argument");
-            return NULL;
-        }
-        auto &arg1 = others[0];
-        if (!isTypeObject(arg1)) {
-            rt->signalError("Right-side object is invalid: " + arg1->shortRepr());
-        }
-        if (arg1->instance == NULL || arg1->type->id != rt->integer_type->id) {
-            rt->signalError("Right-side object " + arg1->shortRepr() + " must be an integer instance object");
-        }
-
-        auto res = makeIntegerInstanceObject(getIntegerValueFast(self) ^ getIntegerValueFast(arg1), rt);
-        return res;
+    if (!isTypeObject(arg)) {
+        rt->signalError("Right-side object is invalid: " + arg->shortRepr());
+    }
+    if (arg->instance == NULL || arg->type->id != rt->integer_type->id) {
+        rt->signalError("Right-side object " + arg->shortRepr() + " must be an integer instance object");
     }
 
+    auto res = makeIntegerInstanceObject(getIntegerValueFast(self) - getIntegerValueFast(arg), rt);
+    return res;
+}
 
+static Object *IntegerLtAdapter(Object *self, Object *arg, Runtime *rt) {
+    ProfilerCAPTURE();
 
-
-    static Object *IntegerBitorAdapter(Object *self, const std::vector<Object *> &others, Runtime *rt) {
-        ProfilerCAPTURE();
-
-        if (!isInstanceObject(self)) {
-            rt->signalError(self->shortRepr() + " does not support that operator");
-        }
-        if (others.size() != 1) {
-            rt->signalError("Expected exactly one right-side argument");
-            return NULL;
-        }
-        auto &arg1 = others[0];
-        if (!isTypeObject(arg1)) {
-            rt->signalError("Right-side object is invalid: " + arg1->shortRepr());
-        }
-        if (arg1->instance == NULL || arg1->type->id != rt->integer_type->id) {
-            rt->signalError("Right-side object " + arg1->shortRepr() + " must be an integer instance object");
-        }
-
-        auto res = makeIntegerInstanceObject(getIntegerValueFast(self) | getIntegerValueFast(arg1), rt);
-        return res;
+    if (!isInstanceObject(self)) {
+        rt->signalError(self->shortRepr() + " does not support that operator");
     }
 
+    if (!isTypeObject(arg)) {
+        rt->signalError("Right-side object is invalid: " + arg->shortRepr());
+    }
+    if (arg->instance == NULL || arg->type->id != rt->integer_type->id) {
+        rt->signalError("Right-side object " + arg->shortRepr() + " must be an integer instance object");
+    }
+
+    return (getIntegerValueFast(self) < getIntegerValueFast(arg)) ? rt->protected_true : rt->protected_false;
+}
+
+static Object *IntegerLeqAdapter(Object *self, Object *arg, Runtime *rt) {
+    ProfilerCAPTURE();
+
+    if (!isInstanceObject(self)) {
+        rt->signalError(self->shortRepr() + " does not support that operator");
+    }
+
+    if (!isTypeObject(arg)) {
+        rt->signalError("Right-side object is invalid: " + arg->shortRepr());
+    }
+    if (arg->instance == NULL || arg->type->id != rt->integer_type->id) {
+        rt->signalError("Right-side object " + arg->shortRepr() + " must be an integer instance object");
+    }
+
+    return (getIntegerValueFast(self) <= getIntegerValueFast(arg)) ? rt->protected_true : rt->protected_false;
+}
+
+static Object *IntegerGtAdapter(Object *self, Object *arg, Runtime *rt) {
+    ProfilerCAPTURE();
+
+    if (!isInstanceObject(self)) {
+        rt->signalError(self->shortRepr() + " does not support that operator");
+    }
+
+    if (!isTypeObject(arg)) {
+        rt->signalError("Right-side object is invalid: " + arg->shortRepr());
+    }
+    if (arg->instance == NULL || arg->type->id != rt->integer_type->id) {
+        rt->signalError("Right-side object " + arg->shortRepr() + " must be an integer instance object");
+    }
+
+    return (getIntegerValueFast(self) > getIntegerValueFast(arg)) ? rt->protected_true : rt->protected_false;
+}
+
+static Object *IntegerGeqAdapter(Object *self, Object *arg, Runtime *rt) {
+    ProfilerCAPTURE();
+
+    if (!isInstanceObject(self)) {
+        rt->signalError(self->shortRepr() + " does not support that operator");
+    }
+
+    if (!isTypeObject(arg)) {
+        rt->signalError("Right-side object is invalid: " + arg->shortRepr());
+    }
+    if (arg->instance == NULL || arg->type->id != rt->integer_type->id) {
+        rt->signalError("Right-side object " + arg->shortRepr() + " must be an integer instance object");
+    }
+
+    return (getIntegerValueFast(self) >= getIntegerValueFast(arg)) ? rt->protected_true : rt->protected_false;
+}
+
+static Object *IntegerEqAdapter(Object *self, Object *arg, Runtime *rt) {
+    ProfilerCAPTURE();
+
+    if (!isTypeObject(arg)) {
+        rt->signalError("Right-side object is invalid: " + arg->shortRepr());
+    }
+
+    bool i1 = isInstanceObject(self);
+    bool i2 = arg->instance != NULL;
+
+    if (i1 && i2) {
+        if (self->type->id != arg->type->id) {
+            return rt->protected_false;
+        }
+        return (getIntegerValueFast(self) == getIntegerValueFast(arg)) ? rt->protected_true : rt->protected_false;
+    }
+    else if (!i1 && !i2) {
+        return (self->type->id == arg->type->id) ? rt->protected_true : rt->protected_false;
+    }
+    else {
+        return rt->protected_false;
+    }
+}
+
+static Object *IntegerNeqAdapter(Object *self, Object *arg, Runtime *rt) {
+    ProfilerCAPTURE();
+    auto res = IntegerEqAdapter(self, arg, rt);
+    return (!getBooleanValueFast(res)) ? rt->protected_true : rt->protected_false;
+}
+
+static Object *IntegerBitandAdapter(Object *self, Object *arg, Runtime *rt) {
+    ProfilerCAPTURE();
+
+    if (!isInstanceObject(self)) {
+        rt->signalError(self->shortRepr() + " does not support that operator");
+    }
+
+    if (!isTypeObject(arg)) {
+        rt->signalError("Right-side object is invalid: " + arg->shortRepr());
+    }
+    if (arg->instance == NULL || arg->type->id != rt->integer_type->id) {
+        rt->signalError("Right-side object " + arg->shortRepr() + " must be an integer instance object");
+    }
+
+    auto res = makeIntegerInstanceObject(getIntegerValueFast(self) & getIntegerValueFast(arg), rt);
+    return res;
+}
+
+static Object *IntegerBitxorAdapter(Object *self, Object *arg, Runtime *rt) {
+    ProfilerCAPTURE();
+
+    if (!isInstanceObject(self)) {
+        rt->signalError(self->shortRepr() + " does not support that operator");
+    }
+
+    if (!isTypeObject(arg)) {
+        rt->signalError("Right-side object is invalid: " + arg->shortRepr());
+    }
+    if (arg->instance == NULL || arg->type->id != rt->integer_type->id) {
+        rt->signalError("Right-side object " + arg->shortRepr() + " must be an integer instance object");
+    }
+
+    auto res = makeIntegerInstanceObject(getIntegerValueFast(self) ^ getIntegerValueFast(arg), rt);
+    return res;
+}
+
+static Object *IntegerBitorAdapter(Object *self, Object *arg, Runtime *rt) {
+    ProfilerCAPTURE();
+
+    if (!isInstanceObject(self)) {
+        rt->signalError(self->shortRepr() + " does not support that operator");
+    }
+
+    if (!isTypeObject(arg)) {
+        rt->signalError("Right-side object is invalid: " + arg->shortRepr());
+    }
+    if (arg->instance == NULL || arg->type->id != rt->integer_type->id) {
+        rt->signalError("Right-side object " + arg->shortRepr() + " must be an integer instance object");
+    }
+
+    auto res = makeIntegerInstanceObject(getIntegerValueFast(self) | getIntegerValueFast(arg), rt);
+    return res;
+}
 
 // TODO: add all operators to function and nothing
 IntegerType::IntegerType(Runtime *rt)
     : Type(rt) {
     ProfilerCAPTURE();
-    this->addOperator(OperatorNode::POST_PLUS_PLUS,  IntegerPostincAdapter);
-    this->addOperator(OperatorNode::POST_MINUS_MINUS,  IntegerPostdecAdapter);
-    this->addOperator(OperatorNode::CALL,  IntegerUnsupportedAdapter);
-    this->addOperator(OperatorNode::INDEX,  IntegerUnsupportedAdapter);
-    this->addOperator(OperatorNode::PRE_PLUS_PLUS,  IntegerPreincAdapter);
-    this->addOperator(OperatorNode::PRE_MINUS_MINUS,  IntegerPredecAdapter);
-    this->addOperator(OperatorNode::PRE_PLUS,  IntegerPositiveAdapter);
-    this->addOperator(OperatorNode::PRE_MINUS,  IntegerNegativeAdapter);
-    this->addOperator(OperatorNode::NOT,  IntegerUnsupportedAdapter);
-    this->addOperator(OperatorNode::INVERSE,  IntegerInverseAdapter);
-    this->addOperator(OperatorNode::MULT,  IntegerMultAdapter);
-    this->addOperator(OperatorNode::DIV,  IntegerDivAdapter);
-    this->addOperator(OperatorNode::REM,  IntegerRemAdapter);
-    this->addOperator(OperatorNode::RIGHT_SHIFT,  IntegerRshiftAdapter);
-    this->addOperator(OperatorNode::LEFT_SHIFT,  IntegerLshiftAdapter);
-    this->addOperator(OperatorNode::PLUS,  IntegerAddAdapter);
-    this->addOperator(OperatorNode::MINUS,  IntegerSubAdapter);
-    this->addOperator(OperatorNode::LESS,  IntegerLtAdapter);
-    this->addOperator(OperatorNode::LESS_EQUAL,  IntegerLeqAdapter);
-    this->addOperator(OperatorNode::GREATER,  IntegerGtAdapter);
-    this->addOperator(OperatorNode::GREATER_EQUAL,  IntegerGeqAdapter);
-    this->addOperator(OperatorNode::EQUAL,  IntegerEqAdapter);
-    this->addOperator(OperatorNode::NOT_EQUAL,  IntegerNeqAdapter);
-    this->addOperator(OperatorNode::BITAND,  IntegerBitandAdapter);
-    this->addOperator(OperatorNode::BITXOR,  IntegerBitxorAdapter);
-    this->addOperator(OperatorNode::BITOR,  IntegerBitorAdapter);
-    this->addOperator(OperatorNode::AND,  IntegerUnsupportedAdapter);
-    this->addOperator(OperatorNode::OR,  IntegerUnsupportedAdapter);
+    this->postinc_op  = IntegerPostincAdapter;
+    this->postdec_op  = IntegerPostdecAdapter;
+    this->preinc_op   = IntegerPreincAdapter;
+    this->predec_op   = IntegerPredecAdapter;
+    this->positive_op = IntegerPositiveAdapter;
+    this->negative_op = IntegerNegativeAdapter;
+    this->inverse_op  = IntegerInverseAdapter;
+    this->mult_op     = IntegerMultAdapter;
+    this->div_op      = IntegerDivAdapter;
+    this->rem_op      = IntegerRemAdapter;
+    this->rshift_op   = IntegerRshiftAdapter;
+    this->lshift_op   = IntegerLshiftAdapter;
+    this->add_op      = IntegerAddAdapter;
+    this->sub_op      = IntegerSubAdapter;
+    this->lt_op       = IntegerLtAdapter;
+    this->leq_op      = IntegerLeqAdapter;
+    this->gt_op       = IntegerGtAdapter;
+    this->geq_op      = IntegerGeqAdapter;
+    this->eq_op       = IntegerEqAdapter;
+    this->neq_op      = IntegerNeqAdapter;
+    this->bitand_op   = IntegerBitandAdapter;
+    this->bitxor_op   = IntegerBitxorAdapter;
+    this->bitor_op    = IntegerBitorAdapter;
 }
 
 Object *IntegerType::create(Runtime *rt) {

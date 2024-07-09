@@ -90,42 +90,9 @@ std::vector<Object *> UserDefinedInstance::getGCReachable() {
     return res;
 }
 
-static Object *UserDefinedDefaultAdapter(Object *self, const std::vector<Object *> &others, Runtime *rt) {
-    ProfilerCAPTURE();
-    rt->signalError(self->shortRepr() + " does not support that operator");
-}
-
 UserDefinedType::UserDefinedType(Runtime *rt)
     : Type(rt) {
     ProfilerCAPTURE();
-    this->addOperator(OperatorNode::POST_PLUS_PLUS,  UserDefinedDefaultAdapter);
-    this->addOperator(OperatorNode::POST_MINUS_MINUS,  UserDefinedDefaultAdapter);
-    this->addOperator(OperatorNode::CALL,  UserDefinedDefaultAdapter);
-    this->addOperator(OperatorNode::INDEX,  UserDefinedDefaultAdapter);
-    this->addOperator(OperatorNode::PRE_PLUS_PLUS,  UserDefinedDefaultAdapter);
-    this->addOperator(OperatorNode::PRE_MINUS_MINUS,  UserDefinedDefaultAdapter);
-    this->addOperator(OperatorNode::PRE_PLUS,  UserDefinedDefaultAdapter);
-    this->addOperator(OperatorNode::PRE_MINUS,  UserDefinedDefaultAdapter);
-    this->addOperator(OperatorNode::NOT,  UserDefinedDefaultAdapter);
-    this->addOperator(OperatorNode::INVERSE,  UserDefinedDefaultAdapter);
-    this->addOperator(OperatorNode::MULT,  UserDefinedDefaultAdapter);
-    this->addOperator(OperatorNode::DIV,  UserDefinedDefaultAdapter);
-    this->addOperator(OperatorNode::REM,  UserDefinedDefaultAdapter);
-    this->addOperator(OperatorNode::RIGHT_SHIFT,  UserDefinedDefaultAdapter);
-    this->addOperator(OperatorNode::LEFT_SHIFT,  UserDefinedDefaultAdapter);
-    this->addOperator(OperatorNode::PLUS,  UserDefinedDefaultAdapter);
-    this->addOperator(OperatorNode::MINUS,  UserDefinedDefaultAdapter);
-    this->addOperator(OperatorNode::LESS,  UserDefinedDefaultAdapter);
-    this->addOperator(OperatorNode::LESS_EQUAL,  UserDefinedDefaultAdapter);
-    this->addOperator(OperatorNode::GREATER,  UserDefinedDefaultAdapter);
-    this->addOperator(OperatorNode::GREATER_EQUAL,  UserDefinedDefaultAdapter);
-    this->addOperator(OperatorNode::EQUAL,  UserDefinedDefaultAdapter);
-    this->addOperator(OperatorNode::NOT_EQUAL,  UserDefinedDefaultAdapter);
-    this->addOperator(OperatorNode::BITAND,  UserDefinedDefaultAdapter);
-    this->addOperator(OperatorNode::BITXOR,  UserDefinedDefaultAdapter);
-    this->addOperator(OperatorNode::BITOR,  UserDefinedDefaultAdapter);
-    this->addOperator(OperatorNode::AND,  UserDefinedDefaultAdapter);
-    this->addOperator(OperatorNode::OR,  UserDefinedDefaultAdapter);
 }
 
 Object *UserDefinedType::create(Runtime *rt) {
@@ -147,6 +114,8 @@ std::string UserDefinedType::shortRepr() {
     return "UserDefinedType(id = " + std::to_string(this->id) + ", name = " + NameId::shortRepr(this->nameid)
            + ")";
 }
+
+// TODO: == and !=
 
 Object *UserDefinedType::copy(Object *obj, Runtime *rt) {
     ProfilerCAPTURE();
