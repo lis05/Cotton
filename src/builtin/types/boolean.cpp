@@ -38,18 +38,18 @@ Instance *BooleanInstance::copy(Runtime *rt) {
     ProfilerCAPTURE();
     Instance *res = new (rt->alloc(sizeof(BooleanInstance))) BooleanInstance(rt);
     if (res == NULL) {
-        rt->signalError("Failed to copy " + this->shortRepr());
+        rt->signalError("Failed to copy " + this->userRepr());
     }
     icast(res, BooleanInstance)->value = this->value;
     return res;
 }
 
-std::string BooleanInstance::shortRepr() {
+std::string BooleanInstance::userRepr() {
     ProfilerCAPTURE();
     if (this == NULL) {
-        return "BooleanInstance(NULL)";
+        return "Boolean(NULL)";
     }
-    return "BooleanInstance(id = " + std::to_string(this->id) + ", value = " + (this->value ? "true" : "false")
+    return std::string("Boolean(value = ") + (this->value ? "true" : "false")
            + ")";
 }
 
@@ -76,7 +76,7 @@ static Object *BooleanNotAdapter(Object *self, Runtime *rt, bool execution_resul
 static Object *BooleanEqAdapter(Object *self, Object *arg, Runtime *rt, bool execution_result_matters) {
     ProfilerCAPTURE();
     if (!isTypeObject(arg)) {
-        rt->signalError("Right-side object is invalid: " + arg->shortRepr());
+        rt->signalError("Right-side object is invalid: " + arg->userRepr());
     }
     auto isSelfI = isInstanceObject(self);
     auto isArg1I = arg->instance != NULL;
@@ -104,13 +104,13 @@ static Object *BooleanAndAdapter(Object *self, Object *arg, Runtime *rt, bool ex
     ProfilerCAPTURE();
 
     if (!isTypeObject(arg)) {
-        rt->signalError("Right-side object is invalid: " + arg->shortRepr());
+        rt->signalError("Right-side object is invalid: " + arg->userRepr());
     }
     if (arg->type->id != rt->boolean_type->id) {
-        rt->signalError("Right-side object is not Boolean: " + arg->shortRepr());
+        rt->signalError("Right-side object is not Boolean: " + arg->userRepr());
     }
     if (arg->instance == NULL) {
-        rt->signalError("Right-side object is not an instance object: " + arg->shortRepr());
+        rt->signalError("Right-side object is not an instance object: " + arg->userRepr());
     }
 
     return (getBooleanValue(self, rt) && getBooleanValue(arg, rt)) ? rt->protected_true : rt->protected_false;
@@ -120,13 +120,13 @@ static Object *BooleanOrAdapter(Object *self, Object *arg, Runtime *rt, bool exe
     ProfilerCAPTURE();
 
     if (!isTypeObject(arg)) {
-        rt->signalError("Right-side object is invalid: " + arg->shortRepr());
+        rt->signalError("Right-side object is invalid: " + arg->userRepr());
     }
     if (arg->type->id != rt->boolean_type->id) {
-        rt->signalError("Right-side object is not Boolean: " + arg->shortRepr());
+        rt->signalError("Right-side object is not Boolean: " + arg->userRepr());
     }
     if (arg->instance == NULL) {
-        rt->signalError("Right-side object is not an instance object: " + arg->shortRepr());
+        rt->signalError("Right-side object is not an instance object: " + arg->userRepr());
     }
 
     return (getBooleanValue(self, rt) || getBooleanValue(arg, rt)) ? rt->protected_true : rt->protected_false;
@@ -154,7 +154,7 @@ Object *BooleanType::create(Runtime *rt) {
 Object *BooleanType::copy(Object *obj, Runtime *rt) {
     ProfilerCAPTURE();
     if (!isTypeObject(obj) || obj->type->id != rt->boolean_type->id) {
-        rt->signalError("Failed to copy an invalid object: " + obj->shortRepr());
+        rt->signalError("Failed to copy an invalid object: " + obj->userRepr());
     }
     if (obj->instance == NULL) {
         return newObject(false, NULL, this, rt);
@@ -164,21 +164,21 @@ Object *BooleanType::copy(Object *obj, Runtime *rt) {
     return res;
 }
 
-std::string BooleanType::shortRepr() {
+std::string BooleanType::userRepr() {
     ProfilerCAPTURE();
     if (this == NULL) {
         return "BooleanType(NULL)";
     }
-    return "BooleanType(id = " + std::to_string(this->id) + ")";
+    return "BooleanType";
 }
 
 bool &getBooleanValue(Object *obj, Runtime *rt) {
     ProfilerCAPTURE();
     if (!isInstanceObject(obj)) {
-        rt->signalError(obj->shortRepr() + " is not an instance object");
+        rt->signalError(obj->userRepr() + " is not an instance object");
     }
     if (obj->type->id != rt->boolean_type->id) {
-        rt->signalError(obj->shortRepr() + " is not Boolean");
+        rt->signalError(obj->userRepr() + " is not Boolean");
     }
     return icast(obj->instance, BooleanInstance)->value;
 }

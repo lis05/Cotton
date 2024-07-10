@@ -55,6 +55,16 @@ public:
     Runtime(GCStrategy *gc_strategy, ErrorManager *error_manager);
     ~Runtime() = default;
 
+    enum BuiltinTypes {
+        NOTHING_TYPE_ID   = 1,
+        BOOLEAN_TYPE_ID   = 2,
+        FUNCTION_TYPE_ID  = 3,
+        INTEGER_TYPE_ID   = 4,
+        REAL_TYPE_ID      = 5,
+        CHARACTER_TYPE_ID = 6,
+        STRING_TYPE_ID    = 7
+    };
+
     Builtin::NothingType   *nothing_type;
     Builtin::BooleanType   *boolean_type;
     Builtin::FunctionType  *function_type;

@@ -101,7 +101,7 @@ std::string NameId::fromId(int64_t id) {
     return "invalid name id";
 }
 
-std::string NameId::shortRepr(int64_t id) {
+std::string NameId::userRepr(int64_t id) {
     ProfilerCAPTURE();
     return fromId(id);
     // return "NameId(id = " + std::to_string(id) + ", str = \'" + NameId::fromId(id) + "\')";

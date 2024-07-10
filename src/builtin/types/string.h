@@ -34,11 +34,11 @@ public:
 
     Instance             *copy(Runtime *rt);
     size_t                getSize();
-    std::string           shortRepr();
+    std::string           userRepr();
     std::vector<Object *> getGCReachable();
     void                  spreadSingleUse();
     void                  spreadMultiUse();
-    void destroy(Runtime *rt);
+    void                  destroy(Runtime *rt);
 };
 
 class StringType: public Type {
@@ -48,7 +48,7 @@ public:
     ~StringType() = default;
     Object     *create(Runtime *rt);
     Object     *copy(Object *obj, Runtime *rt);
-    std::string shortRepr();
+    std::string userRepr();
 };
 
 Object *makeStringInstanceObject(const std::string &str, Runtime *rt);

@@ -30,7 +30,7 @@ static Object *make(const std::vector<Object *> &args, Runtime *rt, bool executi
     }
     auto arg = args[0];
     if (!isTypeObject(arg) || isInstanceObject(arg)) {
-        rt->signalError("Expected a type object but got " + arg->shortRepr());
+        rt->signalError("Expected a type object but got " + arg->userRepr());
     }
 
     if (!execution_result_matters) {
@@ -73,11 +73,11 @@ static Object *print(const std::vector<Object *> &args, Runtime *rt, bool execut
                 }
             }
             else {
-                rt->signalError("Cannot print " + arg->shortRepr());
+                rt->signalError("Cannot print " + arg->userRepr());
             }
         }
         else {
-            rt->signalError("Cannot print " + arg->shortRepr());
+            rt->signalError("Cannot print " + arg->userRepr());
         }
     }
     std::cout << std::endl;

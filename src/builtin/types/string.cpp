@@ -39,7 +39,7 @@ Instance *StringInstance::copy(Runtime *rt) {
     Instance *res = new (rt->alloc(sizeof(StringInstance))) StringInstance(rt);
 
     if (res == NULL) {
-        rt->signalError("Failed to copy " + this->shortRepr());
+        rt->signalError("Failed to copy " + this->userRepr());
     }
     for (auto obj : this->data) {
         ((StringInstance *)res)->data.push_back(rt->copy(obj));
@@ -47,13 +47,12 @@ Instance *StringInstance::copy(Runtime *rt) {
     return res;
 }
 
-std::string StringInstance::shortRepr() {
+std::string StringInstance::userRepr() {
     ProfilerCAPTURE();
     if (this == NULL) {
-        return "StringInstance(NULL)";
+        return "String(NULL)";
     }
-    return "StringInstance(id = " + std::to_string(this->id) + ", size = " + std::to_string(this->data.size())
-           + ", data = ...)";
+    return "StringInstance(size = " + std::to_string(this->data.size()) + ", data = ...)";
 }
 
 void StringInstance::destroy(Runtime *rt) {
@@ -96,7 +95,7 @@ StringIndexAdapter(Object *self, const std::vector<Object *> &args, Runtime *rt,
     ProfilerCAPTURE();
 
     if (!isInstanceObject(self)) {
-        rt->signalError(self->shortRepr() + " does not support that operator");
+        rt->signalError(self->userRepr() + " does not support that operator");
     }
     if (args.size() != 1) {
         rt->signalError("Expected exactly one right-side argument");
@@ -104,13 +103,13 @@ StringIndexAdapter(Object *self, const std::vector<Object *> &args, Runtime *rt,
     }
     auto &arg = args[0];
     if (!isTypeObject(arg)) {
-        rt->signalError("Right-side object is invalid: " + arg->shortRepr());
+        rt->signalError("Right-side object is invalid: " + arg->userRepr());
     }
     if (arg->instance == NULL || arg->type->id != rt->integer_type->id) {
-        rt->signalError("Index " + arg->shortRepr() + " must be an integer instance object");
+        rt->signalError("Index " + arg->userRepr() + " must be an integer instance object");
     }
     if (!(0 <= getIntegerValueFast(arg) && getIntegerValueFast(arg) < getStringDataFast(self).size())) {
-        rt->signalError("Index " + arg->shortRepr() + " is out of string " + self->shortRepr() + " range");
+        rt->signalError("Index " + arg->userRepr() + " is out of string " + self->userRepr() + " range");
     }
     return getStringDataFast(self)[getIntegerValueFast(arg)];
 }
@@ -119,14 +118,14 @@ static Object *StringAddAdapter(Object *self, Object *arg, Runtime *rt, bool exe
     ProfilerCAPTURE();
 
     if (!isInstanceObject(self)) {
-        rt->signalError(self->shortRepr() + " does not support that operator");
+        rt->signalError(self->userRepr() + " does not support that operator");
     }
 
     if (!isTypeObject(arg)) {
-        rt->signalError("Right-side object is invalid: " + arg->shortRepr());
+        rt->signalError("Right-side object is invalid: " + arg->userRepr());
     }
     if (arg->instance == NULL || arg->type->id != rt->string_type->id) {
-        rt->signalError("Right-side object " + arg->shortRepr() + " must be a String instance object");
+        rt->signalError("Right-side object " + arg->userRepr() + " must be a String instance object");
     }
 
     if (!execution_result_matters) {
@@ -145,7 +144,7 @@ static Object *StringEqAdapter(Object *self, Object *arg, Runtime *rt, bool exec
     ProfilerCAPTURE();
 
     if (!isTypeObject(arg)) {
-        rt->signalError("Right-side object is invalid: " + arg->shortRepr());
+        rt->signalError("Right-side object is invalid: " + arg->userRepr());
     }
 
     if (!execution_result_matters) {
@@ -191,16 +190,16 @@ static Object *stringSizeMethod(const std::vector<Object *> &args, Runtime *rt, 
     }
     auto self = args[0];
     if (!isTypeObject(self)) {
-        rt->signalError("Caller is invalid: " + self->shortRepr());
+        rt->signalError("Caller is invalid: " + self->userRepr());
     }
     if (self->instance == NULL || self->type->id != rt->string_type->id) {
-        rt->signalError("Caller must be a String instance object: " + self->shortRepr());
+        rt->signalError("Caller must be a String instance object: " + self->userRepr());
     }
 
     if (!execution_result_matters) {
         return NULL;
     }
-    
+
     return makeIntegerInstanceObject(getStringDataFast(self).size(), rt);
 }
 
@@ -226,7 +225,7 @@ Object *StringType::create(Runtime *rt) {
 Object *StringType::copy(Object *obj, Runtime *rt) {
     ProfilerCAPTURE();
     if (!isTypeObject(obj) || obj->type->id != rt->string_type->id) {
-        rt->signalError("Failed to copy an invalid object: " + obj->shortRepr());
+        rt->signalError("Failed to copy an invalid object: " + obj->userRepr());
     }
     if (obj->instance == NULL) {
         return newObject(false, NULL, this, rt);
@@ -236,21 +235,21 @@ Object *StringType::copy(Object *obj, Runtime *rt) {
     return res;
 }
 
-std::string StringType::shortRepr() {
+std::string StringType::userRepr() {
     ProfilerCAPTURE();
     if (this == NULL) {
         return "StringType(NULL)";
     }
-    return "StringType(id = " + std::to_string(this->id) + ")";
+    return "StringType";
 }
 
 std::vector<Object *> &getStringData(Object *obj, Runtime *rt) {
     ProfilerCAPTURE();
     if (!isInstanceObject(obj)) {
-        rt->signalError(obj->shortRepr() + " is not an instance object");
+        rt->signalError(obj->userRepr() + " is not an instance object");
     }
     if (obj->type->id != rt->string_type->id) {
-        rt->signalError(obj->shortRepr() + " is not String");
+        rt->signalError(obj->userRepr() + " is not String");
     }
     return icast(obj->instance, StringInstance)->data;
 }

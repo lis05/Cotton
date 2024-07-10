@@ -28,9 +28,10 @@
 
 namespace Cotton {
 int64_t Instance::total_instances = 0;
+
 Object *Cotton::Instance::selectField(int64_t id, Runtime *rt) {
     ProfilerCAPTURE();
-    rt->signalError(this->shortRepr() + "doesn't have field " + NameId::shortRepr(id));
+    rt->signalError(this->userRepr() + "doesn't have field " + NameId::userRepr(id));
 }
 
 bool Instance::hasField(int64_t id, Runtime *rt) {

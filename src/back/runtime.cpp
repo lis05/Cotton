@@ -25,12 +25,20 @@ Runtime::Runtime(GCStrategy *gc_strategy, ErrorManager *error_manager) {
     this->current_token = NULL;
 
     this->nothing_type   = new Builtin::NothingType(this);
-    this->function_type  = new Builtin::FunctionType(this);
     this->boolean_type   = new Builtin::BooleanType(this);
+    this->function_type  = new Builtin::FunctionType(this);
     this->integer_type   = new Builtin::IntegerType(this);
     this->real_type      = new Builtin::RealType(this);
     this->character_type = new Builtin::CharacterType(this);
     this->string_type    = new Builtin::StringType(this);
+
+    assert(this->nothing_type->id == NOTHING_TYPE_ID);
+    assert(this->boolean_type->id == BOOLEAN_TYPE_ID);
+    assert(this->function_type->id == FUNCTION_TYPE_ID);
+    assert(this->integer_type->id == INTEGER_TYPE_ID);
+    assert(this->real_type->id == REAL_TYPE_ID);
+    assert(this->character_type->id == CHARACTER_TYPE_ID);
+    assert(this->string_type->id == STRING_TYPE_ID);
 
     this->scope->addVariable(NameId("Nothing").id, this->make(this->nothing_type, Runtime::TYPE_OBJECT), this);
     this->scope->addVariable(NameId("Function").id, this->make(this->function_type, Runtime::TYPE_OBJECT), this);
@@ -118,7 +126,7 @@ Object *Runtime::make(Type *type, ObjectOptions object_opt) {
     }
 
     if (obj == NULL) {
-        this->signalError("Failed to make an object of type " + type->shortRepr());
+        this->signalError("Failed to make an object of type " + type->userRepr());
     }
     obj->spreadSingleUse();
     return obj;
@@ -127,7 +135,7 @@ Object *Runtime::make(Type *type, ObjectOptions object_opt) {
 Object *Runtime::copy(Object *obj) {
     ProfilerCAPTURE();
     if (!isTypeObject(obj)) {
-        this->signalError("Failed to copy non type object " + obj->shortRepr());
+        this->signalError("Failed to copy non type object " + obj->userRepr());
     }
     if (obj->single_use) {
         return obj;
@@ -139,7 +147,7 @@ Object *Runtime::copy(Object *obj) {
 Object *Runtime::runOperator(OperatorNode::OperatorId id, Object *obj, bool execution_result_matters) {
     ProfilerCAPTURE();
     if (!isInstanceObject(obj)) {
-        this->signalError("Failed to run operator " + std::to_string(id) + " on " + obj->shortRepr());
+        this->signalError("Failed to run operator " + std::to_string(id) + " on " + obj->userRepr());
     }
 
     UnaryOperatorAdapter op;
@@ -148,52 +156,52 @@ Object *Runtime::runOperator(OperatorNode::OperatorId id, Object *obj, bool exec
     case OperatorNode::POST_PLUS_PLUS :
         op = obj->type->postinc_op;
         if (op == NULL) {
-            this->signalError(obj->shortRepr() + " doesn't support that operator");
+            this->signalError(obj->userRepr() + " doesn't support that operator");
         }
         return op(obj, this, execution_result_matters);
     case OperatorNode::POST_MINUS_MINUS :
         op = obj->type->postdec_op;
         if (op == NULL) {
-            this->signalError(obj->shortRepr() + " doesn't support that operator");
+            this->signalError(obj->userRepr() + " doesn't support that operator");
         }
         return op(obj, this, execution_result_matters);
     case OperatorNode::PRE_PLUS_PLUS :
         op = obj->type->preinc_op;
         if (op == NULL) {
-            this->signalError(obj->shortRepr() + " doesn't support that operator");
+            this->signalError(obj->userRepr() + " doesn't support that operator");
         }
         return op(obj, this, execution_result_matters);
     case OperatorNode::PRE_MINUS_MINUS :
         op = obj->type->predec_op;
         if (op == NULL) {
-            this->signalError(obj->shortRepr() + " doesn't support that operator");
+            this->signalError(obj->userRepr() + " doesn't support that operator");
         }
         return op(obj, this, execution_result_matters);
     case OperatorNode::PRE_PLUS :
         op = obj->type->positive_op;
         if (op == NULL) {
-            this->signalError(obj->shortRepr() + " doesn't support that operator");
+            this->signalError(obj->userRepr() + " doesn't support that operator");
         }
         return op(obj, this, execution_result_matters);
     case OperatorNode::PRE_MINUS :
         op = obj->type->negative_op;
         if (op == NULL) {
-            this->signalError(obj->shortRepr() + " doesn't support that operator");
+            this->signalError(obj->userRepr() + " doesn't support that operator");
         }
         return op(obj, this, execution_result_matters);
     case OperatorNode::NOT :
         op = obj->type->not_op;
         if (op == NULL) {
-            this->signalError(obj->shortRepr() + " doesn't support that operator");
+            this->signalError(obj->userRepr() + " doesn't support that operator");
         }
         return op(obj, this, execution_result_matters);
     case OperatorNode::INVERSE :
         op = obj->type->inverse_op;
         if (op == NULL) {
-            this->signalError(obj->shortRepr() + " doesn't support that operator");
+            this->signalError(obj->userRepr() + " doesn't support that operator");
         }
         return op(obj, this, execution_result_matters);
-    default : this->signalError(obj->shortRepr() + " doesn't support that operator");
+    default : this->signalError(obj->userRepr() + " doesn't support that operator");
     }
 }
 
@@ -201,7 +209,7 @@ Object *
 Runtime::runOperator(OperatorNode::OperatorId id, Object *obj, Object *arg, bool execution_result_matters) {
     ProfilerCAPTURE();
     if (!isInstanceObject(obj)) {
-        this->signalError("Failed to run operator " + std::to_string(id) + " on " + obj->shortRepr());
+        this->signalError("Failed to run operator " + std::to_string(id) + " on " + obj->userRepr());
     }
 
     BinaryOperatorAdapter op;
@@ -210,129 +218,129 @@ Runtime::runOperator(OperatorNode::OperatorId id, Object *obj, Object *arg, bool
     case OperatorNode::MULT :
         op = obj->type->mult_op;
         if (op == NULL) {
-            this->signalError(obj->shortRepr() + " doesn't support that operator");
+            this->signalError(obj->userRepr() + " doesn't support that operator");
         }
         return op(obj, arg, this, execution_result_matters);
     case OperatorNode::DIV :
         op = obj->type->div_op;
         if (op == NULL) {
-            this->signalError(obj->shortRepr() + " doesn't support that operator");
+            this->signalError(obj->userRepr() + " doesn't support that operator");
         }
 
         return op(obj, arg, this, execution_result_matters);
     case OperatorNode::REM :
         op = obj->type->rem_op;
         if (op == NULL) {
-            this->signalError(obj->shortRepr() + " doesn't support that operator");
+            this->signalError(obj->userRepr() + " doesn't support that operator");
         }
 
         return op(obj, arg, this, execution_result_matters);
     case OperatorNode::RIGHT_SHIFT :
         op = obj->type->rshift_op;
         if (op == NULL) {
-            this->signalError(obj->shortRepr() + " doesn't support that operator");
+            this->signalError(obj->userRepr() + " doesn't support that operator");
         }
 
         return op(obj, arg, this, execution_result_matters);
     case OperatorNode::LEFT_SHIFT :
         op = obj->type->lshift_op;
         if (op == NULL) {
-            this->signalError(obj->shortRepr() + " doesn't support that operator");
+            this->signalError(obj->userRepr() + " doesn't support that operator");
         }
 
         return op(obj, arg, this, execution_result_matters);
     case OperatorNode::PLUS :
         op = obj->type->add_op;
         if (op == NULL) {
-            this->signalError(obj->shortRepr() + " doesn't support that operator");
+            this->signalError(obj->userRepr() + " doesn't support that operator");
         }
 
         return op(obj, arg, this, execution_result_matters);
     case OperatorNode::MINUS :
         op = obj->type->sub_op;
         if (op == NULL) {
-            this->signalError(obj->shortRepr() + " doesn't support that operator");
+            this->signalError(obj->userRepr() + " doesn't support that operator");
         }
 
         return op(obj, arg, this, execution_result_matters);
     case OperatorNode::LESS :
         op = obj->type->lt_op;
         if (op == NULL) {
-            this->signalError(obj->shortRepr() + " doesn't support that operator");
+            this->signalError(obj->userRepr() + " doesn't support that operator");
         }
 
         return op(obj, arg, this, execution_result_matters);
     case OperatorNode::LESS_EQUAL :
         op = obj->type->leq_op;
         if (op == NULL) {
-            this->signalError(obj->shortRepr() + " doesn't support that operator");
+            this->signalError(obj->userRepr() + " doesn't support that operator");
         }
 
         return op(obj, arg, this, execution_result_matters);
     case OperatorNode::GREATER :
         op = obj->type->gt_op;
         if (op == NULL) {
-            this->signalError(obj->shortRepr() + " doesn't support that operator");
+            this->signalError(obj->userRepr() + " doesn't support that operator");
         }
 
         return op(obj, arg, this, execution_result_matters);
     case OperatorNode::GREATER_EQUAL :
         op = obj->type->geq_op;
         if (op == NULL) {
-            this->signalError(obj->shortRepr() + " doesn't support that operator");
+            this->signalError(obj->userRepr() + " doesn't support that operator");
         }
 
         return op(obj, arg, this, execution_result_matters);
     case OperatorNode::EQUAL :
         op = obj->type->eq_op;
         if (op == NULL) {
-            this->signalError(obj->shortRepr() + " doesn't support that operator");
+            this->signalError(obj->userRepr() + " doesn't support that operator");
         }
 
         return op(obj, arg, this, execution_result_matters);
     case OperatorNode::NOT_EQUAL :
         op = obj->type->neq_op;
         if (op == NULL) {
-            this->signalError(obj->shortRepr() + " doesn't support that operator");
+            this->signalError(obj->userRepr() + " doesn't support that operator");
         }
 
         return op(obj, arg, this, execution_result_matters);
     case OperatorNode::BITAND :
         op = obj->type->bitand_op;
         if (op == NULL) {
-            this->signalError(obj->shortRepr() + " doesn't support that operator");
+            this->signalError(obj->userRepr() + " doesn't support that operator");
         }
 
         return op(obj, arg, this, execution_result_matters);
     case OperatorNode::BITXOR :
         op = obj->type->bitxor_op;
         if (op == NULL) {
-            this->signalError(obj->shortRepr() + " doesn't support that operator");
+            this->signalError(obj->userRepr() + " doesn't support that operator");
         }
 
         return op(obj, arg, this, execution_result_matters);
     case OperatorNode::BITOR :
         op = obj->type->bitor_op;
         if (op == NULL) {
-            this->signalError(obj->shortRepr() + " doesn't support that operator");
+            this->signalError(obj->userRepr() + " doesn't support that operator");
         }
 
         return op(obj, arg, this, execution_result_matters);
     case OperatorNode::AND :
         op = obj->type->and_op;
         if (op == NULL) {
-            this->signalError(obj->shortRepr() + " doesn't support that operator");
+            this->signalError(obj->userRepr() + " doesn't support that operator");
         }
 
         return op(obj, arg, this, execution_result_matters);
     case OperatorNode::OR :
         op = obj->type->or_op;
         if (op == NULL) {
-            this->signalError(obj->shortRepr() + " doesn't support that operator");
+            this->signalError(obj->userRepr() + " doesn't support that operator");
         }
 
         return op(obj, arg, this, execution_result_matters);
-    default : this->signalError(obj->shortRepr() + " doesn't support that operator");
+    default : this->signalError(obj->userRepr() + " doesn't support that operator");
     }
 }
 
@@ -342,13 +350,13 @@ Object *Runtime::runOperator(OperatorNode::OperatorId     id,
                              bool                         execution_result_matters) {
     ProfilerCAPTURE();
     if (!isInstanceObject(obj)) {
-        this->signalError("Failed to run operator " + std::to_string(id) + " on " + obj->shortRepr());
+        this->signalError("Failed to run operator " + std::to_string(id) + " on " + obj->userRepr());
     }
 
     if (id == OperatorNode::CALL) {
         auto op = obj->type->call_op;
         if (op == NULL) {
-            this->signalError(obj->shortRepr() + " doesn't support that operator");
+            this->signalError(obj->userRepr() + " doesn't support that operator");
         }
 
         return op(obj, args, this, execution_result_matters);
@@ -356,19 +364,19 @@ Object *Runtime::runOperator(OperatorNode::OperatorId     id,
     else if (id == OperatorNode::INDEX) {
         auto op = obj->type->index_op;
         if (op == NULL) {
-            this->signalError(obj->shortRepr() + " doesn't support that operator");
+            this->signalError(obj->userRepr() + " doesn't support that operator");
         }
 
         return op(obj, args, this, execution_result_matters);
     }
-    this->signalError(obj->shortRepr() + " doesn't support that operator");
+    this->signalError(obj->userRepr() + " doesn't support that operator");
 }
 
 Object *
 Runtime::runMethod(int64_t id, Object *obj, const std::vector<Object *> &args, bool execution_result_matters) {
     ProfilerCAPTURE();
     if (!isInstanceObject(obj)) {
-        this->signalError("Failed to run method " + NameId::shortRepr(id) + " on " + obj->shortRepr());
+        this->signalError("Failed to run method " + NameId::userRepr(id) + " on " + obj->userRepr());
     }
 
     auto method = obj->type->getMethod(id, this);
@@ -520,7 +528,7 @@ Object *Runtime::execute(OperatorNode *node, bool execution_result_matters) {
             }
             int64_t selector = dot->second->atom->ident->nameid;
             if (!isInstanceObject(caller)) {
-                this->signalError("Left-side object " + caller->shortRepr() + " must be an instance object");
+                this->signalError("Left-side object " + caller->userRepr() + " must be an instance object");
             }
             if (caller->instance->hasField(selector, this)) {
                 selected = caller->instance->selectField(selector, this);
@@ -575,7 +583,7 @@ Object *Runtime::execute(OperatorNode *node, bool execution_result_matters) {
         }
         int64_t selector = node->second->atom->ident->nameid;
         if (!isInstanceObject(self)) {
-            this->signalError("Left-side object " + self->shortRepr() + " must be an instance object");
+            this->signalError("Left-side object " + self->userRepr() + " must be an instance object");
         }
         if (self->instance->hasField(selector, this)) {
             auto res = self->instance->selectField(selector, this);

@@ -34,8 +34,8 @@ public:
 
     Instance   *copy(Runtime *rt);
     size_t      getSize();
-    std::string shortRepr();
-    void destroy(Runtime *rt);
+    std::string userRepr();
+    void        destroy(Runtime *rt);
 };
 
 class RealType: public Type {
@@ -45,7 +45,7 @@ public:
     ~RealType() = default;
     Object     *create(Runtime *rt);
     Object     *copy(Object *obj, Runtime *rt);
-    std::string shortRepr();
+    std::string userRepr();
 };
 
 Object *makeRealInstanceObject(double value, Runtime *rt);

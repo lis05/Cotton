@@ -39,7 +39,7 @@ public:
     void        init(bool is_internal, InternalFunction internal_ptr, FuncDefNode *cotton_ptr);
     Instance   *copy(Runtime *rt);
     size_t      getSize();
-    std::string shortRepr();
+    std::string userRepr();
     void        destroy(Runtime *rt);
 };
 
@@ -50,7 +50,7 @@ public:
     ~FunctionType() = default;
     Object     *create(Runtime *rt);
     Object     *copy(Object *obj, Runtime *rt);
-    std::string shortRepr();
+    std::string userRepr();
 };
 
 Object *

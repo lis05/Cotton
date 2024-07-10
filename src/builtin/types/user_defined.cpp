@@ -41,7 +41,7 @@ Object *UserDefinedInstance::selectField(int64_t id, Runtime *rt) {
     if (it != this->fields.end()) {
         return it->second;
     }
-    rt->signalError(this->shortRepr() + "doesn't have field " + NameId::shortRepr(id));
+    rt->signalError(this->userRepr() + "doesn't have field " + NameId::userRepr(id));
 }
 
 bool UserDefinedInstance::hasField(int64_t id, Runtime *rt) {
@@ -69,12 +69,12 @@ size_t UserDefinedType::getInstanceSize() {
     return sizeof(UserDefinedInstance);
 }
 
-std::string UserDefinedInstance::shortRepr() {
+std::string UserDefinedInstance::userRepr() {
     ProfilerCAPTURE();
     if (this == NULL) {
-        return "NULL";
+        return "UserDefined(NULL)";
     }
-    return NameId::shortRepr(this->nameid) + "Instance(id = " + std::to_string(this->id) + ")";
+    return NameId::userRepr(this->nameid);
 }
 
 void UserDefinedInstance::destroy(Runtime *rt) {
@@ -106,13 +106,12 @@ Object *UserDefinedType::create(Runtime *rt) {
     return obj;
 }
 
-std::string UserDefinedType::shortRepr() {
+std::string UserDefinedType::userRepr() {
     ProfilerCAPTURE();
     if (this == NULL) {
         return "NULL";
     }
-    return "UserDefinedType(id = " + std::to_string(this->id) + ", name = " + NameId::shortRepr(this->nameid)
-           + ")";
+    return NameId::userRepr(this->nameid) + "Type";
 }
 
 // TODO: == and !=
@@ -120,7 +119,7 @@ std::string UserDefinedType::shortRepr() {
 Object *UserDefinedType::copy(Object *obj, Runtime *rt) {
     ProfilerCAPTURE();
     if (!isTypeObject(obj)) {
-        rt->signalError("Failed to copy an invalid object: " + obj->shortRepr());
+        rt->signalError("Failed to copy an invalid object: " + obj->userRepr());
     }
     if (obj->instance == NULL) {
         return newObject(false, NULL, this, rt);

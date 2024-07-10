@@ -46,19 +46,18 @@ Instance *FunctionInstance::copy(Runtime *rt) {
     ProfilerCAPTURE();
     auto res = new FunctionInstance(rt);
     if (res == NULL) {
-        rt->signalError("Failed to copy " + this->shortRepr());
+        rt->signalError("Failed to copy " + this->userRepr());
     }
     res->init(this->is_internal, this->internal_ptr, this->cotton_ptr);
     return res;
 }
 
-std::string FunctionInstance::shortRepr() {
+std::string FunctionInstance::userRepr() {
     ProfilerCAPTURE();
     if (this == NULL) {
-        return "NULL";
+        return "Function(NULL)";
     }
-    return "FunctionInstance(id = " + std::to_string(this->id)
-           + ", is_internal = " + (this->is_internal ? "true" : "false") + ")";
+    return (this->is_internal) ? "Function(internal)" : "Function";
 }
 
 void FunctionInstance::destroy(Runtime *rt) {
@@ -80,22 +79,22 @@ FunctionCallAdapter(Object *self, const std::vector<Object *> &args, Runtime *rt
     ProfilerCAPTURE();
 
     if (!isInstanceObject(self)) {
-        rt->signalError(self->shortRepr() + " does not support that operator");
+        rt->signalError(self->userRepr() + " does not support that operator");
     }
     auto f = icast(self->instance, FunctionInstance);
     if (f->is_internal) {
         if (f->internal_ptr == NULL) {
-            rt->signalError("Failed to execute NULL internal function " + self->shortRepr());
+            rt->signalError("Failed to execute NULL internal function " + self->userRepr());
         }
         auto res = f->internal_ptr(args, rt, execution_result_matters);
         if (res == NULL) {
-            rt->signalError("Execution of internal function " + self->shortRepr() + " has failed");
+            rt->signalError("Execution of internal function " + self->userRepr() + " has failed");
         }
         return res;
     }
     else {
         if (f->cotton_ptr == NULL || f->cotton_ptr->body == NULL) {
-            rt->signalError("Failed to execute NULL function " + self->shortRepr());
+            rt->signalError("Failed to execute NULL function " + self->userRepr());
         }
         rt->newFrame(false);
         rt->scope->arguments.push_back(self);
@@ -115,7 +114,7 @@ FunctionCallAdapter(Object *self, const std::vector<Object *> &args, Runtime *rt
         auto res = rt->execute(f->cotton_ptr->body, execution_result_matters);
         rt->popFrame();
         if (res == NULL) {
-            rt->signalError("Execution of function " + self->shortRepr() + " has failed");
+            rt->signalError("Execution of function " + self->userRepr() + " has failed");
         }
         return res;
     }
@@ -125,7 +124,7 @@ static Object *FunctionEqAdapter(Object *self, Object *arg, Runtime *rt, bool ex
     ProfilerCAPTURE();
 
     if (!isTypeObject(arg)) {
-        rt->signalError("Right-side object is invalid: " + arg->shortRepr());
+        rt->signalError("Right-side object is invalid: " + arg->userRepr());
     }
 
     bool i1 = isInstanceObject(self);
@@ -176,7 +175,7 @@ Object *FunctionType::create(Runtime *rt) {
 Object *FunctionType::copy(Object *obj, Runtime *rt) {
     ProfilerCAPTURE();
     if (!isTypeObject(obj) || obj->type->id != rt->function_type->id) {
-        rt->signalError("Failed to copy an invalid object: " + obj->shortRepr());
+        rt->signalError("Failed to copy an invalid object: " + obj->userRepr());
     }
     if (obj->instance == NULL) {
         return newObject(false, NULL, this, rt);
@@ -187,12 +186,12 @@ Object *FunctionType::copy(Object *obj, Runtime *rt) {
     return res;
 }
 
-std::string FunctionType::shortRepr() {
+std::string FunctionType::userRepr() {
     ProfilerCAPTURE();
     if (this == NULL) {
-        return "NULL";
+        return "FunctionType(NULL)";
     }
-    return "FunctionType(id = " + std::to_string(this->id) + ")";
+    return "FunctionType";
 }
 
 Object *

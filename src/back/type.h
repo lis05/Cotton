@@ -35,7 +35,10 @@ class Type;
 
 typedef Object *(*UnaryOperatorAdapter)(Object *self, Runtime *rt, bool execution_result_matters);
 typedef Object *(*BinaryOperatorAdapter)(Object *self, Object *arg, Runtime *rt, bool execution_result_matters);
-typedef Object *(*NaryOperatorAdapter)(Object *self, const std::vector<Object *> &args, Runtime *rt, bool execution_result_matters);
+typedef Object *(*NaryOperatorAdapter)(Object                      *self,
+                                       const std::vector<Object *> &args,
+                                       Runtime                     *rt,
+                                       bool                         execution_result_matters);
 
 class Type {
 private:
@@ -73,7 +76,7 @@ public:
     // returns a valid (non-null) copy of the object
     virtual Object *copy(Object *obj, Runtime *rt) = 0;
 
-    virtual std::string shortRepr() = 0;
+    virtual std::string userRepr() = 0;
 };
 
 };    // namespace Cotton

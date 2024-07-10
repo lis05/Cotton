@@ -38,18 +38,18 @@ Instance *RealInstance::copy(Runtime *rt) {
     Instance *res = new (rt->alloc(sizeof(RealInstance))) RealInstance(rt);
 
     if (res == NULL) {
-        rt->signalError("Failed to copy " + this->shortRepr());
+        rt->signalError("Failed to copy " + this->userRepr());
     }
     icast(res, RealInstance)->value = this->value;
     return res;
 }
 
-std::string RealInstance::shortRepr() {
+std::string RealInstance::userRepr() {
     ProfilerCAPTURE();
     if (this == NULL) {
-        return "RealInstance(NULL)";
+        return "Real(NULL)";
     }
-    return "RealInstance(id = " + std::to_string(this->id) + ", value = " + std::to_string(this->value) + ")";
+    return "Real(value = " + std::to_string(this->value) + ")";
 }
 
 void RealInstance::destroy(Runtime *rt) {
@@ -70,7 +70,7 @@ static Object *RealPositiveAdapter(Object *self, Runtime *rt, bool execution_res
     ProfilerCAPTURE();
 
     if (!isInstanceObject(self)) {
-        rt->signalError(self->shortRepr() + " does not support that operator");
+        rt->signalError(self->userRepr() + " does not support that operator");
     }
 
     if (!execution_result_matters) {
@@ -85,7 +85,7 @@ static Object *RealNegativeAdapter(Object *self, Runtime *rt, bool execution_res
     ProfilerCAPTURE();
 
     if (!isInstanceObject(self)) {
-        rt->signalError(self->shortRepr() + " does not support that operator");
+        rt->signalError(self->userRepr() + " does not support that operator");
     }
 
     if (!execution_result_matters) {
@@ -101,14 +101,14 @@ static Object *RealMultAdapter(Object *self, Object *arg, Runtime *rt, bool exec
     ProfilerCAPTURE();
 
     if (!isInstanceObject(self)) {
-        rt->signalError(self->shortRepr() + " does not support that operator");
+        rt->signalError(self->userRepr() + " does not support that operator");
     }
 
     if (!isTypeObject(arg)) {
-        rt->signalError("Right-side object is invalid: " + arg->shortRepr());
+        rt->signalError("Right-side object is invalid: " + arg->userRepr());
     }
     if (arg->instance == NULL || arg->type->id != rt->real_type->id) {
-        rt->signalError("Right-side object " + arg->shortRepr() + " must be a Real instance object");
+        rt->signalError("Right-side object " + arg->userRepr() + " must be a Real instance object");
     }
 
     if (!execution_result_matters) {
@@ -123,14 +123,14 @@ static Object *RealDivAdapter(Object *self, Object *arg, Runtime *rt, bool execu
     ProfilerCAPTURE();
 
     if (!isInstanceObject(self)) {
-        rt->signalError(self->shortRepr() + " does not support that operator");
+        rt->signalError(self->userRepr() + " does not support that operator");
     }
 
     if (!isTypeObject(arg)) {
-        rt->signalError("Right-side object is invalid: " + arg->shortRepr());
+        rt->signalError("Right-side object is invalid: " + arg->userRepr());
     }
     if (arg->instance == NULL || arg->type->id != rt->real_type->id) {
-        rt->signalError("Right-side object " + arg->shortRepr() + " must be a Real instance object");
+        rt->signalError("Right-side object " + arg->userRepr() + " must be a Real instance object");
     }
 
     if (!execution_result_matters) {
@@ -145,14 +145,14 @@ static Object *RealAddAdapter(Object *self, Object *arg, Runtime *rt, bool execu
     ProfilerCAPTURE();
 
     if (!isInstanceObject(self)) {
-        rt->signalError(self->shortRepr() + " does not support that operator");
+        rt->signalError(self->userRepr() + " does not support that operator");
     }
 
     if (!isTypeObject(arg)) {
-        rt->signalError("Right-side object is invalid: " + arg->shortRepr());
+        rt->signalError("Right-side object is invalid: " + arg->userRepr());
     }
     if (arg->instance == NULL || arg->type->id != rt->real_type->id) {
-        rt->signalError("Right-side object " + arg->shortRepr() + " must be a Real instance object");
+        rt->signalError("Right-side object " + arg->userRepr() + " must be a Real instance object");
     }
 
     if (!execution_result_matters) {
@@ -167,14 +167,14 @@ static Object *RealSubAdapter(Object *self, Object *arg, Runtime *rt, bool execu
     ProfilerCAPTURE();
 
     if (!isInstanceObject(self)) {
-        rt->signalError(self->shortRepr() + " does not support that operator");
+        rt->signalError(self->userRepr() + " does not support that operator");
     }
 
     if (!isTypeObject(arg)) {
-        rt->signalError("Right-side object is invalid: " + arg->shortRepr());
+        rt->signalError("Right-side object is invalid: " + arg->userRepr());
     }
     if (arg->instance == NULL || arg->type->id != rt->real_type->id) {
-        rt->signalError("Right-side object " + arg->shortRepr() + " must be a Real instance object");
+        rt->signalError("Right-side object " + arg->userRepr() + " must be a Real instance object");
     }
 
     if (!execution_result_matters) {
@@ -189,14 +189,14 @@ static Object *RealLtAdapter(Object *self, Object *arg, Runtime *rt, bool execut
     ProfilerCAPTURE();
 
     if (!isInstanceObject(self)) {
-        rt->signalError(self->shortRepr() + " does not support that operator");
+        rt->signalError(self->userRepr() + " does not support that operator");
     }
 
     if (!isTypeObject(arg)) {
-        rt->signalError("Right-side object is invalid: " + arg->shortRepr());
+        rt->signalError("Right-side object is invalid: " + arg->userRepr());
     }
     if (arg->instance == NULL || arg->type->id != rt->real_type->id) {
-        rt->signalError("Right-side object " + arg->shortRepr() + " must be a Real instance object");
+        rt->signalError("Right-side object " + arg->userRepr() + " must be a Real instance object");
     }
 
     if (!execution_result_matters) {
@@ -210,14 +210,14 @@ static Object *RealLeqAdapter(Object *self, Object *arg, Runtime *rt, bool execu
     ProfilerCAPTURE();
 
     if (!isInstanceObject(self)) {
-        rt->signalError(self->shortRepr() + " does not support that operator");
+        rt->signalError(self->userRepr() + " does not support that operator");
     }
 
     if (!isTypeObject(arg)) {
-        rt->signalError("Right-side object is invalid: " + arg->shortRepr());
+        rt->signalError("Right-side object is invalid: " + arg->userRepr());
     }
     if (arg->instance == NULL || arg->type->id != rt->real_type->id) {
-        rt->signalError("Right-side object " + arg->shortRepr() + " must be a Real instance object");
+        rt->signalError("Right-side object " + arg->userRepr() + " must be a Real instance object");
     }
 
     return (getRealValueFast(self) <= getRealValueFast(arg)) ? rt->protected_true : rt->protected_false;
@@ -227,14 +227,14 @@ static Object *RealGtAdapter(Object *self, Object *arg, Runtime *rt, bool execut
     ProfilerCAPTURE();
 
     if (!isInstanceObject(self)) {
-        rt->signalError(self->shortRepr() + " does not support that operator");
+        rt->signalError(self->userRepr() + " does not support that operator");
     }
 
     if (!isTypeObject(arg)) {
-        rt->signalError("Right-side object is invalid: " + arg->shortRepr());
+        rt->signalError("Right-side object is invalid: " + arg->userRepr());
     }
     if (arg->instance == NULL || arg->type->id != rt->real_type->id) {
-        rt->signalError("Right-side object " + arg->shortRepr() + " must be a Real instance object");
+        rt->signalError("Right-side object " + arg->userRepr() + " must be a Real instance object");
     }
 
     return (getRealValueFast(self) > getRealValueFast(arg)) ? rt->protected_true : rt->protected_false;
@@ -244,14 +244,14 @@ static Object *RealGeqAdapter(Object *self, Object *arg, Runtime *rt, bool execu
     ProfilerCAPTURE();
 
     if (!isInstanceObject(self)) {
-        rt->signalError(self->shortRepr() + " does not support that operator");
+        rt->signalError(self->userRepr() + " does not support that operator");
     }
 
     if (!isTypeObject(arg)) {
-        rt->signalError("Right-side object is invalid: " + arg->shortRepr());
+        rt->signalError("Right-side object is invalid: " + arg->userRepr());
     }
     if (arg->instance == NULL || arg->type->id != rt->real_type->id) {
-        rt->signalError("Right-side object " + arg->shortRepr() + " must be a Real instance object");
+        rt->signalError("Right-side object " + arg->userRepr() + " must be a Real instance object");
     }
 
     return (getRealValueFast(self) >= getRealValueFast(arg)) ? rt->protected_true : rt->protected_false;
@@ -261,7 +261,7 @@ static Object *RealEqAdapter(Object *self, Object *arg, Runtime *rt, bool execut
     ProfilerCAPTURE();
 
     if (!isTypeObject(arg)) {
-        rt->signalError("Right-side object is invalid: " + arg->shortRepr());
+        rt->signalError("Right-side object is invalid: " + arg->userRepr());
     }
 
     bool i1 = isInstanceObject(self);
@@ -315,7 +315,7 @@ Object *RealType::create(Runtime *rt) {
 Object *RealType::copy(Object *obj, Runtime *rt) {
     ProfilerCAPTURE();
     if (!isTypeObject(obj) || obj->type->id != rt->real_type->id) {
-        rt->signalError("Failed to copy an invalid object: " + obj->shortRepr());
+        rt->signalError("Failed to copy an invalid object: " + obj->userRepr());
     }
     if (obj->instance == NULL) {
         return newObject(false, NULL, this, rt);
@@ -325,21 +325,21 @@ Object *RealType::copy(Object *obj, Runtime *rt) {
     return res;
 }
 
-std::string RealType::shortRepr() {
+std::string RealType::userRepr() {
     ProfilerCAPTURE();
     if (this == NULL) {
         return "RealType(NULL)";
     }
-    return "RealType(id = " + std::to_string(this->id) + ")";
+    return "RealType";
 }
 
 double &getRealValue(Object *obj, Runtime *rt) {
     ProfilerCAPTURE();
     if (!isInstanceObject(obj)) {
-        rt->signalError(obj->shortRepr() + " is not an instance object");
+        rt->signalError(obj->userRepr() + " is not an instance object");
     }
     if (obj->type->id != rt->real_type->id) {
-        rt->signalError(obj->shortRepr() + " is not Real");
+        rt->signalError(obj->userRepr() + " is not Real");
     }
     return icast(obj->instance, RealInstance)->value;
 }

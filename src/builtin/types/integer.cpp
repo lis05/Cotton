@@ -38,18 +38,18 @@ Instance *IntegerInstance::copy(Runtime *rt) {
     Instance *res = new (rt->alloc(sizeof(IntegerInstance))) IntegerInstance(rt);
 
     if (res == NULL) {
-        rt->signalError("Failed to copy " + this->shortRepr());
+        rt->signalError("Failed to copy " + this->userRepr());
     }
     icast(res, IntegerInstance)->value = this->value;
     return res;
 }
 
-std::string IntegerInstance::shortRepr() {
+std::string IntegerInstance::userRepr() {
     ProfilerCAPTURE();
     if (this == NULL) {
-        return "IntegerInstance(NULL)";
+        return "Integer(NULL)";
     }
-    return "IntegerInstance(id = " + std::to_string(this->id) + ", value = " + std::to_string(this->value) + ")";
+    return "Integer(value = " + std::to_string(this->value) + ")";
 }
 
 void IntegerInstance::destroy(Runtime *rt) {
@@ -70,7 +70,7 @@ static Object *IntegerPostincAdapter(Object *self, Runtime *rt, bool execution_r
     ProfilerCAPTURE();
 
     if (!isInstanceObject(self)) {
-        rt->signalError(self->shortRepr() + " does not support that operator");
+        rt->signalError(self->userRepr() + " does not support that operator");
     }
 
     if (!execution_result_matters) {
@@ -87,7 +87,7 @@ static Object *IntegerPostdecAdapter(Object *self, Runtime *rt, bool execution_r
     ProfilerCAPTURE();
 
     if (!isInstanceObject(self)) {
-        rt->signalError(self->shortRepr() + " does not support that operator");
+        rt->signalError(self->userRepr() + " does not support that operator");
     }
 
     if (!execution_result_matters) {
@@ -104,7 +104,7 @@ static Object *IntegerPreincAdapter(Object *self, Runtime *rt, bool execution_re
     ProfilerCAPTURE();
 
     if (!isInstanceObject(self)) {
-        rt->signalError(self->shortRepr() + " does not support that operator");
+        rt->signalError(self->userRepr() + " does not support that operator");
     }
 
     if (!execution_result_matters) {
@@ -121,7 +121,7 @@ static Object *IntegerPredecAdapter(Object *self, Runtime *rt, bool execution_re
     ProfilerCAPTURE();
 
     if (!isInstanceObject(self)) {
-        rt->signalError(self->shortRepr() + " does not support that operator");
+        rt->signalError(self->userRepr() + " does not support that operator");
     }
 
     if (!execution_result_matters) {
@@ -138,7 +138,7 @@ static Object *IntegerPositiveAdapter(Object *self, Runtime *rt, bool execution_
     ProfilerCAPTURE();
 
     if (!isInstanceObject(self)) {
-        rt->signalError(self->shortRepr() + " does not support that operator");
+        rt->signalError(self->userRepr() + " does not support that operator");
     }
 
     if (!execution_result_matters) {
@@ -153,7 +153,7 @@ static Object *IntegerNegativeAdapter(Object *self, Runtime *rt, bool execution_
     ProfilerCAPTURE();
 
     if (!isInstanceObject(self)) {
-        rt->signalError(self->shortRepr() + " does not support that operator");
+        rt->signalError(self->userRepr() + " does not support that operator");
     }
 
     if (!execution_result_matters) {
@@ -169,7 +169,7 @@ static Object *IntegerInverseAdapter(Object *self, Runtime *rt, bool execution_r
     ProfilerCAPTURE();
 
     if (!isInstanceObject(self)) {
-        rt->signalError(self->shortRepr() + " does not support that operator");
+        rt->signalError(self->userRepr() + " does not support that operator");
     }
 
     if (!execution_result_matters) {
@@ -185,14 +185,14 @@ static Object *IntegerMultAdapter(Object *self, Object *arg, Runtime *rt, bool e
     ProfilerCAPTURE();
 
     if (!isInstanceObject(self)) {
-        rt->signalError(self->shortRepr() + " does not support that operator");
+        rt->signalError(self->userRepr() + " does not support that operator");
     }
 
     if (!isTypeObject(arg)) {
-        rt->signalError("Right-side object is invalid: " + arg->shortRepr());
+        rt->signalError("Right-side object is invalid: " + arg->userRepr());
     }
     if (arg->instance == NULL || arg->type->id != rt->integer_type->id) {
-        rt->signalError("Right-side object " + arg->shortRepr() + " must be an integer instance object");
+        rt->signalError("Right-side object " + arg->userRepr() + " must be an integer instance object");
     }
 
     if (!execution_result_matters) {
@@ -207,14 +207,14 @@ static Object *IntegerDivAdapter(Object *self, Object *arg, Runtime *rt, bool ex
     ProfilerCAPTURE();
 
     if (!isInstanceObject(self)) {
-        rt->signalError(self->shortRepr() + " does not support that operator");
+        rt->signalError(self->userRepr() + " does not support that operator");
     }
 
     if (!isTypeObject(arg)) {
-        rt->signalError("Right-side object is invalid: " + arg->shortRepr());
+        rt->signalError("Right-side object is invalid: " + arg->userRepr());
     }
     if (arg->instance == NULL || arg->type->id != rt->integer_type->id) {
-        rt->signalError("Right-side object " + arg->shortRepr() + " must be an integer instance object");
+        rt->signalError("Right-side object " + arg->userRepr() + " must be an integer instance object");
     }
 
     if (!execution_result_matters) {
@@ -229,14 +229,14 @@ static Object *IntegerRemAdapter(Object *self, Object *arg, Runtime *rt, bool ex
     ProfilerCAPTURE();
 
     if (!isInstanceObject(self)) {
-        rt->signalError(self->shortRepr() + " does not support that operator");
+        rt->signalError(self->userRepr() + " does not support that operator");
     }
 
     if (!isTypeObject(arg)) {
-        rt->signalError("Right-side object is invalid: " + arg->shortRepr());
+        rt->signalError("Right-side object is invalid: " + arg->userRepr());
     }
     if (arg->instance == NULL || arg->type->id != rt->integer_type->id) {
-        rt->signalError("Right-side object " + arg->shortRepr() + " must be an integer instance object");
+        rt->signalError("Right-side object " + arg->userRepr() + " must be an integer instance object");
     }
 
     if (!execution_result_matters) {
@@ -251,14 +251,14 @@ static Object *IntegerRshiftAdapter(Object *self, Object *arg, Runtime *rt, bool
     ProfilerCAPTURE();
 
     if (!isInstanceObject(self)) {
-        rt->signalError(self->shortRepr() + " does not support that operator");
+        rt->signalError(self->userRepr() + " does not support that operator");
     }
 
     if (!isTypeObject(arg)) {
-        rt->signalError("Right-side object is invalid: " + arg->shortRepr());
+        rt->signalError("Right-side object is invalid: " + arg->userRepr());
     }
     if (arg->instance == NULL || arg->type->id != rt->integer_type->id) {
-        rt->signalError("Right-side object " + arg->shortRepr() + " must be an integer instance object");
+        rt->signalError("Right-side object " + arg->userRepr() + " must be an integer instance object");
     }
 
     if (!execution_result_matters) {
@@ -273,14 +273,14 @@ static Object *IntegerLshiftAdapter(Object *self, Object *arg, Runtime *rt, bool
     ProfilerCAPTURE();
 
     if (!isInstanceObject(self)) {
-        rt->signalError(self->shortRepr() + " does not support that operator");
+        rt->signalError(self->userRepr() + " does not support that operator");
     }
 
     if (!isTypeObject(arg)) {
-        rt->signalError("Right-side object is invalid: " + arg->shortRepr());
+        rt->signalError("Right-side object is invalid: " + arg->userRepr());
     }
     if (arg->instance == NULL || arg->type->id != rt->integer_type->id) {
-        rt->signalError("Right-side object " + arg->shortRepr() + " must be an integer instance object");
+        rt->signalError("Right-side object " + arg->userRepr() + " must be an integer instance object");
     }
 
     if (!execution_result_matters) {
@@ -295,14 +295,14 @@ static Object *IntegerAddAdapter(Object *self, Object *arg, Runtime *rt, bool ex
     ProfilerCAPTURE();
 
     if (!isInstanceObject(self)) {
-        rt->signalError(self->shortRepr() + " does not support that operator");
+        rt->signalError(self->userRepr() + " does not support that operator");
     }
 
     if (!isTypeObject(arg)) {
-        rt->signalError("Right-side object is invalid: " + arg->shortRepr());
+        rt->signalError("Right-side object is invalid: " + arg->userRepr());
     }
     if (arg->instance == NULL || arg->type->id != rt->integer_type->id) {
-        rt->signalError("Right-side object " + arg->shortRepr() + " must be an integer instance object");
+        rt->signalError("Right-side object " + arg->userRepr() + " must be an integer instance object");
     }
 
     if (!execution_result_matters) {
@@ -317,14 +317,14 @@ static Object *IntegerSubAdapter(Object *self, Object *arg, Runtime *rt, bool ex
     ProfilerCAPTURE();
 
     if (!isInstanceObject(self)) {
-        rt->signalError(self->shortRepr() + " does not support that operator");
+        rt->signalError(self->userRepr() + " does not support that operator");
     }
 
     if (!isTypeObject(arg)) {
-        rt->signalError("Right-side object is invalid: " + arg->shortRepr());
+        rt->signalError("Right-side object is invalid: " + arg->userRepr());
     }
     if (arg->instance == NULL || arg->type->id != rt->integer_type->id) {
-        rt->signalError("Right-side object " + arg->shortRepr() + " must be an integer instance object");
+        rt->signalError("Right-side object " + arg->userRepr() + " must be an integer instance object");
     }
 
     if (!execution_result_matters) {
@@ -339,14 +339,14 @@ static Object *IntegerLtAdapter(Object *self, Object *arg, Runtime *rt, bool exe
     ProfilerCAPTURE();
 
     if (!isInstanceObject(self)) {
-        rt->signalError(self->shortRepr() + " does not support that operator");
+        rt->signalError(self->userRepr() + " does not support that operator");
     }
 
     if (!isTypeObject(arg)) {
-        rt->signalError("Right-side object is invalid: " + arg->shortRepr());
+        rt->signalError("Right-side object is invalid: " + arg->userRepr());
     }
     if (arg->instance == NULL || arg->type->id != rt->integer_type->id) {
-        rt->signalError("Right-side object " + arg->shortRepr() + " must be an integer instance object");
+        rt->signalError("Right-side object " + arg->userRepr() + " must be an integer instance object");
     }
 
     return (getIntegerValueFast(self) < getIntegerValueFast(arg)) ? rt->protected_true : rt->protected_false;
@@ -356,14 +356,14 @@ static Object *IntegerLeqAdapter(Object *self, Object *arg, Runtime *rt, bool ex
     ProfilerCAPTURE();
 
     if (!isInstanceObject(self)) {
-        rt->signalError(self->shortRepr() + " does not support that operator");
+        rt->signalError(self->userRepr() + " does not support that operator");
     }
 
     if (!isTypeObject(arg)) {
-        rt->signalError("Right-side object is invalid: " + arg->shortRepr());
+        rt->signalError("Right-side object is invalid: " + arg->userRepr());
     }
     if (arg->instance == NULL || arg->type->id != rt->integer_type->id) {
-        rt->signalError("Right-side object " + arg->shortRepr() + " must be an integer instance object");
+        rt->signalError("Right-side object " + arg->userRepr() + " must be an integer instance object");
     }
 
     return (getIntegerValueFast(self) <= getIntegerValueFast(arg)) ? rt->protected_true : rt->protected_false;
@@ -373,14 +373,14 @@ static Object *IntegerGtAdapter(Object *self, Object *arg, Runtime *rt, bool exe
     ProfilerCAPTURE();
 
     if (!isInstanceObject(self)) {
-        rt->signalError(self->shortRepr() + " does not support that operator");
+        rt->signalError(self->userRepr() + " does not support that operator");
     }
 
     if (!isTypeObject(arg)) {
-        rt->signalError("Right-side object is invalid: " + arg->shortRepr());
+        rt->signalError("Right-side object is invalid: " + arg->userRepr());
     }
     if (arg->instance == NULL || arg->type->id != rt->integer_type->id) {
-        rt->signalError("Right-side object " + arg->shortRepr() + " must be an integer instance object");
+        rt->signalError("Right-side object " + arg->userRepr() + " must be an integer instance object");
     }
 
     return (getIntegerValueFast(self) > getIntegerValueFast(arg)) ? rt->protected_true : rt->protected_false;
@@ -390,14 +390,14 @@ static Object *IntegerGeqAdapter(Object *self, Object *arg, Runtime *rt, bool ex
     ProfilerCAPTURE();
 
     if (!isInstanceObject(self)) {
-        rt->signalError(self->shortRepr() + " does not support that operator");
+        rt->signalError(self->userRepr() + " does not support that operator");
     }
 
     if (!isTypeObject(arg)) {
-        rt->signalError("Right-side object is invalid: " + arg->shortRepr());
+        rt->signalError("Right-side object is invalid: " + arg->userRepr());
     }
     if (arg->instance == NULL || arg->type->id != rt->integer_type->id) {
-        rt->signalError("Right-side object " + arg->shortRepr() + " must be an integer instance object");
+        rt->signalError("Right-side object " + arg->userRepr() + " must be an integer instance object");
     }
 
     return (getIntegerValueFast(self) >= getIntegerValueFast(arg)) ? rt->protected_true : rt->protected_false;
@@ -407,7 +407,7 @@ static Object *IntegerEqAdapter(Object *self, Object *arg, Runtime *rt, bool exe
     ProfilerCAPTURE();
 
     if (!isTypeObject(arg)) {
-        rt->signalError("Right-side object is invalid: " + arg->shortRepr());
+        rt->signalError("Right-side object is invalid: " + arg->userRepr());
     }
 
     bool i1 = isInstanceObject(self);
@@ -437,14 +437,14 @@ static Object *IntegerBitandAdapter(Object *self, Object *arg, Runtime *rt, bool
     ProfilerCAPTURE();
 
     if (!isInstanceObject(self)) {
-        rt->signalError(self->shortRepr() + " does not support that operator");
+        rt->signalError(self->userRepr() + " does not support that operator");
     }
 
     if (!isTypeObject(arg)) {
-        rt->signalError("Right-side object is invalid: " + arg->shortRepr());
+        rt->signalError("Right-side object is invalid: " + arg->userRepr());
     }
     if (arg->instance == NULL || arg->type->id != rt->integer_type->id) {
-        rt->signalError("Right-side object " + arg->shortRepr() + " must be an integer instance object");
+        rt->signalError("Right-side object " + arg->userRepr() + " must be an integer instance object");
     }
 
     if (!execution_result_matters) {
@@ -459,14 +459,14 @@ static Object *IntegerBitxorAdapter(Object *self, Object *arg, Runtime *rt, bool
     ProfilerCAPTURE();
 
     if (!isInstanceObject(self)) {
-        rt->signalError(self->shortRepr() + " does not support that operator");
+        rt->signalError(self->userRepr() + " does not support that operator");
     }
 
     if (!isTypeObject(arg)) {
-        rt->signalError("Right-side object is invalid: " + arg->shortRepr());
+        rt->signalError("Right-side object is invalid: " + arg->userRepr());
     }
     if (arg->instance == NULL || arg->type->id != rt->integer_type->id) {
-        rt->signalError("Right-side object " + arg->shortRepr() + " must be an integer instance object");
+        rt->signalError("Right-side object " + arg->userRepr() + " must be an integer instance object");
     }
 
     if (!execution_result_matters) {
@@ -481,14 +481,14 @@ static Object *IntegerBitorAdapter(Object *self, Object *arg, Runtime *rt, bool 
     ProfilerCAPTURE();
 
     if (!isInstanceObject(self)) {
-        rt->signalError(self->shortRepr() + " does not support that operator");
+        rt->signalError(self->userRepr() + " does not support that operator");
     }
 
     if (!isTypeObject(arg)) {
-        rt->signalError("Right-side object is invalid: " + arg->shortRepr());
+        rt->signalError("Right-side object is invalid: " + arg->userRepr());
     }
     if (arg->instance == NULL || arg->type->id != rt->integer_type->id) {
-        rt->signalError("Right-side object " + arg->shortRepr() + " must be an integer instance object");
+        rt->signalError("Right-side object " + arg->userRepr() + " must be an integer instance object");
     }
 
     if (!execution_result_matters) {
@@ -538,7 +538,7 @@ Object *IntegerType::create(Runtime *rt) {
 Object *IntegerType::copy(Object *obj, Runtime *rt) {
     ProfilerCAPTURE();
     if (!isTypeObject(obj) || obj->type->id != rt->integer_type->id) {
-        rt->signalError("Failed to copy an invalid object: " + obj->shortRepr());
+        rt->signalError("Failed to copy an invalid object: " + obj->userRepr());
     }
     if (obj->instance == NULL) {
         return newObject(false, NULL, this, rt);
@@ -548,21 +548,21 @@ Object *IntegerType::copy(Object *obj, Runtime *rt) {
     return res;
 }
 
-std::string IntegerType::shortRepr() {
+std::string IntegerType::userRepr() {
     ProfilerCAPTURE();
     if (this == NULL) {
         return "IntegerType(NULL)";
     }
-    return "IntegerType(id = " + std::to_string(this->id) + ")";
+    return "IntegerType";
 }
 
 int64_t &getIntegerValue(Object *obj, Runtime *rt) {
     ProfilerCAPTURE();
     if (!isInstanceObject(obj)) {
-        rt->signalError(obj->shortRepr() + " is not an instance object");
+        rt->signalError(obj->userRepr() + " is not an instance object");
     }
     if (obj->type->id != rt->integer_type->id) {
-        rt->signalError(obj->shortRepr() + " is not Integer");
+        rt->signalError(obj->userRepr() + " is not Integer");
     }
     return icast(obj->instance, IntegerInstance)->value;
 }

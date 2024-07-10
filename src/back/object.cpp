@@ -45,25 +45,19 @@ std::vector<Object *> Object::getGCReachable() {
     return res;
 }
 
-std::string Object::shortRepr() {
+std::string Object::userRepr() {
     ProfilerCAPTURE();
     if (this == NULL) {
         return std::string("Object(NULL)");
     }
-    std::string res  = "Object(id = " + std::to_string(this->id) + ", flags = ";
-    res             += (this->is_instance) ? "I" : "T";
-    res             += (this->gc_mark) ? "1" : "0";
-    res             += (this->can_modify) ? "W" : "R";
-    res             += ", instance = " + ((this->instance == NULL) ? "NULL" : this->instance->shortRepr());
-    res             += ", type = " + ((this->type == NULL) ? "NULL" : this->type->shortRepr());
-    res             += ")";
-    return res;
+    if (this->instance == NULL) return this->type->userRepr();
+    return this->instance->userRepr();
 }
 
 void Object::assignTo(Object *obj, Runtime *rt) {
     ProfilerCAPTURE();
     if (!this->can_modify) {
-        rt->signalError("Cannot assign to " + this->shortRepr());
+        rt->signalError("Cannot assign to " + this->userRepr());
     }
     auto id          = this->id;
     auto single_use  = this->single_use;
@@ -75,7 +69,7 @@ void Object::assignTo(Object *obj, Runtime *rt) {
 void Object::assignToCopyOf(Object *obj, Runtime *rt) {
     ProfilerCAPTURE();
     if (!this->can_modify) {
-        rt->signalError("Cannot assign to " + this->shortRepr());
+        rt->signalError("Cannot assign to " + this->userRepr());
     }
     auto id          = this->id;
     auto single_use  = this->single_use;

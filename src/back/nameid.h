@@ -44,7 +44,7 @@ public:
     ~NameId();
 
     static std::string fromId(int64_t id);
-    static std::string shortRepr(int64_t id);
+    static std::string userRepr(int64_t id);
 
 };    // namespace NameIds
 }    // namespace Cotton

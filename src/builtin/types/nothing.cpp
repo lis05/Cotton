@@ -40,7 +40,7 @@ Instance *NothingInstance::copy(Runtime *rt) {
     Instance *res = new (rt->alloc(sizeof(NothingInstance))) NothingInstance(rt);
 
     if (res == NULL) {
-        rt->signalError("Failed to copy " + this->shortRepr());
+        rt->signalError("Failed to copy " + this->userRepr());
     }
     return res;
 }
@@ -55,12 +55,12 @@ size_t NothingType::getInstanceSize() {
     return sizeof(NothingInstance);
 }
 
-std::string NothingInstance::shortRepr() {
+std::string NothingInstance::userRepr() {
     ProfilerCAPTURE();
     if (this == NULL) {
-        return "NULL";
+        return "Nothing(NULL)";
     }
-    return "NothingInstance(id = " + std::to_string(this->id) + ")";
+    return "Nothing";
 }
 
 void NothingInstance::destroy(Runtime *rt) {
@@ -70,7 +70,7 @@ void NothingInstance::destroy(Runtime *rt) {
 static Object *NothingEqAdapter(Object *self, Object *arg, Runtime *rt, bool execution_result_matters) {
     ProfilerCAPTURE();
     if (!isTypeObject(arg)) {
-        rt->signalError("Right-side object is invalid: " + arg->shortRepr());
+        rt->signalError("Right-side object is invalid: " + arg->userRepr());
     }
 
     bool i1 = isInstanceObject(self);
@@ -108,18 +108,18 @@ Object *NothingType::create(Runtime *rt) {
     return obj;
 }
 
-std::string NothingType::shortRepr() {
+std::string NothingType::userRepr() {
     ProfilerCAPTURE();
     if (this == NULL) {
-        return "NULL";
+        return "NothingType(NULL)";
     }
-    return "NothingType(id = " + std::to_string(this->id) + ")";
+    return "NothingType";
 }
 
 Object *NothingType::copy(Object *obj, Runtime *rt) {
     ProfilerCAPTURE();
     if (!isTypeObject(obj) || obj->type->id != rt->nothing_type->id) {
-        rt->signalError("Failed to copy an invalid object: " + obj->shortRepr());
+        rt->signalError("Failed to copy an invalid object: " + obj->userRepr());
     }
     if (obj->instance == NULL) {
         return newObject(false, NULL, this, rt);
