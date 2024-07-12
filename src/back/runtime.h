@@ -48,6 +48,7 @@ namespace Builtin {
     class RealType;
     class CharacterType;
     class StringType;
+    class ArrayType;
 }    // namespace Builtin
 
 class Runtime {
@@ -62,7 +63,8 @@ public:
         INTEGER_TYPE_ID   = 4,
         REAL_TYPE_ID      = 5,
         CHARACTER_TYPE_ID = 6,
-        STRING_TYPE_ID    = 7
+        STRING_TYPE_ID    = 7,
+        ARRAY_TYPE_ID     = 8
     };
 
     Builtin::NothingType   *nothing_type;
@@ -72,6 +74,7 @@ public:
     Builtin::RealType      *real_type;
     Builtin::CharacterType *character_type;
     Builtin::StringType    *string_type;
+    Builtin::ArrayType     *array_type;
 
     PoolAllocator                                     *object_allocator;
     __gnu_pbds::cc_hash_table<size_t, PoolAllocator *> allocators;
@@ -146,10 +149,10 @@ public:
 #define highlight(rt, token) rt->current_token = token;
 
 // checks whether obj is an instance object (is non-NULL and has non-NULL type and non-NULL instance)
-#define isInstanceObject(obj)             ((obj) != NULL && (obj)->instance != NULL && (obj)->type != NULL)
+#define isInstanceObject(obj)              ((obj) != NULL && (obj)->instance != NULL && (obj)->type != NULL)
 #define isInstanceObjectOfType(obj, _type) ((obj) != NULL && (obj)->instance != NULL && (obj)->type == (_type))
 // checks whether obj is a type object (is non-NULL and has non-NULL type)
-#define isTypeObject(obj)                 (obj != NULL && (obj)->type != NULL)
+#define isTypeObject(obj)                  (obj != NULL && (obj)->type != NULL)
 
 #define setExecFlagNONE(rt)        rt->execution_flags = 0;
 #define setExecFlagCONTINUE(rt)    rt->execution_flags = 1;

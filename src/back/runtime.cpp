@@ -31,6 +31,7 @@ Runtime::Runtime(GCStrategy *gc_strategy, ErrorManager *error_manager) {
     this->real_type      = new Builtin::RealType(this);
     this->character_type = new Builtin::CharacterType(this);
     this->string_type    = new Builtin::StringType(this);
+    this->array_type    = new Builtin::ArrayType(this);
 
     assert(this->nothing_type->id == NOTHING_TYPE_ID);
     assert(this->boolean_type->id == BOOLEAN_TYPE_ID);
@@ -39,6 +40,7 @@ Runtime::Runtime(GCStrategy *gc_strategy, ErrorManager *error_manager) {
     assert(this->real_type->id == REAL_TYPE_ID);
     assert(this->character_type->id == CHARACTER_TYPE_ID);
     assert(this->string_type->id == STRING_TYPE_ID);
+    assert(this->array_type->id == ARRAY_TYPE_ID);
 
     this->scope->addVariable(NameId("Nothing").id, this->make(this->nothing_type, Runtime::TYPE_OBJECT), this);
     this->scope->addVariable(NameId("Function").id, this->make(this->function_type, Runtime::TYPE_OBJECT), this);
@@ -47,6 +49,7 @@ Runtime::Runtime(GCStrategy *gc_strategy, ErrorManager *error_manager) {
     this->scope->addVariable(NameId("Real").id, this->make(this->real_type, Runtime::TYPE_OBJECT), this);
     this->scope->addVariable(NameId("Character").id, this->make(this->character_type, Runtime::TYPE_OBJECT), this);
     this->scope->addVariable(NameId("String").id, this->make(this->string_type, Runtime::TYPE_OBJECT), this);
+    this->scope->addVariable(NameId("Array").id, this->make(this->array_type, Runtime::TYPE_OBJECT), this);
 
     Builtin::installBuiltinFunctions(this);
 

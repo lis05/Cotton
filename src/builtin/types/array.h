@@ -20,13 +20,39 @@
  */
 
 #pragma once
+#include "../../back/api.h"
+#include "../../front/api.h"
 
-#include "array.h"
-#include "boolean.h"
-#include "character.h"
-#include "function.h"
-#include "integer.h"
-#include "nothing.h"
-#include "real.h"
-#include "string.h"
-#include "user_defined.h"
+namespace Cotton::Builtin {
+
+class ArrayInstance: public Instance {
+public:
+    std::vector<Object *> data;
+
+    ArrayInstance(Runtime *rt);
+    ~ArrayInstance();
+
+    Instance             *copy(Runtime *rt);
+    size_t                getSize();
+    std::string           userRepr();
+    std::vector<Object *> getGCReachable();
+    void                  spreadSingleUse();
+    void                  spreadMultiUse();
+    void                  destroy(Runtime *rt);
+};
+
+class ArrayType: public Type {
+public:
+    size_t getInstanceSize();
+    ArrayType(Runtime *rt);
+    ~ArrayType() = default;
+    Object     *create(Runtime *rt);
+    Object     *copy(Object *obj, Runtime *rt);
+    std::string userRepr();
+};
+
+Object *makeArrayInstanceObject(const std::vector<Object*> &data, Runtime *rt);
+
+std::vector<Object *> &getArrayData(Object *obj, Runtime *rt);
+#define getArrayDataFast(obj) (icast(obj->instance, ArrayInstance)->data)
+}    // namespace Cotton::Builtin
