@@ -147,7 +147,7 @@ public:
 
 // checks whether obj is an instance object (is non-NULL and has non-NULL type and non-NULL instance)
 #define isInstanceObject(obj)             ((obj) != NULL && (obj)->instance != NULL && (obj)->type != NULL)
-#define isInstanceObjectOfType(obj, type) ((obj) != NULL && (obj)->instance != NULL && (obj)->type == (type))
+#define isInstanceObjectOfType(obj, _type) ((obj) != NULL && (obj)->instance != NULL && (obj)->type == (_type))
 // checks whether obj is a type object (is non-NULL and has non-NULL type)
 #define isTypeObject(obj)                 (obj != NULL && (obj)->type != NULL)
 

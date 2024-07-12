@@ -27,7 +27,7 @@ namespace Cotton::Builtin {
 StringInstance::StringInstance(Runtime *rt)
     : Instance(rt, sizeof(StringInstance)) {
     ProfilerCAPTURE();
-    this->data = {};
+    this->data = "";
 }
 
 StringInstance::~StringInstance() {
@@ -41,9 +41,7 @@ Instance *StringInstance::copy(Runtime *rt) {
     if (res == NULL) {
         rt->signalError("Failed to copy " + this->userRepr());
     }
-    for (auto obj : this->data) {
-        ((StringInstance *)res)->data.push_back(rt->copy(obj));
-    }
+    ((StringInstance *)res)->data = this->data;
     return res;
 }
 
@@ -62,27 +60,6 @@ void StringInstance::destroy(Runtime *rt) {
 size_t StringInstance::getSize() {
     ProfilerCAPTURE();
     return sizeof(StringInstance);
-}
-
-std::vector<Object *> StringInstance::getGCReachable() {
-    ProfilerCAPTURE();
-    auto res = Instance::getGCReachable();
-    for (auto obj : this->data) {
-        res.push_back(obj);
-    }
-    return res;
-}
-
-void StringInstance::spreadSingleUse() {
-    for (auto obj : this->data) {
-        obj->spreadSingleUse();
-    }
-}
-
-void StringInstance::spreadMultiUse() {
-    for (auto obj : this->data) {
-        obj->spreadMultiUse();
-    }
 }
 
 size_t StringType::getInstanceSize() {
@@ -111,7 +88,10 @@ StringIndexAdapter(Object *self, const std::vector<Object *> &args, Runtime *rt,
     if (!(0 <= getIntegerValueFast(arg) && getIntegerValueFast(arg) < getStringDataFast(self).size())) {
         rt->signalError("Index " + arg->userRepr() + " is out of string " + self->userRepr() + " range");
     }
-    return getStringDataFast(self)[getIntegerValueFast(arg)];
+    if (!execution_result_matters) {
+        return NULL;
+    }
+    return makeCharacterInstanceObject(getStringDataFast(self)[getIntegerValueFast(arg)], rt);
 }
 
 static Object *StringAddAdapter(Object *self, Object *arg, Runtime *rt, bool execution_result_matters) {
@@ -132,10 +112,8 @@ static Object *StringAddAdapter(Object *self, Object *arg, Runtime *rt, bool exe
         return NULL;
     }
 
-    auto res = rt->copy(self);
-    for (auto obj : getStringDataFast(arg)) {
-        getStringDataFast(res).push_back(obj);
-    }
+    auto res                = rt->copy(self);
+    getStringDataFast(res) += getStringDataFast(arg);
 
     return res;
 }
@@ -161,13 +139,7 @@ static Object *StringEqAdapter(Object *self, Object *arg, Runtime *rt, bool exec
         if (getStringDataFast(self).size() != getStringDataFast(arg).size()) {
             return rt->protected_false;
         }
-        for (int i = 0; i < getStringDataFast(self).size(); i++) {
-            if (!rt->runOperator(OperatorNode::EQUAL, getStringDataFast(self)[i], getStringDataFast(arg)[i], true))
-            {
-                return rt->protected_false;
-            }
-        }
-        return rt->protected_true;
+        return (getStringDataFast(self) == getStringDataFast(arg)) ? rt->protected_true : rt->protected_false;
     }
     else if (!i1 && !i2) {
         return (self->type->id == arg->type->id) ? rt->protected_true : rt->protected_false;
@@ -203,16 +175,45 @@ static Object *stringSizeMethod(const std::vector<Object *> &args, Runtime *rt, 
     return makeIntegerInstanceObject(getStringDataFast(self).size(), rt);
 }
 
+static Object *stringSetMethod(const std::vector<Object *> &args, Runtime *rt, bool execution_result_matters) {
+    ProfilerCAPTURE();
+    if (args.size() < 3) {
+        rt->signalError("Expected two arguments");
+    }
+    auto self  = args[0];
+    auto index = args[1];
+    auto value = args[2];
+
+    if (!isInstanceObjectOfType(self, rt->string_type)) {
+        rt->signalError("Caller must be a String instance object: " + self->userRepr());
+    }
+    if (!isInstanceObjectOfType(index, rt->integer_type)) {
+        rt->signalError("Index must be an Integer instance object: " + index->userRepr());
+    }
+    if (!isInstanceObjectOfType(value, rt->character_type)) {
+        rt->signalError("Value must be a Character instance object: " + value->userRepr());
+    }
+
+    int64_t ind  = getIntegerValueFast(index);
+    auto   &data = getStringDataFast(self);
+    if (!(0 <= ind && ind < data.size())) {
+        rt->signalError("Index is out of range: " + index->userRepr());
+    }
+    data[ind] = getCharacterValueFast(value);
+    return rt->protected_nothing;
+}
+
 // TODO: add all operators to function and nothing
 StringType::StringType(Runtime *rt)
     : Type(rt) {
     ProfilerCAPTURE();
     this->index_op = StringIndexAdapter;
-    this->add_op   = StringAddAdapter;
-    this->eq_op    = StringEqAdapter;
-    this->neq_op   = StringNeqAdapter;
+    this->add_op = StringAddAdapter;
+    this->eq_op  = StringEqAdapter;
+    this->neq_op = StringNeqAdapter;
 
     this->addMethod(NameId("size").id, makeFunctionInstanceObject(true, stringSizeMethod, NULL, rt));
+    this->addMethod(NameId("set").id, makeFunctionInstanceObject(true, stringSetMethod, NULL, rt));
 }
 
 Object *StringType::create(Runtime *rt) {
@@ -243,7 +244,7 @@ std::string StringType::userRepr() {
     return "StringType";
 }
 
-std::vector<Object *> &getStringData(Object *obj, Runtime *rt) {
+std::string &getStringData(Object *obj, Runtime *rt) {
     ProfilerCAPTURE();
     if (!isInstanceObject(obj)) {
         rt->signalError(obj->userRepr() + " is not an instance object");
@@ -257,9 +258,7 @@ std::vector<Object *> &getStringData(Object *obj, Runtime *rt) {
 Object *makeStringInstanceObject(const std::string &value, Runtime *rt) {
     ProfilerCAPTURE();
     auto res = rt->make(rt->string_type, Runtime::INSTANCE_OBJECT);
-    for (auto c : value) {
-        getStringDataFast(res).push_back(makeCharacterInstanceObject(c, rt));
-    }
+    getStringDataFast(res) = value;
     return res;
 }
 

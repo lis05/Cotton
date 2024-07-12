@@ -249,7 +249,7 @@ void Token::identify(ErrorManager *error_manager) {
     }
     else if (this->data.size() > 0 && this->data.front() == '\'' && this->data.back() == '\'') {
         this->id           = CHAR_LIT;
-        this->string_value = parseString(this->data, error_manager);
+        this->char_value = parseString(this->data, error_manager)[0];
     }
     else {
         // check for int and real

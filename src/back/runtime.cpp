@@ -515,8 +515,8 @@ Object *Runtime::execute(OperatorNode *node, bool execution_result_matters) {
         }
         return res;
     }
-    else if (node->id == OperatorNode::CALL) {
-        if (node->first->id == ExprNode::OPERATOR && node->first->op->id == OperatorNode::DOT) {
+    else if (node->id == OperatorNode::CALL || node->id == OperatorNode::INDEX) {
+        if (node->id == OperatorNode::CALL && node->first->id == ExprNode::OPERATOR && node->first->op->id == OperatorNode::DOT) {
             auto    caller   = this->execute(node->first->op->first, true);
             Object *selected = NULL;
 
@@ -558,7 +558,7 @@ Object *Runtime::execute(OperatorNode *node, bool execution_result_matters) {
             highlight(this, node->op);
             std::vector<Object *> args;
             auto                  list = getList(node->second, this);
-            args.reserve(1 + list.size());
+            args.reserve(list.size());
 
             for (auto r : list) {
                 args.push_back(r);
@@ -1022,11 +1022,12 @@ Object *Runtime::execute(BlockStmtNode *node, bool execution_result_matters) {
     if (!node->is_unscoped) {
         this->newFrame(true);
     }
+    Object *res = NULL;
     for (auto stmt : node->list) {
         if (stmt == NULL) {
             continue;
         }
-        auto res = this->execute(stmt, execution_result_matters);
+        res = this->execute(stmt, execution_result_matters);
         if (!isExecFlagNONE(this)) {
             if (!node->is_unscoped) {
                 this->popFrame();
@@ -1038,6 +1039,6 @@ Object *Runtime::execute(BlockStmtNode *node, bool execution_result_matters) {
         this->popFrame();
     }
     setExecFlagNONE(this);
-    return this->protected_nothing;
+    return (res != NULL) ? res : this->protected_nothing;
 }
 }    // namespace Cotton

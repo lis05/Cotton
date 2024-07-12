@@ -27,7 +27,7 @@ namespace Cotton::Builtin {
 
 class StringInstance: public Instance {
 public:
-    std::vector<Object *> data;
+    std::string data;
 
     StringInstance(Runtime *rt);
     ~StringInstance();
@@ -35,9 +35,6 @@ public:
     Instance             *copy(Runtime *rt);
     size_t                getSize();
     std::string           userRepr();
-    std::vector<Object *> getGCReachable();
-    void                  spreadSingleUse();
-    void                  spreadMultiUse();
     void                  destroy(Runtime *rt);
 };
 
@@ -53,6 +50,6 @@ public:
 
 Object *makeStringInstanceObject(const std::string &str, Runtime *rt);
 
-std::vector<Object *> &getStringData(Object *obj, Runtime *rt);
+std::string &getStringData(Object *obj, Runtime *rt);
 #define getStringDataFast(obj) (icast(obj->instance, StringInstance)->data)
 }    // namespace Cotton::Builtin

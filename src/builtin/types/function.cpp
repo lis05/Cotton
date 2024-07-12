@@ -87,7 +87,7 @@ FunctionCallAdapter(Object *self, const std::vector<Object *> &args, Runtime *rt
             rt->signalError("Failed to execute NULL internal function " + self->userRepr());
         }
         auto res = f->internal_ptr(args, rt, execution_result_matters);
-        if (res == NULL) {
+        if (execution_result_matters && res == NULL) {
             rt->signalError("Execution of internal function " + self->userRepr() + " has failed");
         }
         return res;
@@ -113,7 +113,7 @@ FunctionCallAdapter(Object *self, const std::vector<Object *> &args, Runtime *rt
         }
         auto res = rt->execute(f->cotton_ptr->body, execution_result_matters);
         rt->popFrame();
-        if (res == NULL) {
+        if (execution_result_matters && res == NULL) {
             rt->signalError("Execution of function " + self->userRepr() + " has failed");
         }
         return res;

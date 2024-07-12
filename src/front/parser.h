@@ -419,7 +419,7 @@ public:
         bool verify(Parser *p, ResultId id, const std::string error_message, bool highlight_next = true);
     };
 
-private:
+public:
     ParsingResult parseExpr();
     ParsingResult parseStmt();
 
