@@ -44,8 +44,19 @@ class IfStmtNode;
 class ReturnStmtNode;
 class BlockStmtNode;
 
+class TextArea {
+public:
+    int64_t first_char, last_char;
+
+    TextArea();
+    TextArea(const Token &token);
+    TextArea(const TextArea &first, const TextArea &last);
+};
+
 class ExprNode {
 public:
+    TextArea text_area;
+
     enum ExprNodeId { FUNCTION_DEFINITION, TYPE_DEFINITION, OPERATOR, ATOM, PARENTHESES_EXPRESSION } id;
 
     union {
@@ -59,19 +70,18 @@ public:
     ExprNode() = delete;
     ~ExprNode();
 
-    ExprNode(FuncDefNode *func_def);
-    ExprNode(TypeDefNode *type_def);
-    ExprNode(OperatorNode *op);
-    ExprNode(AtomNode *atom);
-    ExprNode(ParExprNode *par_expr);
+    ExprNode(FuncDefNode *func_def, TextArea text_area);
+    ExprNode(TypeDefNode *type_def, TextArea text_area);
+    ExprNode(OperatorNode *op, TextArea text_area);
+    ExprNode(AtomNode *atom, TextArea text_area);
+    ExprNode(ParExprNode *par_expr, TextArea text_area);
 
     void print(int indent = 0, int step = 2);
 };
 
 class FuncDefNode {
 public:
-    Token *function_token;
-
+    TextArea       text_area;
     Token         *name;      // NULL means not present
     IdentListNode *params;    // NULL means not present
     StmtNode      *body;
@@ -79,15 +89,14 @@ public:
     FuncDefNode() = delete;
     ~FuncDefNode();
 
-    FuncDefNode(Token *name, IdentListNode *params, StmtNode *body);
+    FuncDefNode(Token *name, IdentListNode *params, StmtNode *body, TextArea text_area);
 
     void print(int indent = 0, int step = 2);
 };
 
 class TypeDefNode {
 public:
-    Token *type_token;
-
+    TextArea                   text_area;
     Token                     *name;
     std::vector<Token *>       fields;
     std::vector<FuncDefNode *> methods;
@@ -95,13 +104,18 @@ public:
     TypeDefNode() = delete;
     ~TypeDefNode();
 
-    TypeDefNode(Token *name, const std::vector<Token *> &fields, const std::vector<FuncDefNode *> &methods);
+    TypeDefNode(Token                            *name,
+                const std::vector<Token *>       &fields,
+                const std::vector<FuncDefNode *> &methods,
+                TextArea                          text_area);
 
     void print(int indent = 0, int step = 2);
 };
 
 class OperatorNode {
 public:
+    TextArea text_area;
+
     enum OperatorId {
         POST_PLUS_PLUS,
         POST_MINUS_MINUS,
@@ -144,12 +158,12 @@ public:
     } id;
 
     ExprNode *first, *second;    // if second is NULL then it's not present, and the operator is unary
-    Token    *op;                // for error handling
+    Token    *op;
 
     OperatorNode() = delete;
     ~OperatorNode();
 
-    OperatorNode(OperatorId id, ExprNode *first, ExprNode *second, Token *op);
+    OperatorNode(OperatorId id, ExprNode *first, ExprNode *second, Token *op, TextArea text_area);
 
     void print(int indent = 0, int step = 2);
 };
@@ -158,6 +172,8 @@ class Object;
 
 class AtomNode {
 public:
+    TextArea text_area;
+
     enum AtomId { BOOLEAN, CHARACTER, INTEGER, REAL, STRING, IDENTIFIER, NOTHING } id;
 
     bool        bool_value;
@@ -168,43 +184,46 @@ public:
     Token      *ident;
 
     Object *lit_obj;
-
-    Token *token;    // for error handling
+    Token  *token;
 
     AtomNode() = delete;
     ~AtomNode();
 
-    AtomNode(Token *token);    // takes value from the token
+    AtomNode(Token *token, TextArea text_area);    // takes value from the token
 
     void print(int indent = 0, int step = 2);
 };
 
 class ParExprNode {
 public:
+    TextArea  text_area;
     ExprNode *expr;
 
     ParExprNode() = delete;
     ~ParExprNode();
 
-    ParExprNode(ExprNode *expr);
+    ParExprNode(ExprNode *expr, TextArea text_area);
 
     void print(int indent = 0, int step = 2);
 };
 
 class IdentListNode {
 public:
+    TextArea             text_area;
     std::vector<Token *> list;
 
     IdentListNode() = delete;
     ~IdentListNode();
 
-    IdentListNode(const std::vector<Token *> &list);
+    IdentListNode(const std::vector<Token *> &list, TextArea text_area);
 
     void print(int indent = 0, int step = 2);
 };
 
 class StmtNode {
 public:
+    TextArea text_area;
+
     enum StmtId { WHILE, FOR, IF, CONTINUE, BREAK, RETURN, BLOCK, EXPR } id;
 
     union {
@@ -219,35 +238,34 @@ public:
     StmtNode() = delete;
     ~StmtNode();
 
-    StmtNode(WhileStmtNode *while_stmt);
-    StmtNode(ForStmtNode *for_stmt);
-    StmtNode(IfStmtNode *if_stmt);
-    StmtNode(StmtId id);    // for continue and brake only
-    StmtNode(ReturnStmtNode *return_stmt);
-    StmtNode(BlockStmtNode *block_stmt);
-    StmtNode(ExprNode *expr);
+    StmtNode(WhileStmtNode *while_stmt, TextArea text_area);
+    StmtNode(ForStmtNode *for_stmt, TextArea text_area);
+    StmtNode(IfStmtNode *if_stmt, TextArea text_area);
+    StmtNode(StmtId id, TextArea text_area);    // for continue and brake only
+    StmtNode(ReturnStmtNode *return_stmt, TextArea text_area);
+    StmtNode(BlockStmtNode *block_stmt, TextArea text_area);
+    StmtNode(ExprNode *expr, TextArea text_area);
 
     void print(int indent = 0, int step = 2);
 };
 
 class WhileStmtNode {
 public:
-    Token *while_token;
-
+    TextArea  text_area;
     ExprNode *cond;
     StmtNode *body;
 
     WhileStmtNode() = delete;
     ~WhileStmtNode();
 
-    WhileStmtNode(ExprNode *cond, StmtNode *body);
+    WhileStmtNode(ExprNode *cond, StmtNode *body, TextArea text_area);
 
     void print(int indent = 0, int step = 2);
 };
 
 class ForStmtNode {
 public:
-    Token *for_token;
+    TextArea text_area;
 
     ExprNode *init, *cond, *step;
     StmtNode *body;
@@ -255,14 +273,14 @@ public:
     ForStmtNode() = delete;
     ~ForStmtNode();
 
-    ForStmtNode(ExprNode *init, ExprNode *cond, ExprNode *step, StmtNode *body);
+    ForStmtNode(ExprNode *init, ExprNode *cond, ExprNode *step, StmtNode *body, TextArea text_area);
 
     void print(int indent = 0, int step = 2);
 };
 
 class IfStmtNode {
 public:
-    Token *if_token;
+    TextArea text_area;
 
     ExprNode *cond;
     StmtNode *body;
@@ -271,28 +289,28 @@ public:
     IfStmtNode() = delete;
     ~IfStmtNode();
 
-    IfStmtNode(ExprNode *cond, StmtNode *body, StmtNode *else_body);
+    IfStmtNode(ExprNode *cond, StmtNode *body, StmtNode *else_body, TextArea text_area);
 
     void print(int indent = 0, int step = 2);
 };
 
 class ReturnStmtNode {
 public:
-    Token *return_token;
+    TextArea text_area;
 
     ExprNode *value;
 
     ReturnStmtNode() = delete;
     ~ReturnStmtNode();
 
-    ReturnStmtNode(ExprNode *value);
+    ReturnStmtNode(ExprNode *value, TextArea text_area);
 
     void print(int indent = 0, int step = 2);
 };
 
 class BlockStmtNode {
 public:
-    Token *block_token;
+    TextArea text_area;
 
     bool                    is_unscoped;
     std::vector<StmtNode *> list;
@@ -300,7 +318,7 @@ public:
     BlockStmtNode() = delete;
     ~BlockStmtNode();
 
-    BlockStmtNode(bool is_unscoped, const std::vector<StmtNode *> list);
+    BlockStmtNode(bool is_unscoped, const std::vector<StmtNode *> list, TextArea text_area);
 
     void print(int indent = 0, int step = 2);
 };

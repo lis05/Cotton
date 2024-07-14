@@ -41,7 +41,7 @@ Object *UserDefinedInstance::selectField(int64_t id, Runtime *rt) {
     if (it != this->fields.end()) {
         return it->second;
     }
-    rt->signalError(this->userRepr() + "doesn't have field " + NameId::userRepr(id));
+    rt->signalError(this->userRepr() + "doesn't have field " + NameId::userRepr(id), rt->getContext().area);
 }
 
 bool UserDefinedInstance::hasField(int64_t id, Runtime *rt) {
@@ -118,9 +118,7 @@ std::string UserDefinedType::userRepr() {
 
 Object *UserDefinedType::copy(Object *obj, Runtime *rt) {
     ProfilerCAPTURE();
-    if (!isTypeObject(obj)) {
-        rt->signalError("Failed to copy an invalid object: " + obj->userRepr());
-    }
+    rt->verifyIsValidObject(obj);
     if (obj->instance == NULL) {
         return newObject(false, NULL, this, rt);
     }

@@ -50,14 +50,16 @@ std::string Object::userRepr() {
     if (this == NULL) {
         return std::string("Object(NULL)");
     }
-    if (this->instance == NULL) return this->type->userRepr();
+    if (this->instance == NULL) {
+        return this->type->userRepr();
+    }
     return this->instance->userRepr();
 }
 
 void Object::assignTo(Object *obj, Runtime *rt) {
     ProfilerCAPTURE();
     if (!this->can_modify) {
-        rt->signalError("Cannot assign to " + this->userRepr());
+        rt->signalError("Cannot assign to " + this->userRepr(), rt->getContext().area);
     }
     auto id          = this->id;
     auto single_use  = this->single_use;
@@ -69,7 +71,7 @@ void Object::assignTo(Object *obj, Runtime *rt) {
 void Object::assignToCopyOf(Object *obj, Runtime *rt) {
     ProfilerCAPTURE();
     if (!this->can_modify) {
-        rt->signalError("Cannot assign to " + this->userRepr());
+        rt->signalError("Cannot assign to " + this->userRepr(), rt->getContext().area);
     }
     auto id          = this->id;
     auto single_use  = this->single_use;

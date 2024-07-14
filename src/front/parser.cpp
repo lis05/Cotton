@@ -24,6 +24,22 @@
 #include "lexer.h"
 
 namespace Cotton {
+
+TextArea::TextArea() {
+    this->first_char = INT64_MAX;
+    this->last_char  = INT64_MIN;
+}
+
+TextArea::TextArea(const Token &token) {
+    this->first_char = token.begin_pos;
+    this->last_char  = token.end_pos;
+}
+
+TextArea::TextArea(const TextArea &first, const TextArea &last) {
+    this->first_char = std::min(first.first_char, last.first_char);
+    this->last_char  = std::max(first.last_char, last.last_char);
+}
+
 ExprNode::~ExprNode() {
     switch (this->id) {
     case FUNCTION_DEFINITION    : delete this->func_def; break;
@@ -40,51 +56,56 @@ ExprNode::~ExprNode() {
     this->par_expr = NULL;
 }
 
-ExprNode::ExprNode(FuncDefNode *func_def) {
-    this->type_def = NULL;
-    this->op       = NULL;
-    this->atom     = NULL;
-    this->par_expr = NULL;
+ExprNode::ExprNode(FuncDefNode *func_def, TextArea text_area) {
+    this->text_area = text_area;
+    this->type_def  = NULL;
+    this->op        = NULL;
+    this->atom      = NULL;
+    this->par_expr  = NULL;
 
     this->id       = FUNCTION_DEFINITION;
     this->func_def = func_def;
 }
 
-ExprNode::ExprNode(TypeDefNode *type_def) {
-    this->func_def = NULL;
-    this->op       = NULL;
-    this->atom     = NULL;
-    this->par_expr = NULL;
+ExprNode::ExprNode(TypeDefNode *type_def, TextArea text_area) {
+    this->text_area = text_area;
+    this->func_def  = NULL;
+    this->op        = NULL;
+    this->atom      = NULL;
+    this->par_expr  = NULL;
 
     this->id       = TYPE_DEFINITION;
     this->type_def = type_def;
 }
 
-ExprNode::ExprNode(OperatorNode *op) {
-    this->func_def = NULL;
-    this->type_def = NULL;
-    this->atom     = NULL;
-    this->par_expr = NULL;
+ExprNode::ExprNode(OperatorNode *op, TextArea text_area) {
+    this->text_area = text_area;
+    this->func_def  = NULL;
+    this->type_def  = NULL;
+    this->atom      = NULL;
+    this->par_expr  = NULL;
 
     this->id = OPERATOR;
     this->op = op;
 }
 
-ExprNode::ExprNode(AtomNode *atom) {
-    this->func_def = NULL;
-    this->type_def = NULL;
-    this->op       = NULL;
-    this->par_expr = NULL;
+ExprNode::ExprNode(AtomNode *atom, TextArea text_area) {
+    this->text_area = text_area;
+    this->func_def  = NULL;
+    this->type_def  = NULL;
+    this->op        = NULL;
+    this->par_expr  = NULL;
 
     this->id   = ATOM;
     this->atom = atom;
 }
 
-ExprNode::ExprNode(ParExprNode *par_expr) {
-    this->func_def = NULL;
-    this->type_def = NULL;
-    this->op       = NULL;
-    this->atom     = NULL;
+ExprNode::ExprNode(ParExprNode *par_expr, TextArea text_area) {
+    this->text_area = text_area;
+    this->func_def  = NULL;
+    this->type_def  = NULL;
+    this->op        = NULL;
+    this->atom      = NULL;
 
     this->id       = PARENTHESES_EXPRESSION;
     this->par_expr = par_expr;
@@ -140,10 +161,11 @@ FuncDefNode::~FuncDefNode() {
     this->body   = NULL;
 }
 
-FuncDefNode::FuncDefNode(Token *name, IdentListNode *params, StmtNode *body) {
-    this->name   = name;
-    this->params = params;
-    this->body   = body;
+FuncDefNode::FuncDefNode(Token *name, IdentListNode *params, StmtNode *body, TextArea text_area) {
+    this->text_area = text_area;
+    this->name      = name;
+    this->params    = params;
+    this->body      = body;
 }
 
 void FuncDefNode::print(int indent, int step) {
@@ -183,10 +205,12 @@ TypeDefNode::~TypeDefNode() {
 
 TypeDefNode::TypeDefNode(Token                            *name,
                          const std::vector<Token *>       &fields,
-                         const std::vector<FuncDefNode *> &methods) {
-    this->name    = name;
-    this->fields  = fields;
-    this->methods = methods;
+                         const std::vector<FuncDefNode *> &methods,
+                         TextArea                          text_area) {
+    this->text_area = text_area;
+    this->name      = name;
+    this->fields    = fields;
+    this->methods   = methods;
 }
 
 void TypeDefNode::print(int indent, int step) {
@@ -232,11 +256,12 @@ OperatorNode::~OperatorNode() {
     this->op     = NULL;
 }
 
-OperatorNode::OperatorNode(OperatorId id, ExprNode *first, ExprNode *second, Token *op) {
-    this->id     = id;
-    this->first  = first;
-    this->second = second;
-    this->op     = op;
+OperatorNode::OperatorNode(OperatorId id, ExprNode *first, ExprNode *second, Token *op, TextArea text_area) {
+    this->text_area = text_area;
+    this->id        = id;
+    this->first     = first;
+    this->second    = second;
+    this->op        = op;
 }
 
 void OperatorNode::print(int indent, int step) {
@@ -261,9 +286,10 @@ AtomNode::~AtomNode() {
     this->token = NULL;
 }
 
-AtomNode::AtomNode(Token *token) {
-    this->lit_obj = NULL;
-    this->token = token;
+AtomNode::AtomNode(Token *token, TextArea text_area) {
+    this->text_area = text_area;
+    this->lit_obj   = NULL;
+    this->token     = token;
     switch (token->id) {
     case Token::BOOLEAN_LIT : {
         this->id         = BOOLEAN;
@@ -337,8 +363,9 @@ ParExprNode::~ParExprNode() {
     delete this->expr;
 }
 
-ParExprNode::ParExprNode(ExprNode *expr) {
-    this->expr = expr;
+ParExprNode::ParExprNode(ExprNode *expr, TextArea text_area) {
+    this->text_area = text_area;
+    this->expr      = expr;
 }
 
 void ParExprNode::print(int indent, int step) {
@@ -356,8 +383,9 @@ IdentListNode::~IdentListNode() {
     this->list.clear();
 }
 
-IdentListNode::IdentListNode(const std::vector<Token *> &list) {
-    this->list = list;
+IdentListNode::IdentListNode(const std::vector<Token *> &list, TextArea text_area) {
+    this->text_area = text_area;
+    this->list      = list;
 }
 
 void IdentListNode::print(int indent, int step) {
@@ -393,7 +421,8 @@ StmtNode::~StmtNode() {
     this->expr        = NULL;
 }
 
-StmtNode::StmtNode(WhileStmtNode *while_stmt) {
+StmtNode::StmtNode(WhileStmtNode *while_stmt, TextArea text_area) {
+    this->text_area   = text_area;
     this->for_stmt    = NULL;
     this->if_stmt     = NULL;
     this->return_stmt = NULL;
@@ -404,7 +433,8 @@ StmtNode::StmtNode(WhileStmtNode *while_stmt) {
     this->while_stmt = while_stmt;
 }
 
-StmtNode::StmtNode(ForStmtNode *for_stmt) {
+StmtNode::StmtNode(ForStmtNode *for_stmt, TextArea text_area) {
+    this->text_area   = text_area;
     this->while_stmt  = NULL;
     this->if_stmt     = NULL;
     this->return_stmt = NULL;
@@ -415,7 +445,8 @@ StmtNode::StmtNode(ForStmtNode *for_stmt) {
     this->for_stmt = for_stmt;
 }
 
-StmtNode::StmtNode(IfStmtNode *if_stmt) {
+StmtNode::StmtNode(IfStmtNode *if_stmt, TextArea text_area) {
+    this->text_area   = text_area;
     this->while_stmt  = NULL;
     this->for_stmt    = NULL;
     this->return_stmt = NULL;
@@ -426,7 +457,8 @@ StmtNode::StmtNode(IfStmtNode *if_stmt) {
     this->if_stmt = if_stmt;
 }
 
-StmtNode::StmtNode(StmtId id) {
+StmtNode::StmtNode(StmtId id, TextArea text_area) {
+    this->text_area   = text_area;
     this->while_stmt  = NULL;
     this->for_stmt    = NULL;
     this->if_stmt     = NULL;
@@ -437,7 +469,8 @@ StmtNode::StmtNode(StmtId id) {
     this->id = id;
 }
 
-StmtNode::StmtNode(ReturnStmtNode *return_stmt) {
+StmtNode::StmtNode(ReturnStmtNode *return_stmt, TextArea text_area) {
+    this->text_area  = text_area;
     this->while_stmt = NULL;
     this->for_stmt   = NULL;
     this->if_stmt    = NULL;
@@ -448,7 +481,8 @@ StmtNode::StmtNode(ReturnStmtNode *return_stmt) {
     this->return_stmt = return_stmt;
 }
 
-StmtNode::StmtNode(BlockStmtNode *block_stmt) {
+StmtNode::StmtNode(BlockStmtNode *block_stmt, TextArea text_area) {
+    this->text_area   = text_area;
     this->while_stmt  = NULL;
     this->for_stmt    = NULL;
     this->if_stmt     = NULL;
@@ -459,7 +493,8 @@ StmtNode::StmtNode(BlockStmtNode *block_stmt) {
     this->block_stmt = block_stmt;
 }
 
-StmtNode::StmtNode(ExprNode *expr) {
+StmtNode::StmtNode(ExprNode *expr, TextArea text_area) {
+    this->text_area   = text_area;
     this->while_stmt  = NULL;
     this->for_stmt    = NULL;
     this->if_stmt     = NULL;
@@ -513,9 +548,10 @@ WhileStmtNode::~WhileStmtNode() {
     this->body = NULL;
 }
 
-WhileStmtNode::WhileStmtNode(ExprNode *cond, StmtNode *body) {
-    this->cond = cond;
-    this->body = body;
+WhileStmtNode::WhileStmtNode(ExprNode *cond, StmtNode *body, TextArea text_area) {
+    this->text_area = text_area;
+    this->cond      = cond;
+    this->body      = body;
 }
 
 void WhileStmtNode::print(int indent, int step) {
@@ -547,11 +583,12 @@ ForStmtNode::~ForStmtNode() {
     this->body = NULL;
 }
 
-ForStmtNode::ForStmtNode(ExprNode *init, ExprNode *cond, ExprNode *step, StmtNode *body) {
-    this->init = init;
-    this->cond = cond;
-    this->step = step;
-    this->body = body;
+ForStmtNode::ForStmtNode(ExprNode *init, ExprNode *cond, ExprNode *step, StmtNode *body, TextArea text_area) {
+    this->text_area = text_area;
+    this->init      = init;
+    this->cond      = cond;
+    this->step      = step;
+    this->body      = body;
 }
 
 void ForStmtNode::print(int indent, int step) {
@@ -589,7 +626,8 @@ IfStmtNode::~IfStmtNode() {
     this->else_body = NULL;
 }
 
-IfStmtNode::IfStmtNode(ExprNode *cond, StmtNode *body, StmtNode *else_body) {
+IfStmtNode::IfStmtNode(ExprNode *cond, StmtNode *body, StmtNode *else_body, TextArea text_area) {
+    this->text_area = text_area;
     this->cond      = cond;
     this->body      = body;
     this->else_body = else_body;
@@ -622,8 +660,9 @@ ReturnStmtNode::~ReturnStmtNode() {
     this->value = NULL;
 }
 
-ReturnStmtNode::ReturnStmtNode(ExprNode *value) {
-    this->value = value;
+ReturnStmtNode::ReturnStmtNode(ExprNode *value, TextArea text_area) {
+    this->text_area = text_area;
+    this->value     = value;
 }
 
 void ReturnStmtNode::print(int indent, int step) {
@@ -645,7 +684,8 @@ BlockStmtNode::~BlockStmtNode() {
     this->list.clear();
 }
 
-BlockStmtNode::BlockStmtNode(bool is_unscoped, const std::vector<StmtNode *> list) {
+BlockStmtNode::BlockStmtNode(bool is_unscoped, const std::vector<StmtNode *> list, TextArea text_area) {
+    this->text_area   = text_area;
     this->is_unscoped = is_unscoped;
     this->list        = list;
 }
@@ -877,6 +917,7 @@ static bool skipSemicolons(Parser *parser, bool single = false) {
 #define EMPTY_PRIORITY 100
 
 Parser::ParsingResult Parser::parseExpr() {
+    TextArea ta;
     if (this->consume(Token::FUNCTION_KW)) {
         Token *function_token = &*prev(this->next_token);
         Token *name           = NULL;
@@ -890,6 +931,7 @@ Parser::ParsingResult Parser::parseExpr() {
         }
 
         std::vector<Token *> list;
+        Token               *last_bracket;
         if (!this->consume(Token::CLOSE_BRACKET)) {
             while (this->hasNext()) {
                 Token *param = &*this->next_token;
@@ -907,6 +949,8 @@ Parser::ParsingResult Parser::parseExpr() {
                 }
             }
 
+            last_bracket = &*this->next_token;
+
             if (!this->consume(Token::CLOSE_BRACKET)) {
                 return ParsingResult("Expected a close bracket", this);
             }
@@ -920,10 +964,13 @@ Parser::ParsingResult Parser::parseExpr() {
             return ParsingResult("", this);
         }
 
-        auto param_list          = new IdentListNode(list);
-        auto func_def            = new FuncDefNode(name, param_list, body.stmt);
-        func_def->function_token = function_token;
-        auto expr                = new ExprNode(func_def);
+        ta              = (list.empty()) ? TextArea() : TextArea(*list.front());
+        ta              = (list.empty()) ? TextArea() : TextArea(ta, TextArea(*list.back()));
+        auto param_list = new IdentListNode(list, ta);
+
+        ta            = TextArea(TextArea(*function_token), TextArea(*last_bracket));
+        auto func_def = new FuncDefNode(name, param_list, body.stmt, ta);
+        auto expr     = new ExprNode(func_def, ta);
         return ParsingResult(expr, this);
     }
     else if (this->consume(Token::TYPE_KW)) {
@@ -940,6 +987,7 @@ Parser::ParsingResult Parser::parseExpr() {
 
         std::vector<Token *>       fields;
         std::vector<FuncDefNode *> methods;
+        Token                     *last_bracket;
         if (!this->consume(Token::CLOSE_CURLY_BRACKET)) {
             while (this->hasNext()) {
                 if (this->consume(Token::METHOD_KW)) {
@@ -955,6 +1003,7 @@ Parser::ParsingResult Parser::parseExpr() {
                     }
 
                     std::vector<Token *> list;
+                    Token               *last_bracket;
                     if (!this->consume(Token::CLOSE_BRACKET)) {
                         while (this->hasNext()) {
                             Token *param = &*this->next_token;
@@ -972,6 +1021,8 @@ Parser::ParsingResult Parser::parseExpr() {
                             }
                         }
 
+                        last_bracket = &*this->next_token;
+
                         if (!this->consume(Token::CLOSE_BRACKET)) {
                             return ParsingResult("Expected a close bracket", this);
                         }
@@ -985,9 +1036,12 @@ Parser::ParsingResult Parser::parseExpr() {
                         return ParsingResult("", this);
                     }
 
-                    auto param_list            = new IdentListNode(list);
-                    auto method_def            = new FuncDefNode(name, param_list, body.stmt);
-                    method_def->function_token = method_token;
+                    ta              = (list.empty()) ? TextArea() : TextArea(*list.front());
+                    ta              = (list.empty()) ? TextArea() : TextArea(ta, TextArea(*list.back()));
+                    auto param_list = new IdentListNode(list, ta);
+
+                    ta              = TextArea(TextArea(*method_token), TextArea(*last_bracket));
+                    auto method_def = new FuncDefNode(name, param_list, body.stmt, ta);
                     methods.push_back(method_def);
                 }
                 else if (this->checkNext() == Token::IDENTIFIER) {
@@ -1007,14 +1061,16 @@ Parser::ParsingResult Parser::parseExpr() {
                 }
             }
 
+            last_bracket = &*this->next_token;
+
             if (!this->consume(Token::CLOSE_CURLY_BRACKET)) {
                 return ParsingResult("Expected a close curly bracket", this);
             }
         }
 
-        auto type_def        = new TypeDefNode(name, fields, methods);
-        type_def->type_token = type_token;
-        auto expr            = new ExprNode(type_def);
+        ta            = TextArea(TextArea(*type_token), TextArea(*last_bracket));
+        auto type_def = new TypeDefNode(name, fields, methods, ta);
+        auto expr     = new ExprNode(type_def, ta);
         return ParsingResult(expr, this);
     }
     else {
@@ -1075,15 +1131,23 @@ Parser::ParsingResult Parser::parseExpr() {
                         return ParsingResult("", this);
                     }
 
-                    auto op   = new OperatorNode(op_info.id, arg.expr, NULL, operator_token);
-                    auto expr = new ExprNode(op);
+                    auto op   = new OperatorNode(op_info.id,
+                                               arg.expr,
+                                               NULL,
+                                               operator_token,
+                                               TextArea(TextArea(*operator_token), arg.expr->text_area));
+                    auto expr = new ExprNode(op, op->text_area);
                     expr_stack.push_back(expr);
                 }
                 else {
                     // A++
-                    auto op = new OperatorNode(op_info.id, expr_stack.back(), NULL, operator_token);
+                    auto op = new OperatorNode(op_info.id,
+                                               expr_stack.back(),
+                                               NULL,
+                                               operator_token,
+                                               TextArea(TextArea(*operator_token), expr_stack.back()->text_area));
                     expr_stack.pop_back();
-                    auto expr = new ExprNode(op);
+                    auto expr = new ExprNode(op, op->text_area);
                     expr_stack.push_back(expr);
                 }
                 break;
@@ -1095,6 +1159,7 @@ Parser::ParsingResult Parser::parseExpr() {
                 if (expr_stack.empty()) {
                     // expression in parentheses
                     if (this->consume(Token::OPEN_BRACKET)) {
+                        auto operator_token = &*this->next_token;
                         this->saveState();
                         auto in_expr = this->parseExpr();
                         this->restoreState();
@@ -1107,8 +1172,11 @@ Parser::ParsingResult Parser::parseExpr() {
                             return ParsingResult("Expected a close bracket", this);
                         }
 
-                        auto par_expr = new ParExprNode(in_expr.expr);
-                        auto expr     = new ExprNode(par_expr);
+                        auto par_expr = new ParExprNode(
+                        in_expr.expr,
+                        TextArea(TextArea(*operator_token),
+                                 TextArea(in_expr.expr->text_area, TextArea(*prev(this->next_token)))));
+                        auto expr = new ExprNode(par_expr, par_expr->text_area);
                         expr_stack.push_back(expr);
                         break;
                     }
@@ -1128,18 +1196,30 @@ Parser::ParsingResult Parser::parseExpr() {
                 this->consume();
 
                 if (operator_token->id == Token::OPEN_BRACKET && this->consume(Token::CLOSE_BRACKET)) {
-                    auto op = new OperatorNode(op_info.id, expr_stack.back(), NULL, operator_token);
+                    auto op = new OperatorNode(
+                    op_info.id,
+                    expr_stack.back(),
+                    NULL,
+                    operator_token,
+                    TextArea(TextArea(*operator_token),
+                             TextArea(expr_stack.back()->text_area, TextArea(*prev(this->next_token)))));
                     expr_stack.pop_back();
-                    auto expr = new ExprNode(op);
+                    auto expr = new ExprNode(op, op->text_area);
                     expr_stack.push_back(expr);
                     break;
                 }
 
                 if (operator_token->id == Token::OPEN_SQUARE_BRACKET && this->consume(Token::CLOSE_SQUARE_BRACKET))
                 {
-                    auto op = new OperatorNode(op_info.id, expr_stack.back(), NULL, operator_token);
+                    auto op = new OperatorNode(
+                    op_info.id,
+                    expr_stack.back(),
+                    NULL,
+                    operator_token,
+                    TextArea(TextArea(*operator_token),
+                             TextArea(expr_stack.back()->text_area, TextArea(*prev(this->next_token)))));
                     expr_stack.pop_back();
-                    auto expr = new ExprNode(op);
+                    auto expr = new ExprNode(op, op->text_area);
                     expr_stack.push_back(expr);
                     break;
                 }
@@ -1164,9 +1244,16 @@ Parser::ParsingResult Parser::parseExpr() {
                     return ParsingResult("", this);
                 }
 
-                auto op = new OperatorNode(op_info.id, expr_stack.back(), arg.expr, operator_token);
+                auto op = new OperatorNode(
+                op_info.id,
+                expr_stack.back(),
+                arg.expr,
+                operator_token,
+                TextArea(TextArea(TextArea(TextArea(*operator_token), TextArea(*prev(this->next_token))),
+                                  expr_stack.back()->text_area),
+                         arg.expr->text_area));
                 expr_stack.pop_back();
-                auto expr = new ExprNode(op);
+                auto expr = new ExprNode(op, op->text_area);
                 expr_stack.push_back(expr);
                 break;
             }
@@ -1198,8 +1285,12 @@ Parser::ParsingResult Parser::parseExpr() {
                         return ParsingResult("", this);
                     }
 
-                    auto op   = new OperatorNode(op_info.id, arg.expr, NULL, operator_token);
-                    auto expr = new ExprNode(op);
+                    auto op   = new OperatorNode(op_info.id,
+                                               arg.expr,
+                                               NULL,
+                                               operator_token,
+                                               TextArea(TextArea(*operator_token), arg.expr->text_area));
+                    auto expr = new ExprNode(op, op->text_area);
                     expr_stack.push_back(expr);
                 }
                 else {
@@ -1213,9 +1304,15 @@ Parser::ParsingResult Parser::parseExpr() {
                         return ParsingResult("", this);
                     }
 
-                    auto op = new OperatorNode(op_info.id, expr_stack.back(), arg.expr, operator_token);
+                    auto op
+                    = new OperatorNode(op_info.id,
+                                       expr_stack.back(),
+                                       arg.expr,
+                                       operator_token,
+                                       TextArea(TextArea(TextArea(*operator_token), expr_stack.back()->text_area),
+                                                arg.expr->text_area));
                     expr_stack.pop_back();
-                    auto expr = new ExprNode(op);
+                    auto expr = new ExprNode(op, op->text_area);
                     expr_stack.push_back(expr);
                 }
                 break;
@@ -1243,8 +1340,12 @@ Parser::ParsingResult Parser::parseExpr() {
                     return ParsingResult("", this);
                 }
 
-                auto op   = new OperatorNode(op_info.id, arg.expr, NULL, operator_token);
-                auto expr = new ExprNode(op);
+                auto op   = new OperatorNode(op_info.id,
+                                           arg.expr,
+                                           NULL,
+                                           operator_token,
+                                           TextArea(TextArea(*operator_token), arg.expr->text_area));
+                auto expr = new ExprNode(op, op->text_area);
                 expr_stack.push_back(expr);
                 break;
             }
@@ -1297,9 +1398,14 @@ Parser::ParsingResult Parser::parseExpr() {
                     return ParsingResult("", this);
                 }
 
-                auto op = new OperatorNode(op_info.id, expr_stack.back(), arg.expr, operator_token);
+                auto op = new OperatorNode(
+                op_info.id,
+                expr_stack.back(),
+                arg.expr,
+                operator_token,
+                TextArea(TextArea(TextArea(*operator_token), expr_stack.back()->text_area), arg.expr->text_area));
                 expr_stack.pop_back();
-                auto expr = new ExprNode(op);
+                auto expr = new ExprNode(op, op->text_area);
                 expr_stack.push_back(expr);
                 break;
             }
@@ -1318,8 +1424,8 @@ Parser::ParsingResult Parser::parseExpr() {
                 }
                 this->consume();
 
-                auto atom = new AtomNode(atom_token);
-                auto expr = new ExprNode(atom);
+                auto atom = new AtomNode(atom_token, TextArea(*atom_token));
+                auto expr = new ExprNode(atom, atom->text_area);
                 expr_stack.push_back(expr);
                 break;
             }
@@ -1377,9 +1483,9 @@ Parser::ParsingResult Parser::parseStmt() {
             return ParsingResult("", this);
         }
 
-        auto while_stmt         = new WhileStmtNode(cond.expr, body.stmt);
-        while_stmt->while_token = while_token;
-        auto stmt               = new StmtNode(while_stmt);
+        auto while_stmt
+        = new WhileStmtNode(cond.expr, body.stmt, TextArea(TextArea(*while_token), body.stmt->text_area));
+        auto stmt = new StmtNode(while_stmt, while_stmt->text_area);
         return ParsingResult(stmt, this);
     }
     else if (this->consume(Token::FOR_KW)) {
@@ -1438,9 +1544,12 @@ Parser::ParsingResult Parser::parseStmt() {
             return ParsingResult("", this);
         }
 
-        auto for_stmt       = new ForStmtNode(init.expr, cond.expr, step.expr, body.stmt);
-        for_stmt->for_token = for_token;
-        auto stmt           = new StmtNode(for_stmt);
+        auto for_stmt = new ForStmtNode(init.expr,
+                                        cond.expr,
+                                        step.expr,
+                                        body.stmt,
+                                        TextArea(TextArea(*for_token), body.stmt->text_area));
+        auto stmt     = new StmtNode(for_stmt, for_stmt->text_area);
         return ParsingResult(stmt, this);
     }
     else if (this->consume(Token::IF_KW)) {
@@ -1462,9 +1571,9 @@ Parser::ParsingResult Parser::parseStmt() {
         }
 
         if (!this->consume(Token::ELSE_KW)) {
-            auto if_stmt      = new IfStmtNode(cond.expr, body.stmt, NULL);
-            if_stmt->if_token = if_token;
-            auto stmt         = new StmtNode(if_stmt);
+            auto if_stmt
+            = new IfStmtNode(cond.expr, body.stmt, NULL, TextArea(TextArea(*if_token), body.stmt->text_area));
+            auto stmt = new StmtNode(if_stmt, if_stmt->text_area);
             return ParsingResult(stmt, this);
         }
 
@@ -1476,25 +1585,26 @@ Parser::ParsingResult Parser::parseStmt() {
             return ParsingResult("", this);
         }
 
-        auto if_stmt      = new IfStmtNode(cond.expr, body.stmt, else_body.stmt);
-        if_stmt->if_token = if_token;
-        auto stmt         = new StmtNode(if_stmt);
+        auto if_stmt = new IfStmtNode(cond.expr,
+                                      body.stmt,
+                                      else_body.stmt,
+                                      TextArea(TextArea(*if_token), else_body.stmt->text_area));
+        auto stmt    = new StmtNode(if_stmt, if_stmt->text_area);
         return ParsingResult(stmt, this);
     }
     else if (this->consume(Token::CONTINUE_KW)) {
-        auto stmt = new StmtNode(StmtNode::CONTINUE);
+        auto stmt = new StmtNode(StmtNode::CONTINUE, TextArea(*prev(this->next_token)));
         return ParsingResult(stmt, this);
     }
     else if (this->consume(Token::BREAK_KW)) {
-        auto stmt = new StmtNode(StmtNode::BREAK);
+        auto stmt = new StmtNode(StmtNode::BREAK, TextArea(*prev(this->next_token)));
         return ParsingResult(stmt, this);
     }
     else if (this->consume(Token::RETURN_KW)) {
         Token *return_token = &*prev(this->next_token);
         if (this->consume(Token::SEMICOLON)) {
-            auto return_stmt          = new ReturnStmtNode(NULL);
-            return_stmt->return_token = return_token;
-            auto stmt                 = new StmtNode(return_stmt);
+            auto return_stmt = new ReturnStmtNode(NULL, TextArea(*return_token));
+            auto stmt        = new StmtNode(return_stmt, return_stmt->text_area);
             return ParsingResult(stmt, this);
         }
 
@@ -1506,21 +1616,24 @@ Parser::ParsingResult Parser::parseStmt() {
             return ParsingResult("", this);
         }
 
-        auto return_stmt = new ReturnStmtNode(value.expr);
-        auto stmt        = new StmtNode(return_stmt);
+        auto return_stmt
+        = new ReturnStmtNode(value.expr, TextArea(TextArea(*return_token), value.expr->text_area));
+        auto stmt = new StmtNode(return_stmt, return_stmt->text_area);
         return ParsingResult(stmt, this);
     }
     else if (this->consume(Token::UNSCOPED_KW)) {
+        Token *block_token = &*prev(this->next_token);
         if (!this->consume(Token::OPEN_CURLY_BRACKET)) {
             return ParsingResult("Unscoped keyword must be followed by an open curly bracket", this);
         }
-        Token                  *block_token = &*prev(this->next_token);
         std::vector<StmtNode *> list;
         while (this->hasNext()) {
             if (this->consume(Token::CLOSE_CURLY_BRACKET)) {
-                auto block_stmt         = new BlockStmtNode(true, list);
-                block_stmt->block_token = block_token;
-                auto stmt               = new StmtNode(block_stmt);
+                auto block_stmt
+                = new BlockStmtNode(true,
+                                    list,
+                                    TextArea(TextArea(*block_token), TextArea(*prev(this->next_token))));
+                auto stmt = new StmtNode(block_stmt, block_stmt->text_area);
                 return ParsingResult(stmt, this);
             }
 
@@ -1542,9 +1655,11 @@ Parser::ParsingResult Parser::parseStmt() {
         std::vector<StmtNode *> list;
         while (this->hasNext()) {
             if (this->consume(Token::CLOSE_CURLY_BRACKET)) {
-                auto block_stmt         = new BlockStmtNode(false, list);
-                block_stmt->block_token = block_token;
-                auto stmt               = new StmtNode(block_stmt);
+                auto block_stmt
+                = new BlockStmtNode(false,
+                                    list,
+                                    TextArea(TextArea(*block_token), TextArea(*prev(this->next_token))));
+                auto stmt = new StmtNode(block_stmt, block_stmt->text_area);
                 return ParsingResult(stmt, this);
             }
 
@@ -1573,7 +1688,7 @@ Parser::ParsingResult Parser::parseStmt() {
         return ParsingResult("Expression statement must end with a semicolon", this);
     }
 
-    auto stmt = new StmtNode(expr.expr);
+    auto stmt = new StmtNode(expr.expr, expr.expr->text_area);
     return ParsingResult(stmt, this);
 }
 
@@ -1607,8 +1722,10 @@ StmtNode *Parser::parse(const std::vector<Token> &tokens) {
 
         statements.push_back(res.stmt);
     }
-    auto block = new BlockStmtNode(false, statements);
-    auto res   = new StmtNode(block);
+    auto ta    = (statements.empty()) ? TextArea() : statements.front()->text_area;
+    ta         = (statements.empty()) ? TextArea() : TextArea(ta, statements.back()->text_area);
+    auto block = new BlockStmtNode(false, statements, ta);
+    auto res   = new StmtNode(block, ta);
     return res;
 }
 

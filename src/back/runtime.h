@@ -94,6 +94,7 @@ public:
     Object *protected_nothing;
     Object *protected_true;
     Object *protected_false;
+    Object *protectedBoolean(bool val);
 
     Scope *scope;
     // creates a new scope
@@ -104,10 +105,22 @@ public:
     GC *gc;
 
     ErrorManager *error_manager;
-    Token        *current_token;
+
+    class ErrorContext {
+    public:
+        TextArea              area;
+        std::vector<TextArea> sub_areas;
+    };
+
+    std::vector<ErrorContext> error_contexts;
+
+    void          newContext();
+    void          popContext();
+    ErrorContext &getContext();
+
     // signals an error
     [[noreturn]]
-    void signalError(const std::string &message, bool include_token = true);
+    void signalError(const std::string &message, const TextArea &ta);
 
     uint8_t execution_flags;
 
@@ -141,18 +154,37 @@ public:
                         bool                         execution_result_matters);
     // runs method on the object. returns a valid object(non-null); if fails, signals an error
     Object *runMethod(int64_t id, Object *obj, const std::vector<Object *> &args, bool execution_result_matters);
+
+    bool isValidObject(Object *obj);
+    bool isTypeObject(Object *obj, Type *type = NULL);
+    bool isInstanceObject(Object *obj, Type *type = NULL);
+    bool isOfType(Object *obj, BuiltinTypes type);
+    bool isOfType(Object *obj, Type *type);
+
+    void verifyIsValidObject(Object *obj);
+    void verifyIsValidObject(Object *obj, const TextArea &ta);
+    void verifyIsTypeObject(Object *obj, Type *type);
+    void verifyIsTypeObject(Object *obj, Type *type, const TextArea &ta);
+    void verifyIsInstanceObject(Object *obj, Type *type);
+    void verifyIsInstanceObject(Object *obj, Type *type, const TextArea &ta);
+    void verifyIsOfType(Object *obj, BuiltinTypes type);
+    void verifyIsOfType(Object *obj, BuiltinTypes type, const TextArea &ta);
+    void verifyIsOfType(Object *obj, Type *type);
+    void verifyIsOfType(Object *obj, Type *type, const TextArea &ta);
+
+    void verifyMinArgsAmountFunc(const std::vector<Object*> &args, int64_t amount);
+    void verifyMinArgsAmountFunc(const std::vector<Object*> &args, int64_t amount, const TextArea &ta);
+    void verifyExactArgsAmountFunc(const std::vector<Object*> &args, int64_t amount);
+    void verifyExactArgsAmountFunc(const std::vector<Object*> &args, int64_t amount, const TextArea &ta);
+
+    void verifyMinArgsAmountMethod(const std::vector<Object*> &args, int64_t amount);
+    void verifyMinArgsAmountMethod(const std::vector<Object*> &args, int64_t amount, const TextArea &ta);
+    void verifyExactArgsAmountMethod(const std::vector<Object*> &args, int64_t amount);
+    void verifyExactArgsAmountMethod(const std::vector<Object*> &args, int64_t amount, const TextArea &ta);
 };
 
 #define newObject(is_instance, instance, type, rt)                                                                \
     new (rt->object_allocator->allocate(sizeof(Object))) Object(is_instance, instance, type, rt)
-
-#define highlight(rt, token) rt->current_token = token;
-
-// checks whether obj is an instance object (is non-NULL and has non-NULL type and non-NULL instance)
-#define isInstanceObject(obj)              ((obj) != NULL && (obj)->instance != NULL && (obj)->type != NULL)
-#define isInstanceObjectOfType(obj, _type) ((obj) != NULL && (obj)->instance != NULL && (obj)->type == (_type))
-// checks whether obj is a type object (is non-NULL and has non-NULL type)
-#define isTypeObject(obj)                  (obj != NULL && (obj)->type != NULL)
 
 #define setExecFlagNONE(rt)        rt->execution_flags = 0;
 #define setExecFlagCONTINUE(rt)    rt->execution_flags = 1;

@@ -37,7 +37,7 @@ Instance *CharacterInstance::copy(Runtime *rt) {
     ProfilerCAPTURE();
     Instance *res = new (rt->alloc(sizeof(CharacterInstance))) CharacterInstance(rt);
     if (res == NULL) {
-        rt->signalError("Failed to copy " + this->userRepr());
+        rt->signalError("Failed to copy " + this->userRepr(), rt->getContext().area);
     }
     icast(res, CharacterInstance)->value = this->value;
     return res;
@@ -84,9 +84,7 @@ size_t CharacterType::getInstanceSize() {
 static Object *CharacterPostincAdapter(Object *self, Runtime *rt, bool execution_result_matters) {
     ProfilerCAPTURE();
 
-    if (!isInstanceObject(self)) {
-        rt->signalError(self->userRepr() + " does not support that operator");
-    }
+    rt->verifyIsInstanceObject(self, rt->character_type, rt->getContext().sub_areas[0]);
 
     if (!execution_result_matters) {
         getCharacterValueFast(self)++;
@@ -101,9 +99,7 @@ static Object *CharacterPostincAdapter(Object *self, Runtime *rt, bool execution
 static Object *CharacterPostdecAdapter(Object *self, Runtime *rt, bool execution_result_matters) {
     ProfilerCAPTURE();
 
-    if (!isInstanceObject(self)) {
-        rt->signalError(self->userRepr() + " does not support that operator");
-    }
+    rt->verifyIsInstanceObject(self, rt->character_type, rt->getContext().sub_areas[0]);
 
     if (!execution_result_matters) {
         getCharacterValueFast(self)--;
@@ -118,9 +114,7 @@ static Object *CharacterPostdecAdapter(Object *self, Runtime *rt, bool execution
 static Object *CharacterPreincAdapter(Object *self, Runtime *rt, bool execution_result_matters) {
     ProfilerCAPTURE();
 
-    if (!isInstanceObject(self)) {
-        rt->signalError(self->userRepr() + " does not support that operator");
-    }
+    rt->verifyIsInstanceObject(self, rt->character_type, rt->getContext().sub_areas[0]);
 
     if (!execution_result_matters) {
         getCharacterValueFast(self)++;
@@ -135,9 +129,7 @@ static Object *CharacterPreincAdapter(Object *self, Runtime *rt, bool execution_
 static Object *CharacterPredecAdapter(Object *self, Runtime *rt, bool execution_result_matters) {
     ProfilerCAPTURE();
 
-    if (!isInstanceObject(self)) {
-        rt->signalError(self->userRepr() + " does not support that operator");
-    }
+    rt->verifyIsInstanceObject(self, rt->character_type, rt->getContext().sub_areas[0]);
 
     if (!execution_result_matters) {
         getCharacterValueFast(self)--;
@@ -152,9 +144,7 @@ static Object *CharacterPredecAdapter(Object *self, Runtime *rt, bool execution_
 static Object *CharacterPositiveAdapter(Object *self, Runtime *rt, bool execution_result_matters) {
     ProfilerCAPTURE();
 
-    if (!isInstanceObject(self)) {
-        rt->signalError(self->userRepr() + " does not support that operator");
-    }
+    rt->verifyIsInstanceObject(self, rt->character_type, rt->getContext().sub_areas[0]);
 
     if (!execution_result_matters) {
         return NULL;
@@ -167,9 +157,7 @@ static Object *CharacterPositiveAdapter(Object *self, Runtime *rt, bool executio
 static Object *CharacterNegativeAdapter(Object *self, Runtime *rt, bool execution_result_matters) {
     ProfilerCAPTURE();
 
-    if (!isInstanceObject(self)) {
-        rt->signalError(self->userRepr() + " does not support that operator");
-    }
+    rt->verifyIsInstanceObject(self, rt->character_type, rt->getContext().sub_areas[0]);
 
     if (!execution_result_matters) {
         return NULL;
@@ -183,15 +171,8 @@ static Object *CharacterNegativeAdapter(Object *self, Runtime *rt, bool executio
 static Object *CharacterAddAdapter(Object *self, Object *arg, Runtime *rt, bool execution_result_matters) {
     ProfilerCAPTURE();
 
-    if (!isInstanceObject(self)) {
-        rt->signalError(self->userRepr() + " does not support that operator");
-    }
-    if (!isTypeObject(arg)) {
-        rt->signalError("Right-side object is invalid: " + arg->userRepr());
-    }
-    if (arg->instance == NULL || arg->type->id != rt->character_type->id) {
-        rt->signalError("Right-side object " + arg->userRepr() + " must be a Character instance object");
-    }
+    rt->verifyIsInstanceObject(self, rt->character_type, rt->getContext().sub_areas[0]);
+    rt->verifyIsInstanceObject(arg, rt->character_type, rt->getContext().sub_areas[1]);
 
     if (!execution_result_matters) {
         return NULL;
@@ -202,17 +183,8 @@ static Object *CharacterAddAdapter(Object *self, Object *arg, Runtime *rt, bool 
 }
 
 static Object *CharacterSubAdapter(Object *self, Object *arg, Runtime *rt, bool execution_result_matters) {
-    ProfilerCAPTURE();
-
-    if (!isInstanceObject(self)) {
-        rt->signalError(self->userRepr() + " does not support that operator");
-    }
-    if (!isTypeObject(arg)) {
-        rt->signalError("Right-side object is invalid: " + arg->userRepr());
-    }
-    if (arg->instance == NULL || arg->type->id != rt->character_type->id) {
-        rt->signalError("Right-side object " + arg->userRepr() + " must be a Character instance object");
-    }
+    rt->verifyIsInstanceObject(self, rt->character_type, rt->getContext().sub_areas[0]);
+    rt->verifyIsInstanceObject(arg, rt->character_type, rt->getContext().sub_areas[1]);
 
     if (!execution_result_matters) {
         return NULL;
@@ -225,88 +197,62 @@ static Object *CharacterSubAdapter(Object *self, Object *arg, Runtime *rt, bool 
 static Object *CharacterLtAdapter(Object *self, Object *arg, Runtime *rt, bool execution_result_matters) {
     ProfilerCAPTURE();
 
-    if (!isInstanceObject(self)) {
-        rt->signalError(self->userRepr() + " does not support that operator");
-    }
-    if (!isTypeObject(arg)) {
-        rt->signalError("Right-side object is invalid: " + arg->userRepr());
-    }
-    if (arg->instance == NULL || arg->type->id != rt->character_type->id) {
-        rt->signalError("Right-side object " + arg->userRepr() + " must be a Character instance object");
-    }
+    rt->verifyIsInstanceObject(self, rt->character_type, rt->getContext().sub_areas[0]);
+    rt->verifyIsInstanceObject(arg, rt->character_type, rt->getContext().sub_areas[1]);
 
-    return (getCharacterValueFast(self) < getCharacterValueFast(arg)) ? rt->protected_true : rt->protected_false;
+    return rt->protectedBoolean(getCharacterValueFast(self) < getCharacterValueFast(arg));
 }
 
 static Object *CharacterLeqAdapter(Object *self, Object *arg, Runtime *rt, bool execution_result_matters) {
     ProfilerCAPTURE();
 
-    if (!isInstanceObject(self)) {
-        rt->signalError(self->userRepr() + " does not support that operator");
-    }
-    if (!isTypeObject(arg)) {
-        rt->signalError("Right-side object is invalid: " + arg->userRepr());
-    }
-    if (arg->instance == NULL || arg->type->id != rt->character_type->id) {
-        rt->signalError("Right-side object " + arg->userRepr() + " must be a Character instance object");
-    }
+    rt->verifyIsInstanceObject(self, rt->character_type, rt->getContext().sub_areas[0]);
+    rt->verifyIsInstanceObject(arg, rt->character_type, rt->getContext().sub_areas[1]);
 
-    return (getCharacterValueFast(self) <= getCharacterValueFast(arg)) ? rt->protected_true : rt->protected_false;
+    return rt->protectedBoolean(getCharacterValueFast(self) <= getCharacterValueFast(arg));
 }
 
 static Object *CharacterGtAdapter(Object *self, Object *arg, Runtime *rt, bool execution_result_matters) {
     ProfilerCAPTURE();
 
-    if (!isInstanceObject(self)) {
-        rt->signalError(self->userRepr() + " does not support that operator");
-    }
-    if (!isTypeObject(arg)) {
-        rt->signalError("Right-side object is invalid: " + arg->userRepr());
-    }
-    if (arg->instance == NULL || arg->type->id != rt->character_type->id) {
-        rt->signalError("Right-side object " + arg->userRepr() + " must be a Character instance object");
-    }
+    rt->verifyIsInstanceObject(self, rt->character_type, rt->getContext().sub_areas[0]);
+    rt->verifyIsInstanceObject(arg, rt->character_type, rt->getContext().sub_areas[1]);
 
-    return (getCharacterValueFast(self) > getCharacterValueFast(arg)) ? rt->protected_true : rt->protected_false;
+    return rt->protectedBoolean(getCharacterValueFast(self) > getCharacterValueFast(arg));
 }
 
 static Object *CharacterGeqAdapter(Object *self, Object *arg, Runtime *rt, bool execution_result_matters) {
     ProfilerCAPTURE();
 
-    if (!isInstanceObject(self)) {
-        rt->signalError(self->userRepr() + " does not support that operator");
-    }
-    if (!isTypeObject(arg)) {
-        rt->signalError("Right-side object is invalid: " + arg->userRepr());
-    }
-    if (arg->instance == NULL || arg->type->id != rt->character_type->id) {
-        rt->signalError("Right-side object " + arg->userRepr() + " must be a Character instance object");
-    }
+    rt->verifyIsInstanceObject(self, rt->character_type, rt->getContext().sub_areas[0]);
+    rt->verifyIsInstanceObject(arg, rt->character_type, rt->getContext().sub_areas[1]);
 
-    return (getCharacterValueFast(self) >= getCharacterValueFast(arg)) ? rt->protected_true : rt->protected_false;
+    return rt->protectedBoolean(getCharacterValueFast(self) >= getCharacterValueFast(arg));
 }
 
 static Object *CharacterEqAdapter(Object *self, Object *arg, Runtime *rt, bool execution_result_matters) {
     ProfilerCAPTURE();
-    if (!isTypeObject(arg)) {
-        rt->signalError("Right-side object is invalid: " + arg->userRepr());
-    }
-    bool i1 = isInstanceObject(self);
-    bool i2 = arg->instance != NULL;
+    rt->verifyIsOfType(self, rt->character_type, rt->getContext().sub_areas[0]);
+    rt->verifyIsValidObject(arg, rt->getContext().sub_areas[1]);
 
-    if (i1 && i2) {
-        if (self->type->id != arg->type->id) {
-            return rt->protected_false;
-        }
-        return (getCharacterValueFast(self) == getCharacterValueFast(arg)) ? rt->protected_true
-                                                                           : rt->protected_false;
-    }
-    else if (!i1 && !i2) {
-        return (self->type->id == arg->type->id) ? rt->protected_true : rt->protected_false;
-    }
-    else {
+    if (!rt->isOfType(arg, rt->character_type)) {
         return rt->protected_false;
     }
+
+    if (rt->isInstanceObject(self, rt->character_type)) {
+        if (!rt->isInstanceObject(arg, rt->character_type)) {
+            return rt->protected_false;
+        }
+        return rt->protectedBoolean(getCharacterValueFast(self) == getCharacterValueFast(arg));
+    }
+    else if (rt->isTypeObject(self, rt->character_type)) {
+        if (!rt->isTypeObject(arg, rt->character_type)) {
+            return rt->protected_false;
+        }
+        return rt->protected_true;
+    }
+
+    return rt->protected_false;
 }
 
 static Object *CharacterNeqAdapter(Object *self, Object *arg, Runtime *rt, bool execution_result_matters) {
@@ -344,9 +290,7 @@ Object *CharacterType::create(Runtime *rt) {
 
 Object *CharacterType::copy(Object *obj, Runtime *rt) {
     ProfilerCAPTURE();
-    if (!isTypeObject(obj) || obj->type->id != rt->character_type->id) {
-        rt->signalError("Failed to copy an invalid object: " + obj->userRepr());
-    }
+    rt->verifyIsOfType(obj, rt->character_type);
     if (obj->instance == NULL) {
         return newObject(false, NULL, this, rt);
     }
@@ -365,12 +309,13 @@ std::string CharacterType::userRepr() {
 
 uint8_t &getCharacterValue(Object *obj, Runtime *rt) {
     ProfilerCAPTURE();
-    if (!isInstanceObject(obj)) {
-        rt->signalError(obj->userRepr() + " is not an instance object");
-    }
-    if (obj->type->id != rt->character_type->id) {
-        rt->signalError(obj->userRepr() + " is not Character");
-    }
+    rt->verifyIsInstanceObject(obj, rt->character_type, rt->getContext().area);
+    return icast(obj->instance, CharacterInstance)->value;
+}
+
+uint8_t &getCharacterValue(Object *obj, Runtime *rt, const TextArea &ta) {
+    ProfilerCAPTURE();
+    rt->verifyIsInstanceObject(obj, rt->character_type, ta);
     return icast(obj->instance, CharacterInstance)->value;
 }
 

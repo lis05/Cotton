@@ -51,5 +51,6 @@ public:
 Object *makeRealInstanceObject(double value, Runtime *rt);
 
 double &getRealValue(Object *obj, Runtime *rt);
+double &getRealValue(Object *obj, Runtime *rt, const TextArea &ta);
 #define getRealValueFast(obj) (icast(obj->instance, RealInstance)->value)
 }    // namespace Cotton::Builtin

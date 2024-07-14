@@ -38,7 +38,7 @@ Instance *BooleanInstance::copy(Runtime *rt) {
     ProfilerCAPTURE();
     Instance *res = new (rt->alloc(sizeof(BooleanInstance))) BooleanInstance(rt);
     if (res == NULL) {
-        rt->signalError("Failed to copy " + this->userRepr());
+        rt->signalError("Failed to copy " + this->userRepr(), rt->getContext().area);
     }
     icast(res, BooleanInstance)->value = this->value;
     return res;
@@ -49,8 +49,7 @@ std::string BooleanInstance::userRepr() {
     if (this == NULL) {
         return "Boolean(NULL)";
     }
-    return std::string("Boolean(value = ") + (this->value ? "true" : "false")
-           + ")";
+    return std::string("Boolean(value = ") + (this->value ? "true" : "false") + ")";
 }
 
 void BooleanInstance::destroy(Runtime *rt) {
@@ -75,23 +74,27 @@ static Object *BooleanNotAdapter(Object *self, Runtime *rt, bool execution_resul
 
 static Object *BooleanEqAdapter(Object *self, Object *arg, Runtime *rt, bool execution_result_matters) {
     ProfilerCAPTURE();
-    if (!isTypeObject(arg)) {
-        rt->signalError("Right-side object is invalid: " + arg->userRepr());
-    }
-    auto isSelfI = isInstanceObject(self);
-    auto isArg1I = arg->instance != NULL;
-    if (isSelfI && isArg1I) {
-        if (self->type->id != arg->type->id) {
-            return rt->protected_false;
-        }
-        return (getBooleanValueFast(self) == getBooleanValueFast(arg)) ? rt->protected_true : rt->protected_false;
-    }
-    else if (!isSelfI && !isArg1I) {
-        return (self->type->id == arg->type->id) ? rt->protected_true : rt->protected_false;
-    }
-    else {
+    rt->verifyIsOfType(self, rt->boolean_type, rt->getContext().sub_areas[0]);
+    rt->verifyIsValidObject(arg, rt->getContext().sub_areas[1]);
+
+    if (!rt->isOfType(arg, rt->boolean_type)) {
         return rt->protected_false;
     }
+
+    if (rt->isInstanceObject(self, rt->boolean_type)) {
+        if (!rt->isInstanceObject(arg, rt->boolean_type)) {
+            return rt->protected_false;
+        }
+        return rt->protectedBoolean(getBooleanValueFast(self) == getBooleanValueFast(arg));
+    }
+    else if (rt->isTypeObject(self, rt->boolean_type)) {
+        if (!rt->isTypeObject(arg, rt->boolean_type)) {
+            return rt->protected_false;
+        }
+        return rt->protected_true;
+    }
+
+    return rt->protected_false;
 }
 
 static Object *BooleanNeqAdapter(Object *self, Object *arg, Runtime *rt, bool execution_result_matters) {
@@ -102,34 +105,18 @@ static Object *BooleanNeqAdapter(Object *self, Object *arg, Runtime *rt, bool ex
 
 static Object *BooleanAndAdapter(Object *self, Object *arg, Runtime *rt, bool execution_result_matters) {
     ProfilerCAPTURE();
+    rt->verifyIsInstanceObject(self, rt->boolean_type, rt->getContext().sub_areas[0]);
+    rt->verifyIsInstanceObject(arg, rt->boolean_type, rt->getContext().sub_areas[1]);
 
-    if (!isTypeObject(arg)) {
-        rt->signalError("Right-side object is invalid: " + arg->userRepr());
-    }
-    if (arg->type->id != rt->boolean_type->id) {
-        rt->signalError("Right-side object is not Boolean: " + arg->userRepr());
-    }
-    if (arg->instance == NULL) {
-        rt->signalError("Right-side object is not an instance object: " + arg->userRepr());
-    }
-
-    return (getBooleanValue(self, rt) && getBooleanValue(arg, rt)) ? rt->protected_true : rt->protected_false;
+    return rt->protectedBoolean(getBooleanValueFast(self) && getBooleanValueFast(arg));
 }
 
 static Object *BooleanOrAdapter(Object *self, Object *arg, Runtime *rt, bool execution_result_matters) {
     ProfilerCAPTURE();
+    rt->verifyIsInstanceObject(self, rt->boolean_type, rt->getContext().sub_areas[0]);
+    rt->verifyIsInstanceObject(arg, rt->boolean_type, rt->getContext().sub_areas[1]);
 
-    if (!isTypeObject(arg)) {
-        rt->signalError("Right-side object is invalid: " + arg->userRepr());
-    }
-    if (arg->type->id != rt->boolean_type->id) {
-        rt->signalError("Right-side object is not Boolean: " + arg->userRepr());
-    }
-    if (arg->instance == NULL) {
-        rt->signalError("Right-side object is not an instance object: " + arg->userRepr());
-    }
-
-    return (getBooleanValue(self, rt) || getBooleanValue(arg, rt)) ? rt->protected_true : rt->protected_false;
+    return rt->protectedBoolean(getBooleanValueFast(self) || getBooleanValueFast(arg));
 }
 
 // TODO: add all operators to function and nothing
@@ -153,9 +140,7 @@ Object *BooleanType::create(Runtime *rt) {
 
 Object *BooleanType::copy(Object *obj, Runtime *rt) {
     ProfilerCAPTURE();
-    if (!isTypeObject(obj) || obj->type->id != rt->boolean_type->id) {
-        rt->signalError("Failed to copy an invalid object: " + obj->userRepr());
-    }
+    rt->verifyIsOfType(obj, rt->boolean_type);
     if (obj->instance == NULL) {
         return newObject(false, NULL, this, rt);
     }
@@ -174,12 +159,13 @@ std::string BooleanType::userRepr() {
 
 bool &getBooleanValue(Object *obj, Runtime *rt) {
     ProfilerCAPTURE();
-    if (!isInstanceObject(obj)) {
-        rt->signalError(obj->userRepr() + " is not an instance object");
-    }
-    if (obj->type->id != rt->boolean_type->id) {
-        rt->signalError(obj->userRepr() + " is not Boolean");
-    }
+    rt->verifyIsInstanceObject(obj, rt->boolean_type);
+    return icast(obj->instance, BooleanInstance)->value;
+}
+
+bool &getBooleanValue(Object *obj, Runtime *rt, const TextArea &ta) {
+    ProfilerCAPTURE();
+    rt->verifyIsInstanceObject(obj, rt->boolean_type, ta);
     return icast(obj->instance, BooleanInstance)->value;
 }
 

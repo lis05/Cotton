@@ -54,5 +54,6 @@ public:
 Object *makeArrayInstanceObject(const std::vector<Object*> &data, Runtime *rt);
 
 std::vector<Object *> &getArrayData(Object *obj, Runtime *rt);
+std::vector<Object *> &getArrayData(Object *obj, Runtime *rt, const TextArea &ta);
 #define getArrayDataFast(obj) (icast(obj->instance, ArrayInstance)->data)
 }    // namespace Cotton::Builtin

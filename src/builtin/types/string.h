@@ -51,5 +51,6 @@ public:
 Object *makeStringInstanceObject(const std::string &str, Runtime *rt);
 
 std::string &getStringData(Object *obj, Runtime *rt);
+std::string &getStringData(Object *obj, Runtime *rt, const TextArea &ta);
 #define getStringDataFast(obj) (icast(obj->instance, StringInstance)->data)
 }    // namespace Cotton::Builtin

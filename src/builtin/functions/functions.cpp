@@ -27,13 +27,9 @@ namespace Cotton::Builtin {
 
 static Object *CFmake(const std::vector<Object *> &args, Runtime *rt, bool execution_result_matters) {
     ProfilerCAPTURE();
-    if (args.size() != 1) {
-        rt->signalError("Expected exactly one argument");
-    }
+    rt->verifyExactArgsAmountFunc(args, 1);
     auto arg = args[0];
-    if (!isTypeObject(arg) || isInstanceObject(arg)) {
-        rt->signalError("Expected a type object but got " + arg->userRepr());
-    }
+    rt->verifyIsTypeObject(arg, NULL, rt->getContext().sub_areas[1]);
 
     if (!execution_result_matters) {
         return NULL;
@@ -44,43 +40,41 @@ static Object *CFmake(const std::vector<Object *> &args, Runtime *rt, bool execu
 
 static Object *CFexit(const std::vector<Object *> &args, Runtime *rt, bool execution_result_matters) {
     ProfilerCAPTURE();
-    if (args.size() != 1) {
-        rt->signalError("Expected exactly one argument");
-    }
+    rt->verifyExactArgsAmountFunc(args, 1);
     auto arg = args[0];
-    if (!isInstanceObject(arg) || arg->type->id != rt->integer_type->id) {
-        rt->signalError("Expected an integer object but got " + arg->userRepr());
-    }
+    rt->verifyIsInstanceObject(arg, rt->integer_type, rt->getContext().sub_areas[1]);
 
     ::exit(getIntegerValue(arg, rt));
 }
 
 static Object *CFprintr(const std::vector<Object *> &args, Runtime *rt, bool execution_result_matters) {
     ProfilerCAPTURE();
+    int64_t index = 0;
     for (auto arg : args) {
-        if (isInstanceObject(arg)) {
-            if (arg->type->id == rt->boolean_type->id) {
+        index++;
+        if (rt->isInstanceObject(arg, NULL)) {
+            if (arg->type == rt->boolean_type) {
                 std::cout << (getBooleanValue(arg, rt) ? "true" : "false");
             }
-            else if (arg->type->id == rt->character_type->id) {
+            else if (arg->type == rt->character_type) {
                 std::cout << (char)getCharacterValue(arg, rt);
             }
-            else if (arg->type->id == rt->function_type->id) {
+            else if (arg->type == rt->function_type) {
                 std::cout << "function";
             }
-            else if (arg->type->id == rt->integer_type->id) {
+            else if (arg->type == rt->integer_type) {
                 std::cout << getIntegerValue(arg, rt);
             }
-            else if (arg->type->id == rt->nothing_type->id) {
+            else if (arg->type == rt->nothing_type) {
                 std::cout << "nothing";
             }
-            else if (arg->type->id == rt->real_type->id) {
+            else if (arg->type == rt->real_type) {
                 std::cout << getRealValue(arg, rt);
             }
-            else if (arg->type->id == rt->string_type->id) {
+            else if (arg->type == rt->string_type) {
                 std::cout << getStringData(arg, rt);
             }
-            else if (arg->type->id == rt->array_type->id) {
+            else if (arg->type == rt->array_type) {
                 auto &data = getArrayData(arg, rt);
                 std::cout << "{";
                 if (data.size() != 0) {
@@ -93,11 +87,11 @@ static Object *CFprintr(const std::vector<Object *> &args, Runtime *rt, bool exe
                 std::cout << "}";
             }
             else {
-                rt->signalError("Cannot print " + arg->userRepr());
+                rt->signalError("Cannot print " + arg->userRepr(), rt->getContext().sub_areas[index]);
             }
         }
         else {
-            rt->signalError("Cannot print " + arg->userRepr());
+            rt->signalError("Cannot print " + arg->userRepr(), rt->getContext().sub_areas[index]);
         }
     }
     return rt->protected_nothing;
@@ -119,13 +113,9 @@ static Object *CFprint(const std::vector<Object *> &args, Runtime *rt, bool exec
 
 static Object *CFcotton(const std::vector<Object *> &args, Runtime *rt, bool execution_result_matters) {
     ProfilerCAPTURE();
-    if (args.size() != 1) {
-        rt->signalError("Expected exactly one argument");
-    }
+    rt->verifyExactArgsAmountFunc(args, 1);
     auto arg = args[0];
-    if (!isInstanceObject(arg) || arg->type->id != rt->string_type->id) {
-        rt->signalError("Expected a string object but got " + arg->userRepr());
-    }
+    rt->verifyIsInstanceObject(arg, rt->string_type, rt->getContext().sub_areas[1]);
 
     Lexer        lexer(rt->error_manager);
     std::string &str = getStringDataFast(arg);
@@ -143,15 +133,10 @@ static Object *CFcotton(const std::vector<Object *> &args, Runtime *rt, bool exe
 
 static Object *CFsystem(const std::vector<Object *> &args, Runtime *rt, bool execution_result_matters) {
     ProfilerCAPTURE();
-    if (args.size() != 1) {
-        rt->signalError("Expected exactly one argument");
-    }
+    rt->verifyExactArgsAmountFunc(args, 1);
     auto arg = args[0];
-    if (!isInstanceObject(arg) || arg->type->id != rt->string_type->id) {
-        rt->signalError("Expected a string object but got " + arg->userRepr());
-    }
+    rt->verifyIsInstanceObject(arg, rt->string_type, rt->getContext().sub_areas[1]);
 
-    Lexer        lexer(rt->error_manager);
     std::string &str = getStringDataFast(arg);
     auto         ret = ::system(str.c_str());
     if (!execution_result_matters) {
@@ -162,9 +147,7 @@ static Object *CFsystem(const std::vector<Object *> &args, Runtime *rt, bool exe
 
 static Object *CFfork(const std::vector<Object *> &args, Runtime *rt, bool execution_result_matters) {
     ProfilerCAPTURE();
-    if (args.size() != 0) {
-        rt->signalError("Expected exactly zero arguments");
-    }
+    rt->verifyExactArgsAmountFunc(args, 0);
 
     auto ret = ::fork();
 
@@ -176,9 +159,7 @@ static Object *CFfork(const std::vector<Object *> &args, Runtime *rt, bool execu
 
 static Object *CFargc(const std::vector<Object *> &args, Runtime *rt, bool execution_result_matters) {
     ProfilerCAPTURE();
-    if (args.size() != 0) {
-        rt->signalError("Expected exactly zero arguments");
-    }
+    rt->verifyExactArgsAmountFunc(args, 0);
 
     if (!execution_result_matters) {
         return NULL;
@@ -196,14 +177,9 @@ static Object *CFargc(const std::vector<Object *> &args, Runtime *rt, bool execu
 
 static Object *CFargg(const std::vector<Object *> &args, Runtime *rt, bool execution_result_matters) {
     ProfilerCAPTURE();
-    if (args.size() != 1) {
-        rt->signalError("Expected exactly one argument");
-    }
-
+    rt->verifyExactArgsAmountFunc(args, 1);
     auto arg = args[0];
-    if (!isInstanceObject(arg) || arg->type->id != rt->integer_type->id) {
-        rt->signalError("Expected an integer object but got " + arg->userRepr());
-    }
+    rt->verifyIsInstanceObject(arg, rt->integer_type, rt->getContext().sub_areas[1]);
 
     if (!execution_result_matters) {
         return NULL;
@@ -218,42 +194,43 @@ static Object *CFargg(const std::vector<Object *> &args, Runtime *rt, bool execu
     if (s == NULL || i >= s->arguments.size()) {
         return rt->protected_nothing;
     }
-
-    return s->arguments[i];
+    if (i < s->arguments.size()) {
+        return s->arguments[i];
+    }
+    else {
+        rt->signalError("Argument index is out of range:" + arg->userRepr(), rt->getContext().sub_areas[1]);
+    }
 }
 
 static Object *CFint(const std::vector<Object *> &args, Runtime *rt, bool execution_result_matters) {
     ProfilerCAPTURE();
-    if (args.size() != 1) {
-        rt->signalError("Expected exactly one argument");
-    }
+    rt->verifyExactArgsAmountFunc(args, 1);
     auto arg = args[0];
-    if (!isInstanceObject(arg)) {
-        rt->signalError("Expected an instance object but got  " + arg->userRepr());
-    }
+    rt->verifyIsInstanceObject(arg, NULL, rt->getContext().sub_areas[1]);
+
     if (!execution_result_matters) {
         return NULL;
     }
 
-    if (arg->type->id == rt->boolean_type->id) {
+    if (arg->type == rt->boolean_type) {
         return Builtin::makeIntegerInstanceObject(getBooleanValue(arg, rt), rt);
     }
-    else if (arg->type->id == rt->character_type->id) {
+    else if (arg->type == rt->character_type) {
         return Builtin::makeIntegerInstanceObject(getCharacterValue(arg, rt), rt);
     }
-    else if (arg->type->id == rt->function_type->id) {
+    else if (arg->type == rt->function_type) {
         // unsupported
     }
-    else if (arg->type->id == rt->integer_type->id) {
+    else if (arg->type == rt->integer_type) {
         return Builtin::makeIntegerInstanceObject(getIntegerValue(arg, rt), rt);
     }
-    else if (arg->type->id == rt->nothing_type->id) {
+    else if (arg->type == rt->nothing_type) {
         return Builtin::makeIntegerInstanceObject(0, rt);
     }
-    else if (arg->type->id == rt->real_type->id) {
+    else if (arg->type == rt->real_type) {
         return Builtin::makeIntegerInstanceObject(getRealValue(arg, rt), rt);
     }
-    else if (arg->type->id == rt->string_type->id) {
+    else if (arg->type == rt->string_type) {
         std::string &str = getStringDataFast(arg);
         try {
             size_t  ptr;
@@ -265,41 +242,38 @@ static Object *CFint(const std::vector<Object *> &args, Runtime *rt, bool execut
         }
     }
 
-    rt->signalError("Unsupported conversion");
+    rt->signalError("Unsupported conversion", rt->getContext().area);
 }
 
 static Object *CFbool(const std::vector<Object *> &args, Runtime *rt, bool execution_result_matters) {
     ProfilerCAPTURE();
-    if (args.size() != 1) {
-        rt->signalError("Expected exactly one argument");
-    }
+    rt->verifyExactArgsAmountFunc(args, 1);
     auto arg = args[0];
-    if (!isInstanceObject(arg)) {
-        rt->signalError("Expected an instance object but got  " + arg->userRepr());
-    }
+    rt->verifyIsInstanceObject(arg, NULL, rt->getContext().sub_areas[1]);
+
     if (!execution_result_matters) {
         return NULL;
     }
 
-    if (arg->type->id == rt->boolean_type->id) {
+    if (arg->type == rt->boolean_type) {
         return Builtin::makeBooleanInstanceObject(getBooleanValue(arg, rt), rt);
     }
-    else if (arg->type->id == rt->character_type->id) {
+    else if (arg->type == rt->character_type) {
         return Builtin::makeBooleanInstanceObject(getCharacterValue(arg, rt), rt);
     }
-    else if (arg->type->id == rt->function_type->id) {
+    else if (arg->type == rt->function_type) {
         // unsupported
     }
-    else if (arg->type->id == rt->integer_type->id) {
+    else if (arg->type == rt->integer_type) {
         return Builtin::makeBooleanInstanceObject(getIntegerValue(arg, rt), rt);
     }
-    else if (arg->type->id == rt->nothing_type->id) {
+    else if (arg->type == rt->nothing_type) {
         return Builtin::makeBooleanInstanceObject(0, rt);
     }
-    else if (arg->type->id == rt->real_type->id) {
+    else if (arg->type == rt->real_type) {
         return Builtin::makeBooleanInstanceObject(getRealValue(arg, rt), rt);
     }
-    else if (arg->type->id == rt->string_type->id) {
+    else if (arg->type == rt->string_type) {
         std::string &str = getStringDataFast(arg);
         if (str == "true") {
             return Builtin::makeBooleanInstanceObject(true, rt);
@@ -309,14 +283,14 @@ static Object *CFbool(const std::vector<Object *> &args, Runtime *rt, bool execu
         }
     }
 
-    rt->signalError("Unsupported conversion");
+    rt->signalError("Unsupported conversion", rt->getContext().area);
 }
 
 static Object *CFcopy(const std::vector<Object *> &args, Runtime *rt, bool execution_result_matters) {
     ProfilerCAPTURE();
-    if (args.size() != 1) {
-        rt->signalError("Expected exactly one argument");
-    }
+    rt->verifyExactArgsAmountFunc(args, 1);
+    auto arg = args[0];
+    rt->verifyIsValidObject(arg, rt->getContext().sub_areas[1]);
 
     if (!execution_result_matters) {
         return NULL;
@@ -334,24 +308,27 @@ static Object *CFarray(const std::vector<Object *> &args, Runtime *rt, bool exec
         return makeArrayInstanceObject({}, rt);
     }
 
-    auto array_size = args[0];
-    if (!isInstanceObjectOfType(array_size, rt->integer_type)) {
-        rt->signalError("Size must be an Integer instance object: " + array_size->userRepr());
-    }
-    if (getIntegerValueFast(array_size) < 0) {
-        rt->signalError("Size cant be negative");
-    }
+    else if (args.size() == 1) {
+        auto array_size = args[0];
 
-    std::vector<Object *> values;
-    for (int64_t i = 1; i < args.size(); i++) {
-        values.push_back(args[i]);
+        rt->verifyIsInstanceObject(array_size, rt->integer_type, rt->getContext().sub_areas[1]);
+        if (getIntegerValueFast(array_size) < 0) {
+            rt->signalError("Size cant be negative", rt->getContext().sub_areas[1]);
+        }
+        std::vector<Object *> values;
+        for (int i = 0; i < getIntegerValueFast(array_size); i++) {
+            values.push_back(makeNothingInstanceObject(rt));
+        }
+        return makeArrayInstanceObject(values, rt);
     }
+    else {
+        std::vector<Object *> values;
+        for (int64_t i = 0; i < args.size(); i++) {
+            values.push_back(args[i]);
+        }
 
-    while (values.size() < getIntegerValueFast(array_size)) {
-        values.push_back(makeNothingInstanceObject(rt));
+        return makeArrayInstanceObject(values, rt);
     }
-
-    return makeArrayInstanceObject(values, rt);
 }
 
 void installBuiltinFunctions(Runtime *rt) {

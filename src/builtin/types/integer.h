@@ -50,6 +50,7 @@ public:
 
 Object *makeIntegerInstanceObject(int64_t value, Runtime *rt);
 
-int64_t &getIntegerValue(Object *obj, Runtime *r);
+int64_t &getIntegerValue(Object *obj, Runtime *rt);
+int64_t &getIntegerValue(Object *obj, Runtime *rt, const TextArea &ta);
 #define getIntegerValueFast(obj) (icast(obj->instance, IntegerInstance)->value)
 }    // namespace Cotton::Builtin

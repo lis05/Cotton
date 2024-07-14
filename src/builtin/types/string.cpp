@@ -39,7 +39,7 @@ Instance *StringInstance::copy(Runtime *rt) {
     Instance *res = new (rt->alloc(sizeof(StringInstance))) StringInstance(rt);
 
     if (res == NULL) {
-        rt->signalError("Failed to copy " + this->userRepr());
+        rt->signalError("Failed to copy " + this->userRepr(), rt->getContext().area);
     }
     ((StringInstance *)res)->data = this->data;
     return res;
@@ -71,22 +71,13 @@ static Object *
 StringIndexAdapter(Object *self, const std::vector<Object *> &args, Runtime *rt, bool execution_result_matters) {
     ProfilerCAPTURE();
 
-    if (!isInstanceObject(self)) {
-        rt->signalError(self->userRepr() + " does not support that operator");
-    }
-    if (args.size() != 1) {
-        rt->signalError("Expected exactly one right-side argument");
-        return NULL;
-    }
+    rt->verifyIsInstanceObject(self, rt->string_type, rt->getContext().sub_areas[0]);
+    rt->verifyExactArgsAmountFunc(args, 1);
     auto &arg = args[0];
-    if (!isTypeObject(arg)) {
-        rt->signalError("Right-side object is invalid: " + arg->userRepr());
-    }
-    if (arg->instance == NULL || arg->type->id != rt->integer_type->id) {
-        rt->signalError("Index " + arg->userRepr() + " must be an integer instance object");
-    }
+    rt->verifyIsInstanceObject(arg, rt->integer_type, rt->getContext().sub_areas[1]);
     if (!(0 <= getIntegerValueFast(arg) && getIntegerValueFast(arg) < getStringDataFast(self).size())) {
-        rt->signalError("Index " + arg->userRepr() + " is out of string " + self->userRepr() + " range");
+        rt->signalError("Index " + arg->userRepr() + " is out of string " + self->userRepr() + " range",
+                        rt->getContext().sub_areas[1]);
     }
     if (!execution_result_matters) {
         return NULL;
@@ -97,16 +88,8 @@ StringIndexAdapter(Object *self, const std::vector<Object *> &args, Runtime *rt,
 static Object *StringAddAdapter(Object *self, Object *arg, Runtime *rt, bool execution_result_matters) {
     ProfilerCAPTURE();
 
-    if (!isInstanceObject(self)) {
-        rt->signalError(self->userRepr() + " does not support that operator");
-    }
-
-    if (!isTypeObject(arg)) {
-        rt->signalError("Right-side object is invalid: " + arg->userRepr());
-    }
-    if (arg->instance == NULL || arg->type->id != rt->string_type->id) {
-        rt->signalError("Right-side object " + arg->userRepr() + " must be a String instance object");
-    }
+    rt->verifyIsInstanceObject(self, rt->string_type, rt->getContext().sub_areas[0]);
+    rt->verifyIsInstanceObject(arg, rt->string_type, rt->getContext().sub_areas[1]);
 
     if (!execution_result_matters) {
         return NULL;
@@ -120,33 +103,27 @@ static Object *StringAddAdapter(Object *self, Object *arg, Runtime *rt, bool exe
 
 static Object *StringEqAdapter(Object *self, Object *arg, Runtime *rt, bool execution_result_matters) {
     ProfilerCAPTURE();
+    rt->verifyIsOfType(self, rt->string_type, rt->getContext().sub_areas[0]);
+    rt->verifyIsValidObject(arg, rt->getContext().sub_areas[1]);
 
-    if (!isTypeObject(arg)) {
-        rt->signalError("Right-side object is invalid: " + arg->userRepr());
-    }
-
-    if (!execution_result_matters) {
-        return NULL;
-    }
-
-    bool i1 = isInstanceObject(self);
-    bool i2 = arg->instance != NULL;
-
-    if (i1 && i2) {
-        if (self->type->id != arg->type->id) {
-            return rt->protected_false;
-        }
-        if (getStringDataFast(self).size() != getStringDataFast(arg).size()) {
-            return rt->protected_false;
-        }
-        return (getStringDataFast(self) == getStringDataFast(arg)) ? rt->protected_true : rt->protected_false;
-    }
-    else if (!i1 && !i2) {
-        return (self->type->id == arg->type->id) ? rt->protected_true : rt->protected_false;
-    }
-    else {
+    if (!rt->isOfType(arg, rt->string_type)) {
         return rt->protected_false;
     }
+
+    if (rt->isInstanceObject(self, rt->integer_type)) {
+        if (!rt->isInstanceObject(arg, rt->integer_type)) {
+            return rt->protected_false;
+        }
+        return rt->protectedBoolean(getStringDataFast(self) == getStringDataFast(arg));
+    }
+    else if (rt->isTypeObject(self, rt->integer_type)) {
+        if (!rt->isTypeObject(arg, rt->integer_type)) {
+            return rt->protected_false;
+        }
+        return rt->protected_true;
+    }
+
+    return rt->protected_false;
 }
 
 static Object *StringNeqAdapter(Object *self, Object *arg, Runtime *rt, bool execution_result_matters) {
@@ -157,16 +134,9 @@ static Object *StringNeqAdapter(Object *self, Object *arg, Runtime *rt, bool exe
 
 static Object *stringSizeMethod(const std::vector<Object *> &args, Runtime *rt, bool execution_result_matters) {
     ProfilerCAPTURE();
-    if (args.size() < 1) {
-        rt->signalError("Expected a caller object");
-    }
+    rt->verifyExactArgsAmountMethod(args, 0);
     auto self = args[0];
-    if (!isTypeObject(self)) {
-        rt->signalError("Caller is invalid: " + self->userRepr());
-    }
-    if (self->instance == NULL || self->type->id != rt->string_type->id) {
-        rt->signalError("Caller must be a String instance object: " + self->userRepr());
-    }
+    rt->verifyIsInstanceObject(self, rt->string_type, rt->getContext().sub_areas[0]);
 
     if (!execution_result_matters) {
         return NULL;
@@ -177,27 +147,19 @@ static Object *stringSizeMethod(const std::vector<Object *> &args, Runtime *rt, 
 
 static Object *stringSetMethod(const std::vector<Object *> &args, Runtime *rt, bool execution_result_matters) {
     ProfilerCAPTURE();
-    if (args.size() < 3) {
-        rt->signalError("Expected two arguments");
-    }
+    rt->verifyExactArgsAmountMethod(args, 2);
     auto self  = args[0];
     auto index = args[1];
     auto value = args[2];
 
-    if (!isInstanceObjectOfType(self, rt->string_type)) {
-        rt->signalError("Caller must be a String instance object: " + self->userRepr());
-    }
-    if (!isInstanceObjectOfType(index, rt->integer_type)) {
-        rt->signalError("Index must be an Integer instance object: " + index->userRepr());
-    }
-    if (!isInstanceObjectOfType(value, rt->character_type)) {
-        rt->signalError("Value must be a Character instance object: " + value->userRepr());
-    }
+    rt->verifyIsInstanceObject(self, rt->string_type, rt->getContext().sub_areas[0]);
+    rt->verifyIsInstanceObject(index, rt->integer_type, rt->getContext().sub_areas[1]);
+    rt->verifyIsInstanceObject(value, rt->character_type, rt->getContext().sub_areas[2]);
 
     int64_t ind  = getIntegerValueFast(index);
     auto   &data = getStringDataFast(self);
     if (!(0 <= ind && ind < data.size())) {
-        rt->signalError("Index is out of range: " + index->userRepr());
+        rt->signalError("Index is out of range: " + index->userRepr(), rt->getContext().sub_areas[1]);
     }
     data[ind] = getCharacterValueFast(value);
     return rt->protected_nothing;
@@ -208,9 +170,9 @@ StringType::StringType(Runtime *rt)
     : Type(rt) {
     ProfilerCAPTURE();
     this->index_op = StringIndexAdapter;
-    this->add_op = StringAddAdapter;
-    this->eq_op  = StringEqAdapter;
-    this->neq_op = StringNeqAdapter;
+    this->add_op   = StringAddAdapter;
+    this->eq_op    = StringEqAdapter;
+    this->neq_op   = StringNeqAdapter;
 
     this->addMethod(NameId("size").id, makeFunctionInstanceObject(true, stringSizeMethod, NULL, rt));
     this->addMethod(NameId("set").id, makeFunctionInstanceObject(true, stringSetMethod, NULL, rt));
@@ -225,9 +187,7 @@ Object *StringType::create(Runtime *rt) {
 
 Object *StringType::copy(Object *obj, Runtime *rt) {
     ProfilerCAPTURE();
-    if (!isTypeObject(obj) || obj->type->id != rt->string_type->id) {
-        rt->signalError("Failed to copy an invalid object: " + obj->userRepr());
-    }
+    rt->verifyIsOfType(obj, rt->string_type);
     if (obj->instance == NULL) {
         return newObject(false, NULL, this, rt);
     }
@@ -246,18 +206,19 @@ std::string StringType::userRepr() {
 
 std::string &getStringData(Object *obj, Runtime *rt) {
     ProfilerCAPTURE();
-    if (!isInstanceObject(obj)) {
-        rt->signalError(obj->userRepr() + " is not an instance object");
-    }
-    if (obj->type->id != rt->string_type->id) {
-        rt->signalError(obj->userRepr() + " is not String");
-    }
+    rt->verifyIsInstanceObject(obj, rt->string_type);
+    return icast(obj->instance, StringInstance)->data;
+}
+
+std::string &getStringData(Object *obj, Runtime *rt, const TextArea &ta) {
+    ProfilerCAPTURE();
+    rt->verifyIsInstanceObject(obj, rt->string_type, ta);
     return icast(obj->instance, StringInstance)->data;
 }
 
 Object *makeStringInstanceObject(const std::string &value, Runtime *rt) {
     ProfilerCAPTURE();
-    auto res = rt->make(rt->string_type, Runtime::INSTANCE_OBJECT);
+    auto res               = rt->make(rt->string_type, Runtime::INSTANCE_OBJECT);
     getStringDataFast(res) = value;
     return res;
 }

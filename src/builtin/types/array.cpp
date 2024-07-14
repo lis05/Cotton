@@ -39,7 +39,7 @@ Instance *ArrayInstance::copy(Runtime *rt) {
     Instance *res = new (rt->alloc(sizeof(ArrayInstance))) ArrayInstance(rt);
 
     if (res == NULL) {
-        rt->signalError("Failed to copy " + this->userRepr());
+        rt->signalError("Failed to copy " + this->userRepr(), rt->getContext().area);
     }
     for (auto obj : this->data) {
         ((ArrayInstance *)res)->data.push_back(rt->copy(obj));
@@ -94,60 +94,60 @@ static Object *
 ArrayIndexAdapter(Object *self, const std::vector<Object *> &args, Runtime *rt, bool execution_result_matters) {
     ProfilerCAPTURE();
 
-    if (!isInstanceObject(self)) {
-        rt->signalError(self->userRepr() + " does not support that operator");
-    }
-    if (args.size() != 1) {
-        rt->signalError("Expected exactly one right-side argument");
-        return NULL;
-    }
+    rt->verifyIsInstanceObject(self, rt->array_type, rt->getContext().sub_areas[0]);
+    rt->verifyExactArgsAmountFunc(args, 1);
     auto &arg = args[0];
-    if (!isTypeObject(arg)) {
-        rt->signalError("Right-side object is invalid: " + arg->userRepr());
-    }
-    if (arg->instance == NULL || arg->type->id != rt->integer_type->id) {
-        rt->signalError("Index " + arg->userRepr() + " must be an integer instance object");
-    }
+    rt->verifyIsInstanceObject(arg, rt->integer_type, rt->getContext().sub_areas[1]);
+
     if (!(0 <= getIntegerValueFast(arg) && getIntegerValueFast(arg) < getArrayDataFast(self).size())) {
-        rt->signalError("Index " + arg->userRepr() + " is out of string " + self->userRepr() + " range");
+        rt->signalError("Index " + arg->userRepr() + " is out of array " + self->userRepr() + " range",
+                        rt->getContext().sub_areas[1]);
     }
     return getArrayDataFast(self)[getIntegerValueFast(arg)];
 }
 
 static Object *ArrayEqAdapter(Object *self, Object *arg, Runtime *rt, bool execution_result_matters) {
     ProfilerCAPTURE();
-
-    if (!isTypeObject(arg)) {
-        rt->signalError("Right-side object is invalid: " + arg->userRepr());
-    }
+    rt->verifyIsOfType(self, rt->array_type, rt->getContext().sub_areas[0]);
+    rt->verifyIsValidObject(arg, rt->getContext().sub_areas[1]);
 
     if (!execution_result_matters) {
-        return NULL;
+        return rt->protected_false;
     }
 
-    bool i1 = isInstanceObject(self);
-    bool i2 = arg->instance != NULL;
+    if (!rt->isOfType(arg, rt->string_type)) {
+        return rt->protected_false;
+    }
 
-    if (i1 && i2) {
-        if (self->type->id != arg->type->id) {
+    if (rt->isInstanceObject(self, rt->integer_type)) {
+        if (!rt->isInstanceObject(arg, rt->integer_type)) {
             return rt->protected_false;
         }
-        if (getArrayDataFast(self).size() != getArrayDataFast(arg).size()) {
+        auto a1 = getArrayDataFast(self);
+        auto a2 = getArrayDataFast(self);
+        if (a1.size() != a2.size()) {
             return rt->protected_false;
         }
-        for (int i = 0; i < getArrayDataFast(self).size(); i++) {
-            if (!rt->runOperator(OperatorNode::EQUAL, getArrayDataFast(self)[i], getArrayDataFast(arg)[i], true)) {
+        for (int64_t i = 0; i < a1.size(); i++) {
+            auto &ta = rt->getContext().area;
+            rt->newContext();
+            rt->getContext().area      = ta;
+            rt->getContext().sub_areas = {ta, ta};
+            auto res                   = rt->runOperator(OperatorNode::EQUAL, a1[i], a2[i], true);
+            if (!getIntegerValueFast(res)) {
                 return rt->protected_false;
             }
         }
         return rt->protected_true;
     }
-    else if (!i1 && !i2) {
-        return (self->type->id == arg->type->id) ? rt->protected_true : rt->protected_false;
+    else if (rt->isTypeObject(self, rt->integer_type)) {
+        if (!rt->isTypeObject(arg, rt->integer_type)) {
+            return rt->protected_false;
+        }
+        return rt->protected_true;
     }
-    else {
-        return rt->protected_false;
-    }
+
+    return rt->protected_false;
 }
 
 static Object *ArrayNeqAdapter(Object *self, Object *arg, Runtime *rt, bool execution_result_matters) {
@@ -158,16 +158,9 @@ static Object *ArrayNeqAdapter(Object *self, Object *arg, Runtime *rt, bool exec
 
 static Object *arraySizeMethod(const std::vector<Object *> &args, Runtime *rt, bool execution_result_matters) {
     ProfilerCAPTURE();
-    if (args.size() != 1) {
-        rt->signalError("Expected a caller object");
-    }
+    rt->verifyExactArgsAmountMethod(args, 0);
     auto self = args[0];
-    if (!isTypeObject(self)) {
-        rt->signalError("Caller is invalid: " + self->userRepr());
-    }
-    if (self->instance == NULL || self->type->id != rt->array_type->id) {
-        rt->signalError("Caller must be an Array instance object: " + self->userRepr());
-    }
+    rt->verifyIsInstanceObject(self, rt->array_type, rt->getContext().sub_areas[0]);
 
     if (!execution_result_matters) {
         return NULL;
@@ -178,20 +171,17 @@ static Object *arraySizeMethod(const std::vector<Object *> &args, Runtime *rt, b
 
 static Object *arrayResizeMethod(const std::vector<Object *> &args, Runtime *rt, bool execution_result_matters) {
     ProfilerCAPTURE();
-    if (args.size() != 2) {
-        rt->signalError("Expected an argument");
-    }
+    rt->verifyExactArgsAmountMethod(args, 1);
     auto self     = args[0];
-    auto new_size = args[0];
-    if (!isInstanceObjectOfType(self, rt->array_type)) {
-        rt->signalError("Caller must be an Array instance object: " + self->userRepr());
-    }
-    if (!isInstanceObjectOfType(new_size, rt->integer_type)) {
-        rt->signalError("New size must be an Integer instance object: " + new_size->userRepr());
-    }
+    auto new_size = args[1];
+    rt->verifyIsInstanceObject(self, rt->array_type, rt->getContext().sub_areas[0]);
+    rt->verifyIsInstanceObject(new_size, rt->integer_type, rt->getContext().sub_areas[1]);
 
     int64_t oldn = getArrayDataFast(self).size();
     int64_t newn = getIntegerValueFast(new_size);
+    if (newn <= 0) {
+        rt->signalError("New array size must be positive: " + new_size->userRepr(), rt->getContext().sub_areas[1]);
+    }
     getArrayDataFast(self).resize(newn);
 
     for (int64_t i = oldn; i < newn; i++) {
@@ -222,9 +212,7 @@ Object *ArrayType::create(Runtime *rt) {
 
 Object *ArrayType::copy(Object *obj, Runtime *rt) {
     ProfilerCAPTURE();
-    if (!isTypeObject(obj) || obj->type->id != rt->array_type->id) {
-        rt->signalError("Failed to copy an invalid object: " + obj->userRepr());
-    }
+    rt->verifyIsOfType(obj, rt->array_type);
     if (obj->instance == NULL) {
         return newObject(false, NULL, this, rt);
     }
@@ -243,18 +231,19 @@ std::string ArrayType::userRepr() {
 
 std::vector<Object *> &getArrayData(Object *obj, Runtime *rt) {
     ProfilerCAPTURE();
-    if (!isInstanceObject(obj)) {
-        rt->signalError(obj->userRepr() + " is not an instance object");
-    }
-    if (obj->type->id != rt->array_type->id) {
-        rt->signalError(obj->userRepr() + " is not Array");
-    }
+    rt->verifyIsInstanceObject(obj, rt->array_type);
     return icast(obj->instance, ArrayInstance)->data;
 }
 
-Object *makeArrayInstanceObject(const std::vector<Object*> &data, Runtime *rt) {
+std::vector<Object *> &getArrayData(Object *obj, Runtime *rt, const TextArea &ta) {
     ProfilerCAPTURE();
-    auto res = rt->make(rt->array_type, Runtime::INSTANCE_OBJECT);
+    rt->verifyIsInstanceObject(obj, rt->array_type, ta);
+    return icast(obj->instance, ArrayInstance)->data;
+}
+
+Object *makeArrayInstanceObject(const std::vector<Object *> &data, Runtime *rt) {
+    ProfilerCAPTURE();
+    auto res              = rt->make(rt->array_type, Runtime::INSTANCE_OBJECT);
     getArrayDataFast(res) = data;
     return res;
 }

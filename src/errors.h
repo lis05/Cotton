@@ -26,8 +26,11 @@
 #include <string>
 
 namespace Cotton {
+
+class TextArea;
+
 class ErrorManager {
-private:
+public:
     // when an error occurs, this is called. it is expected to NOT return.
     void (*emergency_error_exit)();
 
@@ -47,21 +50,19 @@ public:
     void setErrorMessage(const std::string &message);
     void clearError();
 
-    
     void signalError(bool eee = true);
-    
+
     void signalError(const std::string &message, bool eee = true);
-    
+
     void signalError(const std::string &message, int64_t char_pos, bool eee = true);
 
-    
     void signalError(const std::string &message, const Token &token, bool eee = true);
 
-    
     void signalError(const std::vector<std::pair<Token *, std::string>> errors, bool eee = true);
 
-    
     void signalErrorWithContext(const std::vector<std::pair<std::string, Token *>> messages, bool eee = true);
+
+    void signalError(const std::string &message, const TextArea &ta, bool eee = true);
 
     friend void __assert__(bool               value,
                            const char        *assertion,

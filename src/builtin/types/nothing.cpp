@@ -40,7 +40,7 @@ Instance *NothingInstance::copy(Runtime *rt) {
     Instance *res = new (rt->alloc(sizeof(NothingInstance))) NothingInstance(rt);
 
     if (res == NULL) {
-        rt->signalError("Failed to copy " + this->userRepr());
+        rt->signalError("Failed to copy " + this->userRepr(), rt->getContext().area);
     }
     return res;
 }
@@ -69,22 +69,14 @@ void NothingInstance::destroy(Runtime *rt) {
 
 static Object *NothingEqAdapter(Object *self, Object *arg, Runtime *rt, bool execution_result_matters) {
     ProfilerCAPTURE();
-    if (!isTypeObject(arg)) {
-        rt->signalError("Right-side object is invalid: " + arg->userRepr());
-    }
+    rt->verifyIsOfType(self, rt->nothing_type, rt->getContext().sub_areas[0]);
+    rt->verifyIsValidObject(arg, rt->getContext().sub_areas[1]);
 
-    bool i1 = isInstanceObject(self);
-    bool i2 = arg->instance != NULL;
-
-    if (i1 && i2) {
-        return (arg->type->id == self->type->id) ? rt->protected_true : rt->protected_false;
-    }
-    else if (!i1 && !i2) {
-        return (arg->type->id == self->type->id) ? rt->protected_true : rt->protected_false;
-    }
-    else {
+    if (!rt->isOfType(arg, rt->nothing_type)) {
         return rt->protected_false;
     }
+
+    return rt->protected_true;
 }
 
 static Object *NothingNeqAdapter(Object *self, Object *arg, Runtime *rt, bool execution_result_matters) {
@@ -118,9 +110,7 @@ std::string NothingType::userRepr() {
 
 Object *NothingType::copy(Object *obj, Runtime *rt) {
     ProfilerCAPTURE();
-    if (!isTypeObject(obj) || obj->type->id != rt->nothing_type->id) {
-        rt->signalError("Failed to copy an invalid object: " + obj->userRepr());
-    }
+    rt->verifyIsOfType(obj, rt->nothing_type);
     if (obj->instance == NULL) {
         return newObject(false, NULL, this, rt);
     }

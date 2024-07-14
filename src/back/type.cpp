@@ -66,13 +66,10 @@ Object *Type::getMethod(int64_t id, Runtime *rt) {
     ProfilerCAPTURE();
     auto it = this->methods.find(id);
     if (it != this->methods.end()) {
-        if (!isInstanceObject(it->second)) {
-            rt->signalError("Method " + NameId::userRepr(id) + " from " + this->userRepr()
-                            + " is not an instance object");
-        }
+        rt->verifyIsValidObject(it->second);
         return it->second;
     }
-    rt->signalError(this->userRepr() + " doesn't have method " + NameId::userRepr(id));
+    rt->signalError(this->userRepr() + " doesn't have method " + NameId::userRepr(id), rt->getContext().area);
 }
 
 bool Type::hasMethod(int64_t id) {

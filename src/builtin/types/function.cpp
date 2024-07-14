@@ -46,7 +46,7 @@ Instance *FunctionInstance::copy(Runtime *rt) {
     ProfilerCAPTURE();
     auto res = new FunctionInstance(rt);
     if (res == NULL) {
-        rt->signalError("Failed to copy " + this->userRepr());
+        rt->signalError("Failed to copy " + this->userRepr(), rt->getContext().area);
     }
     res->init(this->is_internal, this->internal_ptr, this->cotton_ptr);
     return res;
@@ -77,24 +77,23 @@ size_t FunctionType::getInstanceSize() {
 static Object *
 FunctionCallAdapter(Object *self, const std::vector<Object *> &args, Runtime *rt, bool execution_result_matters) {
     ProfilerCAPTURE();
-
-    if (!isInstanceObject(self)) {
-        rt->signalError(self->userRepr() + " does not support that operator");
-    }
+    rt->verifyIsInstanceObject(self, rt->function_type, rt->getContext().sub_areas[0]);
     auto f = icast(self->instance, FunctionInstance);
     if (f->is_internal) {
         if (f->internal_ptr == NULL) {
-            rt->signalError("Failed to execute NULL internal function " + self->userRepr());
+            rt->signalError("Failed to execute NULL internal function: " + self->userRepr(),
+                            rt->getContext().area);
         }
         auto res = f->internal_ptr(args, rt, execution_result_matters);
         if (execution_result_matters && res == NULL) {
-            rt->signalError("Execution of internal function " + self->userRepr() + " has failed");
+            rt->signalError("Execution of internal function " + self->userRepr() + " has failed",
+                            rt->getContext().area);
         }
         return res;
     }
     else {
         if (f->cotton_ptr == NULL || f->cotton_ptr->body == NULL) {
-            rt->signalError("Failed to execute NULL function " + self->userRepr());
+            rt->signalError("Failed to execute NULL function " + self->userRepr(), rt->getContext().area);
         }
         rt->newFrame(false);
         rt->scope->arguments.push_back(self);
@@ -114,7 +113,8 @@ FunctionCallAdapter(Object *self, const std::vector<Object *> &args, Runtime *rt
         auto res = rt->execute(f->cotton_ptr->body, execution_result_matters);
         rt->popFrame();
         if (execution_result_matters && res == NULL) {
-            rt->signalError("Execution of function " + self->userRepr() + " has failed");
+            rt->signalError("Execution of function " + self->userRepr() + " has failed",
+                            rt->getContext().sub_areas[0]);
         }
         return res;
     }
@@ -122,32 +122,35 @@ FunctionCallAdapter(Object *self, const std::vector<Object *> &args, Runtime *rt
 
 static Object *FunctionEqAdapter(Object *self, Object *arg, Runtime *rt, bool execution_result_matters) {
     ProfilerCAPTURE();
+    rt->verifyIsOfType(self, rt->function_type, rt->getContext().sub_areas[0]);
+    rt->verifyIsValidObject(arg, rt->getContext().sub_areas[1]);
 
-    if (!isTypeObject(arg)) {
-        rt->signalError("Right-side object is invalid: " + arg->userRepr());
+    if (!rt->isOfType(arg, rt->function_type)) {
+        return rt->protected_false;
     }
 
-    bool i1 = isInstanceObject(self);
-    bool i2 = arg->instance != NULL;
-
-    if (i1 && i2) {
-        if (self->type->id == arg->type->id) {
-            auto f1 = icast(self->instance, FunctionInstance);
-            auto f2 = icast(arg->instance, FunctionInstance);
-            if (f1->is_internal == f2->is_internal && f1->internal_ptr == f2->internal_ptr
-                && f1->cotton_ptr == f2->cotton_ptr)
-            {
-                return rt->protected_true;
-            }
+    if (rt->isInstanceObject(self, rt->function_type)) {
+        if (!rt->isInstanceObject(arg, rt->function_type)) {
+            return rt->protected_false;
+        }
+        auto f1 = icast(self, FunctionInstance);
+        auto f2 = icast(arg, FunctionInstance);
+        if (f1->is_internal && f2->is_internal) {
+            return rt->protectedBoolean(f1->internal_ptr == f2->internal_ptr);
+        }
+        else if (!f1->is_internal && !f2->is_internal) {
+            return rt->protectedBoolean(f1->cotton_ptr == f2->cotton_ptr);
         }
         return rt->protected_false;
     }
-    else if (!i1 && !i2) {
-        return (self->type->id == arg->type->id) ? rt->protected_true : rt->protected_false;
+    else if (rt->isTypeObject(self, rt->function_type)) {
+        if (!rt->isTypeObject(arg, rt->function_type)) {
+            return rt->protected_false;
+        }
+        return rt->protected_true;
     }
-    else {
-        return rt->protected_false;
-    }
+
+    return rt->protected_false;
 }
 
 static Object *FunctionNeqAdapter(Object *self, Object *arg, Runtime *rt, bool execution_result_matters) {
@@ -174,9 +177,7 @@ Object *FunctionType::create(Runtime *rt) {
 
 Object *FunctionType::copy(Object *obj, Runtime *rt) {
     ProfilerCAPTURE();
-    if (!isTypeObject(obj) || obj->type->id != rt->function_type->id) {
-        rt->signalError("Failed to copy an invalid object: " + obj->userRepr());
-    }
+    rt->verifyIsOfType(obj, rt->function_type);
     if (obj->instance == NULL) {
         return newObject(false, NULL, this, rt);
     }
