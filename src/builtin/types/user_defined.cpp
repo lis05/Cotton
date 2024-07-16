@@ -111,7 +111,7 @@ std::string UserDefinedType::userRepr() {
     if (this == NULL) {
         return "NULL";
     }
-    return NameId::userRepr(this->nameid) + "Type";
+    return NameId::userRepr(this->nameid);
 }
 
 // TODO: == and !=

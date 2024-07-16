@@ -60,6 +60,6 @@ public:
 };
 
 std::ostream &operator<<(std::ostream &stream, Object *obj);
-// namespace MagicMethods
+
 
 };    // namespace Cotton

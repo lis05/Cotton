@@ -409,12 +409,6 @@ Object *Runtime::runOperator(OperatorNode::OperatorId     id,
 
 Object *
 Runtime::runMethod(int64_t id, Object *obj, const std::vector<Object *> &args, bool execution_result_matters) {
-    ProfilerCAPTURE();
-    if (!isInstanceObject(obj)) {
-        this->signalError("Failed to run method " + NameId::userRepr(id) + " on " + obj->userRepr(),
-                          this->getContext().area);
-    }
-
     auto method = obj->type->getMethod(id, this);
     return this->runOperator(OperatorNode::CALL, method, args, execution_result_matters);
 }
@@ -433,6 +427,19 @@ Runtime::ErrorContext &Runtime::getContext() {
 
 void Runtime::signalError(const std::string &message, const TextArea &ta) {
     ProfilerCAPTURE();
+    TextArea prev;
+    for (auto c : this->error_contexts) {
+        if (c.area.first_char < c.area.last_char) {
+            if (c.area.first_char == prev.first_char && c.area.last_char == prev.last_char) {
+                continue;
+            }
+            if (c.area.first_char == ta.first_char && c.area.last_char == ta.last_char) {
+                continue;
+            }
+            this->error_manager->signalError("Error occurred here", c.area, false);
+            prev = c.area;
+        }
+    }
     this->error_manager->signalError(message, ta);
 }
 
@@ -1419,10 +1426,9 @@ void Runtime::verifyIsOfType(Object *obj, Type *type, const TextArea &ta) {
 
 void Runtime::verifyMinArgsAmountFunc(const std::vector<Object *> &args, int64_t amount) {
     if (args.size() < amount) {
-        this->signalError(
-        "Expected at least " + std::to_string(amount) + " arguments, got " + std::to_string(args.size()),
-        (args.empty()) ? this->getContext().area
-                       : TextArea(this->getContext().sub_areas.front(), this->getContext().sub_areas.back()));
+        this->signalError("Expected at least " + std::to_string(amount) + " arguments, got "
+                          + std::to_string(args.size()),
+                          this->getContext().area);
     }
 }
 
@@ -1436,10 +1442,9 @@ void Runtime::verifyMinArgsAmountFunc(const std::vector<Object *> &args, int64_t
 
 void Runtime::verifyExactArgsAmountFunc(const std::vector<Object *> &args, int64_t amount) {
     if (args.size() != amount) {
-        this->signalError(
-        "Expected exactly " + std::to_string(amount) + " arguments, got " + std::to_string(args.size()),
-        (args.empty()) ? this->getContext().area
-                       : TextArea(this->getContext().sub_areas.front(), this->getContext().sub_areas.back()));
+        this->signalError("Expected exactly " + std::to_string(amount) + " arguments, got "
+                          + std::to_string(args.size()),
+                          this->getContext().area);
     }
 }
 
@@ -1484,4 +1489,68 @@ void Runtime::verifyExactArgsAmountMethod(const std::vector<Object *> &args, int
                           ta);
     }
 }
+
+void Runtime::verifyHasMethod(Object *obj, int64_t id) {
+    this->verifyIsInstanceObject(obj, NULL);
+    if (!obj->type->hasMethod(id)) {
+        this->signalError(obj->userRepr() + " doesn't have method " + NameId::userRepr(id),
+                          this->getContext().area);
+    }
+}
+
+void Runtime::verifyHasMethod(Object *obj, int64_t id, const TextArea &ta) {
+    this->verifyIsValidObject(obj, ta);
+    if (!obj->type->hasMethod(id)) {
+        this->signalError(obj->userRepr() + " doesn't have method " + NameId::userRepr(id), ta);
+    }
+}
+
+namespace MagicMethods {
+
+    int64_t mm__make__() {
+        static NameId res("__make__");
+        return res.id;
+    }
+
+    int64_t mm__copy__() {
+        static NameId res("__copy__");
+        return res.id;
+    }
+
+    int64_t mm__bool__() {
+        static NameId res("__bool__");
+        return res.id;
+    }
+
+    int64_t mm__char__() {
+        static NameId res("__char__");
+        return res.id;
+    }
+
+    int64_t mm__int__() {
+        static NameId res("__int__");
+        return res.id;
+    }
+
+    int64_t mm__real__() {
+        static NameId res("__real__");
+        return res.id;
+    }
+
+    int64_t mm__string__() {
+        static NameId res("__string__");
+        return res.id;
+    }
+
+    int64_t mm__repr__() {
+        static NameId res("__repr__");
+        return res.id;
+    }
+
+    int64_t mm__read__() {
+        static NameId res("__read__");
+        return res.id;
+    }
+}    // namespace MagicMethods
+
 }    // namespace Cotton

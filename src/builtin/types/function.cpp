@@ -104,7 +104,8 @@ FunctionCallAdapter(Object *self, const std::vector<Object *> &args, Runtime *rt
             int i = 0;
             for (auto token : f->cotton_ptr->params->list) {
                 if (i >= args.size()) {
-                    break;
+                    rt->scope->addVariable(token->nameid, makeNothingInstanceObject(rt), rt);
+                    continue;
                 }
                 rt->scope->addVariable(token->nameid, args[i], rt);
                 i++;

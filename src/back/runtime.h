@@ -181,7 +181,22 @@ public:
     void verifyMinArgsAmountMethod(const std::vector<Object*> &args, int64_t amount, const TextArea &ta);
     void verifyExactArgsAmountMethod(const std::vector<Object*> &args, int64_t amount);
     void verifyExactArgsAmountMethod(const std::vector<Object*> &args, int64_t amount, const TextArea &ta);
+
+    void verifyHasMethod(Object *obj, int64_t id);
+    void verifyHasMethod(Object *obj, int64_t id, const TextArea &ta);
 };
+
+namespace MagicMethods {
+    int64_t mm__make__();
+    int64_t mm__copy__();
+    int64_t mm__bool__();
+    int64_t mm__char__();
+    int64_t mm__int__();
+    int64_t mm__real__();
+    int64_t mm__string__();
+    int64_t mm__repr__();
+    int64_t mm__read__();
+}
 
 #define newObject(is_instance, instance, type, rt)                                                                \
     new (rt->object_allocator->allocate(sizeof(Object))) Object(is_instance, instance, type, rt)
