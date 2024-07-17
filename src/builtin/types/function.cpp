@@ -96,7 +96,7 @@ FunctionCallAdapter(Object *self, const std::vector<Object *> &args, Runtime *rt
             rt->signalError("Failed to execute NULL function " + self->userRepr(), rt->getContext().area);
         }
         rt->newFrame(false);
-        rt->scope->arguments.push_back(self);
+        // rt->scope->arguments.push_back(self); // is it needed?
         for (auto arg : args) {
             rt->scope->arguments.push_back(arg);
         }
@@ -160,7 +160,6 @@ static Object *FunctionNeqAdapter(Object *self, Object *arg, Runtime *rt, bool e
     return (!getBooleanValueFast(res)) ? rt->protected_true : rt->protected_false;
 }
 
-// TODO: add all operators to function and nothing
 FunctionType::FunctionType(Runtime *rt)
     : Type(rt) {
     ProfilerCAPTURE();

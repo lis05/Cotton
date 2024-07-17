@@ -68,8 +68,9 @@ size_t BooleanType::getInstanceSize() {
 
 static Object *BooleanNotAdapter(Object *self, Runtime *rt, bool execution_result_matters) {
     ProfilerCAPTURE();
+    rt->verifyIsInstanceObject(self, rt->boolean_type, rt->getContext().sub_areas[0]);
 
-    return (getBooleanValue(self, rt)) ? rt->protected_true : rt->protected_false;
+    return (!getBooleanValueFast(self)) ? rt->protected_true : rt->protected_false;
 }
 
 static Object *BooleanEqAdapter(Object *self, Object *arg, Runtime *rt, bool execution_result_matters) {
@@ -119,7 +120,157 @@ static Object *BooleanOrAdapter(Object *self, Object *arg, Runtime *rt, bool exe
     return rt->protectedBoolean(getBooleanValueFast(self) || getBooleanValueFast(arg));
 }
 
-// TODO: add all operators to function and nothing
+static Object *mm__make__(const std::vector<Object *> &args, Runtime *rt, bool execution_result_matters) {
+    ProfilerCAPTURE();
+    rt->verifyExactArgsAmountMethod(args, 0);
+    auto self = args[0];
+    rt->verifyIsOfType(self, rt->boolean_type, rt->getContext().sub_areas[0]);
+
+    if (rt->isTypeObject(self, NULL)) {
+        return self;
+    }
+
+    getBooleanValueFast(self) = false;
+
+    return self;
+}
+
+static Object *mm__copy__(const std::vector<Object *> &args, Runtime *rt, bool execution_result_matters) {
+    ProfilerCAPTURE();
+    rt->verifyExactArgsAmountMethod(args, 0);
+    auto self = args[0];
+    rt->verifyIsOfType(self, rt->boolean_type, rt->getContext().sub_areas[0]);
+
+    if (!execution_result_matters) {
+        return self;
+    }
+
+    if (rt->isTypeObject(self, NULL)) {
+        return self;
+    }
+
+    auto res = makeBooleanInstanceObject(getBooleanValueFast(self), rt);
+    return res;
+}
+
+static Object *mm__bool__(const std::vector<Object *> &args, Runtime *rt, bool execution_result_matters) {
+    ProfilerCAPTURE();
+    rt->verifyExactArgsAmountMethod(args, 0);
+    auto self = args[0];
+    rt->verifyIsOfType(self, rt->boolean_type, rt->getContext().sub_areas[0]);
+
+    if (!execution_result_matters) {
+        return self;
+    }
+
+    if (rt->isTypeObject(self, NULL)) {
+        return rt->protected_false;
+    }
+
+    return self;
+}
+
+static Object *mm__char__(const std::vector<Object *> &args, Runtime *rt, bool execution_result_matters) {
+    ProfilerCAPTURE();
+    rt->verifyExactArgsAmountMethod(args, 0);
+    auto self = args[0];
+    rt->verifyIsOfType(self, rt->boolean_type, rt->getContext().sub_areas[0]);
+
+    if (!execution_result_matters) {
+        return self;
+    }
+
+    if (rt->isTypeObject(self, NULL)) {
+        return makeCharacterInstanceObject(0, rt);
+    }
+
+    return makeCharacterInstanceObject('0' + getBooleanValueFast(self), rt);
+}
+
+static Object *mm__int__(const std::vector<Object *> &args, Runtime *rt, bool execution_result_matters) {
+    ProfilerCAPTURE();
+    rt->verifyExactArgsAmountMethod(args, 0);
+    auto self = args[0];
+    rt->verifyIsOfType(self, rt->boolean_type, rt->getContext().sub_areas[0]);
+
+    if (!execution_result_matters) {
+        return self;
+    }
+
+    if (rt->isTypeObject(self, NULL)) {
+        return makeIntegerInstanceObject(0, rt);
+    }
+
+    return makeIntegerInstanceObject(getBooleanValueFast(self), rt);
+}
+
+static Object *mm__real__(const std::vector<Object *> &args, Runtime *rt, bool execution_result_matters) {
+    ProfilerCAPTURE();
+    rt->verifyExactArgsAmountMethod(args, 0);
+    auto self = args[0];
+    rt->verifyIsOfType(self, rt->boolean_type, rt->getContext().sub_areas[0]);
+
+    if (!execution_result_matters) {
+        return self;
+    }
+
+    if (rt->isTypeObject(self, NULL)) {
+        return makeRealInstanceObject(0, rt);
+    }
+
+    return makeRealInstanceObject(getBooleanValueFast(self), rt);
+}
+
+static Object *mm__string__(const std::vector<Object *> &args, Runtime *rt, bool execution_result_matters) {
+    ProfilerCAPTURE();
+    rt->verifyExactArgsAmountMethod(args, 0);
+    auto self = args[0];
+    rt->verifyIsOfType(self, rt->boolean_type, rt->getContext().sub_areas[0]);
+
+    if (!execution_result_matters) {
+        return self;
+    }
+
+    if (rt->isTypeObject(self, NULL)) {
+        return makeStringInstanceObject("Boolean", rt);
+    }
+
+    return makeStringInstanceObject(getBooleanValueFast(self) ? "true" : "false", rt);
+}
+
+static Object *mm__repr__(const std::vector<Object *> &args, Runtime *rt, bool execution_result_matters) {
+    ProfilerCAPTURE();
+    rt->verifyExactArgsAmountMethod(args, 0);
+    auto self = args[0];
+    rt->verifyIsOfType(self, rt->boolean_type, rt->getContext().sub_areas[0]);
+
+    if (!execution_result_matters) {
+        return self;
+    }
+
+    if (rt->isTypeObject(self, NULL)) {
+        return makeStringInstanceObject("Boolean", rt);
+    }
+
+    return makeStringInstanceObject(getBooleanValueFast(self) ? "true" : "false", rt);
+}
+
+static Object *mm__read__(const std::vector<Object *> &args, Runtime *rt, bool execution_result_matters) {
+    ProfilerCAPTURE();
+    rt->verifyExactArgsAmountMethod(args, 0);
+    auto self = args[0];
+    rt->verifyIsOfType(self, rt->boolean_type, rt->getContext().sub_areas[0]);
+
+    char c;
+    std::cin >> c;
+
+    if (!execution_result_matters) {
+        return self;
+    }
+
+    return makeCharacterInstanceObject(c, rt);
+}
+
 BooleanType::BooleanType(Runtime *rt)
     : Type(rt) {
     ProfilerCAPTURE();
@@ -129,6 +280,17 @@ BooleanType::BooleanType(Runtime *rt)
     this->neq_op = BooleanNeqAdapter;
     this->and_op = BooleanAndAdapter;
     this->or_op  = BooleanOrAdapter;
+
+    this->addMethod(MagicMethods::mm__make__(), Builtin::makeFunctionInstanceObject(true, mm__make__, NULL, rt));
+    this->addMethod(MagicMethods::mm__copy__(), Builtin::makeFunctionInstanceObject(true, mm__copy__, NULL, rt));
+    this->addMethod(MagicMethods::mm__bool__(), Builtin::makeFunctionInstanceObject(true, mm__bool__, NULL, rt));
+    this->addMethod(MagicMethods::mm__char__(), Builtin::makeFunctionInstanceObject(true, mm__char__, NULL, rt));
+    this->addMethod(MagicMethods::mm__int__(), Builtin::makeFunctionInstanceObject(true, mm__int__, NULL, rt));
+    this->addMethod(MagicMethods::mm__real__(), Builtin::makeFunctionInstanceObject(true, mm__real__, NULL, rt));
+    this->addMethod(MagicMethods::mm__string__(),
+                    Builtin::makeFunctionInstanceObject(true, mm__string__, NULL, rt));
+    this->addMethod(MagicMethods::mm__repr__(), Builtin::makeFunctionInstanceObject(true, mm__repr__, NULL, rt));
+    this->addMethod(MagicMethods::mm__read__(), Builtin::makeFunctionInstanceObject(true, mm__read__, NULL, rt));
 }
 
 Object *BooleanType::create(Runtime *rt) {

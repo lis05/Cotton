@@ -56,7 +56,7 @@ static std::string charToString(char c) {
     case '\"' : return "\\\"";
     case '\'' : return "\\\'";
     }
-    return std::to_string(c);
+    return std::string() + c;
 }
 
 std::string CharacterInstance::userRepr() {
@@ -64,7 +64,7 @@ std::string CharacterInstance::userRepr() {
     if (this == NULL) {
         return "Character(NULL)";
     }
-    return std::string("Character(value = '") + charToString((char)this->value) + "')";
+    return std::string("Character(value = '") + charToString(this->value) + "')";
 }
 
 void CharacterInstance::destroy(Runtime *rt) {
@@ -261,7 +261,6 @@ static Object *CharacterNeqAdapter(Object *self, Object *arg, Runtime *rt, bool 
     return (!getBooleanValueFast(res)) ? rt->protected_true : rt->protected_false;
 }
 
-// TODO: add all operators to function and nothing
 CharacterType::CharacterType(Runtime *rt)
     : Type(rt) {
     ProfilerCAPTURE();

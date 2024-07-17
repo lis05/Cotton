@@ -52,7 +52,7 @@ std::string ArrayInstance::userRepr() {
     if (this == NULL) {
         return "Array(NULL)";
     }
-    return "ArrayInstance(size = " + std::to_string(this->data.size()) + ", data = ...)";
+    return "Array(size = " + std::to_string(this->data.size()) + ", data = ...)";
 }
 
 void ArrayInstance::destroy(Runtime *rt) {
@@ -191,7 +191,6 @@ static Object *arrayResizeMethod(const std::vector<Object *> &args, Runtime *rt,
     return rt->protected_nothing;
 }
 
-// TODO: add all operators to function and nothing
 ArrayType::ArrayType(Runtime *rt)
     : Type(rt) {
     ProfilerCAPTURE();

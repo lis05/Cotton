@@ -215,62 +215,46 @@ static Object *CF_exit(const std::vector<Object *> &args, Runtime *rt, bool exec
     ProfilerCAPTURE();
     rt->verifyExactArgsAmountFunc(args, 1);
     auto arg = args[0];
-
     rt->verifyIsInstanceObject(arg, rt->integer_type, rt->getContext().sub_areas[1]);
+
     exit(getIntegerValueFast(arg));
 }
 
 // fork() - does fork()
-static Object *CF_fork(const std::vector<Object *> &args, Runtime *rt, bool execution_result_matters) {}
+static Object *CF_fork(const std::vector<Object *> &args, Runtime *rt, bool execution_result_matters) {
+    ProfilerCAPTURE();
+    rt->verifyExactArgsAmountFunc(args, 0);
+
+    fork();
+}
 
 // system(str) - does system(str)
-static Object *CF_system(const std::vector<Object *> &args, Runtime *rt, bool execution_result_matters) {}
-
-// error(msg) - signals an error with the given message
-static Object *CF_error(const std::vector<Object *> &args, Runtime *rt, bool execution_result_matters) {}
-
-// cotton(str) - executes cotton code given in the string
-static Object *CF_cotton(const std::vector<Object *> &args, Runtime *rt, bool execution_result_matters) {}
-
-// argc() - returns the number of arguments passed to the current function
-static Object *CF_argc(const std::vector<Object *> &args, Runtime *rt, bool execution_result_matters) {}
-
-// argv() - returns an array made of arguments passed to the current functions
-static Object *CF_argv(const std::vector<Object *> &args, Runtime *rt, bool execution_result_matters) {}
-
-// argg(index) - returns a function arguments at position index
-static Object *CF_argg(const std::vector<Object *> &args, Runtime *rt, bool execution_result_matters) {}
-
-// typeof(obj) - returns a type object with type of obj
-static Object *CF_typeof(const std::vector<Object *> &args, Runtime *rt, bool execution_result_matters) {}
-
-// isinsobj(obj, type) - tells whether obj is an instance object of the given type (or any type if nothing is
-// given)
-static Object *CF_isinsobj(const std::vector<Object *> &args, Runtime *rt, bool execution_result_matters) {}
-
-// istypeobj(obj, type) - tells whether obj is a type object of the given type (or any type if nothing is
-// given)
-static Object *CF_istypeobj(const std::vector<Object *> &args, Runtime *rt, bool execution_result_matters) {}
-
-// repr(obj) - gives a string representation of obj
-static Object *CF_repr(const std::vector<Object *> &args, Runtime *rt, bool execution_result_matters) {}
-
-// hasfield(obj, str) - tells whether obj has field given in str
-static Object *CF_hasfield(const std::vector<Object *> &args, Runtime *rt, bool execution_result_matters) {}
-
-// hasmethod(obj, str) - tells whether obj has method given in str
-static Object *CF_hasmethod(const std::vector<Object *> &args, Runtime *rt, bool execution_result_matters) {}
-
-static Object *CFexit(const std::vector<Object *> &args, Runtime *rt, bool execution_result_matters) {
+static Object *CF_system(const std::vector<Object *> &args, Runtime *rt, bool execution_result_matters) {
     ProfilerCAPTURE();
     rt->verifyExactArgsAmountFunc(args, 1);
     auto arg = args[0];
-    rt->verifyIsInstanceObject(arg, rt->integer_type, rt->getContext().sub_areas[1]);
+    rt->verifyIsInstanceObject(arg, rt->string_type, rt->getContext().sub_areas[1]);
 
-    ::exit(getIntegerValue(arg, rt));
+    auto ret = system(getStringDataFast(arg).c_str());
+    if (!execution_result_matters) {
+        return rt->protected_nothing;
+    }
+
+    return Builtin::makeIntegerInstanceObject(ret, rt);
 }
 
-static Object *CFcotton(const std::vector<Object *> &args, Runtime *rt, bool execution_result_matters) {
+// error(msg) - signals an error with the given message
+static Object *CF_error(const std::vector<Object *> &args, Runtime *rt, bool execution_result_matters) {
+    ProfilerCAPTURE();
+    rt->verifyExactArgsAmountFunc(args, 1);
+    auto arg = args[0];
+    rt->verifyIsInstanceObject(arg, rt->string_type, rt->getContext().sub_areas[1]);
+
+    rt->signalError(getStringDataFast(arg), rt->getContext().area);
+}
+
+// cotton(str) - executes cotton code given in the string
+static Object *CF_cotton(const std::vector<Object *> &args, Runtime *rt, bool execution_result_matters) {
     ProfilerCAPTURE();
     rt->verifyExactArgsAmountFunc(args, 1);
     auto arg = args[0];
@@ -281,42 +265,20 @@ static Object *CFcotton(const std::vector<Object *> &args, Runtime *rt, bool exe
 
     std::vector<Token> tokens = lexer.process(str);
     for (auto &token : tokens) {
-        token.nameid = NameId(&token).id;
+        token.nameid     = NameId(&token).id;
+        // yeah this is awful but it works so shut up
+        token.begin_pos += rt->getContext().sub_areas[1].first_char + 1;
+        token.end_pos   += rt->getContext().sub_areas[1].first_char + 1;
     }
 
     Parser    parser(rt->error_manager);
     StmtNode *program = parser.parse(tokens);
 
-    return rt->execute(program, true);
+    return rt->execute(program, execution_result_matters);
 }
 
-static Object *CFsystem(const std::vector<Object *> &args, Runtime *rt, bool execution_result_matters) {
-    ProfilerCAPTURE();
-    rt->verifyExactArgsAmountFunc(args, 1);
-    auto arg = args[0];
-    rt->verifyIsInstanceObject(arg, rt->string_type, rt->getContext().sub_areas[1]);
-
-    std::string &str = getStringDataFast(arg);
-    auto         ret = ::system(str.c_str());
-    if (!execution_result_matters) {
-        return NULL;
-    }
-    return Builtin::makeIntegerInstanceObject(ret, rt);
-}
-
-static Object *CFfork(const std::vector<Object *> &args, Runtime *rt, bool execution_result_matters) {
-    ProfilerCAPTURE();
-    rt->verifyExactArgsAmountFunc(args, 0);
-
-    auto ret = ::fork();
-
-    if (!execution_result_matters) {
-        return NULL;
-    }
-    return Builtin::makeIntegerInstanceObject(ret, rt);
-}
-
-static Object *CFargc(const std::vector<Object *> &args, Runtime *rt, bool execution_result_matters) {
+// argc() - returns the number of arguments passed to the current function
+static Object *CF_argc(const std::vector<Object *> &args, Runtime *rt, bool execution_result_matters) {
     ProfilerCAPTURE();
     rt->verifyExactArgsAmountFunc(args, 0);
 
@@ -334,7 +296,27 @@ static Object *CFargc(const std::vector<Object *> &args, Runtime *rt, bool execu
     return Builtin::makeIntegerInstanceObject(s->arguments.size(), rt);
 }
 
-static Object *CFargg(const std::vector<Object *> &args, Runtime *rt, bool execution_result_matters) {
+// argv() - returns an array made of arguments passed to the current functions
+static Object *CF_argv(const std::vector<Object *> &args, Runtime *rt, bool execution_result_matters) {
+    ProfilerCAPTURE();
+    rt->verifyExactArgsAmountFunc(args, 0);
+
+    if (!execution_result_matters) {
+        return NULL;
+    }
+
+    auto s = rt->scope->prev;
+    while (s != NULL && s->can_access_prev) {
+        s = s->prev;
+    }
+    if (s == NULL) {
+        return Builtin::makeArrayInstanceObject({}, rt);
+    }
+    return Builtin::makeArrayInstanceObject(s->arguments, rt);
+}
+
+// argg(index) - returns a function arguments at position index
+static Object *CF_argg(const std::vector<Object *> &args, Runtime *rt, bool execution_result_matters) {
     ProfilerCAPTURE();
     rt->verifyExactArgsAmountFunc(args, 1);
     auto arg = args[0];
@@ -361,35 +343,123 @@ static Object *CFargg(const std::vector<Object *> &args, Runtime *rt, bool execu
     }
 }
 
-static Object *CFarray(const std::vector<Object *> &args, Runtime *rt, bool execution_result_matters) {
+// typeof(obj) - returns a type object with type of obj
+static Object *CF_typeof(const std::vector<Object *> &args, Runtime *rt, bool execution_result_matters) {
     ProfilerCAPTURE();
+    rt->verifyExactArgsAmountFunc(args, 1);
+    auto arg = args[0];
+    rt->verifyIsValidObject(arg, rt->getContext().sub_areas[1]);
+
+    return rt->getTypeObject(arg->type);
+}
+
+// isinsobj(obj, type) - tells whether obj is an instance object of the given type (or any type if nothing is
+// given)
+static Object *CF_isinsobj(const std::vector<Object *> &args, Runtime *rt, bool execution_result_matters) {
+    ProfilerCAPTURE();
+    rt->verifyMinArgsAmountFunc(args, 1);
+    auto arg = args[0];
+    rt->verifyIsValidObject(arg, rt->getContext().sub_areas[1]);
+
+    if (args.size() == 2) {
+        auto type = args[1];
+        rt->verifyIsTypeObject(type, NULL, rt->getContext().sub_areas[2]);
+
+        if (!execution_result_matters) {
+            return rt->protected_nothing;
+        }
+
+        return rt->protectedBoolean(rt->isInstanceObject(arg, type->type));
+    }
+
+    return rt->protectedBoolean(rt->isInstanceObject(arg, NULL));
+}
+
+// istypeobj(obj, type) - tells whether obj is a type object of the given type (or any type if nothing is
+// given)
+static Object *CF_istypeobj(const std::vector<Object *> &args, Runtime *rt, bool execution_result_matters) {
+    ProfilerCAPTURE();
+    rt->verifyMinArgsAmountFunc(args, 1);
+    auto arg = args[0];
+    rt->verifyIsValidObject(arg, rt->getContext().sub_areas[1]);
+
+    if (args.size() == 2) {
+        auto type = args[1];
+        rt->verifyIsTypeObject(type, NULL, rt->getContext().sub_areas[2]);
+
+        if (!execution_result_matters) {
+            return rt->protected_nothing;
+        }
+
+        return rt->protectedBoolean(rt->isInstanceObject(arg, type->type));
+    }
+
+    return rt->protectedBoolean(rt->isInstanceObject(arg, NULL));
+}
+
+// repr(obj) - gives a string representation of obj
+static Object *CF_repr(const std::vector<Object *> &args, Runtime *rt, bool execution_result_matters) {
+    ProfilerCAPTURE();
+    rt->verifyExactArgsAmountFunc(args, 1);
+    auto arg = args[0];
+    rt->verifyIsValidObject(arg, rt->getContext().sub_areas[1]);
+
+    rt->verifyHasMethod(arg, MagicMethods::mm__repr__(), rt->getContext().sub_areas[1]);
+    return rt->runMethod(MagicMethods::mm__repr__(), arg, {arg}, execution_result_matters);
+}
+
+// hasfield(obj, str) - tells whether obj has field given in str
+static Object *CF_hasfield(const std::vector<Object *> &args, Runtime *rt, bool execution_result_matters) {
+    ProfilerCAPTURE();
+    rt->verifyExactArgsAmountFunc(args, 2);
+    auto obj = args[0];
+    auto str = args[1];
+    rt->verifyIsInstanceObject(obj, NULL, rt->getContext().sub_areas[1]);
+    rt->verifyIsInstanceObject(str, rt->string_type, rt->getContext().sub_areas[2]);
+
     if (!execution_result_matters) {
-        return NULL;
+        return rt->protected_nothing;
     }
-    if (args.size() == 0) {
-        return makeArrayInstanceObject({}, rt);
+    return rt->protectedBoolean(obj->instance->hasField(NameId(getStringDataFast(str)).id, rt));
+}
+
+// hasmethod(obj, str) - tells whether obj has method given in str
+static Object *CF_hasmethod(const std::vector<Object *> &args, Runtime *rt, bool execution_result_matters) {
+    ProfilerCAPTURE();
+    rt->verifyExactArgsAmountFunc(args, 2);
+    auto obj = args[0];
+    auto str = args[1];
+    rt->verifyIsValidObject(obj, rt->getContext().sub_areas[1]);
+    rt->verifyIsInstanceObject(str, rt->string_type, rt->getContext().sub_areas[2]);
+
+    if (!execution_result_matters) {
+        return rt->protected_nothing;
+    }
+    return rt->protectedBoolean(obj->type->hasMethod(NameId(getStringDataFast(str)).id));
+}
+
+// assert(val, str) - raises an error given in str(or "assertion error" is str is absent) if value is not true
+static Object *CF_assert(const std::vector<Object *> &args, Runtime *rt, bool execution_result_matters) {
+    ProfilerCAPTURE();
+    rt->verifyMinArgsAmountFunc(args, 1);
+    auto val = args[0];
+    rt->verifyIsInstanceObject(val, rt->boolean_type, rt->getContext().sub_areas[1]);
+
+    std::string message = "Assertion error";
+
+    if (args.size() == 2) {
+        auto str = args[1];
+        rt->verifyIsInstanceObject(str, rt->string_type, rt->getContext().sub_areas[2]);
+
+        message += ": " + getStringDataFast(str);
     }
 
-    else if (args.size() == 1) {
-        auto array_size = args[0];
-
-        rt->verifyIsInstanceObject(array_size, rt->integer_type, rt->getContext().sub_areas[1]);
-        if (getIntegerValueFast(array_size) < 0) {
-            rt->signalError("Size cant be negative", rt->getContext().sub_areas[1]);
-        }
-        std::vector<Object *> values;
-        for (int i = 0; i < getIntegerValueFast(array_size); i++) {
-            values.push_back(makeNothingInstanceObject(rt));
-        }
-        return makeArrayInstanceObject(values, rt);
+    if (!getBooleanValueFast(val)) {
+        rt->signalError(message, rt->getContext().area);
     }
-    else {
-        std::vector<Object *> values;
-        for (int64_t i = 0; i < args.size(); i++) {
-            values.push_back(args[i]);
-        }
 
-        return makeArrayInstanceObject(values, rt);
+    if (!execution_result_matters) {
+        return rt->protected_nothing;
     }
 }
 
@@ -423,5 +493,6 @@ void installBuiltinFunctions(Runtime *rt) {
     rt->scope->addVariable(NameId("repr").id, makeFunctionInstanceObject(true, CF_repr, NULL, rt), rt);
     rt->scope->addVariable(NameId("hasfield").id, makeFunctionInstanceObject(true, CF_hasfield, NULL, rt), rt);
     rt->scope->addVariable(NameId("hasmethod").id, makeFunctionInstanceObject(true, CF_hasmethod, NULL, rt), rt);
+    rt->scope->addVariable(NameId("assert").id, makeFunctionInstanceObject(true, CF_assert, NULL, rt), rt);
 }
 }    // namespace Cotton::Builtin

@@ -17,39 +17,70 @@ Runtime::Runtime(GCStrategy *gc_strategy, ErrorManager *error_manager) {
         a = NULL;
     }
 
-    this->scope         = new Scope(NULL, NULL, true);
+    this->scope         = new Scope(NULL, NULL, false);
     this->scope->master = this->scope;
     this->gc            = new GC(gc_strategy);
     this->gc->rt        = this;
     this->error_manager = error_manager;
     this->newContext();
 
+    this->function_type  = new Builtin::FunctionType(this);
     this->nothing_type   = new Builtin::NothingType(this);
     this->boolean_type   = new Builtin::BooleanType(this);
-    this->function_type  = new Builtin::FunctionType(this);
     this->integer_type   = new Builtin::IntegerType(this);
     this->real_type      = new Builtin::RealType(this);
     this->character_type = new Builtin::CharacterType(this);
     this->string_type    = new Builtin::StringType(this);
     this->array_type     = new Builtin::ArrayType(this);
 
+    assert(this->function_type->id == FUNCTION_TYPE_ID);
     assert(this->nothing_type->id == NOTHING_TYPE_ID);
     assert(this->boolean_type->id == BOOLEAN_TYPE_ID);
-    assert(this->function_type->id == FUNCTION_TYPE_ID);
     assert(this->integer_type->id == INTEGER_TYPE_ID);
     assert(this->real_type->id == REAL_TYPE_ID);
     assert(this->character_type->id == CHARACTER_TYPE_ID);
     assert(this->string_type->id == STRING_TYPE_ID);
     assert(this->array_type->id == ARRAY_TYPE_ID);
 
-    this->scope->addVariable(NameId("Nothing").id, this->make(this->nothing_type, Runtime::TYPE_OBJECT), this);
-    this->scope->addVariable(NameId("Function").id, this->make(this->function_type, Runtime::TYPE_OBJECT), this);
-    this->scope->addVariable(NameId("Boolean").id, this->make(this->boolean_type, Runtime::TYPE_OBJECT), this);
-    this->scope->addVariable(NameId("Integer").id, this->make(this->integer_type, Runtime::TYPE_OBJECT), this);
-    this->scope->addVariable(NameId("Real").id, this->make(this->real_type, Runtime::TYPE_OBJECT), this);
-    this->scope->addVariable(NameId("Character").id, this->make(this->character_type, Runtime::TYPE_OBJECT), this);
-    this->scope->addVariable(NameId("String").id, this->make(this->string_type, Runtime::TYPE_OBJECT), this);
-    this->scope->addVariable(NameId("Array").id, this->make(this->array_type, Runtime::TYPE_OBJECT), this);
+    auto nothing_obj        = this->make(this->nothing_type, Runtime::TYPE_OBJECT);
+    nothing_obj->can_modify = false;
+    this->scope->addVariable(NameId("Nothing").id, nothing_obj, this);
+    this->registerTypeObject(this->nothing_type, nothing_obj);
+
+    auto function_obj        = this->make(this->function_type, Runtime::TYPE_OBJECT);
+    function_obj->can_modify = false;
+    this->scope->addVariable(NameId("Function").id, function_obj, this);
+    this->registerTypeObject(this->function_type, function_obj);
+
+    auto boolean_obj        = this->make(this->boolean_type, Runtime::TYPE_OBJECT);
+    boolean_obj->can_modify = false;
+    this->scope->addVariable(NameId("Boolean").id, boolean_obj, this);
+    this->registerTypeObject(this->boolean_type, boolean_obj);
+
+    auto integer_obj        = this->make(this->integer_type, Runtime::TYPE_OBJECT);
+    integer_obj->can_modify = false;
+    this->scope->addVariable(NameId("Integer").id, integer_obj, this);
+    this->registerTypeObject(this->integer_type, integer_obj);
+
+    auto real_obj        = this->make(this->real_type, Runtime::TYPE_OBJECT);
+    real_obj->can_modify = false;
+    this->scope->addVariable(NameId("Real").id, real_obj, this);
+    this->registerTypeObject(this->real_type, real_obj);
+
+    auto character_obj        = this->make(this->character_type, Runtime::TYPE_OBJECT);
+    character_obj->can_modify = false;
+    this->scope->addVariable(NameId("Character").id, character_obj, this);
+    this->registerTypeObject(this->character_type, character_obj);
+
+    auto string_obj        = this->make(this->string_type, Runtime::TYPE_OBJECT);
+    string_obj->can_modify = false;
+    this->scope->addVariable(NameId("String").id, string_obj, this);
+    this->registerTypeObject(this->string_type, string_obj);
+
+    auto array_obj        = this->make(this->array_type, Runtime::TYPE_OBJECT);
+    array_obj->can_modify = false;
+    this->scope->addVariable(NameId("Array").id, array_obj, this);
+    this->registerTypeObject(this->array_type, array_obj);
 
     Builtin::installBuiltinFunctions(this);
 
@@ -66,6 +97,18 @@ Runtime::Runtime(GCStrategy *gc_strategy, ErrorManager *error_manager) {
     Builtin::getBooleanValue(this->protected_false, this) = false;
     this->protected_false->can_modify                     = false;
     this->gc->hold(this->protected_false);
+}
+
+void Runtime::registerTypeObject(Type *type, Object *obj) {
+    this->type_objects[type] = obj;
+}
+
+Object *Runtime::getTypeObject(Type *type) {
+    auto it = this->type_objects.find(type);
+    if (it != this->type_objects.end()) {
+        return it->second;
+    }
+    return this->protected_nothing;
 }
 
 PoolAllocator *Runtime::getAllocator(size_t size) {
@@ -153,10 +196,7 @@ Object *Runtime::copy(Object *obj) {
 
 Object *Runtime::runOperator(OperatorNode::OperatorId id, Object *obj, bool execution_result_matters) {
     ProfilerCAPTURE();
-    if (!isInstanceObject(obj)) {
-        this->signalError("Failed to run operator " + std::to_string(id) + " on " + obj->userRepr(),
-                          this->getContext().area);
-    }
+    this->verifyIsValidObject(obj, this->getContext().sub_areas[1]);
 
     UnaryOperatorAdapter op;
 
@@ -216,10 +256,8 @@ Object *Runtime::runOperator(OperatorNode::OperatorId id, Object *obj, bool exec
 Object *
 Runtime::runOperator(OperatorNode::OperatorId id, Object *obj, Object *arg, bool execution_result_matters) {
     ProfilerCAPTURE();
-    if (!isInstanceObject(obj)) {
-        this->signalError("Failed to run operator " + std::to_string(id) + " on " + obj->userRepr(),
-                          this->getContext().area);
-    }
+    this->verifyIsValidObject(obj, this->getContext().sub_areas[1]);
+    this->verifyIsValidObject(arg, this->getContext().sub_areas[2]);
 
     BinaryOperatorAdapter op;
 
@@ -378,10 +416,7 @@ Object *Runtime::runOperator(OperatorNode::OperatorId     id,
                              const std::vector<Object *> &args,
                              bool                         execution_result_matters) {
     ProfilerCAPTURE();
-    if (!isInstanceObject(obj)) {
-        this->signalError("Failed to run operator " + std::to_string(id) + " on " + obj->userRepr(),
-                          this->getContext().area);
-    }
+    this->verifyIsValidObject(obj, this->getContext().sub_areas[1]);
 
     if (id == OperatorNode::CALL) {
         auto op = obj->type->call_op;

@@ -57,24 +57,28 @@ public:
     ~Runtime() = default;
 
     enum BuiltinTypes {
-        NOTHING_TYPE_ID   = 1,
-        BOOLEAN_TYPE_ID   = 2,
-        FUNCTION_TYPE_ID  = 3,
+        FUNCTION_TYPE_ID  = 1,
+        NOTHING_TYPE_ID   = 2,
+        BOOLEAN_TYPE_ID   = 3,
         INTEGER_TYPE_ID   = 4,
         REAL_TYPE_ID      = 5,
         CHARACTER_TYPE_ID = 6,
         STRING_TYPE_ID    = 7,
         ARRAY_TYPE_ID     = 8
     };
+    Builtin::FunctionType  *function_type;
 
     Builtin::NothingType   *nothing_type;
     Builtin::BooleanType   *boolean_type;
-    Builtin::FunctionType  *function_type;
     Builtin::IntegerType   *integer_type;
     Builtin::RealType      *real_type;
     Builtin::CharacterType *character_type;
     Builtin::StringType    *string_type;
     Builtin::ArrayType     *array_type;
+
+    __gnu_pbds::cc_hash_table<Type *, Object *> type_objects;
+    void                                        registerTypeObject(Type *type, Object *obj);
+    Object                                     *getTypeObject(Type *type);
 
     PoolAllocator                                     *object_allocator;
     __gnu_pbds::cc_hash_table<size_t, PoolAllocator *> allocators;
@@ -172,15 +176,15 @@ public:
     void verifyIsOfType(Object *obj, Type *type);
     void verifyIsOfType(Object *obj, Type *type, const TextArea &ta);
 
-    void verifyMinArgsAmountFunc(const std::vector<Object*> &args, int64_t amount);
-    void verifyMinArgsAmountFunc(const std::vector<Object*> &args, int64_t amount, const TextArea &ta);
-    void verifyExactArgsAmountFunc(const std::vector<Object*> &args, int64_t amount);
-    void verifyExactArgsAmountFunc(const std::vector<Object*> &args, int64_t amount, const TextArea &ta);
+    void verifyMinArgsAmountFunc(const std::vector<Object *> &args, int64_t amount);
+    void verifyMinArgsAmountFunc(const std::vector<Object *> &args, int64_t amount, const TextArea &ta);
+    void verifyExactArgsAmountFunc(const std::vector<Object *> &args, int64_t amount);
+    void verifyExactArgsAmountFunc(const std::vector<Object *> &args, int64_t amount, const TextArea &ta);
 
-    void verifyMinArgsAmountMethod(const std::vector<Object*> &args, int64_t amount);
-    void verifyMinArgsAmountMethod(const std::vector<Object*> &args, int64_t amount, const TextArea &ta);
-    void verifyExactArgsAmountMethod(const std::vector<Object*> &args, int64_t amount);
-    void verifyExactArgsAmountMethod(const std::vector<Object*> &args, int64_t amount, const TextArea &ta);
+    void verifyMinArgsAmountMethod(const std::vector<Object *> &args, int64_t amount);
+    void verifyMinArgsAmountMethod(const std::vector<Object *> &args, int64_t amount, const TextArea &ta);
+    void verifyExactArgsAmountMethod(const std::vector<Object *> &args, int64_t amount);
+    void verifyExactArgsAmountMethod(const std::vector<Object *> &args, int64_t amount, const TextArea &ta);
 
     void verifyHasMethod(Object *obj, int64_t id);
     void verifyHasMethod(Object *obj, int64_t id, const TextArea &ta);
@@ -196,7 +200,7 @@ namespace MagicMethods {
     int64_t mm__string__();
     int64_t mm__repr__();
     int64_t mm__read__();
-}
+}    // namespace MagicMethods
 
 #define newObject(is_instance, instance, type, rt)                                                                \
     new (rt->object_allocator->allocate(sizeof(Object))) Object(is_instance, instance, type, rt)

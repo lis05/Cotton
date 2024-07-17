@@ -931,7 +931,6 @@ Parser::ParsingResult Parser::parseExpr() {
         }
 
         std::vector<Token *> list;
-        Token               *last_bracket;
         if (!this->consume(Token::CLOSE_BRACKET)) {
             while (this->hasNext()) {
                 Token *param = &*this->next_token;
@@ -948,8 +947,6 @@ Parser::ParsingResult Parser::parseExpr() {
                     return ParsingResult("Expected a comma", this);
                 }
             }
-
-            last_bracket = &*this->next_token;
 
             if (!this->consume(Token::CLOSE_BRACKET)) {
                 return ParsingResult("Expected a close bracket", this);
@@ -968,7 +965,7 @@ Parser::ParsingResult Parser::parseExpr() {
         ta              = (list.empty()) ? TextArea() : TextArea(ta, TextArea(*list.back()));
         auto param_list = new IdentListNode(list, ta);
 
-        ta            = TextArea(TextArea(*function_token), TextArea(*last_bracket));
+        ta            = TextArea(TextArea(*function_token), body.stmt->text_area);
         auto func_def = new FuncDefNode(name, param_list, body.stmt, ta);
         auto expr     = new ExprNode(func_def, ta);
         return ParsingResult(expr, this);

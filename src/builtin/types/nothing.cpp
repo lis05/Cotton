@@ -85,7 +85,6 @@ static Object *NothingNeqAdapter(Object *self, Object *arg, Runtime *rt, bool ex
     return (!getBooleanValueFast(res)) ? rt->protected_true : rt->protected_false;
 }
 
-// TODO: add all operators to function and nothing
 NothingType::NothingType(Runtime *rt)
     : Type(rt) {
     ProfilerCAPTURE();

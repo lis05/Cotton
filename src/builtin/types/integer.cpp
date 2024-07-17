@@ -354,7 +354,6 @@ static Object *IntegerBitorAdapter(Object *self, Object *arg, Runtime *rt, bool 
     return res;
 }
 
-// TODO: add all operators to function and nothing
 IntegerType::IntegerType(Runtime *rt)
     : Type(rt) {
     ProfilerCAPTURE();

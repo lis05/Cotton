@@ -165,7 +165,6 @@ static Object *stringSetMethod(const std::vector<Object *> &args, Runtime *rt, b
     return rt->protected_nothing;
 }
 
-// TODO: add all operators to function and nothing
 StringType::StringType(Runtime *rt)
     : Type(rt) {
     ProfilerCAPTURE();
