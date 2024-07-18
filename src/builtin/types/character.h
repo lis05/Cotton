@@ -50,6 +50,8 @@ public:
 
 Object *makeCharacterInstanceObject(uint8_t value, Runtime *rt);
 
+void installCharacterMethods(Type *type, Runtime *rt);
+
 uint8_t &getCharacterValue(Object *obj, Runtime *rt);
 uint8_t &getCharacterValue(Object *obj, Runtime *rt, const TextArea &ta);
 #define getCharacterValueFast(obj) (icast(obj->instance, CharacterInstance)->value)

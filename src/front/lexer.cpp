@@ -248,7 +248,7 @@ void Token::identify(ErrorManager *error_manager) {
         this->string_value = parseString(this->data, error_manager);
     }
     else if (this->data.size() > 0 && this->data.front() == '\'' && this->data.back() == '\'') {
-        this->id           = CHAR_LIT;
+        this->id         = CHAR_LIT;
         this->char_value = parseString(this->data, error_manager)[0];
     }
     else {
@@ -557,7 +557,9 @@ std::vector<Token> Lexer::faze3SplitByOperatorsAndSeparators(const std::vector<T
         while (it != token.data.end()) {
             bool f = false;
             for (auto &splitter : sortedSplitters) {
-                if (token.id != Token::STRING_LIT && token.id != Token::CHAR_LIT && token.data.substr(it - token.data.begin(), splitter.size()) == splitter) {
+                if (token.id != Token::STRING_LIT && token.id != Token::CHAR_LIT
+                    && token.data.substr(it - token.data.begin(), splitter.size()) == splitter)
+                {
                     f = true;
                     splitByOperator(token, split_end, it, res, splitter);
                     break;
@@ -582,38 +584,43 @@ std::vector<Token> Lexer::faze3SplitByOperatorsAndSeparators(const std::vector<T
 std::vector<Token> Lexer::faze4FindRealNumbers(const std::vector<Token> &tokens) {
     std::vector<Token> res;
     for (auto &token : tokens) {
-        if (token.data.find(".") != token.data.npos) {
-            try {
-                size_t ptr;
-                std::stod(token.data, &ptr);
-                if (ptr == token.data.size()) {
-                    res.push_back(token);
-                    continue;
+        if (!token.data.empty() && token.data[0] != '\"' && token.data[0] != '\'') {
+            if (token.data.find(".") != token.data.npos) {
+                try {
+                    size_t ptr;
+                    std::stod(token.data, &ptr);
+                    if (ptr == token.data.size()) {
+                        res.push_back(token);
+                        continue;
+                    }
+                } catch (...) {
                 }
-            } catch (...) {
-            }
 
-            // not real, splitting by dot operator
-            auto        it        = token.data.begin();
-            auto        split_end = it;
-            bool        f         = false;
-            std::string splitter  = ".";
-            while (it != token.data.end()) {
-                if (token.data.substr(it - token.data.begin(), splitter.size()) == splitter) {
-                    f = true;
-                    splitByOperator(token, split_end, it, res, splitter);
+                // not real, splitting by dot operator
+                auto        it        = token.data.begin();
+                auto        split_end = it;
+                bool        f         = false;
+                std::string splitter  = ".";
+                while (it != token.data.end()) {
+                    if (token.data.substr(it - token.data.begin(), splitter.size()) == splitter) {
+                        f = true;
+                        splitByOperator(token, split_end, it, res, splitter);
+                    }
+                    else {
+                        it++;
+                    }
                 }
-                else {
-                    it++;
+
+                if (it != split_end) {
+                    Token t(token.data.substr(split_end - token.data.begin(), it - split_end),
+                            split_end - token.data.begin() + token.begin_pos,
+                            it - token.data.begin() + token.begin_pos);
+                    res.push_back(t);
+                    split_end = it;
                 }
             }
-
-            if (it != split_end) {
-                Token t(token.data.substr(split_end - token.data.begin(), it - split_end),
-                        split_end - token.data.begin() + token.begin_pos,
-                        it - token.data.begin() + token.begin_pos);
-                res.push_back(t);
-                split_end = it;
+            else {
+                res.push_back(token);
             }
         }
         else {

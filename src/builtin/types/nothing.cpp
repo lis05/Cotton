@@ -85,6 +85,27 @@ static Object *NothingNeqAdapter(Object *self, Object *arg, Runtime *rt, bool ex
     return (!getBooleanValueFast(res)) ? rt->protected_true : rt->protected_false;
 }
 
+static Object *mm__repr__(const std::vector<Object *> &args, Runtime *rt, bool execution_result_matters) {
+    ProfilerCAPTURE();
+    rt->verifyExactArgsAmountMethod(args, 0);
+    auto self = args[0];
+    rt->verifyIsOfType(self, rt->nothing_type, rt->getContext().sub_areas[1]);
+
+    if (!execution_result_matters) {
+        return self;
+    }
+
+    if (rt->isTypeObject(self, NULL)) {
+        return makeStringInstanceObject("Nothing", rt);
+    }
+
+    return makeStringInstanceObject("nothing", rt);
+}
+
+void installNothingMethods(Type *type, Runtime *rt) {
+    type->addMethod(MagicMethods::mm__repr__(), Builtin::makeFunctionInstanceObject(true, mm__repr__, NULL, rt));
+}
+
 NothingType::NothingType(Runtime *rt)
     : Type(rt) {
     ProfilerCAPTURE();

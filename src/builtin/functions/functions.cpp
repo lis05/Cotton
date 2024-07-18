@@ -154,7 +154,6 @@ static Object *CF_print(const std::vector<Object *> &args, Runtime *rt, bool exe
         CF_printraw({arg}, rt, false);
         rt->popContext();
     }
-    std::cout << std::endl;
     return rt->protected_nothing;
 }
 

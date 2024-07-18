@@ -48,6 +48,8 @@ public:
     std::string userRepr();
 };
 
+void installRealMethods(Type *type, Runtime *rt);
+
 Object *makeRealInstanceObject(double value, Runtime *rt);
 
 double &getRealValue(Object *obj, Runtime *rt);

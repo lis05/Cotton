@@ -48,6 +48,8 @@ public:
     std::string userRepr();
 };
 
+void installIntegerMethods(Type *type, Runtime *rt);
+
 Object *makeIntegerInstanceObject(int64_t value, Runtime *rt);
 
 int64_t &getIntegerValue(Object *obj, Runtime *rt);

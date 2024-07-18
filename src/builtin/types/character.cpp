@@ -261,6 +261,119 @@ static Object *CharacterNeqAdapter(Object *self, Object *arg, Runtime *rt, bool 
     return (!getBooleanValueFast(res)) ? rt->protected_true : rt->protected_false;
 }
 
+static Object *mm__bool__(const std::vector<Object *> &args, Runtime *rt, bool execution_result_matters) {
+    ProfilerCAPTURE();
+    rt->verifyExactArgsAmountMethod(args, 0);
+    auto self = args[0];
+    rt->verifyIsInstanceObject(self, rt->character_type, rt->getContext().sub_areas[1]);
+
+    if (!execution_result_matters) {
+        return self;
+    }
+
+    return makeBooleanInstanceObject(getCharacterValueFast(self) != '0', rt);
+}
+
+static Object *mm__char__(const std::vector<Object *> &args, Runtime *rt, bool execution_result_matters) {
+    ProfilerCAPTURE();
+    rt->verifyExactArgsAmountMethod(args, 0);
+    auto self = args[0];
+    rt->verifyIsInstanceObject(self, rt->character_type, rt->getContext().sub_areas[1]);
+
+    if (!execution_result_matters) {
+        return self;
+    }
+
+    return makeCharacterInstanceObject(getCharacterValueFast(self), rt);
+}
+
+static Object *mm__int__(const std::vector<Object *> &args, Runtime *rt, bool execution_result_matters) {
+    ProfilerCAPTURE();
+    rt->verifyExactArgsAmountMethod(args, 0);
+    auto self = args[0];
+    rt->verifyIsInstanceObject(self, rt->character_type, rt->getContext().sub_areas[1]);
+
+    if (!execution_result_matters) {
+        return self;
+    }
+
+    return makeIntegerInstanceObject(getCharacterValueFast(self), rt);
+}
+
+static Object *mm__real__(const std::vector<Object *> &args, Runtime *rt, bool execution_result_matters) {
+    ProfilerCAPTURE();
+    rt->verifyExactArgsAmountMethod(args, 0);
+    auto self = args[0];
+    rt->verifyIsInstanceObject(self, rt->character_type, rt->getContext().sub_areas[1]);
+
+    if (!execution_result_matters) {
+        return self;
+    }
+
+    return makeRealInstanceObject(getCharacterValueFast(self), rt);
+}
+
+static Object *mm__string__(const std::vector<Object *> &args, Runtime *rt, bool execution_result_matters) {
+    ProfilerCAPTURE();
+    rt->verifyExactArgsAmountMethod(args, 0);
+    auto self = args[0];
+    rt->verifyIsOfType(self, rt->character_type, rt->getContext().sub_areas[1]);
+
+    if (!execution_result_matters) {
+        return self;
+    }
+
+    if (rt->isTypeObject(self, NULL)) {
+        return makeStringInstanceObject("Character", rt);
+    }
+
+    return makeStringInstanceObject(std::string() + (char)getCharacterValueFast(self), rt);
+}
+
+static Object *mm__repr__(const std::vector<Object *> &args, Runtime *rt, bool execution_result_matters) {
+    ProfilerCAPTURE();
+    rt->verifyExactArgsAmountMethod(args, 0);
+    auto self = args[0];
+    rt->verifyIsOfType(self, rt->character_type, rt->getContext().sub_areas[1]);
+
+    if (!execution_result_matters) {
+        return self;
+    }
+
+    if (rt->isTypeObject(self, NULL)) {
+        return makeStringInstanceObject("Character", rt);
+    }
+
+    return makeStringInstanceObject(std::string() + (char)getCharacterValueFast(self), rt);
+}
+
+static Object *mm__read__(const std::vector<Object *> &args, Runtime *rt, bool execution_result_matters) {
+    ProfilerCAPTURE();
+    rt->verifyExactArgsAmountMethod(args, 0);
+    auto self = args[0];
+    rt->verifyIsOfType(self, rt->character_type, rt->getContext().sub_areas[1]);
+
+    char c;
+    std::cin >> c;
+
+    if (!execution_result_matters) {
+        return self;
+    }
+
+    return makeCharacterInstanceObject(c, rt);
+}
+
+void installCharacterMethods(Type *type, Runtime *rt) {
+    type->addMethod(MagicMethods::mm__bool__(), Builtin::makeFunctionInstanceObject(true, mm__bool__, NULL, rt));
+    type->addMethod(MagicMethods::mm__char__(), Builtin::makeFunctionInstanceObject(true, mm__char__, NULL, rt));
+    type->addMethod(MagicMethods::mm__int__(), Builtin::makeFunctionInstanceObject(true, mm__int__, NULL, rt));
+    type->addMethod(MagicMethods::mm__real__(), Builtin::makeFunctionInstanceObject(true, mm__real__, NULL, rt));
+    type->addMethod(MagicMethods::mm__string__(),
+                    Builtin::makeFunctionInstanceObject(true, mm__string__, NULL, rt));
+    type->addMethod(MagicMethods::mm__repr__(), Builtin::makeFunctionInstanceObject(true, mm__repr__, NULL, rt));
+    type->addMethod(MagicMethods::mm__read__(), Builtin::makeFunctionInstanceObject(true, mm__read__, NULL, rt));
+}
+
 CharacterType::CharacterType(Runtime *rt)
     : Type(rt) {
     ProfilerCAPTURE();

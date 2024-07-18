@@ -45,5 +45,7 @@ public:
     Object     *copy(Object *obj, Runtime *rt);
 };
 
+void installNothingMethods(Type *type, Runtime *rt);
+
 Object *makeNothingInstanceObject(Runtime *rt);
 }    // namespace Cotton::Builtin

@@ -51,6 +51,8 @@ public:
     std::string userRepr();
 };
 
+void installArrayMethods(Type *type, Runtime *rt);
+
 Object *makeArrayInstanceObject(const std::vector<Object*> &data, Runtime *rt);
 
 std::vector<Object *> &getArrayData(Object *obj, Runtime *rt);

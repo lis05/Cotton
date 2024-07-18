@@ -48,6 +48,8 @@ public:
     std::string userRepr();
 };
 
+void installStringMethods(Type *type, Runtime *rt);
+
 Object *makeStringInstanceObject(const std::string &str, Runtime *rt);
 
 std::string &getStringData(Object *obj, Runtime *rt);

@@ -53,6 +53,8 @@ public:
     std::string userRepr();
 };
 
+void installFunctionMethods(Type *type, Runtime *rt);
+
 Object *
 makeFunctionInstanceObject(bool is_internal, InternalFunction internal_ptr, FuncDefNode *cotton_ptr, Runtime *rt);
 }    // namespace Cotton::Builtin

@@ -48,6 +48,8 @@ public:
     std::string userRepr();
 };
 
+void installBooleanMethods(Type *type, Runtime *rt);
+
 Object *makeBooleanInstanceObject(bool value, Runtime *rt);
 
 bool &getBooleanValue(Object *obj, Runtime *rt);

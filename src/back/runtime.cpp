@@ -82,6 +82,15 @@ Runtime::Runtime(GCStrategy *gc_strategy, ErrorManager *error_manager) {
     this->scope->addVariable(NameId("Array").id, array_obj, this);
     this->registerTypeObject(this->array_type, array_obj);
 
+    Builtin::installBooleanMethods(this->boolean_type, this);
+    Builtin::installCharacterMethods(this->character_type, this);
+    Builtin::installFunctionMethods(this->function_type, this);
+    Builtin::installIntegerMethods(this->integer_type, this);
+    Builtin::installRealMethods(this->real_type, this);
+    Builtin::installNothingMethods(this->nothing_type, this);
+    Builtin::installStringMethods(this->string_type, this);
+    Builtin::installArrayMethods(this->array_type, this);
+
     Builtin::installBuiltinFunctions(this);
 
     this->protected_nothing             = this->make(this->nothing_type, Runtime::INSTANCE_OBJECT);
@@ -644,9 +653,8 @@ Object *Runtime::execute(OperatorNode *node, bool execution_result_matters) {
                 this->signalError("Selector is illegal", dot->second->text_area);
             }
             int64_t selector = dot->second->atom->ident->nameid;
-            if (!isInstanceObject(caller)) {
-                this->signalError(caller->userRepr() + " must be an instance object",
-                                  dot->first->op->first->text_area);
+            if (!this->isInstanceObject(caller, NULL)) {
+                this->signalError(caller->userRepr() + " must be an instance object", dot->first->text_area);
             }
             if (caller->instance->hasField(selector, this)) {
                 selected = caller->instance->selectField(selector, this);

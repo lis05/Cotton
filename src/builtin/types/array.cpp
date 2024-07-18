@@ -188,7 +188,47 @@ static Object *arrayResizeMethod(const std::vector<Object *> &args, Runtime *rt,
         getArrayDataFast(self)[i] = makeNothingInstanceObject(rt);
     }
 
-    return rt->protected_nothing;
+    return self;
+}
+
+static Object *mm__repr__(const std::vector<Object *> &args, Runtime *rt, bool execution_result_matters) {
+    ProfilerCAPTURE();
+    rt->verifyExactArgsAmountMethod(args, 0);
+    auto self = args[0];
+    rt->verifyIsOfType(self, rt->array_type, rt->getContext().sub_areas[1]);
+
+    if (!execution_result_matters) {
+        return self;
+    }
+
+    if (rt->isTypeObject(self, NULL)) {
+        return makeStringInstanceObject("Array", rt);
+    }
+
+    auto &arr = getArrayDataFast(self);
+    std::string res = "{";
+    if (arr.size() != 0) {
+        auto o = rt->runMethod(MagicMethods::mm__repr__(), arr[0], {arr[0]}, true);
+        rt->verifyIsInstanceObject(o, rt->string_type, rt->getContext().sub_areas[1]);
+        res += getStringDataFast(o);
+    }
+
+    for (int64_t i = 1; i < arr.size(); i++) {
+        auto o = rt->runMethod(MagicMethods::mm__repr__(), arr[i], {arr[i]}, true);
+        rt->verifyIsInstanceObject(o, rt->string_type, rt->getContext().sub_areas[1]);
+        res += ", " + getStringDataFast(o);
+    }
+
+    res += "}";
+
+    return makeStringInstanceObject(res, rt);
+}
+
+void installArrayMethods(Type *type, Runtime *rt) {
+    type->addMethod(MagicMethods::mm__repr__(), Builtin::makeFunctionInstanceObject(true, mm__repr__, NULL, rt));
+
+    type->addMethod(NameId("size").id, makeFunctionInstanceObject(true, arraySizeMethod, NULL, rt));
+    type->addMethod(NameId("resize").id, makeFunctionInstanceObject(true, arrayResizeMethod, NULL, rt));
 }
 
 ArrayType::ArrayType(Runtime *rt)
@@ -197,9 +237,6 @@ ArrayType::ArrayType(Runtime *rt)
     this->index_op = ArrayIndexAdapter;
     this->eq_op    = ArrayEqAdapter;
     this->neq_op   = ArrayNeqAdapter;
-
-    this->addMethod(NameId("size").id, makeFunctionInstanceObject(true, arraySizeMethod, NULL, rt));
-    this->addMethod(NameId("resize").id, makeFunctionInstanceObject(true, arrayResizeMethod, NULL, rt));
 }
 
 Object *ArrayType::create(Runtime *rt) {

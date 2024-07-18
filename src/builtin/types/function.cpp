@@ -160,6 +160,27 @@ static Object *FunctionNeqAdapter(Object *self, Object *arg, Runtime *rt, bool e
     return (!getBooleanValueFast(res)) ? rt->protected_true : rt->protected_false;
 }
 
+static Object *mm__repr__(const std::vector<Object *> &args, Runtime *rt, bool execution_result_matters) {
+    ProfilerCAPTURE();
+    rt->verifyExactArgsAmountMethod(args, 0);
+    auto self = args[0];
+    rt->verifyIsOfType(self, rt->function_type, rt->getContext().sub_areas[1]);
+
+    if (!execution_result_matters) {
+        return self;
+    }
+
+    if (rt->isTypeObject(self, NULL)) {
+        return makeStringInstanceObject("Function", rt);
+    }
+
+    return makeStringInstanceObject("function", rt);
+}
+
+void installFunctionMethods(Type *type, Runtime *rt) {
+    type->addMethod(MagicMethods::mm__repr__(), Builtin::makeFunctionInstanceObject(true, mm__repr__, NULL, rt));
+}
+
 FunctionType::FunctionType(Runtime *rt)
     : Type(rt) {
     ProfilerCAPTURE();
