@@ -572,6 +572,7 @@ static std::vector<Object *> getList(ExprNode *expr, Runtime *rt) {
                 res.push_back(rt->copy(r));
                 rt->popContext();
             }
+            rt->gc->hold(res.back());
             expr = expr->op->second;
         }
         else {
@@ -585,6 +586,7 @@ static std::vector<Object *> getList(ExprNode *expr, Runtime *rt) {
                 res.push_back(rt->copy(r));
                 rt->popContext();
             }
+            rt->gc->hold(res.back());
             break;
         }
     }
@@ -624,7 +626,8 @@ Object *Runtime::execute(OperatorNode *node, bool execution_result_matters) {
         }
     }
     else if (node->id == OperatorNode::COMMA) {
-        auto res  = this->execute(node->first, execution_result_matters);
+        auto res = this->execute(node->first, execution_result_matters);
+        this->gc->hold(res);
         auto expr = node->second;
         while (expr != NULL) {
             if (expr->id == ExprNode::OPERATOR && expr->op->id == OperatorNode::COMMA) {
@@ -637,13 +640,15 @@ Object *Runtime::execute(OperatorNode *node, bool execution_result_matters) {
             }
         }
         this->popContext();
+        this->gc->release(res);
         return res;
     }
     else if (node->id == OperatorNode::CALL || node->id == OperatorNode::INDEX) {
         if (node->id == OperatorNode::CALL && node->first->id == ExprNode::OPERATOR
             && node->first->op->id == OperatorNode::DOT)
         {
-            auto    caller   = this->execute(node->first->op->first, true);
+            auto caller = this->execute(node->first->op->first, true);
+            this->gc->hold(caller);
             Object *selected = NULL;
 
             auto dot = node->first->op;
@@ -684,10 +689,16 @@ Object *Runtime::execute(OperatorNode *node, bool execution_result_matters) {
 
             setExecFlagNONE(this);
             this->popContext();
+
+            for (auto &item : list) {
+                this->gc->release(item);
+            }
+            this->gc->release(caller);
             return res;
         }
         else {
-            Object               *self = this->execute(node->first, true);
+            Object *self = this->execute(node->first, true);
+            this->gc->hold(self);
             std::vector<Object *> args;
             auto                  list = getList(node->second, this);
             args.reserve(list.size());
@@ -705,11 +716,16 @@ Object *Runtime::execute(OperatorNode *node, bool execution_result_matters) {
 
             setExecFlagNONE(this);
             this->popContext();
+            for (auto &item : list) {
+                this->gc->release(item);
+            }
+            this->gc->release(self);
             return res;
         }
     }
 
-    Object *self  = this->execute(node->first, true);
+    Object *self = this->execute(node->first, true);
+    this->gc->hold(self);
     Object *other = NULL;
 
     switch (node->id) {
@@ -728,6 +744,7 @@ Object *Runtime::execute(OperatorNode *node, bool execution_result_matters) {
 
             setExecFlagNONE(this);
             this->popContext();
+            this->gc->release(self);
             return res;
         }
         else if (self->type->hasMethod(selector)) {
@@ -735,6 +752,7 @@ Object *Runtime::execute(OperatorNode *node, bool execution_result_matters) {
 
             setExecFlagNONE(this);
             this->popContext();
+            this->gc->release(self);
             return res;
         }
         else {
@@ -744,6 +762,7 @@ Object *Runtime::execute(OperatorNode *node, bool execution_result_matters) {
     case OperatorNode::AT : {
         setExecFlagDIRECT_PASS(this);
         this->popContext();
+        this->gc->release(self);
         return self;
     }
     case OperatorNode::ASSIGN : {
@@ -757,6 +776,7 @@ Object *Runtime::execute(OperatorNode *node, bool execution_result_matters) {
 
         setExecFlagNONE(this);
         this->popContext();
+        this->gc->release(self);
         return self;
     }
     case OperatorNode::PLUS_ASSIGN : {
@@ -767,6 +787,7 @@ Object *Runtime::execute(OperatorNode *node, bool execution_result_matters) {
 
         setExecFlagNONE(this);
         this->popContext();
+        this->gc->release(self);
         return self;
     }
     case OperatorNode::MINUS_ASSIGN : {
@@ -777,6 +798,7 @@ Object *Runtime::execute(OperatorNode *node, bool execution_result_matters) {
 
         setExecFlagNONE(this);
         this->popContext();
+        this->gc->release(self);
         return self;
     }
     case OperatorNode::MULT_ASSIGN : {
@@ -787,6 +809,7 @@ Object *Runtime::execute(OperatorNode *node, bool execution_result_matters) {
 
         setExecFlagNONE(this);
         this->popContext();
+        this->gc->release(self);
         return self;
     }
     case OperatorNode::DIV_ASSIGN : {
@@ -797,6 +820,7 @@ Object *Runtime::execute(OperatorNode *node, bool execution_result_matters) {
 
         setExecFlagNONE(this);
         this->popContext();
+        this->gc->release(self);
         return self;
     }
     case OperatorNode::REM_ASSIGN : {
@@ -807,6 +831,7 @@ Object *Runtime::execute(OperatorNode *node, bool execution_result_matters) {
 
         setExecFlagNONE(this);
         this->popContext();
+        this->gc->release(self);
         return self;
     }
     }
@@ -824,6 +849,7 @@ Object *Runtime::execute(OperatorNode *node, bool execution_result_matters) {
         auto res = this->runOperator(node->id, self, execution_result_matters);
         setExecFlagNONE(this);
         this->popContext();
+        this->gc->release(self);
         return res;
     }
 
@@ -833,6 +859,7 @@ Object *Runtime::execute(OperatorNode *node, bool execution_result_matters) {
     auto res = this->runOperator(node->id, self, arg, execution_result_matters);
     setExecFlagNONE(this);
     this->popContext();
+    this->gc->release(self);
     return res;
 }
 
@@ -1031,6 +1058,7 @@ Object *Runtime::execute(StmtNode *node, bool execution_result_matters) {
     if (node == NULL) {
         this->signalError("Failed to execute unknown AST node", this->getContext().area);
     }
+    // TODO: fix gc eating some important stuff idk xd
     this->gc->ping(this);
     switch (node->id) {
     case StmtNode::WHILE : {

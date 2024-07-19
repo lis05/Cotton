@@ -165,6 +165,9 @@ static Object *CF_printf(const std::vector<Object *> &args, Runtime *rt, bool ex
 // println(...) - prints arguments with adding spaces in between them, as well as adding the trailing newline
 static Object *CF_println(const std::vector<Object *> &args, Runtime *rt, bool execution_result_matters) {
     ProfilerCAPTURE();
+    if (args[0]->id > 1e14) {
+        std::cout << "FUCKED UP!\n";
+    }
     CF_print(args, rt, execution_result_matters);
     std::cout << std::endl;
     return rt->protected_nothing;

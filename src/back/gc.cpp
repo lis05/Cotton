@@ -96,8 +96,8 @@ void GCDefaultStrategy::acknowledgeUntrack(Type *type) {
 
 void GCDefaultStrategy::acknowledgeEndOfCycle(Runtime *rt) {
     ProfilerCAPTURE();
-    this->prev_num_tracked = rt->gc->tracked_instances.size() + rt->gc->tracked_objects.size()
-                             + rt->gc->tracked_types.size();
+    this->prev_num_tracked
+    = rt->gc->tracked_instances.size() + rt->gc->tracked_objects.size() + rt->gc->tracked_types.size();
     this->prev_sizeof_tracked = 0;
     for (auto &[obj, _] : rt->gc->tracked_objects) {
         this->prev_sizeof_tracked += sizeof(obj);
@@ -205,13 +205,15 @@ void GC::untrack(Type *type) {
 
 void GC::hold(Object *object) {
     ProfilerCAPTURE();
-    this->held_objects[object] = true;
+    ++this->held_objects[object];
     object->spreadMultiUse();
 }
 
 void GC::release(Object *object) {
     ProfilerCAPTURE();
-    this->held_objects.erase(object);
+    if (--this->held_objects[object] <= 0) {
+        this->held_objects.erase(object);
+    }
     object->spreadSingleUse();
 }
 
@@ -275,10 +277,14 @@ void GC::runCycle(Runtime *rt) {
     if (!this->enabled) {
         return;
     }
+
     // mark
     auto scope = rt->scope;
     while (scope != NULL) {
         for (auto &[_, obj] : scope->variables) {
+            mark(obj, rt);
+        }
+        for (auto &obj : scope->arguments) {
             mark(obj, rt);
         }
         scope = scope->prev;

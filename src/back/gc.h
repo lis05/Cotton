@@ -74,7 +74,7 @@ class GC {
 public:
     Runtime                                  *rt;
     __gnu_pbds::gp_hash_table<Object *, bool> tracked_objects;
-    __gnu_pbds::gp_hash_table<Object *, bool> held_objects;
+    __gnu_pbds::gp_hash_table<Object *, int64_t> held_objects;
 
     __gnu_pbds::gp_hash_table<Instance *, bool> tracked_instances;
     __gnu_pbds::gp_hash_table<Type *, bool>     tracked_types;
