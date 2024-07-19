@@ -1158,7 +1158,9 @@ Parser::ParsingResult Parser::parseExpr() {
                     if (this->consume(Token::OPEN_BRACKET)) {
                         auto operator_token = &*this->next_token;
                         this->saveState();
-                        auto in_expr = this->parseExpr();
+                        this->state.cur_priority      = EMPTY_PRIORITY;
+                        this->state.cur_associativity = LEFT_TO_RIGHT;
+                        auto in_expr                  = this->parseExpr();
                         this->restoreState();
 
                         if (!in_expr.verify(this, ParsingResult::EXPR, "Expected an expression")) {
