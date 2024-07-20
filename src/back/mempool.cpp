@@ -55,41 +55,14 @@ PoolAllocator::PoolAllocator(size_t chunksPerBlock) {
 }
 
 void *PoolAllocator::allocate(size_t size) {
-    // No chunks left in the current block, or no any block
-    // exists yet. Allocate a new one, passing the chunk size:
-
-    if (mAlloc == nullptr) {
-        mAlloc = allocateBlock(size);
-    }
-
-    // The return value is the current position of
-    // the allocation pointer:
-
-    Chunk *freeChunk = mAlloc;
-
-    // Advance (bump) the allocation pointer to the next chunk.
-    //
-    // When no chunks left, the `mAlloc` will be set to `nullptr`, and
-    // this will cause allocation of a new block on the next request:
-
-    mAlloc = mAlloc->next;
-
-    return freeChunk;
+    return malloc(size);
 }
 
 /**
  * Puts the chunk into the front of the chunks list.
  */
 void PoolAllocator::deallocate(void *chunk, size_t size) {
-    // The freed chunk's next pointer points to the
-    // current allocation pointer:
-
-    reinterpret_cast<Chunk *>(chunk)->next = mAlloc;
-
-    // And the allocation pointer is moved backwards, and
-    // is set to the returned (now free) chunk:
-
-    mAlloc = reinterpret_cast<Chunk *>(chunk);
+    free(chunk);
 }
 
 }    // namespace Cotton
