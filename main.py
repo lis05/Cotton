@@ -1,12 +1,8 @@
-class C :
-    x = 1
+def fib(n):
+    if n == 0: return 0;
+    if n == 1: return 1;
+    return fib(n - 1) + fib(n - 2);
 
-c = C()
 
-print (
-    c
-    .
-    x
-    (
-    )
-)
+for i in range(0, 101):
+    print(i, fib(i));

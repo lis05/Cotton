@@ -165,9 +165,6 @@ static Object *CF_printf(const std::vector<Object *> &args, Runtime *rt, bool ex
 // println(...) - prints arguments with adding spaces in between them, as well as adding the trailing newline
 static Object *CF_println(const std::vector<Object *> &args, Runtime *rt, bool execution_result_matters) {
     ProfilerCAPTURE();
-    if (args[0]->id > 1e14) {
-        std::cout << "FUCKED UP!\n";
-    }
     CF_print(args, rt, execution_result_matters);
     std::cout << std::endl;
     return rt->protected_nothing;
@@ -227,7 +224,12 @@ static Object *CF_fork(const std::vector<Object *> &args, Runtime *rt, bool exec
     ProfilerCAPTURE();
     rt->verifyExactArgsAmountFunc(args, 0);
 
-    fork();
+    int res = fork();
+    if (!execution_result_matters) {
+        return rt->protected_nothing;
+    }
+
+    return makeIntegerInstanceObject(res, rt);
 }
 
 // system(str) - does system(str)
@@ -243,6 +245,18 @@ static Object *CF_system(const std::vector<Object *> &args, Runtime *rt, bool ex
     }
 
     return Builtin::makeIntegerInstanceObject(ret, rt);
+}
+
+// sleep(tm) - sleems for the given amount of seconds
+static Object *CF_sleep(const std::vector<Object *> &args, Runtime *rt, bool execution_result_matters) {
+    ProfilerCAPTURE();
+    rt->verifyExactArgsAmountFunc(args, 1);
+    auto arg = args[0];
+    rt->verifyIsInstanceObject(arg, rt->real_type, rt->getContext().sub_areas[1]);
+
+    ::usleep(getRealValueFast(arg) * 100'000);
+
+    return rt->protected_nothing;
 }
 
 // error(msg) - signals an error with the given message
@@ -484,6 +498,7 @@ void installBuiltinFunctions(Runtime *rt) {
     rt->scope->addVariable(NameId("exit").id, makeFunctionInstanceObject(true, CF_exit, NULL, rt), rt);
     rt->scope->addVariable(NameId("fork").id, makeFunctionInstanceObject(true, CF_fork, NULL, rt), rt);
     rt->scope->addVariable(NameId("system").id, makeFunctionInstanceObject(true, CF_system, NULL, rt), rt);
+    rt->scope->addVariable(NameId("sleep").id, makeFunctionInstanceObject(true, CF_sleep, NULL, rt), rt);
     rt->scope->addVariable(NameId("error").id, makeFunctionInstanceObject(true, CF_error, NULL, rt), rt);
     rt->scope->addVariable(NameId("cotton").id, makeFunctionInstanceObject(true, CF_cotton, NULL, rt), rt);
     rt->scope->addVariable(NameId("argc").id, makeFunctionInstanceObject(true, CF_argc, NULL, rt), rt);

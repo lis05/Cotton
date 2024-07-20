@@ -205,7 +205,7 @@ Object *Runtime::copy(Object *obj) {
 
 Object *Runtime::runOperator(OperatorNode::OperatorId id, Object *obj, bool execution_result_matters) {
     ProfilerCAPTURE();
-    this->verifyIsValidObject(obj, this->getContext().sub_areas[1]);
+    this->verifyIsValidObject(obj, this->getContext().sub_areas[0]);
 
     UnaryOperatorAdapter op;
 
@@ -265,8 +265,8 @@ Object *Runtime::runOperator(OperatorNode::OperatorId id, Object *obj, bool exec
 Object *
 Runtime::runOperator(OperatorNode::OperatorId id, Object *obj, Object *arg, bool execution_result_matters) {
     ProfilerCAPTURE();
-    this->verifyIsValidObject(obj, this->getContext().sub_areas[1]);
-    this->verifyIsValidObject(arg, this->getContext().sub_areas[2]);
+    this->verifyIsValidObject(obj, this->getContext().sub_areas[0]);
+    this->verifyIsValidObject(arg, this->getContext().sub_areas[1]);
 
     BinaryOperatorAdapter op;
 
@@ -1058,7 +1058,6 @@ Object *Runtime::execute(StmtNode *node, bool execution_result_matters) {
     if (node == NULL) {
         this->signalError("Failed to execute unknown AST node", this->getContext().area);
     }
-    // TODO: fix gc eating some important stuff idk xd
     this->gc->ping(this);
     switch (node->id) {
     case StmtNode::WHILE : {

@@ -277,7 +277,6 @@ void GC::runCycle(Runtime *rt) {
     if (!this->enabled) {
         return;
     }
-
     // mark
     auto scope = rt->scope;
     while (scope != NULL) {
