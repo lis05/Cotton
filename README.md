@@ -21,7 +21,7 @@ Cottot is my second programming language, which has been drastically improved an
 
 The syntax of Cotton resembles that of C and Golang. 
 
-A few builtin types are supported, namely `Boolean`, `Character`, `Integer`, `Real`, `String`, `Array`, and `Nothing`. New data types can be defined both in Cotton (using the `type` expression) and in C++(using the internal Cotton API).
+A few builtin types are supported, namely `Boolean`, `Character`, `Integer`, `Real`, `String`, `Array`, `Function`, and `Nothing`. New data types can be defined both in Cotton (using the `type` expression) and in C++(using the internal Cotton API).
 
 All types in Cotton can define methods which can be used via the `.` operator. Therefore, expressions like `object.method(args)` are supproted. Methods are shared between all the objects of the same type. Types defined via the `type` expression can specify what methods if that type will be available.
 
