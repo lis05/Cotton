@@ -1,0 +1,132 @@
+all objects in cotton are instances of types - even basic types, like int and string.
+
+both types and objects of those types are available in Cotton. 
+
+all types implement the same IType interface, which defines a lot of operators and other necessary stuff
+
+instances of basic types are passed and copied by value
+instances of complex types are passed and copied by pointer
+
+=== BUILTIN TYPES ===
+Simple:
+    Boolean: boolean
+    Character: 8 bit unsigned integer representing a UTF-8 character
+    Integer: 64 bit signed integer
+    Real: double-precision floating-point number
+Complex:
+    String: UTF-8 string 
+    Function: function
+    Record: data structure that contains fields, methods, and operator overloading
+    Nothing: means that an objects has no value 
+
+cotton supports definition of custom classes called records.
+instances of records may have fields and methods, and each record supports operator overloading
+they also have constructors and destructors
+records are defined in the next way:
+    record NAME {
+        ...
+    }
+
+inside of a record a few things can be defined:
+1. fields. fields will be present in all instances of the record, and are different for each one of them
+fields are defined inside of a record body:
+    NAME;
+2. methods. methods are same for all the instances of the same record. therefore, their first argument must be the instance
+    NAME (this, ...) {...}
+note that some methods are special: they will be called when an operator is executed
+
+functions are objects that implement __call_op__ method;
+functions are defined in the next way:
+    function NAME (ARGS) {...}
+1. If NAME is present, then a function gets added to the scope with that name. 
+    If NAME is not present, it is not added to the scope.
+    However, in both cases, a function object is returned regardless of the presence of NAME.
+2. ARGS is supposed to be a list of names, under which the arguments will be added to the scope when the function is called.
+    If not enough arguments are passed, the remaining names will hold a value of Nothing.
+    ARGS may not be present at all; in that case the arguments may be accessed via the argc() and arg() builtin methods
+
+================================================================
+
+now, operators
+operators can be overloaded for records by implementing certain methods
+
+=== OPERATORS ===
+given as operators, priority, magic method
+
+A++, 1, __postinc_op__
+A--, 1, __postdecr_op__
+A(), 1, __call_op__
+A[], 1, __index_op__
+A., 1, __member_op__
+
+++A, 2, __prefinc_op__
+--A, 2, __prefdecr_op__
++A, 2, __positive_op__
+-A, 2, __negative_op__
+!A, 2, __not_op__
+~A, 2, __bitnot_op__
+
+A*B, 3, __mult_op__
+A/B, 3, __div_op__
+A%B, 3, __rem_op__
+
+A<<B, 4, __leftshift_op__
+A>>B, 4, __rightshift_op__
+
+A+B, 5, __add_op__
+A-B, 5, __sub_op__
+
+A<B, 6, __lt_op__
+A<=B, 6, __leq_op__
+A>B, 6, __gt_op__
+A>=B, 6, __geq_op__
+
+A==B, 7, __eq_op__
+A!=B, 7, __noteq_op__
+
+A&B, 8, __bitand_op__
+
+A^B, 9, __bitxor_op__
+
+A|B, 10, __bitor_op__
+
+A and B, 11, __and_op__
+
+A or B, 12, __or_op__
+
+A=B, 13, __assign_op__
+A*=B, 13, __mult_assign_op__
+A/=B, 13, __div_assign_op__
+A%=B, 13, __rem_assign_op__
+A<<=B, 13, __leftshift_assign_op__
+A>>=B, 13, __rightshift_assign_op__
+A+=B, 13, __add_assign_op__
+A-=B, 13, __sub_assign_op__
+
+A,B , 14, comma operator can't be overloaded
+
+======================================================
+control instructions
+
+while E S
+for E E E S
+if E S else S
+continue
+break E
+return E
+{ S }
+block { S }
+
+======================================================
+basic types are copied by value
+complex types are copied by pointer (therefore x = y makes x point to the object pointed by y)
+
+references are objects that hold other objects and act as if they are the objects they hold
+======================================================
+load, export
+======================================================
+
+
+
+
+

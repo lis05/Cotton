@@ -1,9 +1,3 @@
 /.vscode
-/CMakeLists.txt
-/CMakePresets.json
 /build
-/idea.txt
-/main.cpp
-/out
-/program.ctn
-/main.py
+/tests/program.cnt
