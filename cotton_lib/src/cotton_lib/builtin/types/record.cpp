@@ -130,7 +130,7 @@ Object *makeRecordInstanceObject(Runtime *rt) {
     return res;
 }
 
-RecordType *Cotton::Builtin::makeRecordType(int64_t nameid, Runtime *rt) {
+RecordType *makeRecordType(int64_t nameid, Runtime *rt) {
     auto res    = new RecordType(rt);
     res->nameid = nameid;
     return res;
