@@ -376,8 +376,7 @@ static bool intersection(int64_t l, int64_t r, int64_t L, int64_t R) {
 }
 
 void ErrorManager::signalError(const std::string &message, const TextArea &ta, bool eee) {
-    auto &filename = ta.filename;
-    if (filename.empty()) {
+    if (ta.filename == NULL || ta.filename->empty()) {
         printColor(stderr, "red");
         fprintf(stderr,
                 "Error has occurred at positions %ld..%ld: %s.\n",
@@ -393,6 +392,7 @@ void ErrorManager::signalError(const std::string &message, const TextArea &ta, b
             return;
         }
     }
+    auto filename = *ta.filename;
 
     FILE *fd = fopen(filename.c_str(), "r");
     if (fd == NULL) {

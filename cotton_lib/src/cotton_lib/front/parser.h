@@ -46,11 +46,11 @@ class BlockStmtNode;
 
 class TextArea {
 public:
-    int64_t first_char, last_char;
-    std::string filename;
+    int64_t      first_char, last_char;
+    std::string *filename;
 
     TextArea();
-    TextArea(const Token &token);
+    TextArea(Token &token);
     TextArea(const TextArea &first, const TextArea &last);
 };
 
