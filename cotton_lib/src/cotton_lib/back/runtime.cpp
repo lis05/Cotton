@@ -12,7 +12,7 @@
 namespace Cotton {
 Runtime::Runtime(GCStrategy *gc_strategy, ErrorManager *error_manager, NameIds *nds) {
     ProfilerCAPTURE();
-    
+
     this->scope         = new Scope(NULL, NULL, false);
     this->scope->master = this->scope;
     this->gc            = new GC(gc_strategy);
@@ -117,8 +117,6 @@ Object *Runtime::getTypeObject(Type *type) {
     }
     return this->protected_nothing;
 }
-
-
 
 Object *Runtime::protectedBoolean(bool val) {
     return val ? this->protected_true : this->protected_false;
@@ -503,9 +501,11 @@ Object *Runtime::execute(TypeDefNode *node, bool execution_result_matters) {
     }
     this->newContext();
     this->getContext().area = node->text_area;
-    auto type               = new Builtin::UserDefinedType(this);
+    auto type               = new Builtin::RecordType(this);
     type->nameid            = node->name->nameid;
-    type->instance_fields   = node->fields;
+    for (auto f : node->fields) {
+        type->instance_fields.push_back(this->nds->get(f).id);
+    }
 
     for (auto method : node->methods) {
         this->newContext();

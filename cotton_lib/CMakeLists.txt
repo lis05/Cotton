@@ -44,8 +44,8 @@ src/cotton_lib/builtin/types/real.h
 src/cotton_lib/builtin/types/real.cpp
 src/cotton_lib/builtin/types/string.h
 src/cotton_lib/builtin/types/string.cpp
-src/cotton_lib/builtin/types/user_defined.h
-src/cotton_lib/builtin/types/user_defined.cpp
+src/cotton_lib/builtin/types/record.h
+src/cotton_lib/builtin/types/record.cpp
 
 src/cotton_lib/builtin/functions/api.h
 src/cotton_lib/builtin/functions/functions.h

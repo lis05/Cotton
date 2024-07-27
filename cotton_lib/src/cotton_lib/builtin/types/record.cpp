@@ -23,19 +23,20 @@
 
 #include "../../profiler.h"
 #include "api.h"
+#include "record.h"
 
 namespace Cotton::Builtin {
 
-UserDefinedInstance::UserDefinedInstance(Runtime *rt)
-    : Instance(rt, sizeof(UserDefinedInstance)) {
+RecordInstance::RecordInstance(Runtime *rt)
+    : Instance(rt, sizeof(RecordInstance)) {
     ProfilerCAPTURE();
 }
 
-UserDefinedInstance::~UserDefinedInstance() {
+RecordInstance::~RecordInstance() {
     ProfilerCAPTURE();
 }
 
-Object *UserDefinedInstance::selectField(int64_t id, Runtime *rt) {
+Object *RecordInstance::selectField(int64_t id, Runtime *rt) {
     ProfilerCAPTURE();
     auto it = this->fields.find(id);
     if (it != this->fields.end()) {
@@ -44,40 +45,40 @@ Object *UserDefinedInstance::selectField(int64_t id, Runtime *rt) {
     rt->signalError(this->userRepr(rt) + "doesn't have field " + rt->nds->userRepr(id), rt->getContext().area);
 }
 
-bool UserDefinedInstance::hasField(int64_t id, Runtime *rt) {
+bool RecordInstance::hasField(int64_t id, Runtime *rt) {
     ProfilerCAPTURE();
     return this->fields.find(id) != this->fields.end();
 }
 
-void UserDefinedInstance::addField(int64_t id, Object *obj, Runtime *rt) {
+void RecordInstance::addField(int64_t id, Object *obj, Runtime *rt) {
     ProfilerCAPTURE();
     this->fields[id] = obj;
 }
 
-Instance *UserDefinedInstance::copy(Runtime *rt) {
+Instance *RecordInstance::copy(Runtime *rt) {
     ProfilerCAPTURE();
     return this;    // because record is a complex data type
 }
 
-size_t UserDefinedInstance::getSize() {
+size_t RecordInstance::getSize() {
     ProfilerCAPTURE();
-    return sizeof(UserDefinedInstance);
+    return sizeof(RecordInstance);
 }
 
-size_t UserDefinedType::getInstanceSize() {
+size_t RecordType::getInstanceSize() {
     ProfilerCAPTURE();
-    return sizeof(UserDefinedInstance);
+    return sizeof(RecordInstance);
 }
 
-std::string UserDefinedInstance::userRepr(Runtime *rt) {
+std::string RecordInstance::userRepr(Runtime *rt) {
     ProfilerCAPTURE();
     if (this == NULL) {
-        return "UserDefined(NULL)";
+        return "Record(NULL)";
     }
     return rt->nds->userRepr(this->nameid);
 }
 
-std::vector<Object *> UserDefinedInstance::getGCReachable() {
+std::vector<Object *> RecordInstance::getGCReachable() {
     ProfilerCAPTURE();
     std::vector<Object *> res;
     for (auto field : this->fields) {
@@ -86,23 +87,23 @@ std::vector<Object *> UserDefinedInstance::getGCReachable() {
     return res;
 }
 
-UserDefinedType::UserDefinedType(Runtime *rt)
+RecordType::RecordType(Runtime *rt)
     : Type(rt) {
     ProfilerCAPTURE();
 }
 
-Object *UserDefinedType::create(Runtime *rt) {
+Object *RecordType::create(Runtime *rt) {
     ProfilerCAPTURE();
-    auto ins = new UserDefinedInstance(rt);
+    auto ins = new RecordInstance(rt);
     for (auto f : this->instance_fields) {
-        ins->addField(rt->nds->get(f).id, makeNothingInstanceObject(rt), rt);
+        ins->addField(f, makeNothingInstanceObject(rt), rt);
     }
     Object *obj = newObject(true, ins, this, rt);
 
     return obj;
 }
 
-std::string UserDefinedType::userRepr(Runtime *rt) {
+std::string RecordType::userRepr(Runtime *rt) {
     ProfilerCAPTURE();
     if (this == NULL) {
         return "NULL";
@@ -112,7 +113,7 @@ std::string UserDefinedType::userRepr(Runtime *rt) {
 
 // TODO: == and !=
 
-Object *UserDefinedType::copy(Object *obj, Runtime *rt) {
+Object *RecordType::copy(Object *obj, Runtime *rt) {
     ProfilerCAPTURE();
     rt->verifyIsValidObject(obj);
     if (obj->instance == NULL) {
@@ -123,10 +124,15 @@ Object *UserDefinedType::copy(Object *obj, Runtime *rt) {
     return res;
 }
 
-Object *makeUserDefinedInstanceObject(Runtime *rt) {
+Object *makeRecordInstanceObject(Runtime *rt) {
     ProfilerCAPTURE();
     auto res = rt->make(rt->nothing_type, rt->INSTANCE_OBJECT);
     return res;
 }
 
+RecordType *Cotton::Builtin::makeRecordType(int64_t nameid, Runtime *rt) {
+    auto res    = new RecordType(rt);
+    res->nameid = nameid;
+    return res;
+}
 }    // namespace Cotton::Builtin
