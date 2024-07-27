@@ -23,6 +23,7 @@
 #include "front/parser.h"
 
 static void printColor(FILE *fd, std::string color = "reset") {
+#ifndef NOCOLOROUTPUT
     std::string col = "\033[0m";
 
     if (color == "blue") {
@@ -45,6 +46,7 @@ static void printColor(FILE *fd, std::string color = "reset") {
     }
 
     fprintf(fd, "%s", col.c_str());
+#endif
 }
 
 namespace Cotton {
@@ -189,7 +191,8 @@ void ErrorManager::signalError(const std::string &message, const Token &token, b
     eassert(token.begin_pos != -1 && token.end_pos != -1,
             std::string("Invalid token. Original message: ") + message,
             this);
-    if (this->error_filename.empty()) {
+    auto &filename = token.filename;
+    if (filename.empty()) {
         printColor(stderr, "red");
         fprintf(stderr,
                 "Error has occurred at positions %ld..%ld: %s.\n",
@@ -206,7 +209,7 @@ void ErrorManager::signalError(const std::string &message, const Token &token, b
         }
     }
 
-    FILE *fd = fopen(this->error_filename.c_str(), "r");
+    FILE *fd = fopen(filename.c_str(), "r");
     if (fd == NULL) {
         printColor(stderr, "red");
         perror("Failed to open file where the error has occurred");
@@ -234,7 +237,7 @@ void ErrorManager::signalError(const std::string &message, const Token &token, b
     }
 
     printColor(stderr, "red");
-    fprintf(stderr, "Error has occurred in file %s\n", this->error_filename.c_str());
+    fprintf(stderr, "Error has occurred in file %s\n", filename.c_str());
     printColor(stderr, "reset");
     if (fseek(fd, last_line_position, SEEK_SET) == -1) {
         printColor(stderr, "red");
@@ -373,7 +376,8 @@ static bool intersection(int64_t l, int64_t r, int64_t L, int64_t R) {
 }
 
 void ErrorManager::signalError(const std::string &message, const TextArea &ta, bool eee) {
-    if (this->error_filename.empty()) {
+    auto &filename = ta.filename;
+    if (filename.empty()) {
         printColor(stderr, "red");
         fprintf(stderr,
                 "Error has occurred at positions %ld..%ld: %s.\n",
@@ -390,7 +394,7 @@ void ErrorManager::signalError(const std::string &message, const TextArea &ta, b
         }
     }
 
-    FILE *fd = fopen(this->error_filename.c_str(), "r");
+    FILE *fd = fopen(filename.c_str(), "r");
     if (fd == NULL) {
         printColor(stderr, "red");
         perror("Failed to open file where the error has occurred");
@@ -438,7 +442,7 @@ void ErrorManager::signalError(const std::string &message, const TextArea &ta, b
     }
 
     printColor(stderr, "red");
-    fprintf(stderr, "Error has occurred in file %s\n", this->error_filename.c_str());
+    fprintf(stderr, "Error has occurred in file %s\n", filename.c_str());
     printColor(stderr, "reset");
     if (fseek(fd, last_line_position, SEEK_SET) == -1) {
         printColor(stderr, "red");

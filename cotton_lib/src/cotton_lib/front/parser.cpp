@@ -28,16 +28,19 @@ namespace Cotton {
 TextArea::TextArea() {
     this->first_char = INT64_MAX;
     this->last_char  = INT64_MIN;
+    this->filename = "";
 }
 
 TextArea::TextArea(const Token &token) {
     this->first_char = token.begin_pos;
     this->last_char  = token.end_pos;
+    this->filename = token.filename;
 }
 
 TextArea::TextArea(const TextArea &first, const TextArea &last) {
     this->first_char = std::min(first.first_char, last.first_char);
     this->last_char  = std::max(first.last_char, last.last_char);
+    this->filename = (first.filename.empty()) ? last.filename : first.filename;
 }
 
 ExprNode::~ExprNode() {

@@ -30,13 +30,15 @@ Token::Token() {
     this->data      = "";
     this->begin_pos = -1;
     this->end_pos   = -1;
+    this->filename  = "";
 }
 
-Token::Token(const std::string &data, int64_t begin_pos, int64_t end_pos) {
+Token::Token(const std::string &data, int64_t begin_pos, int64_t end_pos, const std::string &filename) {
     this->id        = NOTHING_LIT;
     this->data      = data;
     this->begin_pos = begin_pos;
     this->end_pos   = end_pos;
+    this->filename  = filename;
 }
 
 static char getCharacter(std::string::const_iterator &it, const std::string &str, ErrorManager *error_manager) {
@@ -455,7 +457,7 @@ std::vector<Token> Lexer::faze2FormConnectedTokens(const std::string &input) {
     while (it != input.end()) {
         if (*it == '"') {
             if (!buf.empty()) {
-                tokens.push_back(Token(buf, it - input.begin() - buf.size(), it - input.begin()));
+                tokens.push_back(Token(buf, it - input.begin() - buf.size(), it - input.begin(), ""));
                 buf.clear();
             }
             auto string_begin = it;
@@ -475,13 +477,13 @@ std::vector<Token> Lexer::faze2FormConnectedTokens(const std::string &input) {
                 it++;
             }
 
-            tokens.push_back(Token(buf, it - input.begin() - buf.size(), it - input.begin()));
+            tokens.push_back(Token(buf, it - input.begin() - buf.size(), it - input.begin(), ""));
             tokens.back().id = Token::STRING_LIT;
             buf.clear();
         }
         else if (*it == '\'') {
             if (!buf.empty()) {
-                tokens.push_back(Token(buf, it - input.begin() - buf.size(), it - input.begin()));
+                tokens.push_back(Token(buf, it - input.begin() - buf.size(), it - input.begin(), ""));
                 buf.clear();
             }
             auto char_begin = it;
@@ -499,13 +501,13 @@ std::vector<Token> Lexer::faze2FormConnectedTokens(const std::string &input) {
                 it++;
             }
 
-            tokens.push_back(Token(buf, it - input.begin() - buf.size(), it - input.begin()));
+            tokens.push_back(Token(buf, it - input.begin() - buf.size(), it - input.begin(), ""));
             tokens.back().id = Token::CHAR_LIT;
             buf.clear();
         }
         else if (isspace(*it)) {
             if (!buf.empty()) {
-                tokens.push_back(Token(buf, it - input.begin() - buf.size(), it - input.begin()));
+                tokens.push_back(Token(buf, it - input.begin() - buf.size(), it - input.begin(), ""));
                 buf.clear();
             }
             it++;
@@ -516,7 +518,7 @@ std::vector<Token> Lexer::faze2FormConnectedTokens(const std::string &input) {
         }
     }
     if (!buf.empty()) {
-        tokens.push_back(Token(buf, it - input.begin() - buf.size(), it - input.begin()));
+        tokens.push_back(Token(buf, it - input.begin() - buf.size(), it - input.begin(), ""));
         buf.clear();
     }
     return tokens;
@@ -535,7 +537,8 @@ static void splitByOperator(const Token                 &token,
     if (it != split_end) {
         Token t(token.data.substr(split_end - token.data.begin(), it - split_end),
                 split_end - token.data.begin() + token.begin_pos,
-                it - token.data.begin() + token.begin_pos);
+                it - token.data.begin() + token.begin_pos,
+                "");
         res.push_back(t);
         split_end = it;
     }
@@ -543,7 +546,8 @@ static void splitByOperator(const Token                 &token,
     {
         Token t(token.data.substr(split_end - token.data.begin(), it - split_end),
                 split_end - token.data.begin() + token.begin_pos,
-                it - token.data.begin() + token.begin_pos);
+                it - token.data.begin() + token.begin_pos,
+                "");
         res.push_back(t);
         split_end = it;
     }
@@ -573,7 +577,8 @@ std::vector<Token> Lexer::faze3SplitByOperatorsAndSeparators(const std::vector<T
         if (it != split_end) {
             Token t(token.data.substr(split_end - token.data.begin(), it - split_end),
                     split_end - token.data.begin() + token.begin_pos,
-                    it - token.data.begin() + token.begin_pos);
+                    it - token.data.begin() + token.begin_pos,
+                    "");
             res.push_back(t);
             split_end = it;
         }
@@ -614,7 +619,8 @@ std::vector<Token> Lexer::faze4FindRealNumbers(const std::vector<Token> &tokens)
                 if (it != split_end) {
                     Token t(token.data.substr(split_end - token.data.begin(), it - split_end),
                             split_end - token.data.begin() + token.begin_pos,
-                            it - token.data.begin() + token.begin_pos);
+                            it - token.data.begin() + token.begin_pos,
+                            "");
                     res.push_back(t);
                     split_end = it;
                 }
@@ -647,7 +653,7 @@ std::vector<Token> Lexer::process(std::string &input) {
     tokens                    = this->faze4FindRealNumbers(tokens);
     this->faze5IdentifyTokens(tokens);
     if (!tokens.empty()) {
-        tokens.push_back(Token("", tokens.back().end_pos, tokens.back().end_pos + 1));
+        tokens.push_back(Token("", tokens.back().end_pos, tokens.back().end_pos + 1, ""));
     }
     return tokens;
 }
@@ -670,6 +676,10 @@ std::vector<Token> Lexer::processFile(const std::string &filename) {
     }
 
     fclose(fd);
-    return this->process(data);
+    auto res = this->process(data);
+    for (auto &token : res) {
+        token.filename = filename;
+    }
+    return res;
 }
 }    // namespace Cotton

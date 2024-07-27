@@ -101,12 +101,13 @@ public:
     double      real_value;
     std::string string_value;
 
-    int64_t begin_pos, end_pos;
+    int64_t     begin_pos, end_pos;
+    std::string filename;
 
     Token();
     ~Token() = default;
 
-    Token(const std::string &data, int64_t begin_pos, int64_t end_pos);
+    Token(const std::string &data, int64_t begin_pos, int64_t end_pos, const std::string &filename);
     void identify(ErrorManager *error_manager);
 };
 
