@@ -77,6 +77,13 @@ public:
     Builtin::StringType    *string_type;
     Builtin::ArrayType     *array_type;
 
+    __gnu_pbds::cc_hash_table<int64_t, Object *> globals;
+
+    bool checkGlobal(int64_t id);
+    Object *getGlobal(int64_t id);
+    void setGlobal(int64_t id, Object *obj);
+    void removeGlobal(int64_t id);
+
     __gnu_pbds::cc_hash_table<Type *, Object *> type_objects;
     void                                        registerTypeObject(Type *type, Object *obj);
     Object                                     *getTypeObject(Type *type);
@@ -196,8 +203,7 @@ namespace MagicMethods {
     int64_t mm__read__(Runtime *rt);
 }    // namespace MagicMethods
 
-#define newObject(is_instance, instance, type, rt)                                                                \
-    new Object(is_instance, instance, type, rt)
+#define newObject(is_instance, instance, type, rt) new Object(is_instance, instance, type, rt)
 
 #define setExecFlagNONE(rt)        rt->execution_flags = 0;
 #define setExecFlagCONTINUE(rt)    rt->execution_flags = 1;

@@ -106,6 +106,27 @@ Runtime::Runtime(GCStrategy *gc_strategy, ErrorManager *error_manager, NameIds *
     this->gc->hold(this->protected_false);
 }
 
+bool Runtime::checkGlobal(int64_t id) {
+    auto it = this->globals.find(id);
+    return it != this->globals.end();
+}
+
+Object* Runtime::getGlobal(int64_t id) {
+    auto it = this->globals.find(id);
+    if (it == this->globals.end()) {
+        this->signalError("Global not found: " + this->nds->fromId(id), this->getContext().area);
+    }
+    return it->second;
+}
+
+void Runtime::setGlobal(int64_t id, Object *obj) {
+    this->globals[id] = obj;
+}
+
+void Runtime::removeGlobal(int64_t id) {
+    this->globals.erase(id);
+}
+
 void Runtime::registerTypeObject(Type *type, Object *obj) {
     this->type_objects[type] = obj;
 }

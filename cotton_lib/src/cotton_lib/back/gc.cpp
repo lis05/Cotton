@@ -291,6 +291,9 @@ void GC::runCycle(Runtime *rt) {
     for (auto &[obj, _] : this->held_objects) {
         mark(obj, rt);
     }
+    for (auto &[_, obj] : rt->globals) {
+        mark(obj, rt);
+    }
     // sweep
     std::vector<Object *> deleted_objects;
     for (auto &[obj, _] : this->tracked_objects) {

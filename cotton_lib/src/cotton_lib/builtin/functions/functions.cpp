@@ -479,6 +479,50 @@ static Object *CF_assert(const std::vector<Object *> &args, Runtime *rt, bool ex
     }
 }
 
+// checkglobal(str) - returns whether global variable with name str was defined
+static Object *CF_checkglobal(const std::vector<Object *> &args, Runtime *rt, bool execution_result_matters) {
+    ProfilerCAPTURE();
+    rt->verifyExactArgsAmountFunc(args, 1);
+    auto arg = args[0];
+    rt->verifyIsInstanceObject(arg, rt->string_type, rt->getContext().sub_areas[1]);
+
+    return rt->protectedBoolean(rt->checkGlobal(rt->nds->get(getStringDataFast(arg)).id));
+}
+
+// getglobal(str) - returns global variable with name str
+static Object *CF_getglobal(const std::vector<Object *> &args, Runtime *rt, bool execution_result_matters) {
+    ProfilerCAPTURE();
+    rt->verifyExactArgsAmountFunc(args, 1);
+    auto arg = args[0];
+    rt->verifyIsInstanceObject(arg, rt->string_type, rt->getContext().sub_areas[1]);
+
+    return rt->getGlobal(rt->nds->get(getStringDataFast(arg)).id);
+}
+
+// setglobal(str, obj) - sets global variable with name str to obj
+static Object *CF_setglobal(const std::vector<Object *> &args, Runtime *rt, bool execution_result_matters) {
+    ProfilerCAPTURE();
+    rt->verifyExactArgsAmountFunc(args, 2);
+    auto arg1 = args[0];
+    auto arg2 = args[1];
+    rt->verifyIsInstanceObject(arg1, rt->string_type, rt->getContext().sub_areas[1]);
+    rt->verifyIsValidObject(arg2, rt->getContext().sub_areas[2]);
+
+    rt->setGlobal(rt->nds->get(getStringDataFast(arg1)).id, arg2);
+    return arg2;
+}
+
+// removeglobal(str) - removes global variable with name str
+static Object *CF_removeglobal(const std::vector<Object *> &args, Runtime *rt, bool execution_result_matters) {
+    ProfilerCAPTURE();
+    rt->verifyExactArgsAmountFunc(args, 1);
+    auto arg1 = args[0];
+    rt->verifyIsInstanceObject(arg1, rt->string_type, rt->getContext().sub_areas[1]);
+
+    rt->removeGlobal(rt->nds->get(getStringDataFast(arg1)).id);
+    return rt->protected_nothing;
+}
+
 void installBuiltinFunctions(Runtime *rt) {
     ProfilerCAPTURE();
     rt->scope->addVariable(rt->nds->get("make").id, makeFunctionInstanceObject(true, CF_make, NULL, rt), rt);
@@ -521,5 +565,17 @@ void installBuiltinFunctions(Runtime *rt) {
                            makeFunctionInstanceObject(true, CF_hasmethod, NULL, rt),
                            rt);
     rt->scope->addVariable(rt->nds->get("assert").id, makeFunctionInstanceObject(true, CF_assert, NULL, rt), rt);
+    rt->scope->addVariable(rt->nds->get("checkglobal").id,
+                           makeFunctionInstanceObject(true, CF_checkglobal, NULL, rt),
+                           rt);
+    rt->scope->addVariable(rt->nds->get("getglobal").id,
+                           makeFunctionInstanceObject(true, CF_getglobal, NULL, rt),
+                           rt);
+    rt->scope->addVariable(rt->nds->get("setglobal").id,
+                           makeFunctionInstanceObject(true, CF_setglobal, NULL, rt),
+                           rt);
+    rt->scope->addVariable(rt->nds->get("removeglobal").id,
+                           makeFunctionInstanceObject(true, CF_removeglobal, NULL, rt),
+                           rt);
 }
 }    // namespace Cotton::Builtin
