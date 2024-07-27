@@ -22,7 +22,6 @@
 #pragma once
 
 #include "../front/parser.h"
-#include "mempool.h"
 #include "nameid.h"
 #include "object.h"
 #include <ext/pb_ds/assoc_container.hpp>

@@ -25,9 +25,6 @@ src/cotton_lib/back/scope.cpp
 src/cotton_lib/back/type.h
 src/cotton_lib/back/type.cpp
 
-src/cotton_lib/back/mempool.h
-src/cotton_lib/back/mempool.cpp
-
 src/cotton_lib/builtin/api.h
 
 src/cotton_lib/builtin/types/api.h
