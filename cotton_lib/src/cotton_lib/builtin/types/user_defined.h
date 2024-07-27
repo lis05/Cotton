@@ -37,10 +37,8 @@ public:
 
     Instance             *copy(Runtime *rt);
     size_t                getSize();
-    std::string           userRepr();
+    std::string           userRepr(Runtime *rt);
     std::vector<Object *> getGCReachable();
-
-    void destroy(Runtime *rt);
 };
 
 class UserDefinedType: public Type {
@@ -52,7 +50,7 @@ public:
     UserDefinedType(Runtime *rt);
     ~UserDefinedType() = default;
     Object     *create(Runtime *rt);
-    std::string userRepr();
+    std::string userRepr(Runtime *rt);
     Object     *copy(Object *obj, Runtime *rt);
 };
 }    // namespace Cotton::Builtin

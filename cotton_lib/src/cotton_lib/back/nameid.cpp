@@ -23,87 +23,78 @@
 #include "../profiler.h"
 
 namespace Cotton {
-__gnu_pbds::cc_hash_table<std::string, int64_t> NameId::map;
-__gnu_pbds::cc_hash_table<int64_t, std::string> NameId::reverse_map;
 
-NameId::NameId() {
+NameId NameIds::get(Token *token) {
     ProfilerCAPTURE();
-    this->id    = -1;
-    this->token = NULL;
-    this->str   = NULL;
-}
-
-NameId::NameId(Token *token) {
-    ProfilerCAPTURE();
+    NameId res;
     if (token == NULL) {
-        this->id = -1;
+        res.id = -1;
     }
     else {
-        if (NameId::map.find(token->data) != NameId::map.end()) {
-            this->id = NameId::map[token->data];
+        if (this->map.find(token->data) != this->map.end()) {
+            res.id = this->map[token->data];
         }
         else {
-            this->id                      = NameId::map.size();
-            NameId::map[token->data]      = this->id;
-            NameId::reverse_map[this->id] = token->data;
+            res.id                    = this->map.size();
+            this->map[token->data]    = res.id;
+            this->reverse_map[res.id] = token->data;
         }
     }
-    this->token = token;
-    this->str   = &this->token->data;
+    res.token = token;
+    res.str   = &res.token->data;
+    return res;
 }
 
-NameId::NameId(std::string *str) {
+NameId NameIds::get(std::string *str) {
     ProfilerCAPTURE();
+    NameId res;
     if (str == NULL) {
-        this->id = -1;
+        res.id = -1;
     }
     else {
-        if (NameId::map.find(*str) != NameId::map.end()) {
-            this->id = NameId::map[*str];
+        if (this->map.find(*str) != this->map.end()) {
+            res.id = this->map[*str];
         }
         else {
-            this->id                      = NameId::map.size();
-            NameId::map[*str]             = this->id;
-            NameId::reverse_map[this->id] = *str;
+            res.id                    = this->map.size();
+            this->map[*str]           = res.id;
+            this->reverse_map[res.id] = *str;
         }
     }
-    this->token = NULL;
-    this->str   = str;
+    res.token = NULL;
+    res.str   = str;
+    return res;
 }
 
-NameId::NameId(std::string str) {
+NameId NameIds::get(std::string str) {
     ProfilerCAPTURE();
-    if (NameId::map.find(str) != NameId::map.end()) {
-        this->id = NameId::map[str];
+    NameId res;
+    if (this->map.find(str) != this->map.end()) {
+        res.id = this->map[str];
     }
     else {
-        this->id                      = NameId::map.size();
-        NameId::map[str]              = this->id;
-        NameId::reverse_map[this->id] = str;
+        res.id                    = this->map.size();
+        this->map[str]            = res.id;
+        this->reverse_map[res.id] = str;
     }
 
-    this->token   = NULL;
-    this->val_str = str;
+    res.token   = NULL;
+    res.val_str = str;
+    return res;
 }
 
-NameId::~NameId() {
+std::string NameIds::fromId(int64_t id) {
     ProfilerCAPTURE();
-    this->id    = -1;
-    this->token = NULL;
-}
-
-std::string NameId::fromId(int64_t id) {
-    ProfilerCAPTURE();
-    auto it = NameId::reverse_map.find(id);
+    auto it = this->reverse_map.find(id);
     if (it != reverse_map.end()) {
         return it->second;
     }
-    return "invalid name id";
+    return "[INVALID NAMEID]";
 }
 
-std::string NameId::userRepr(int64_t id) {
+std::string NameIds::userRepr(int64_t id) {
     ProfilerCAPTURE();
-    return fromId(id);
+    return this->fromId(id);
     // return "NameId(id = " + std::to_string(id) + ", str = \'" + NameId::fromId(id) + "\')";
 }
 

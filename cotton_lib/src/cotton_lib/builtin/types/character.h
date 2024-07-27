@@ -34,8 +34,7 @@ public:
 
     Instance   *copy(Runtime *rt);
     size_t      getSize();
-    std::string userRepr();
-    void        destroy(Runtime *rt);
+    std::string userRepr(Runtime *rt);
 };
 
 class CharacterType: public Type {
@@ -45,7 +44,7 @@ public:
     ~CharacterType() = default;
     Object     *create(Runtime *rt);
     Object     *copy(Object *obj, Runtime *rt);
-    std::string userRepr();
+    std::string userRepr(Runtime *rt);
 };
 
 Object *makeCharacterInstanceObject(uint8_t value, Runtime *rt);

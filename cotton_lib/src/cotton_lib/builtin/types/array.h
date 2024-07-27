@@ -34,11 +34,10 @@ public:
 
     Instance             *copy(Runtime *rt);
     size_t                getSize();
-    std::string           userRepr();
+    std::string           userRepr(Runtime *rt);
     std::vector<Object *> getGCReachable();
     void                  spreadSingleUse();
     void                  spreadMultiUse();
-    void                  destroy(Runtime *rt);
 };
 
 class ArrayType: public Type {
@@ -48,12 +47,12 @@ public:
     ~ArrayType() = default;
     Object     *create(Runtime *rt);
     Object     *copy(Object *obj, Runtime *rt);
-    std::string userRepr();
+    std::string userRepr(Runtime *rt);
 };
 
 void installArrayMethods(Type *type, Runtime *rt);
 
-Object *makeArrayInstanceObject(const std::vector<Object*> &data, Runtime *rt);
+Object *makeArrayInstanceObject(const std::vector<Object *> &data, Runtime *rt);
 
 std::vector<Object *> &getArrayData(Object *obj, Runtime *rt);
 std::vector<Object *> &getArrayData(Object *obj, Runtime *rt, const TextArea &ta);

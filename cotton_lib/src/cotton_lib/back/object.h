@@ -49,7 +49,7 @@ public:
 
     std::vector<Object *> getGCReachable();
     // short representation of the object
-    std::string           userRepr();
+    std::string           userRepr(Runtime *rt);
 
     void assignTo(Object *obj, Runtime *rt);
     void assignToCopyOf(Object *obj, Runtime *rt);

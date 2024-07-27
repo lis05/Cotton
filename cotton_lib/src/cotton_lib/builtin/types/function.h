@@ -39,8 +39,7 @@ public:
     void        init(bool is_internal, InternalFunction internal_ptr, FuncDefNode *cotton_ptr);
     Instance   *copy(Runtime *rt);
     size_t      getSize();
-    std::string userRepr();
-    void        destroy(Runtime *rt);
+    std::string userRepr(Runtime *rt);
 };
 
 class FunctionType: public Type {
@@ -50,7 +49,7 @@ public:
     ~FunctionType() = default;
     Object     *create(Runtime *rt);
     Object     *copy(Object *obj, Runtime *rt);
-    std::string userRepr();
+    std::string userRepr(Runtime *rt);
 };
 
 void installFunctionMethods(Type *type, Runtime *rt);

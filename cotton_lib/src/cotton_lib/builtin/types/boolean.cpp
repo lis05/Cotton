@@ -36,24 +36,20 @@ BooleanInstance::~BooleanInstance() {
 
 Instance *BooleanInstance::copy(Runtime *rt) {
     ProfilerCAPTURE();
-    Instance *res = new (rt->alloc(sizeof(BooleanInstance))) BooleanInstance(rt);
+    Instance *res = new BooleanInstance(rt);
     if (res == NULL) {
-        rt->signalError("Failed to copy " + this->userRepr(), rt->getContext().area);
+        rt->signalError("Failed to copy " + this->userRepr(rt), rt->getContext().area);
     }
     icast(res, BooleanInstance)->value = this->value;
     return res;
 }
 
-std::string BooleanInstance::userRepr() {
+std::string BooleanInstance::userRepr(Runtime *rt) {
     ProfilerCAPTURE();
     if (this == NULL) {
         return "Boolean(NULL)";
     }
     return std::string("Boolean(value = ") + (this->value ? "true" : "false") + ")";
-}
-
-void BooleanInstance::destroy(Runtime *rt) {
-    rt->dealloc(this, sizeof(BooleanInstance));
 }
 
 size_t BooleanInstance::getSize() {
@@ -223,20 +219,24 @@ static Object *mm__read__(const std::vector<Object *> &args, Runtime *rt, bool e
         return self;
     }
 
-    if (s == "true") return rt->protected_true;
-    else if (s == "false") return rt->protected_false;
+    if (s == "true") {
+        return rt->protected_true;
+    }
+    else if (s == "false") {
+        return rt->protected_false;
+    }
     rt->signalError("Not a Boolean: " + s, rt->getContext().area);
 }
 
 void installBooleanMethods(Type *type, Runtime *rt) {
-    type->addMethod(MagicMethods::mm__bool__(), Builtin::makeFunctionInstanceObject(true, mm__bool__, NULL, rt));
-    type->addMethod(MagicMethods::mm__char__(), Builtin::makeFunctionInstanceObject(true, mm__char__, NULL, rt));
-    type->addMethod(MagicMethods::mm__int__(), Builtin::makeFunctionInstanceObject(true, mm__int__, NULL, rt));
-    type->addMethod(MagicMethods::mm__real__(), Builtin::makeFunctionInstanceObject(true, mm__real__, NULL, rt));
-    type->addMethod(MagicMethods::mm__string__(),
+    type->addMethod(MagicMethods::mm__bool__(rt), Builtin::makeFunctionInstanceObject(true, mm__bool__, NULL, rt));
+    type->addMethod(MagicMethods::mm__char__(rt), Builtin::makeFunctionInstanceObject(true, mm__char__, NULL, rt));
+    type->addMethod(MagicMethods::mm__int__(rt), Builtin::makeFunctionInstanceObject(true, mm__int__, NULL, rt));
+    type->addMethod(MagicMethods::mm__real__(rt), Builtin::makeFunctionInstanceObject(true, mm__real__, NULL, rt));
+    type->addMethod(MagicMethods::mm__string__(rt),
                     Builtin::makeFunctionInstanceObject(true, mm__string__, NULL, rt));
-    type->addMethod(MagicMethods::mm__repr__(), Builtin::makeFunctionInstanceObject(true, mm__repr__, NULL, rt));
-    type->addMethod(MagicMethods::mm__read__(), Builtin::makeFunctionInstanceObject(true, mm__read__, NULL, rt));
+    type->addMethod(MagicMethods::mm__repr__(rt), Builtin::makeFunctionInstanceObject(true, mm__repr__, NULL, rt));
+    type->addMethod(MagicMethods::mm__read__(rt), Builtin::makeFunctionInstanceObject(true, mm__read__, NULL, rt));
 }
 
 BooleanType::BooleanType(Runtime *rt)
@@ -252,7 +252,7 @@ BooleanType::BooleanType(Runtime *rt)
 
 Object *BooleanType::create(Runtime *rt) {
     ProfilerCAPTURE();
-    Instance *ins = new (rt->alloc(sizeof(BooleanInstance))) BooleanInstance(rt);
+    Instance *ins = new BooleanInstance(rt);
     Object   *obj = newObject(true, ins, this, rt);
     return obj;
 }
@@ -268,7 +268,7 @@ Object *BooleanType::copy(Object *obj, Runtime *rt) {
     return res;
 }
 
-std::string BooleanType::userRepr() {
+std::string BooleanType::userRepr(Runtime *rt) {
     ProfilerCAPTURE();
     if (this == NULL) {
         return "BooleanType(NULL)";
@@ -287,8 +287,6 @@ bool &getBooleanValue(Object *obj, Runtime *rt, const TextArea &ta) {
     rt->verifyIsInstanceObject(obj, rt->boolean_type, ta);
     return icast(obj->instance, BooleanInstance)->value;
 }
-
-
 
 Object *makeBooleanInstanceObject(bool value, Runtime *rt) {
     ProfilerCAPTURE();

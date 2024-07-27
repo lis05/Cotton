@@ -47,7 +47,7 @@ Object *Scope::getVariable(int64_t id, Runtime *rt) {
         }
     }
 
-    rt->signalError("Failed to find variable " + NameId::userRepr(id), rt->getContext().area);
+    rt->signalError("Failed to find variable " + rt->nds->userRepr(id), rt->getContext().area);
 }
 
 bool Scope::queryVariable(int64_t id, Runtime *rt) {

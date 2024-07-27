@@ -46,22 +46,18 @@ Instance *FunctionInstance::copy(Runtime *rt) {
     ProfilerCAPTURE();
     auto res = new FunctionInstance(rt);
     if (res == NULL) {
-        rt->signalError("Failed to copy " + this->userRepr(), rt->getContext().area);
+        rt->signalError("Failed to copy " + this->userRepr(rt), rt->getContext().area);
     }
     res->init(this->is_internal, this->internal_ptr, this->cotton_ptr);
     return res;
 }
 
-std::string FunctionInstance::userRepr() {
+std::string FunctionInstance::userRepr(Runtime *rt) {
     ProfilerCAPTURE();
     if (this == NULL) {
         return "Function(NULL)";
     }
     return (this->is_internal) ? "Function(internal)" : "Function";
-}
-
-void FunctionInstance::destroy(Runtime *rt) {
-    delete this;
 }
 
 size_t FunctionInstance::getSize() {
@@ -81,19 +77,19 @@ FunctionCallAdapter(Object *self, const std::vector<Object *> &args, Runtime *rt
     auto f = icast(self->instance, FunctionInstance);
     if (f->is_internal) {
         if (f->internal_ptr == NULL) {
-            rt->signalError("Failed to execute NULL internal function: " + self->userRepr(),
+            rt->signalError("Failed to execute NULL internal function: " + self->userRepr(rt),
                             rt->getContext().area);
         }
         auto res = f->internal_ptr(args, rt, execution_result_matters);
         if (execution_result_matters && res == NULL) {
-            rt->signalError("Execution of internal function " + self->userRepr() + " has failed",
+            rt->signalError("Execution of internal function " + self->userRepr(rt) + " has failed",
                             rt->getContext().area);
         }
         return res;
     }
     else {
         if (f->cotton_ptr == NULL || f->cotton_ptr->body == NULL) {
-            rt->signalError("Failed to execute NULL function " + self->userRepr(), rt->getContext().area);
+            rt->signalError("Failed to execute NULL function " + self->userRepr(rt), rt->getContext().area);
         }
         rt->newFrame(false);
         // rt->scope->arguments.push_back(self); // is it needed?
@@ -114,7 +110,7 @@ FunctionCallAdapter(Object *self, const std::vector<Object *> &args, Runtime *rt
         auto res = rt->execute(f->cotton_ptr->body, execution_result_matters);
         rt->popFrame();
         if (execution_result_matters && res == NULL) {
-            rt->signalError("Execution of function " + self->userRepr() + " has failed",
+            rt->signalError("Execution of function " + self->userRepr(rt) + " has failed",
                             rt->getContext().sub_areas[0]);
         }
         return res;
@@ -178,7 +174,7 @@ static Object *mm__repr__(const std::vector<Object *> &args, Runtime *rt, bool e
 }
 
 void installFunctionMethods(Type *type, Runtime *rt) {
-    type->addMethod(MagicMethods::mm__repr__(), Builtin::makeFunctionInstanceObject(true, mm__repr__, NULL, rt));
+    type->addMethod(MagicMethods::mm__repr__(rt), Builtin::makeFunctionInstanceObject(true, mm__repr__, NULL, rt));
 }
 
 FunctionType::FunctionType(Runtime *rt)
@@ -208,7 +204,7 @@ Object *FunctionType::copy(Object *obj, Runtime *rt) {
     return res;
 }
 
-std::string FunctionType::userRepr() {
+std::string FunctionType::userRepr(Runtime *rt) {
     ProfilerCAPTURE();
     if (this == NULL) {
         return "FunctionType(NULL)";

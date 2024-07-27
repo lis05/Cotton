@@ -76,7 +76,7 @@ public:
     // returns a valid (non-null) copy of the object
     virtual Object *copy(Object *obj, Runtime *rt) = 0;
 
-    virtual std::string userRepr() = 0;
+    virtual std::string userRepr(Runtime *rt) = 0;
 };
 
 };    // namespace Cotton

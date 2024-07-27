@@ -10,13 +10,9 @@
 #include "type.h"
 
 namespace Cotton {
-Runtime::Runtime(GCStrategy *gc_strategy, ErrorManager *error_manager) {
+Runtime::Runtime(GCStrategy *gc_strategy, ErrorManager *error_manager, NameIds *nds) {
     ProfilerCAPTURE();
-    this->object_allocator = new PoolAllocator(1024);
-    for (auto &a : this->array_of_allocators) {
-        a = NULL;
-    }
-
+    
     this->scope         = new Scope(NULL, NULL, false);
     this->scope->master = this->scope;
     this->gc            = new GC(gc_strategy);
@@ -42,44 +38,46 @@ Runtime::Runtime(GCStrategy *gc_strategy, ErrorManager *error_manager) {
     assert(this->string_type->id == STRING_TYPE_ID);
     assert(this->array_type->id == ARRAY_TYPE_ID);
 
+    this->nds = nds;
+
     auto nothing_obj        = this->make(this->nothing_type, Runtime::TYPE_OBJECT);
     nothing_obj->can_modify = false;
-    this->scope->addVariable(NameId("Nothing").id, nothing_obj, this);
+    this->scope->addVariable(this->nds->get("Nothing").id, nothing_obj, this);
     this->registerTypeObject(this->nothing_type, nothing_obj);
 
     auto function_obj        = this->make(this->function_type, Runtime::TYPE_OBJECT);
     function_obj->can_modify = false;
-    this->scope->addVariable(NameId("Function").id, function_obj, this);
+    this->scope->addVariable(this->nds->get("Function").id, function_obj, this);
     this->registerTypeObject(this->function_type, function_obj);
 
     auto boolean_obj        = this->make(this->boolean_type, Runtime::TYPE_OBJECT);
     boolean_obj->can_modify = false;
-    this->scope->addVariable(NameId("Boolean").id, boolean_obj, this);
+    this->scope->addVariable(this->nds->get("Boolean").id, boolean_obj, this);
     this->registerTypeObject(this->boolean_type, boolean_obj);
 
     auto integer_obj        = this->make(this->integer_type, Runtime::TYPE_OBJECT);
     integer_obj->can_modify = false;
-    this->scope->addVariable(NameId("Integer").id, integer_obj, this);
+    this->scope->addVariable(this->nds->get("Integer").id, integer_obj, this);
     this->registerTypeObject(this->integer_type, integer_obj);
 
     auto real_obj        = this->make(this->real_type, Runtime::TYPE_OBJECT);
     real_obj->can_modify = false;
-    this->scope->addVariable(NameId("Real").id, real_obj, this);
+    this->scope->addVariable(this->nds->get("Real").id, real_obj, this);
     this->registerTypeObject(this->real_type, real_obj);
 
     auto character_obj        = this->make(this->character_type, Runtime::TYPE_OBJECT);
     character_obj->can_modify = false;
-    this->scope->addVariable(NameId("Character").id, character_obj, this);
+    this->scope->addVariable(this->nds->get("Character").id, character_obj, this);
     this->registerTypeObject(this->character_type, character_obj);
 
     auto string_obj        = this->make(this->string_type, Runtime::TYPE_OBJECT);
     string_obj->can_modify = false;
-    this->scope->addVariable(NameId("String").id, string_obj, this);
+    this->scope->addVariable(this->nds->get("String").id, string_obj, this);
     this->registerTypeObject(this->string_type, string_obj);
 
     auto array_obj        = this->make(this->array_type, Runtime::TYPE_OBJECT);
     array_obj->can_modify = false;
-    this->scope->addVariable(NameId("Array").id, array_obj, this);
+    this->scope->addVariable(this->nds->get("Array").id, array_obj, this);
     this->registerTypeObject(this->array_type, array_obj);
 
     Builtin::installBooleanMethods(this->boolean_type, this);
@@ -120,39 +118,7 @@ Object *Runtime::getTypeObject(Type *type) {
     return this->protected_nothing;
 }
 
-PoolAllocator *Runtime::getAllocator(size_t size) {
-    if (size < 4096) {
-        if (this->array_of_allocators[size] != NULL) {
-            return this->array_of_allocators[size];
-        }
-        return this->array_of_allocators[size] = new PoolAllocator(1024);
-    }
-    auto it = this->allocators.find(size);
-    if (it != this->allocators.end()) {
-        return it->second;
-    }
-    return this->allocators[size] = new PoolAllocator(1024);
-}
 
-void *Runtime::alloc(size_t size) {
-    return this->getAllocator(size)->allocate(size);
-}
-
-void Runtime::dealloc(void *ptr, size_t size) {
-    return this->getAllocator(size)->deallocate(ptr, size);
-}
-
-void Runtime::destroy(Object *obj) {
-    if (obj != NULL) {
-        this->object_allocator->deallocate(obj, sizeof(obj));
-    }
-}
-
-void Runtime::destroy(Instance *ins) {
-    if (ins != NULL) {
-        ins->destroy(this);
-    }
-}
 
 Object *Runtime::protectedBoolean(bool val) {
     return val ? this->protected_true : this->protected_false;
@@ -185,7 +151,7 @@ Object *Runtime::make(Type *type, ObjectOptions object_opt) {
     }
 
     if (obj == NULL) {
-        this->signalError("Failed to make an object of type " + type->userRepr(), this->getContext().area);
+        this->signalError("Failed to make an object of type " + type->userRepr(this), this->getContext().area);
     }
     obj->spreadSingleUse();
     return obj;
@@ -194,7 +160,7 @@ Object *Runtime::make(Type *type, ObjectOptions object_opt) {
 Object *Runtime::copy(Object *obj) {
     ProfilerCAPTURE();
     if (!this->isValidObject(obj)) {
-        this->signalError("Failed to copy non type object " + obj->userRepr(), this->getContext().area);
+        this->signalError("Failed to copy non type object " + obj->userRepr(this), this->getContext().area);
     }
     if (obj->single_use) {
         return obj;
@@ -213,52 +179,52 @@ Object *Runtime::runOperator(OperatorNode::OperatorId id, Object *obj, bool exec
     case OperatorNode::POST_PLUS_PLUS :
         op = obj->type->postinc_op;
         if (op == NULL) {
-            this->signalError(obj->userRepr() + " doesn't support that operator", this->getContext().area);
+            this->signalError(obj->userRepr(this) + " doesn't support that operator", this->getContext().area);
         }
         return op(obj, this, execution_result_matters);
     case OperatorNode::POST_MINUS_MINUS :
         op = obj->type->postdec_op;
         if (op == NULL) {
-            this->signalError(obj->userRepr() + " doesn't support that operator", this->getContext().area);
+            this->signalError(obj->userRepr(this) + " doesn't support that operator", this->getContext().area);
         }
         return op(obj, this, execution_result_matters);
     case OperatorNode::PRE_PLUS_PLUS :
         op = obj->type->preinc_op;
         if (op == NULL) {
-            this->signalError(obj->userRepr() + " doesn't support that operator", this->getContext().area);
+            this->signalError(obj->userRepr(this) + " doesn't support that operator", this->getContext().area);
         }
         return op(obj, this, execution_result_matters);
     case OperatorNode::PRE_MINUS_MINUS :
         op = obj->type->predec_op;
         if (op == NULL) {
-            this->signalError(obj->userRepr() + " doesn't support that operator", this->getContext().area);
+            this->signalError(obj->userRepr(this) + " doesn't support that operator", this->getContext().area);
         }
         return op(obj, this, execution_result_matters);
     case OperatorNode::PRE_PLUS :
         op = obj->type->positive_op;
         if (op == NULL) {
-            this->signalError(obj->userRepr() + " doesn't support that operator", this->getContext().area);
+            this->signalError(obj->userRepr(this) + " doesn't support that operator", this->getContext().area);
         }
         return op(obj, this, execution_result_matters);
     case OperatorNode::PRE_MINUS :
         op = obj->type->negative_op;
         if (op == NULL) {
-            this->signalError(obj->userRepr() + " doesn't support that operator", this->getContext().area);
+            this->signalError(obj->userRepr(this) + " doesn't support that operator", this->getContext().area);
         }
         return op(obj, this, execution_result_matters);
     case OperatorNode::NOT :
         op = obj->type->not_op;
         if (op == NULL) {
-            this->signalError(obj->userRepr() + " doesn't support that operator", this->getContext().area);
+            this->signalError(obj->userRepr(this) + " doesn't support that operator", this->getContext().area);
         }
         return op(obj, this, execution_result_matters);
     case OperatorNode::INVERSE :
         op = obj->type->inverse_op;
         if (op == NULL) {
-            this->signalError(obj->userRepr() + " doesn't support that operator", this->getContext().area);
+            this->signalError(obj->userRepr(this) + " doesn't support that operator", this->getContext().area);
         }
         return op(obj, this, execution_result_matters);
-    default : this->signalError(obj->userRepr() + " doesn't support that operator", this->getContext().area);
+    default : this->signalError(obj->userRepr(this) + " doesn't support that operator", this->getContext().area);
     }
 }
 
@@ -274,14 +240,14 @@ Runtime::runOperator(OperatorNode::OperatorId id, Object *obj, Object *arg, bool
     case OperatorNode::MULT :
         op = obj->type->mult_op;
         if (op == NULL) {
-            this->signalError("Left argument " + obj->userRepr() + " doesn't support that operator",
+            this->signalError("Left argument " + obj->userRepr(this) + " doesn't support that operator",
                               this->getContext().area);
         }
         return op(obj, arg, this, execution_result_matters);
     case OperatorNode::DIV :
         op = obj->type->div_op;
         if (op == NULL) {
-            this->signalError("Left argument " + obj->userRepr() + " doesn't support that operator",
+            this->signalError("Left argument " + obj->userRepr(this) + " doesn't support that operator",
                               this->getContext().area);
         }
 
@@ -289,7 +255,7 @@ Runtime::runOperator(OperatorNode::OperatorId id, Object *obj, Object *arg, bool
     case OperatorNode::REM :
         op = obj->type->rem_op;
         if (op == NULL) {
-            this->signalError("Left argument " + obj->userRepr() + " doesn't support that operator",
+            this->signalError("Left argument " + obj->userRepr(this) + " doesn't support that operator",
                               this->getContext().area);
         }
 
@@ -297,7 +263,7 @@ Runtime::runOperator(OperatorNode::OperatorId id, Object *obj, Object *arg, bool
     case OperatorNode::RIGHT_SHIFT :
         op = obj->type->rshift_op;
         if (op == NULL) {
-            this->signalError("Left argument " + obj->userRepr() + " doesn't support that operator",
+            this->signalError("Left argument " + obj->userRepr(this) + " doesn't support that operator",
                               this->getContext().area);
         }
 
@@ -305,7 +271,7 @@ Runtime::runOperator(OperatorNode::OperatorId id, Object *obj, Object *arg, bool
     case OperatorNode::LEFT_SHIFT :
         op = obj->type->lshift_op;
         if (op == NULL) {
-            this->signalError("Left argument " + obj->userRepr() + " doesn't support that operator",
+            this->signalError("Left argument " + obj->userRepr(this) + " doesn't support that operator",
                               this->getContext().area);
         }
 
@@ -313,7 +279,7 @@ Runtime::runOperator(OperatorNode::OperatorId id, Object *obj, Object *arg, bool
     case OperatorNode::PLUS :
         op = obj->type->add_op;
         if (op == NULL) {
-            this->signalError("Left argument " + obj->userRepr() + " doesn't support that operator",
+            this->signalError("Left argument " + obj->userRepr(this) + " doesn't support that operator",
                               this->getContext().area);
         }
 
@@ -321,7 +287,7 @@ Runtime::runOperator(OperatorNode::OperatorId id, Object *obj, Object *arg, bool
     case OperatorNode::MINUS :
         op = obj->type->sub_op;
         if (op == NULL) {
-            this->signalError("Left argument " + obj->userRepr() + " doesn't support that operator",
+            this->signalError("Left argument " + obj->userRepr(this) + " doesn't support that operator",
                               this->getContext().area);
         }
 
@@ -329,7 +295,7 @@ Runtime::runOperator(OperatorNode::OperatorId id, Object *obj, Object *arg, bool
     case OperatorNode::LESS :
         op = obj->type->lt_op;
         if (op == NULL) {
-            this->signalError("Left argument " + obj->userRepr() + " doesn't support that operator",
+            this->signalError("Left argument " + obj->userRepr(this) + " doesn't support that operator",
                               this->getContext().area);
         }
 
@@ -337,7 +303,7 @@ Runtime::runOperator(OperatorNode::OperatorId id, Object *obj, Object *arg, bool
     case OperatorNode::LESS_EQUAL :
         op = obj->type->leq_op;
         if (op == NULL) {
-            this->signalError("Left argument " + obj->userRepr() + " doesn't support that operator",
+            this->signalError("Left argument " + obj->userRepr(this) + " doesn't support that operator",
                               this->getContext().area);
         }
 
@@ -345,7 +311,7 @@ Runtime::runOperator(OperatorNode::OperatorId id, Object *obj, Object *arg, bool
     case OperatorNode::GREATER :
         op = obj->type->gt_op;
         if (op == NULL) {
-            this->signalError("Left argument " + obj->userRepr() + " doesn't support that operator",
+            this->signalError("Left argument " + obj->userRepr(this) + " doesn't support that operator",
                               this->getContext().area);
         }
 
@@ -353,7 +319,7 @@ Runtime::runOperator(OperatorNode::OperatorId id, Object *obj, Object *arg, bool
     case OperatorNode::GREATER_EQUAL :
         op = obj->type->geq_op;
         if (op == NULL) {
-            this->signalError("Left argument " + obj->userRepr() + " doesn't support that operator",
+            this->signalError("Left argument " + obj->userRepr(this) + " doesn't support that operator",
                               this->getContext().area);
         }
 
@@ -361,7 +327,7 @@ Runtime::runOperator(OperatorNode::OperatorId id, Object *obj, Object *arg, bool
     case OperatorNode::EQUAL :
         op = obj->type->eq_op;
         if (op == NULL) {
-            this->signalError("Left argument " + obj->userRepr() + " doesn't support that operator",
+            this->signalError("Left argument " + obj->userRepr(this) + " doesn't support that operator",
                               this->getContext().area);
         }
 
@@ -369,7 +335,7 @@ Runtime::runOperator(OperatorNode::OperatorId id, Object *obj, Object *arg, bool
     case OperatorNode::NOT_EQUAL :
         op = obj->type->neq_op;
         if (op == NULL) {
-            this->signalError("Left argument " + obj->userRepr() + " doesn't support that operator",
+            this->signalError("Left argument " + obj->userRepr(this) + " doesn't support that operator",
                               this->getContext().area);
         }
 
@@ -377,7 +343,7 @@ Runtime::runOperator(OperatorNode::OperatorId id, Object *obj, Object *arg, bool
     case OperatorNode::BITAND :
         op = obj->type->bitand_op;
         if (op == NULL) {
-            this->signalError("Left argument " + obj->userRepr() + " doesn't support that operator",
+            this->signalError("Left argument " + obj->userRepr(this) + " doesn't support that operator",
                               this->getContext().area);
         }
 
@@ -385,7 +351,7 @@ Runtime::runOperator(OperatorNode::OperatorId id, Object *obj, Object *arg, bool
     case OperatorNode::BITXOR :
         op = obj->type->bitxor_op;
         if (op == NULL) {
-            this->signalError("Left argument " + obj->userRepr() + " doesn't support that operator",
+            this->signalError("Left argument " + obj->userRepr(this) + " doesn't support that operator",
                               this->getContext().area);
         }
 
@@ -393,7 +359,7 @@ Runtime::runOperator(OperatorNode::OperatorId id, Object *obj, Object *arg, bool
     case OperatorNode::BITOR :
         op = obj->type->bitor_op;
         if (op == NULL) {
-            this->signalError("Left argument " + obj->userRepr() + " doesn't support that operator",
+            this->signalError("Left argument " + obj->userRepr(this) + " doesn't support that operator",
                               this->getContext().area);
         }
 
@@ -401,7 +367,7 @@ Runtime::runOperator(OperatorNode::OperatorId id, Object *obj, Object *arg, bool
     case OperatorNode::AND :
         op = obj->type->and_op;
         if (op == NULL) {
-            this->signalError("Left argument " + obj->userRepr() + " doesn't support that operator",
+            this->signalError("Left argument " + obj->userRepr(this) + " doesn't support that operator",
                               this->getContext().area);
         }
 
@@ -409,13 +375,13 @@ Runtime::runOperator(OperatorNode::OperatorId id, Object *obj, Object *arg, bool
     case OperatorNode::OR :
         op = obj->type->or_op;
         if (op == NULL) {
-            this->signalError("Left argument " + obj->userRepr() + " doesn't support that operator",
+            this->signalError("Left argument " + obj->userRepr(this) + " doesn't support that operator",
                               this->getContext().area);
         }
 
         return op(obj, arg, this, execution_result_matters);
     default :
-        this->signalError("Left argument " + obj->userRepr() + " doesn't support that operator",
+        this->signalError("Left argument " + obj->userRepr(this) + " doesn't support that operator",
                           this->getContext().area);
     }
 }
@@ -430,7 +396,7 @@ Object *Runtime::runOperator(OperatorNode::OperatorId     id,
     if (id == OperatorNode::CALL) {
         auto op = obj->type->call_op;
         if (op == NULL) {
-            this->signalError("Left argument " + obj->userRepr() + " doesn't support that operator",
+            this->signalError("Left argument " + obj->userRepr(this) + " doesn't support that operator",
                               this->getContext().area);
         }
 
@@ -439,14 +405,14 @@ Object *Runtime::runOperator(OperatorNode::OperatorId     id,
     else if (id == OperatorNode::INDEX) {
         auto op = obj->type->index_op;
         if (op == NULL) {
-            this->signalError("Left argument " + obj->userRepr() + " doesn't support that operator",
+            this->signalError("Left argument " + obj->userRepr(this) + " doesn't support that operator",
                               this->getContext().area);
         }
 
         return op(obj, args, this, execution_result_matters);
     }
     else {
-        this->signalError("Left argument " + obj->userRepr() + " doesn't support that operator",
+        this->signalError("Left argument " + obj->userRepr(this) + " doesn't support that operator",
                           this->getContext().area);
     }
 }
@@ -659,7 +625,7 @@ Object *Runtime::execute(OperatorNode *node, bool execution_result_matters) {
             }
             int64_t selector = dot->second->atom->ident->nameid;
             if (!this->isInstanceObject(caller, NULL)) {
-                this->signalError(caller->userRepr() + " must be an instance object", dot->first->text_area);
+                this->signalError(caller->userRepr(this) + " must be an instance object", dot->first->text_area);
             }
             if (caller->instance->hasField(selector, this)) {
                 selected = caller->instance->selectField(selector, this);
@@ -737,7 +703,7 @@ Object *Runtime::execute(OperatorNode *node, bool execution_result_matters) {
         }
         int64_t selector = node->second->atom->ident->nameid;
         if (!isInstanceObject(self)) {
-            this->signalError(self->userRepr() + " must be an instance object", node->first->text_area);
+            this->signalError(self->userRepr(this) + " must be an instance object", node->first->text_area);
         }
         if (self->instance->hasField(selector, this)) {
             auto res = self->instance->selectField(selector, this);
@@ -1318,23 +1284,23 @@ bool Runtime::isOfType(Object *obj, Type *type) {
 
 void Runtime::verifyIsValidObject(Object *obj) {
     if (!this->isValidObject(obj)) {
-        this->signalError("Not a valid object: " + obj->userRepr(), this->getContext().area);
+        this->signalError("Not a valid object: " + obj->userRepr(this), this->getContext().area);
     }
 }
 
 void Runtime::verifyIsValidObject(Object *obj, const TextArea &ta) {
     if (!this->isValidObject(obj)) {
-        this->signalError("Not a valid object: " + obj->userRepr(), ta);
+        this->signalError("Not a valid object: " + obj->userRepr(this), ta);
     }
 }
 
 void Runtime::verifyIsTypeObject(Object *obj, Type *type) {
     if (!this->isTypeObject(obj, type)) {
         if (type == NULL) {
-            this->signalError("Not a type object: " + obj->userRepr(), this->getContext().area);
+            this->signalError("Not a type object: " + obj->userRepr(this), this->getContext().area);
         }
         else {
-            this->signalError("Not a type object of type " + type->userRepr() + ": " + obj->userRepr(),
+            this->signalError("Not a type object of type " + type->userRepr(this) + ": " + obj->userRepr(this),
                               this->getContext().area);
         }
     }
@@ -1343,10 +1309,11 @@ void Runtime::verifyIsTypeObject(Object *obj, Type *type) {
 void Runtime::verifyIsTypeObject(Object *obj, Type *type, const TextArea &ta) {
     if (!this->isTypeObject(obj, type)) {
         if (type == NULL) {
-            this->signalError("Not a type object: " + obj->userRepr(), ta);
+            this->signalError("Not a type object: " + obj->userRepr(this), ta);
         }
         else {
-            this->signalError("Not a type object of type " + type->userRepr() + ": " + obj->userRepr(), ta);
+            this->signalError("Not a type object of type " + type->userRepr(this) + ": " + obj->userRepr(this),
+                              ta);
         }
     }
 }
@@ -1354,10 +1321,11 @@ void Runtime::verifyIsTypeObject(Object *obj, Type *type, const TextArea &ta) {
 void Runtime::verifyIsInstanceObject(Object *obj, Type *type) {
     if (!this->isInstanceObject(obj, type)) {
         if (type == NULL) {
-            this->signalError("Not an instance object: " + obj->userRepr(), this->getContext().area);
+            this->signalError("Not an instance object: " + obj->userRepr(this), this->getContext().area);
         }
         else {
-            this->signalError("Not an instance object of type " + type->userRepr() + ": " + obj->userRepr(),
+            this->signalError("Not an instance object of type " + type->userRepr(this) + ": "
+                              + obj->userRepr(this),
                               this->getContext().area);
         }
     }
@@ -1366,10 +1334,12 @@ void Runtime::verifyIsInstanceObject(Object *obj, Type *type) {
 void Runtime::verifyIsInstanceObject(Object *obj, Type *type, const TextArea &ta) {
     if (!this->isInstanceObject(obj, type)) {
         if (type == NULL) {
-            this->signalError("Not an instance object: " + obj->userRepr(), ta);
+            this->signalError("Not an instance object: " + obj->userRepr(this), ta);
         }
         else {
-            this->signalError("Not an instance object of type " + type->userRepr() + ": " + obj->userRepr(), ta);
+            this->signalError("Not an instance object of type " + type->userRepr(this) + ": "
+                              + obj->userRepr(this),
+                              ta);
         }
     }
 }
@@ -1379,54 +1349,54 @@ void Runtime::verifyIsOfType(Object *obj, Runtime::BuiltinTypes type) {
     switch (type) {
     case NOTHING_TYPE_ID :
         if (obj->type != this->nothing_type) {
-            this->signalError(obj->userRepr() + " is not of type " + this->nothing_type->userRepr(),
+            this->signalError(obj->userRepr(this) + " is not of type " + this->nothing_type->userRepr(this),
                               this->getContext().area);
         }
         break;
     case BOOLEAN_TYPE_ID :
         if (obj->type != this->boolean_type) {
-            this->signalError(obj->userRepr() + " is not of type " + this->nothing_type->userRepr(),
+            this->signalError(obj->userRepr(this) + " is not of type " + this->nothing_type->userRepr(this),
                               this->getContext().area);
         }
         break;
     case FUNCTION_TYPE_ID :
         if (obj->type != this->function_type) {
-            this->signalError(obj->userRepr() + " is not of type " + this->nothing_type->userRepr(),
+            this->signalError(obj->userRepr(this) + " is not of type " + this->nothing_type->userRepr(this),
                               this->getContext().area);
         }
         break;
     case INTEGER_TYPE_ID :
         if (obj->type != this->integer_type) {
-            this->signalError(obj->userRepr() + " is not of type " + this->nothing_type->userRepr(),
+            this->signalError(obj->userRepr(this) + " is not of type " + this->nothing_type->userRepr(this),
                               this->getContext().area);
         }
         break;
     case REAL_TYPE_ID :
         if (obj->type != this->real_type) {
-            this->signalError(obj->userRepr() + " is not of type " + this->nothing_type->userRepr(),
+            this->signalError(obj->userRepr(this) + " is not of type " + this->nothing_type->userRepr(this),
                               this->getContext().area);
         }
         break;
     case CHARACTER_TYPE_ID :
         if (obj->type != this->character_type) {
-            this->signalError(obj->userRepr() + " is not of type " + this->nothing_type->userRepr(),
+            this->signalError(obj->userRepr(this) + " is not of type " + this->nothing_type->userRepr(this),
                               this->getContext().area);
         }
         break;
     case STRING_TYPE_ID :
         if (obj->type != this->string_type) {
-            this->signalError(obj->userRepr() + " is not of type " + this->nothing_type->userRepr(),
+            this->signalError(obj->userRepr(this) + " is not of type " + this->nothing_type->userRepr(this),
                               this->getContext().area);
         }
         break;
     case ARRAY_TYPE_ID :
         if (obj->type != this->array_type) {
-            this->signalError(obj->userRepr() + " is not of type " + this->nothing_type->userRepr(),
+            this->signalError(obj->userRepr(this) + " is not of type " + this->nothing_type->userRepr(this),
                               this->getContext().area);
         }
         break;
     default :
-        this->signalError(obj->userRepr() + " is not of type ?UNKNOWN_TYPE?", this->getContext().area);
+        this->signalError(obj->userRepr(this) + " is not of type ?UNKNOWN_TYPE?", this->getContext().area);
         break;
         ;
     }
@@ -1437,46 +1407,46 @@ void Runtime::verifyIsOfType(Object *obj, Runtime::BuiltinTypes type, const Text
     switch (type) {
     case NOTHING_TYPE_ID :
         if (obj->type != this->nothing_type) {
-            this->signalError(obj->userRepr() + " is not of type " + this->nothing_type->userRepr(), ta);
+            this->signalError(obj->userRepr(this) + " is not of type " + this->nothing_type->userRepr(this), ta);
         }
         break;
     case BOOLEAN_TYPE_ID :
         if (obj->type != this->boolean_type) {
-            this->signalError(obj->userRepr() + " is not of type " + this->nothing_type->userRepr(), ta);
+            this->signalError(obj->userRepr(this) + " is not of type " + this->nothing_type->userRepr(this), ta);
         }
         break;
     case FUNCTION_TYPE_ID :
         if (obj->type != this->function_type) {
-            this->signalError(obj->userRepr() + " is not of type " + this->nothing_type->userRepr(), ta);
+            this->signalError(obj->userRepr(this) + " is not of type " + this->nothing_type->userRepr(this), ta);
         }
         break;
     case INTEGER_TYPE_ID :
         if (obj->type != this->integer_type) {
-            this->signalError(obj->userRepr() + " is not of type " + this->nothing_type->userRepr(), ta);
+            this->signalError(obj->userRepr(this) + " is not of type " + this->nothing_type->userRepr(this), ta);
         }
         break;
     case REAL_TYPE_ID :
         if (obj->type != this->real_type) {
-            this->signalError(obj->userRepr() + " is not of type " + this->nothing_type->userRepr(), ta);
+            this->signalError(obj->userRepr(this) + " is not of type " + this->nothing_type->userRepr(this), ta);
         }
         break;
     case CHARACTER_TYPE_ID :
         if (obj->type != this->character_type) {
-            this->signalError(obj->userRepr() + " is not of type " + this->nothing_type->userRepr(), ta);
+            this->signalError(obj->userRepr(this) + " is not of type " + this->nothing_type->userRepr(this), ta);
         }
         break;
     case STRING_TYPE_ID :
         if (obj->type != this->string_type) {
-            this->signalError(obj->userRepr() + " is not of type " + this->nothing_type->userRepr(), ta);
+            this->signalError(obj->userRepr(this) + " is not of type " + this->nothing_type->userRepr(this), ta);
         }
         break;
     case ARRAY_TYPE_ID :
         if (obj->type != this->array_type) {
-            this->signalError(obj->userRepr() + " is not of type " + this->nothing_type->userRepr(), ta);
+            this->signalError(obj->userRepr(this) + " is not of type " + this->nothing_type->userRepr(this), ta);
         }
         break;
     default :
-        this->signalError(obj->userRepr() + " is not of type ?UNKNOWN_TYPE?", ta);
+        this->signalError(obj->userRepr(this) + " is not of type ?UNKNOWN_TYPE?", ta);
         break;
         ;
     }
@@ -1484,13 +1454,14 @@ void Runtime::verifyIsOfType(Object *obj, Runtime::BuiltinTypes type, const Text
 
 void Runtime::verifyIsOfType(Object *obj, Type *type) {
     if (!this->isOfType(obj, type)) {
-        this->signalError(obj->userRepr() + " is not of type " + type->userRepr(), this->getContext().area);
+        this->signalError(obj->userRepr(this) + " is not of type " + type->userRepr(this),
+                          this->getContext().area);
     }
 }
 
 void Runtime::verifyIsOfType(Object *obj, Type *type, const TextArea &ta) {
     if (!this->isOfType(obj, type)) {
-        this->signalError(obj->userRepr() + " is not of type " + type->userRepr(), ta);
+        this->signalError(obj->userRepr(this) + " is not of type " + type->userRepr(this), ta);
     }
 }
 
@@ -1563,7 +1534,7 @@ void Runtime::verifyExactArgsAmountMethod(const std::vector<Object *> &args, int
 void Runtime::verifyHasMethod(Object *obj, int64_t id) {
     this->verifyIsInstanceObject(obj, NULL);
     if (!obj->type->hasMethod(id)) {
-        this->signalError(obj->userRepr() + " doesn't have method " + NameId::userRepr(id),
+        this->signalError(obj->userRepr(this) + " doesn't have method " + this->nds->userRepr(id),
                           this->getContext().area);
     }
 }
@@ -1571,55 +1542,45 @@ void Runtime::verifyHasMethod(Object *obj, int64_t id) {
 void Runtime::verifyHasMethod(Object *obj, int64_t id, const TextArea &ta) {
     this->verifyIsValidObject(obj, ta);
     if (!obj->type->hasMethod(id)) {
-        this->signalError(obj->userRepr() + " doesn't have method " + NameId::userRepr(id), ta);
+        this->signalError(obj->userRepr(this) + " doesn't have method " + this->nds->userRepr(id), ta);
     }
 }
 
 namespace MagicMethods {
-
-    int64_t mm__make__() {
-        static NameId res("__make__");
-        return res.id;
+    int64_t mm__make__(Runtime *rt) {
+        return rt->nds->get("__make__").id;
     }
 
-    int64_t mm__copy__() {
-        static NameId res("__copy__");
-        return res.id;
+    int64_t mm__copy__(Runtime *rt) {
+        return rt->nds->get("__copy__").id;
     }
 
-    int64_t mm__bool__() {
-        static NameId res("__bool__");
-        return res.id;
+    int64_t mm__bool__(Runtime *rt) {
+        return rt->nds->get("__bool__").id;
     }
 
-    int64_t mm__char__() {
-        static NameId res("__char__");
-        return res.id;
+    int64_t mm__char__(Runtime *rt) {
+        return rt->nds->get("__char__").id;
     }
 
-    int64_t mm__int__() {
-        static NameId res("__int__");
-        return res.id;
+    int64_t mm__int__(Runtime *rt) {
+        return rt->nds->get("__int__").id;
     }
 
-    int64_t mm__real__() {
-        static NameId res("__real__");
-        return res.id;
+    int64_t mm__real__(Runtime *rt) {
+        return rt->nds->get("__real__").id;
     }
 
-    int64_t mm__string__() {
-        static NameId res("__string__");
-        return res.id;
+    int64_t mm__string__(Runtime *rt) {
+        return rt->nds->get("__string__").id;
     }
 
-    int64_t mm__repr__() {
-        static NameId res("__repr__");
-        return res.id;
+    int64_t mm__repr__(Runtime *rt) {
+        return rt->nds->get("__repr__").id;
     }
 
-    int64_t mm__read__() {
-        static NameId res("__read__");
-        return res.id;
+    int64_t mm__read__(Runtime *rt) {
+        return rt->nds->get("__read__").id;
     }
 }    // namespace MagicMethods
 

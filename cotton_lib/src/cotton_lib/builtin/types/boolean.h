@@ -34,8 +34,7 @@ public:
 
     Instance   *copy(Runtime *rt);
     size_t      getSize();
-    std::string userRepr();
-    void        destroy(Runtime *rt);
+    std::string userRepr(Runtime *rt);
 };
 
 class BooleanType: public Type {
@@ -45,7 +44,7 @@ public:
     ~BooleanType() = default;
     Object     *create(Runtime *rt);
     Object     *copy(Object *obj, Runtime *rt);
-    std::string userRepr();
+    std::string userRepr(Runtime *rt);
 };
 
 void installBooleanMethods(Type *type, Runtime *rt);

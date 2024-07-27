@@ -36,25 +36,21 @@ IntegerInstance::~IntegerInstance() {
 
 Instance *IntegerInstance::copy(Runtime *rt) {
     ProfilerCAPTURE();
-    Instance *res = new (rt->alloc(sizeof(IntegerInstance))) IntegerInstance(rt);
+    Instance *res = new IntegerInstance(rt);
 
     if (res == NULL) {
-        rt->signalError("Failed to copy " + this->userRepr(), rt->getContext().area);
+        rt->signalError("Failed to copy " + this->userRepr(rt), rt->getContext().area);
     }
     icast(res, IntegerInstance)->value = this->value;
     return res;
 }
 
-std::string IntegerInstance::userRepr() {
+std::string IntegerInstance::userRepr(Runtime *rt) {
     ProfilerCAPTURE();
     if (this == NULL) {
         return "Integer(NULL)";
     }
     return "Integer(value = " + std::to_string(this->value) + ")";
-}
-
-void IntegerInstance::destroy(Runtime *rt) {
-    rt->dealloc(this, sizeof(IntegerInstance));
 }
 
 size_t IntegerInstance::getSize() {
@@ -453,14 +449,14 @@ static Object *mm__read__(const std::vector<Object *> &args, Runtime *rt, bool e
 }
 
 void installIntegerMethods(Type *type, Runtime *rt) {
-    type->addMethod(MagicMethods::mm__bool__(), Builtin::makeFunctionInstanceObject(true, mm__bool__, NULL, rt));
-    type->addMethod(MagicMethods::mm__char__(), Builtin::makeFunctionInstanceObject(true, mm__char__, NULL, rt));
-    type->addMethod(MagicMethods::mm__int__(), Builtin::makeFunctionInstanceObject(true, mm__int__, NULL, rt));
-    type->addMethod(MagicMethods::mm__real__(), Builtin::makeFunctionInstanceObject(true, mm__real__, NULL, rt));
-    type->addMethod(MagicMethods::mm__string__(),
+    type->addMethod(MagicMethods::mm__bool__(rt), Builtin::makeFunctionInstanceObject(true, mm__bool__, NULL, rt));
+    type->addMethod(MagicMethods::mm__char__(rt), Builtin::makeFunctionInstanceObject(true, mm__char__, NULL, rt));
+    type->addMethod(MagicMethods::mm__int__(rt), Builtin::makeFunctionInstanceObject(true, mm__int__, NULL, rt));
+    type->addMethod(MagicMethods::mm__real__(rt), Builtin::makeFunctionInstanceObject(true, mm__real__, NULL, rt));
+    type->addMethod(MagicMethods::mm__string__(rt),
                     Builtin::makeFunctionInstanceObject(true, mm__string__, NULL, rt));
-    type->addMethod(MagicMethods::mm__repr__(), Builtin::makeFunctionInstanceObject(true, mm__repr__, NULL, rt));
-    type->addMethod(MagicMethods::mm__read__(), Builtin::makeFunctionInstanceObject(true, mm__read__, NULL, rt));
+    type->addMethod(MagicMethods::mm__repr__(rt), Builtin::makeFunctionInstanceObject(true, mm__repr__, NULL, rt));
+    type->addMethod(MagicMethods::mm__read__(rt), Builtin::makeFunctionInstanceObject(true, mm__read__, NULL, rt));
 }
 
 IntegerType::IntegerType(Runtime *rt)
@@ -493,7 +489,7 @@ IntegerType::IntegerType(Runtime *rt)
 
 Object *IntegerType::create(Runtime *rt) {
     ProfilerCAPTURE();
-    Instance *ins = new (rt->alloc(sizeof(IntegerInstance))) IntegerInstance(rt);
+    Instance *ins = new IntegerInstance(rt);
     Object   *obj = newObject(true, ins, this, rt);
     return obj;
 }
@@ -509,7 +505,7 @@ Object *IntegerType::copy(Object *obj, Runtime *rt) {
     return res;
 }
 
-std::string IntegerType::userRepr() {
+std::string IntegerType::userRepr(Runtime *rt) {
     ProfilerCAPTURE();
     if (this == NULL) {
         return "IntegerType(NULL)";

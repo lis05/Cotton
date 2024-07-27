@@ -35,25 +35,21 @@ RealInstance::~RealInstance() {
 
 Instance *RealInstance::copy(Runtime *rt) {
     ProfilerCAPTURE();
-    Instance *res = new (rt->alloc(sizeof(RealInstance))) RealInstance(rt);
+    Instance *res = new RealInstance(rt);
 
     if (res == NULL) {
-        rt->signalError("Failed to copy " + this->userRepr(), rt->getContext().area);
+        rt->signalError("Failed to copy " + this->userRepr(rt), rt->getContext().area);
     }
     icast(res, RealInstance)->value = this->value;
     return res;
 }
 
-std::string RealInstance::userRepr() {
+std::string RealInstance::userRepr(Runtime *rt) {
     ProfilerCAPTURE();
     if (this == NULL) {
         return "Real(NULL)";
     }
     return "Real(value = " + std::to_string(this->value) + ")";
-}
-
-void RealInstance::destroy(Runtime *rt) {
-    rt->dealloc(this, sizeof(RealInstance));
 }
 
 size_t RealInstance::getSize() {
@@ -315,14 +311,14 @@ static Object *mm__read__(const std::vector<Object *> &args, Runtime *rt, bool e
 }
 
 void installRealMethods(Type *type, Runtime *rt) {
-    type->addMethod(MagicMethods::mm__bool__(), Builtin::makeFunctionInstanceObject(true, mm__bool__, NULL, rt));
-    type->addMethod(MagicMethods::mm__char__(), Builtin::makeFunctionInstanceObject(true, mm__char__, NULL, rt));
-    type->addMethod(MagicMethods::mm__int__(), Builtin::makeFunctionInstanceObject(true, mm__int__, NULL, rt));
-    type->addMethod(MagicMethods::mm__real__(), Builtin::makeFunctionInstanceObject(true, mm__real__, NULL, rt));
-    type->addMethod(MagicMethods::mm__string__(),
+    type->addMethod(MagicMethods::mm__bool__(rt), Builtin::makeFunctionInstanceObject(true, mm__bool__, NULL, rt));
+    type->addMethod(MagicMethods::mm__char__(rt), Builtin::makeFunctionInstanceObject(true, mm__char__, NULL, rt));
+    type->addMethod(MagicMethods::mm__int__(rt), Builtin::makeFunctionInstanceObject(true, mm__int__, NULL, rt));
+    type->addMethod(MagicMethods::mm__real__(rt), Builtin::makeFunctionInstanceObject(true, mm__real__, NULL, rt));
+    type->addMethod(MagicMethods::mm__string__(rt),
                     Builtin::makeFunctionInstanceObject(true, mm__string__, NULL, rt));
-    type->addMethod(MagicMethods::mm__repr__(), Builtin::makeFunctionInstanceObject(true, mm__repr__, NULL, rt));
-    type->addMethod(MagicMethods::mm__read__(), Builtin::makeFunctionInstanceObject(true, mm__read__, NULL, rt));
+    type->addMethod(MagicMethods::mm__repr__(rt), Builtin::makeFunctionInstanceObject(true, mm__repr__, NULL, rt));
+    type->addMethod(MagicMethods::mm__read__(rt), Builtin::makeFunctionInstanceObject(true, mm__read__, NULL, rt));
 }
 
 RealType::RealType(Runtime *rt)
@@ -344,7 +340,7 @@ RealType::RealType(Runtime *rt)
 
 Object *RealType::create(Runtime *rt) {
     ProfilerCAPTURE();
-    Instance *ins = new (rt->alloc(sizeof(RealInstance))) RealInstance(rt);
+    Instance *ins = new RealInstance(rt);
     Object   *obj = newObject(true, ins, this, rt);
     return obj;
 }
@@ -360,7 +356,7 @@ Object *RealType::copy(Object *obj, Runtime *rt) {
     return res;
 }
 
-std::string RealType::userRepr() {
+std::string RealType::userRepr(Runtime *rt) {
     ProfilerCAPTURE();
     if (this == NULL) {
         return "RealType(NULL)";

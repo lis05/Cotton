@@ -41,7 +41,7 @@ Object *UserDefinedInstance::selectField(int64_t id, Runtime *rt) {
     if (it != this->fields.end()) {
         return it->second;
     }
-    rt->signalError(this->userRepr() + "doesn't have field " + NameId::userRepr(id), rt->getContext().area);
+    rt->signalError(this->userRepr(rt) + "doesn't have field " + rt->nds->userRepr(id), rt->getContext().area);
 }
 
 bool UserDefinedInstance::hasField(int64_t id, Runtime *rt) {
@@ -69,16 +69,12 @@ size_t UserDefinedType::getInstanceSize() {
     return sizeof(UserDefinedInstance);
 }
 
-std::string UserDefinedInstance::userRepr() {
+std::string UserDefinedInstance::userRepr(Runtime *rt) {
     ProfilerCAPTURE();
     if (this == NULL) {
         return "UserDefined(NULL)";
     }
-    return NameId::userRepr(this->nameid);
-}
-
-void UserDefinedInstance::destroy(Runtime *rt) {
-    delete this;
+    return rt->nds->userRepr(this->nameid);
 }
 
 std::vector<Object *> UserDefinedInstance::getGCReachable() {
@@ -99,19 +95,19 @@ Object *UserDefinedType::create(Runtime *rt) {
     ProfilerCAPTURE();
     auto ins = new UserDefinedInstance(rt);
     for (auto f : this->instance_fields) {
-        ins->addField(NameId(f).id, makeNothingInstanceObject(rt), rt);
+        ins->addField(rt->nds->get(f).id, makeNothingInstanceObject(rt), rt);
     }
     Object *obj = newObject(true, ins, this, rt);
 
     return obj;
 }
 
-std::string UserDefinedType::userRepr() {
+std::string UserDefinedType::userRepr(Runtime *rt) {
     ProfilerCAPTURE();
     if (this == NULL) {
         return "NULL";
     }
-    return NameId::userRepr(this->nameid);
+    return rt->nds->userRepr(this->nameid);
 }
 
 // TODO: == and !=

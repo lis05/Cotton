@@ -32,10 +32,9 @@ public:
     StringInstance(Runtime *rt);
     ~StringInstance();
 
-    Instance             *copy(Runtime *rt);
-    size_t                getSize();
-    std::string           userRepr();
-    void                  destroy(Runtime *rt);
+    Instance   *copy(Runtime *rt);
+    size_t      getSize();
+    std::string userRepr(Runtime *rt);
 };
 
 class StringType: public Type {
@@ -45,7 +44,7 @@ public:
     ~StringType() = default;
     Object     *create(Runtime *rt);
     Object     *copy(Object *obj, Runtime *rt);
-    std::string userRepr();
+    std::string userRepr(Runtime *rt);
 };
 
 void installStringMethods(Type *type, Runtime *rt);

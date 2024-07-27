@@ -37,10 +37,10 @@ NothingInstance::~NothingInstance() {
 
 Instance *NothingInstance::copy(Runtime *rt) {
     ProfilerCAPTURE();
-    Instance *res = new (rt->alloc(sizeof(NothingInstance))) NothingInstance(rt);
+    Instance *res = new NothingInstance(rt);
 
     if (res == NULL) {
-        rt->signalError("Failed to copy " + this->userRepr(), rt->getContext().area);
+        rt->signalError("Failed to copy " + this->userRepr(rt), rt->getContext().area);
     }
     return res;
 }
@@ -55,16 +55,12 @@ size_t NothingType::getInstanceSize() {
     return sizeof(NothingInstance);
 }
 
-std::string NothingInstance::userRepr() {
+std::string NothingInstance::userRepr(Runtime *rt) {
     ProfilerCAPTURE();
     if (this == NULL) {
         return "Nothing(NULL)";
     }
     return "Nothing";
-}
-
-void NothingInstance::destroy(Runtime *rt) {
-    rt->dealloc(this, sizeof(NothingInstance));
 }
 
 static Object *NothingEqAdapter(Object *self, Object *arg, Runtime *rt, bool execution_result_matters) {
@@ -103,7 +99,7 @@ static Object *mm__repr__(const std::vector<Object *> &args, Runtime *rt, bool e
 }
 
 void installNothingMethods(Type *type, Runtime *rt) {
-    type->addMethod(MagicMethods::mm__repr__(), Builtin::makeFunctionInstanceObject(true, mm__repr__, NULL, rt));
+    type->addMethod(MagicMethods::mm__repr__(rt), Builtin::makeFunctionInstanceObject(true, mm__repr__, NULL, rt));
 }
 
 NothingType::NothingType(Runtime *rt)
@@ -115,12 +111,12 @@ NothingType::NothingType(Runtime *rt)
 
 Object *NothingType::create(Runtime *rt) {
     ProfilerCAPTURE();
-    Instance *ins = new (rt->alloc(sizeof(NothingInstance))) NothingInstance(rt);
+    Instance *ins = new NothingInstance(rt);
     Object   *obj = newObject(true, ins, this, rt);
     return obj;
 }
 
-std::string NothingType::userRepr() {
+std::string NothingType::userRepr(Runtime *rt) {
     ProfilerCAPTURE();
     if (this == NULL) {
         return "NothingType(NULL)";

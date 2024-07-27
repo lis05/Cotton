@@ -34,8 +34,8 @@ static Object *CF_make(const std::vector<Object *> &args, Runtime *rt, bool exec
 
     auto res = rt->make(arg->type, Runtime::INSTANCE_OBJECT);
 
-    if (rt->isValidObject(res) && res->type->hasMethod(MagicMethods::mm__make__())) {
-        rt->runMethod(MagicMethods::mm__make__(), res, {res}, false);
+    if (rt->isValidObject(res) && res->type->hasMethod(MagicMethods::mm__make__(rt))) {
+        rt->runMethod(MagicMethods::mm__make__(rt), res, {res}, false);
     }
     return res;
 }
@@ -47,8 +47,8 @@ static Object *CF_copy(const std::vector<Object *> &args, Runtime *rt, bool exec
     auto arg = args[0];
     rt->verifyIsValidObject(arg, rt->getContext().sub_areas[1]);
 
-    if (arg->type->hasMethod(MagicMethods::mm__copy__())) {
-        return rt->runMethod(MagicMethods::mm__copy__(), arg, {arg}, true);
+    if (arg->type->hasMethod(MagicMethods::mm__copy__(rt))) {
+        return rt->runMethod(MagicMethods::mm__copy__(rt), arg, {arg}, true);
     }
 
     return rt->copy(args[0]);
@@ -61,8 +61,8 @@ static Object *CF_bool(const std::vector<Object *> &args, Runtime *rt, bool exec
     auto arg = args[0];
     rt->verifyIsValidObject(arg, rt->getContext().sub_areas[1]);
 
-    rt->verifyHasMethod(arg, MagicMethods::mm__bool__(), rt->getContext().sub_areas[1]);
-    return rt->runMethod(MagicMethods::mm__bool__(), arg, {arg}, execution_result_matters);
+    rt->verifyHasMethod(arg, MagicMethods::mm__bool__(rt), rt->getContext().sub_areas[1]);
+    return rt->runMethod(MagicMethods::mm__bool__(rt), arg, {arg}, execution_result_matters);
 }
 
 // char(obj) - converts obj to Character
@@ -72,8 +72,8 @@ static Object *CF_char(const std::vector<Object *> &args, Runtime *rt, bool exec
     auto arg = args[0];
     rt->verifyIsValidObject(arg, rt->getContext().sub_areas[1]);
 
-    rt->verifyHasMethod(arg, MagicMethods::mm__char__(), rt->getContext().sub_areas[1]);
-    return rt->runMethod(MagicMethods::mm__char__(), arg, {arg}, execution_result_matters);
+    rt->verifyHasMethod(arg, MagicMethods::mm__char__(rt), rt->getContext().sub_areas[1]);
+    return rt->runMethod(MagicMethods::mm__char__(rt), arg, {arg}, execution_result_matters);
 }
 
 // int(obj) - converts obj to Integer
@@ -83,8 +83,8 @@ static Object *CF_int(const std::vector<Object *> &args, Runtime *rt, bool execu
     auto arg = args[0];
     rt->verifyIsValidObject(arg, rt->getContext().sub_areas[1]);
 
-    rt->verifyHasMethod(arg, MagicMethods::mm__int__(), rt->getContext().sub_areas[1]);
-    return rt->runMethod(MagicMethods::mm__int__(), arg, {arg}, execution_result_matters);
+    rt->verifyHasMethod(arg, MagicMethods::mm__int__(rt), rt->getContext().sub_areas[1]);
+    return rt->runMethod(MagicMethods::mm__int__(rt), arg, {arg}, execution_result_matters);
 }
 
 // real(obj) - converts obj to Real
@@ -94,8 +94,8 @@ static Object *CF_real(const std::vector<Object *> &args, Runtime *rt, bool exec
     auto arg = args[0];
     rt->verifyIsValidObject(arg, rt->getContext().sub_areas[1]);
 
-    rt->verifyHasMethod(arg, MagicMethods::mm__real__(), rt->getContext().sub_areas[1]);
-    return rt->runMethod(MagicMethods::mm__real__(), arg, {arg}, execution_result_matters);
+    rt->verifyHasMethod(arg, MagicMethods::mm__real__(rt), rt->getContext().sub_areas[1]);
+    return rt->runMethod(MagicMethods::mm__real__(rt), arg, {arg}, execution_result_matters);
 }
 
 // string(obj) - converts obj to String
@@ -105,8 +105,8 @@ static Object *CF_string(const std::vector<Object *> &args, Runtime *rt, bool ex
     auto arg = args[0];
     rt->verifyIsValidObject(arg, rt->getContext().sub_areas[1]);
 
-    rt->verifyHasMethod(arg, MagicMethods::mm__string__(), rt->getContext().sub_areas[1]);
-    return rt->runMethod(MagicMethods::mm__string__(), arg, {arg}, execution_result_matters);
+    rt->verifyHasMethod(arg, MagicMethods::mm__string__(rt), rt->getContext().sub_areas[1]);
+    return rt->runMethod(MagicMethods::mm__string__(rt), arg, {arg}, execution_result_matters);
 }
 
 // printraw(...) - prints arguments without adding any spaces or new lines
@@ -121,13 +121,13 @@ static Object *CF_printraw(const std::vector<Object *> &args, Runtime *rt, bool 
             continue;
         }
 
-        rt->verifyHasMethod(arg, MagicMethods::mm__repr__(), rt->getContext().sub_areas[index]);
+        rt->verifyHasMethod(arg, MagicMethods::mm__repr__(rt), rt->getContext().sub_areas[index]);
 
         auto &ta = rt->getContext().sub_areas[index];
         rt->newContext();
         rt->getContext().area      = ta;
         rt->getContext().sub_areas = {ta, ta};
-        auto res                   = rt->runMethod(MagicMethods::mm__repr__(), arg, {arg}, true);
+        auto res                   = rt->runMethod(MagicMethods::mm__repr__(rt), arg, {arg}, true);
         CF_printraw({res}, rt, false);
         rt->popContext();
     }
@@ -191,8 +191,8 @@ static Object *CF_read(const std::vector<Object *> &args, Runtime *rt, bool exec
     auto arg = args[0];
     rt->verifyIsTypeObject(arg, NULL, rt->getContext().sub_areas[1]);
 
-    rt->verifyHasMethod(arg, MagicMethods::mm__read__(), rt->getContext().sub_areas[1]);
-    return rt->runMethod(MagicMethods::mm__read__(), arg, {arg}, execution_result_matters);
+    rt->verifyHasMethod(arg, MagicMethods::mm__read__(rt), rt->getContext().sub_areas[1]);
+    return rt->runMethod(MagicMethods::mm__read__(rt), arg, {arg}, execution_result_matters);
 }
 
 // readln() - scans an entire line
@@ -281,7 +281,7 @@ static Object *CF_cotton(const std::vector<Object *> &args, Runtime *rt, bool ex
 
     std::vector<Token> tokens = lexer.process(str);
     for (auto &token : tokens) {
-        token.nameid     = NameId(&token).id;
+        token.nameid     = rt->nds->get(&token).id;
         // yeah this is awful but it works so shut up
         token.begin_pos += rt->getContext().sub_areas[1].first_char + 1;
         token.end_pos   += rt->getContext().sub_areas[1].first_char + 1;
@@ -355,7 +355,7 @@ static Object *CF_argg(const std::vector<Object *> &args, Runtime *rt, bool exec
         return s->arguments[i];
     }
     else {
-        rt->signalError("Argument index is out of range:" + arg->userRepr(), rt->getContext().sub_areas[1]);
+        rt->signalError("Argument index is out of range:" + arg->userRepr(rt), rt->getContext().sub_areas[1]);
     }
 }
 
@@ -420,8 +420,8 @@ static Object *CF_repr(const std::vector<Object *> &args, Runtime *rt, bool exec
     auto arg = args[0];
     rt->verifyIsValidObject(arg, rt->getContext().sub_areas[1]);
 
-    rt->verifyHasMethod(arg, MagicMethods::mm__repr__(), rt->getContext().sub_areas[1]);
-    return rt->runMethod(MagicMethods::mm__repr__(), arg, {arg}, execution_result_matters);
+    rt->verifyHasMethod(arg, MagicMethods::mm__repr__(rt), rt->getContext().sub_areas[1]);
+    return rt->runMethod(MagicMethods::mm__repr__(rt), arg, {arg}, execution_result_matters);
 }
 
 // hasfield(obj, str) - tells whether obj has field given in str
@@ -436,7 +436,7 @@ static Object *CF_hasfield(const std::vector<Object *> &args, Runtime *rt, bool 
     if (!execution_result_matters) {
         return rt->protected_nothing;
     }
-    return rt->protectedBoolean(obj->instance->hasField(NameId(getStringDataFast(str)).id, rt));
+    return rt->protectedBoolean(obj->instance->hasField(rt->nds->get(getStringDataFast(str)).id, rt));
 }
 
 // hasmethod(obj, str) - tells whether obj has method given in str
@@ -451,7 +451,7 @@ static Object *CF_hasmethod(const std::vector<Object *> &args, Runtime *rt, bool
     if (!execution_result_matters) {
         return rt->protected_nothing;
     }
-    return rt->protectedBoolean(obj->type->hasMethod(NameId(getStringDataFast(str)).id));
+    return rt->protectedBoolean(obj->type->hasMethod(rt->nds->get(getStringDataFast(str)).id));
 }
 
 // assert(val, str) - raises an error given in str(or "assertion error" is str is absent) if value is not true
@@ -481,35 +481,45 @@ static Object *CF_assert(const std::vector<Object *> &args, Runtime *rt, bool ex
 
 void installBuiltinFunctions(Runtime *rt) {
     ProfilerCAPTURE();
-    rt->scope->addVariable(NameId("make").id, makeFunctionInstanceObject(true, CF_make, NULL, rt), rt);
-    rt->scope->addVariable(NameId("copy").id, makeFunctionInstanceObject(true, CF_copy, NULL, rt), rt);
-    rt->scope->addVariable(NameId("bool").id, makeFunctionInstanceObject(true, CF_bool, NULL, rt), rt);
-    rt->scope->addVariable(NameId("char").id, makeFunctionInstanceObject(true, CF_char, NULL, rt), rt);
-    rt->scope->addVariable(NameId("int").id, makeFunctionInstanceObject(true, CF_int, NULL, rt), rt);
-    rt->scope->addVariable(NameId("real").id, makeFunctionInstanceObject(true, CF_real, NULL, rt), rt);
-    rt->scope->addVariable(NameId("string").id, makeFunctionInstanceObject(true, CF_string, NULL, rt), rt);
-    rt->scope->addVariable(NameId("printraw").id, makeFunctionInstanceObject(true, CF_printraw, NULL, rt), rt);
-    rt->scope->addVariable(NameId("print").id, makeFunctionInstanceObject(true, CF_print, NULL, rt), rt);
-    rt->scope->addVariable(NameId("printf").id, makeFunctionInstanceObject(true, CF_printf, NULL, rt), rt);
-    rt->scope->addVariable(NameId("println").id, makeFunctionInstanceObject(true, CF_println, NULL, rt), rt);
-    rt->scope->addVariable(NameId("readraw").id, makeFunctionInstanceObject(true, CF_readraw, NULL, rt), rt);
-    rt->scope->addVariable(NameId("read").id, makeFunctionInstanceObject(true, CF_read, NULL, rt), rt);
-    rt->scope->addVariable(NameId("readln").id, makeFunctionInstanceObject(true, CF_readln, NULL, rt), rt);
-    rt->scope->addVariable(NameId("exit").id, makeFunctionInstanceObject(true, CF_exit, NULL, rt), rt);
-    rt->scope->addVariable(NameId("fork").id, makeFunctionInstanceObject(true, CF_fork, NULL, rt), rt);
-    rt->scope->addVariable(NameId("system").id, makeFunctionInstanceObject(true, CF_system, NULL, rt), rt);
-    rt->scope->addVariable(NameId("sleep").id, makeFunctionInstanceObject(true, CF_sleep, NULL, rt), rt);
-    rt->scope->addVariable(NameId("error").id, makeFunctionInstanceObject(true, CF_error, NULL, rt), rt);
-    rt->scope->addVariable(NameId("cotton").id, makeFunctionInstanceObject(true, CF_cotton, NULL, rt), rt);
-    rt->scope->addVariable(NameId("argc").id, makeFunctionInstanceObject(true, CF_argc, NULL, rt), rt);
-    rt->scope->addVariable(NameId("argv").id, makeFunctionInstanceObject(true, CF_argv, NULL, rt), rt);
-    rt->scope->addVariable(NameId("argg").id, makeFunctionInstanceObject(true, CF_argg, NULL, rt), rt);
-    rt->scope->addVariable(NameId("typeof").id, makeFunctionInstanceObject(true, CF_typeof, NULL, rt), rt);
-    rt->scope->addVariable(NameId("isinsobj").id, makeFunctionInstanceObject(true, CF_isinsobj, NULL, rt), rt);
-    rt->scope->addVariable(NameId("istypeobj").id, makeFunctionInstanceObject(true, CF_istypeobj, NULL, rt), rt);
-    rt->scope->addVariable(NameId("repr").id, makeFunctionInstanceObject(true, CF_repr, NULL, rt), rt);
-    rt->scope->addVariable(NameId("hasfield").id, makeFunctionInstanceObject(true, CF_hasfield, NULL, rt), rt);
-    rt->scope->addVariable(NameId("hasmethod").id, makeFunctionInstanceObject(true, CF_hasmethod, NULL, rt), rt);
-    rt->scope->addVariable(NameId("assert").id, makeFunctionInstanceObject(true, CF_assert, NULL, rt), rt);
+    rt->scope->addVariable(rt->nds->get("make").id, makeFunctionInstanceObject(true, CF_make, NULL, rt), rt);
+    rt->scope->addVariable(rt->nds->get("copy").id, makeFunctionInstanceObject(true, CF_copy, NULL, rt), rt);
+    rt->scope->addVariable(rt->nds->get("bool").id, makeFunctionInstanceObject(true, CF_bool, NULL, rt), rt);
+    rt->scope->addVariable(rt->nds->get("char").id, makeFunctionInstanceObject(true, CF_char, NULL, rt), rt);
+    rt->scope->addVariable(rt->nds->get("int").id, makeFunctionInstanceObject(true, CF_int, NULL, rt), rt);
+    rt->scope->addVariable(rt->nds->get("real").id, makeFunctionInstanceObject(true, CF_real, NULL, rt), rt);
+    rt->scope->addVariable(rt->nds->get("string").id, makeFunctionInstanceObject(true, CF_string, NULL, rt), rt);
+    rt->scope->addVariable(rt->nds->get("printraw").id,
+                           makeFunctionInstanceObject(true, CF_printraw, NULL, rt),
+                           rt);
+    rt->scope->addVariable(rt->nds->get("print").id, makeFunctionInstanceObject(true, CF_print, NULL, rt), rt);
+    rt->scope->addVariable(rt->nds->get("printf").id, makeFunctionInstanceObject(true, CF_printf, NULL, rt), rt);
+    rt->scope->addVariable(rt->nds->get("println").id, makeFunctionInstanceObject(true, CF_println, NULL, rt), rt);
+    rt->scope->addVariable(rt->nds->get("readraw").id, makeFunctionInstanceObject(true, CF_readraw, NULL, rt), rt);
+    rt->scope->addVariable(rt->nds->get("read").id, makeFunctionInstanceObject(true, CF_read, NULL, rt), rt);
+    rt->scope->addVariable(rt->nds->get("readln").id, makeFunctionInstanceObject(true, CF_readln, NULL, rt), rt);
+    rt->scope->addVariable(rt->nds->get("exit").id, makeFunctionInstanceObject(true, CF_exit, NULL, rt), rt);
+    rt->scope->addVariable(rt->nds->get("fork").id, makeFunctionInstanceObject(true, CF_fork, NULL, rt), rt);
+    rt->scope->addVariable(rt->nds->get("system").id, makeFunctionInstanceObject(true, CF_system, NULL, rt), rt);
+    rt->scope->addVariable(rt->nds->get("sleep").id, makeFunctionInstanceObject(true, CF_sleep, NULL, rt), rt);
+    rt->scope->addVariable(rt->nds->get("error").id, makeFunctionInstanceObject(true, CF_error, NULL, rt), rt);
+    rt->scope->addVariable(rt->nds->get("cotton").id, makeFunctionInstanceObject(true, CF_cotton, NULL, rt), rt);
+    rt->scope->addVariable(rt->nds->get("argc").id, makeFunctionInstanceObject(true, CF_argc, NULL, rt), rt);
+    rt->scope->addVariable(rt->nds->get("argv").id, makeFunctionInstanceObject(true, CF_argv, NULL, rt), rt);
+    rt->scope->addVariable(rt->nds->get("argg").id, makeFunctionInstanceObject(true, CF_argg, NULL, rt), rt);
+    rt->scope->addVariable(rt->nds->get("typeof").id, makeFunctionInstanceObject(true, CF_typeof, NULL, rt), rt);
+    rt->scope->addVariable(rt->nds->get("isinsobj").id,
+                           makeFunctionInstanceObject(true, CF_isinsobj, NULL, rt),
+                           rt);
+    rt->scope->addVariable(rt->nds->get("istypeobj").id,
+                           makeFunctionInstanceObject(true, CF_istypeobj, NULL, rt),
+                           rt);
+    rt->scope->addVariable(rt->nds->get("repr").id, makeFunctionInstanceObject(true, CF_repr, NULL, rt), rt);
+    rt->scope->addVariable(rt->nds->get("hasfield").id,
+                           makeFunctionInstanceObject(true, CF_hasfield, NULL, rt),
+                           rt);
+    rt->scope->addVariable(rt->nds->get("hasmethod").id,
+                           makeFunctionInstanceObject(true, CF_hasmethod, NULL, rt),
+                           rt);
+    rt->scope->addVariable(rt->nds->get("assert").id, makeFunctionInstanceObject(true, CF_assert, NULL, rt), rt);
 }
 }    // namespace Cotton::Builtin

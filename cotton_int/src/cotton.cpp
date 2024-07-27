@@ -67,15 +67,16 @@ int main(int argc, char *argv[]) {
     ErrorManager em(emergency_error_exit);
     Lexer        lx(&em);
     Parser       pr(&em);
+    NameIds nds;
 
     auto tokens = lx.processFile(file);
     for (auto &token : tokens) {
-        token.nameid = NameId(&token).id;
+        token.nameid = nds.get(&token).id;
     }
     auto program = pr.parse(tokens);
 
     GCDefaultStrategy gcst;
-    Runtime           rt(&gcst, &em);
+    Runtime           rt(&gcst, &em, &nds);
 
     auto begin_time = duration_cast<milliseconds>(system_clock::now().time_since_epoch()).count();
     rt.execute(program, false);

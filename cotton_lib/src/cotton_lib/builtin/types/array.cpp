@@ -36,10 +36,10 @@ ArrayInstance::~ArrayInstance() {
 
 Instance *ArrayInstance::copy(Runtime *rt) {
     ProfilerCAPTURE();
-    Instance *res = new (rt->alloc(sizeof(ArrayInstance))) ArrayInstance(rt);
+    Instance *res = new ArrayInstance(rt);
 
     if (res == NULL) {
-        rt->signalError("Failed to copy " + this->userRepr(), rt->getContext().area);
+        rt->signalError("Failed to copy " + this->userRepr(rt), rt->getContext().area);
     }
     for (auto obj : this->data) {
         ((ArrayInstance *)res)->data.push_back(rt->copy(obj));
@@ -47,16 +47,12 @@ Instance *ArrayInstance::copy(Runtime *rt) {
     return res;
 }
 
-std::string ArrayInstance::userRepr() {
+std::string ArrayInstance::userRepr(Runtime *rt) {
     ProfilerCAPTURE();
     if (this == NULL) {
         return "Array(NULL)";
     }
     return "Array(size = " + std::to_string(this->data.size()) + ", data = ...)";
-}
-
-void ArrayInstance::destroy(Runtime *rt) {
-    rt->dealloc(this, sizeof(ArrayInstance));
 }
 
 size_t ArrayInstance::getSize() {
@@ -100,7 +96,7 @@ ArrayIndexAdapter(Object *self, const std::vector<Object *> &args, Runtime *rt, 
     rt->verifyIsInstanceObject(arg, rt->integer_type, rt->getContext().sub_areas[1]);
 
     if (!(0 <= getIntegerValueFast(arg) && getIntegerValueFast(arg) < getArrayDataFast(self).size())) {
-        rt->signalError("Index " + arg->userRepr() + " is out of array " + self->userRepr() + " range",
+        rt->signalError("Index " + arg->userRepr(rt) + " is out of array " + self->userRepr(rt) + " range",
                         rt->getContext().sub_areas[1]);
     }
     return getArrayDataFast(self)[getIntegerValueFast(arg)];
@@ -180,7 +176,8 @@ static Object *arrayResizeMethod(const std::vector<Object *> &args, Runtime *rt,
     int64_t oldn = getArrayDataFast(self).size();
     int64_t newn = getIntegerValueFast(new_size);
     if (newn <= 0) {
-        rt->signalError("New array size must be positive: " + new_size->userRepr(), rt->getContext().sub_areas[1]);
+        rt->signalError("New array size must be positive: " + new_size->userRepr(rt),
+                        rt->getContext().sub_areas[1]);
     }
     getArrayDataFast(self).resize(newn);
 
@@ -205,16 +202,16 @@ static Object *mm__repr__(const std::vector<Object *> &args, Runtime *rt, bool e
         return makeStringInstanceObject("Array", rt);
     }
 
-    auto &arr = getArrayDataFast(self);
+    auto       &arr = getArrayDataFast(self);
     std::string res = "{";
     if (arr.size() != 0) {
-        auto o = rt->runMethod(MagicMethods::mm__repr__(), arr[0], {arr[0]}, true);
+        auto o = rt->runMethod(MagicMethods::mm__repr__(rt), arr[0], {arr[0]}, true);
         rt->verifyIsInstanceObject(o, rt->string_type, rt->getContext().sub_areas[1]);
         res += getStringDataFast(o);
     }
 
     for (int64_t i = 1; i < arr.size(); i++) {
-        auto o = rt->runMethod(MagicMethods::mm__repr__(), arr[i], {arr[i]}, true);
+        auto o = rt->runMethod(MagicMethods::mm__repr__(rt), arr[i], {arr[i]}, true);
         rt->verifyIsInstanceObject(o, rt->string_type, rt->getContext().sub_areas[1]);
         res += ", " + getStringDataFast(o);
     }
@@ -225,10 +222,10 @@ static Object *mm__repr__(const std::vector<Object *> &args, Runtime *rt, bool e
 }
 
 void installArrayMethods(Type *type, Runtime *rt) {
-    type->addMethod(MagicMethods::mm__repr__(), Builtin::makeFunctionInstanceObject(true, mm__repr__, NULL, rt));
+    type->addMethod(MagicMethods::mm__repr__(rt), Builtin::makeFunctionInstanceObject(true, mm__repr__, NULL, rt));
 
-    type->addMethod(NameId("size").id, makeFunctionInstanceObject(true, arraySizeMethod, NULL, rt));
-    type->addMethod(NameId("resize").id, makeFunctionInstanceObject(true, arrayResizeMethod, NULL, rt));
+    type->addMethod(rt->nds->get("size").id, makeFunctionInstanceObject(true, arraySizeMethod, NULL, rt));
+    type->addMethod(rt->nds->get("resize").id, makeFunctionInstanceObject(true, arrayResizeMethod, NULL, rt));
 }
 
 ArrayType::ArrayType(Runtime *rt)
@@ -241,7 +238,7 @@ ArrayType::ArrayType(Runtime *rt)
 
 Object *ArrayType::create(Runtime *rt) {
     ProfilerCAPTURE();
-    Instance *ins = new (rt->alloc(sizeof(ArrayInstance))) ArrayInstance(rt);
+    Instance *ins = new ArrayInstance(rt);
     Object   *obj = newObject(true, ins, this, rt);
     return obj;
 }
@@ -257,7 +254,7 @@ Object *ArrayType::copy(Object *obj, Runtime *rt) {
     return res;
 }
 
-std::string ArrayType::userRepr() {
+std::string ArrayType::userRepr(Runtime *rt) {
     ProfilerCAPTURE();
     if (this == NULL) {
         return "ArrayType(NULL)";

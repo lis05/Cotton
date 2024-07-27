@@ -45,21 +45,21 @@ std::vector<Object *> Object::getGCReachable() {
     return res;
 }
 
-std::string Object::userRepr() {
+std::string Object::userRepr(Runtime *rt) {
     ProfilerCAPTURE();
     if (this == NULL) {
         return std::string("Object(NULL)");
     }
     if (this->instance == NULL) {
-        return this->type->userRepr();
+        return this->type->userRepr(rt);
     }
-    return this->instance->userRepr();
+    return this->instance->userRepr(rt);
 }
 
 void Object::assignTo(Object *obj, Runtime *rt) {
     ProfilerCAPTURE();
     if (!this->can_modify) {
-        rt->signalError("Cannot assign to " + this->userRepr(), rt->getContext().area);
+        rt->signalError("Cannot assign to " + this->userRepr(rt), rt->getContext().area);
     }
     auto id          = this->id;
     auto single_use  = this->single_use;
@@ -71,7 +71,7 @@ void Object::assignTo(Object *obj, Runtime *rt) {
 void Object::assignToCopyOf(Object *obj, Runtime *rt) {
     ProfilerCAPTURE();
     if (!this->can_modify) {
-        rt->signalError("Cannot assign to " + this->userRepr(), rt->getContext().area);
+        rt->signalError("Cannot assign to " + this->userRepr(rt), rt->getContext().area);
     }
     auto id          = this->id;
     auto single_use  = this->single_use;

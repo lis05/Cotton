@@ -69,7 +69,7 @@ Object *Type::getMethod(int64_t id, Runtime *rt) {
         rt->verifyIsValidObject(it->second);
         return it->second;
     }
-    rt->signalError(this->userRepr() + " doesn't have method " + NameId::userRepr(id), rt->getContext().area);
+    rt->signalError(this->userRepr(rt) + " doesn't have method " + rt->nds->userRepr(id), rt->getContext().area);
 }
 
 bool Type::hasMethod(int64_t id) {

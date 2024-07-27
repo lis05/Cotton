@@ -23,6 +23,7 @@
 
 #include "../front/parser.h"
 #include "mempool.h"
+#include "nameid.h"
 #include "object.h"
 #include <ext/pb_ds/assoc_container.hpp>
 #include <string>
@@ -53,7 +54,7 @@ namespace Builtin {
 
 class Runtime {
 public:
-    Runtime(GCStrategy *gc_strategy, ErrorManager *error_manager);
+    Runtime(GCStrategy *gc_strategy, ErrorManager *error_manager, NameIds *nds);
     ~Runtime() = default;
 
     enum BuiltinTypes {
@@ -66,7 +67,8 @@ public:
         STRING_TYPE_ID    = 7,
         ARRAY_TYPE_ID     = 8
     };
-    Builtin::FunctionType  *function_type;
+
+    Builtin::FunctionType *function_type;
 
     Builtin::NothingType   *nothing_type;
     Builtin::BooleanType   *boolean_type;
@@ -80,17 +82,10 @@ public:
     void                                        registerTypeObject(Type *type, Object *obj);
     Object                                     *getTypeObject(Type *type);
 
-    PoolAllocator                                     *object_allocator;
-    __gnu_pbds::cc_hash_table<size_t, PoolAllocator *> allocators;
-    PoolAllocator                                     *array_of_allocators[4096];    // for small objects
-
-    PoolAllocator *getAllocator(size_t size);
+    NameIds *nds;
 
     void *alloc(size_t size);
     void  dealloc(void *ptr, size_t size);
-
-    void destroy(Object *obj);
-    void destroy(Instance *ins);
 
     Object                                      *exec_res_default;
     __gnu_pbds::cc_hash_table<int64_t, Object *> readonly_literals;
@@ -191,19 +186,19 @@ public:
 };
 
 namespace MagicMethods {
-    int64_t mm__make__();
-    int64_t mm__copy__();
-    int64_t mm__bool__();
-    int64_t mm__char__();
-    int64_t mm__int__();
-    int64_t mm__real__();
-    int64_t mm__string__();
-    int64_t mm__repr__();
-    int64_t mm__read__();
+    int64_t mm__make__(Runtime *rt);
+    int64_t mm__copy__(Runtime *rt);
+    int64_t mm__bool__(Runtime *rt);
+    int64_t mm__char__(Runtime *rt);
+    int64_t mm__int__(Runtime *rt);
+    int64_t mm__real__(Runtime *rt);
+    int64_t mm__string__(Runtime *rt);
+    int64_t mm__repr__(Runtime *rt);
+    int64_t mm__read__(Runtime *rt);
 }    // namespace MagicMethods
 
 #define newObject(is_instance, instance, type, rt)                                                                \
-    new (rt->object_allocator->allocate(sizeof(Object))) Object(is_instance, instance, type, rt)
+    new Object(is_instance, instance, type, rt)
 
 #define setExecFlagNONE(rt)        rt->execution_flags = 0;
 #define setExecFlagCONTINUE(rt)    rt->execution_flags = 1;

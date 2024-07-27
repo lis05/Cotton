@@ -35,9 +35,9 @@ CharacterInstance::~CharacterInstance() {
 
 Instance *CharacterInstance::copy(Runtime *rt) {
     ProfilerCAPTURE();
-    Instance *res = new (rt->alloc(sizeof(CharacterInstance))) CharacterInstance(rt);
+    Instance *res = new CharacterInstance(rt);
     if (res == NULL) {
-        rt->signalError("Failed to copy " + this->userRepr(), rt->getContext().area);
+        rt->signalError("Failed to copy " + this->userRepr(rt), rt->getContext().area);
     }
     icast(res, CharacterInstance)->value = this->value;
     return res;
@@ -59,16 +59,12 @@ static std::string charToString(char c) {
     return std::string() + c;
 }
 
-std::string CharacterInstance::userRepr() {
+std::string CharacterInstance::userRepr(Runtime *rt) {
     ProfilerCAPTURE();
     if (this == NULL) {
         return "Character(NULL)";
     }
     return std::string("Character(value = '") + charToString(this->value) + "')";
-}
-
-void CharacterInstance::destroy(Runtime *rt) {
-    rt->dealloc(this, sizeof(CharacterInstance));
 }
 
 size_t CharacterInstance::getSize() {
@@ -364,14 +360,14 @@ static Object *mm__read__(const std::vector<Object *> &args, Runtime *rt, bool e
 }
 
 void installCharacterMethods(Type *type, Runtime *rt) {
-    type->addMethod(MagicMethods::mm__bool__(), Builtin::makeFunctionInstanceObject(true, mm__bool__, NULL, rt));
-    type->addMethod(MagicMethods::mm__char__(), Builtin::makeFunctionInstanceObject(true, mm__char__, NULL, rt));
-    type->addMethod(MagicMethods::mm__int__(), Builtin::makeFunctionInstanceObject(true, mm__int__, NULL, rt));
-    type->addMethod(MagicMethods::mm__real__(), Builtin::makeFunctionInstanceObject(true, mm__real__, NULL, rt));
-    type->addMethod(MagicMethods::mm__string__(),
+    type->addMethod(MagicMethods::mm__bool__(rt), Builtin::makeFunctionInstanceObject(true, mm__bool__, NULL, rt));
+    type->addMethod(MagicMethods::mm__char__(rt), Builtin::makeFunctionInstanceObject(true, mm__char__, NULL, rt));
+    type->addMethod(MagicMethods::mm__int__(rt), Builtin::makeFunctionInstanceObject(true, mm__int__, NULL, rt));
+    type->addMethod(MagicMethods::mm__real__(rt), Builtin::makeFunctionInstanceObject(true, mm__real__, NULL, rt));
+    type->addMethod(MagicMethods::mm__string__(rt),
                     Builtin::makeFunctionInstanceObject(true, mm__string__, NULL, rt));
-    type->addMethod(MagicMethods::mm__repr__(), Builtin::makeFunctionInstanceObject(true, mm__repr__, NULL, rt));
-    type->addMethod(MagicMethods::mm__read__(), Builtin::makeFunctionInstanceObject(true, mm__read__, NULL, rt));
+    type->addMethod(MagicMethods::mm__repr__(rt), Builtin::makeFunctionInstanceObject(true, mm__repr__, NULL, rt));
+    type->addMethod(MagicMethods::mm__read__(rt), Builtin::makeFunctionInstanceObject(true, mm__read__, NULL, rt));
 }
 
 CharacterType::CharacterType(Runtime *rt)
@@ -395,7 +391,7 @@ CharacterType::CharacterType(Runtime *rt)
 
 Object *CharacterType::create(Runtime *rt) {
     ProfilerCAPTURE();
-    Instance *ins = new (rt->alloc(sizeof(CharacterInstance))) CharacterInstance(rt);
+    Instance *ins = new CharacterInstance(rt);
     Object   *obj = newObject(true, ins, this, rt);
     return obj;
 }
@@ -411,7 +407,7 @@ Object *CharacterType::copy(Object *obj, Runtime *rt) {
     return res;
 }
 
-std::string CharacterType::userRepr() {
+std::string CharacterType::userRepr(Runtime *rt) {
     ProfilerCAPTURE();
     if (this == NULL) {
         return "CharacterType(NULL)";

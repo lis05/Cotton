@@ -36,25 +36,21 @@ StringInstance::~StringInstance() {
 
 Instance *StringInstance::copy(Runtime *rt) {
     ProfilerCAPTURE();
-    Instance *res = new (rt->alloc(sizeof(StringInstance))) StringInstance(rt);
+    Instance *res = new StringInstance(rt);
 
     if (res == NULL) {
-        rt->signalError("Failed to copy " + this->userRepr(), rt->getContext().area);
+        rt->signalError("Failed to copy " + this->userRepr(rt), rt->getContext().area);
     }
     ((StringInstance *)res)->data = this->data;
     return res;
 }
 
-std::string StringInstance::userRepr() {
+std::string StringInstance::userRepr(Runtime *rt) {
     ProfilerCAPTURE();
     if (this == NULL) {
         return "String(NULL)";
     }
     return "StringInstance(size = " + std::to_string(this->data.size()) + ", data = ...)";
-}
-
-void StringInstance::destroy(Runtime *rt) {
-    rt->dealloc(this, sizeof(StringInstance));
 }
 
 size_t StringInstance::getSize() {
@@ -76,7 +72,7 @@ StringIndexAdapter(Object *self, const std::vector<Object *> &args, Runtime *rt,
     auto &arg = args[0];
     rt->verifyIsInstanceObject(arg, rt->integer_type, rt->getContext().sub_areas[1]);
     if (!(0 <= getIntegerValueFast(arg) && getIntegerValueFast(arg) < getStringDataFast(self).size())) {
-        rt->signalError("Index " + arg->userRepr() + " is out of string " + self->userRepr() + " range",
+        rt->signalError("Index " + arg->userRepr(rt) + " is out of string " + self->userRepr(rt) + " range",
                         rt->getContext().sub_areas[1]);
     }
     if (!execution_result_matters) {
@@ -159,7 +155,7 @@ static Object *stringSetMethod(const std::vector<Object *> &args, Runtime *rt, b
     int64_t ind  = getIntegerValueFast(index);
     auto   &data = getStringDataFast(self);
     if (!(0 <= ind && ind < data.size())) {
-        rt->signalError("Index is out of range: " + index->userRepr(), rt->getContext().sub_areas[2]);
+        rt->signalError("Index is out of range: " + index->userRepr(rt), rt->getContext().sub_areas[2]);
     }
     data[ind] = getCharacterValueFast(value);
     return rt->protected_nothing;
@@ -257,16 +253,16 @@ static Object *mm__read__(const std::vector<Object *> &args, Runtime *rt, bool e
 }
 
 void installStringMethods(Type *type, Runtime *rt) {
-    type->addMethod(MagicMethods::mm__bool__(), Builtin::makeFunctionInstanceObject(true, mm__bool__, NULL, rt));
-    type->addMethod(MagicMethods::mm__int__(), Builtin::makeFunctionInstanceObject(true, mm__int__, NULL, rt));
-    type->addMethod(MagicMethods::mm__real__(), Builtin::makeFunctionInstanceObject(true, mm__real__, NULL, rt));
-    type->addMethod(MagicMethods::mm__string__(),
+    type->addMethod(MagicMethods::mm__bool__(rt), Builtin::makeFunctionInstanceObject(true, mm__bool__, NULL, rt));
+    type->addMethod(MagicMethods::mm__int__(rt), Builtin::makeFunctionInstanceObject(true, mm__int__, NULL, rt));
+    type->addMethod(MagicMethods::mm__real__(rt), Builtin::makeFunctionInstanceObject(true, mm__real__, NULL, rt));
+    type->addMethod(MagicMethods::mm__string__(rt),
                     Builtin::makeFunctionInstanceObject(true, mm__string__, NULL, rt));
-    type->addMethod(MagicMethods::mm__repr__(), Builtin::makeFunctionInstanceObject(true, mm__repr__, NULL, rt));
-    type->addMethod(MagicMethods::mm__read__(), Builtin::makeFunctionInstanceObject(true, mm__read__, NULL, rt));
+    type->addMethod(MagicMethods::mm__repr__(rt), Builtin::makeFunctionInstanceObject(true, mm__repr__, NULL, rt));
+    type->addMethod(MagicMethods::mm__read__(rt), Builtin::makeFunctionInstanceObject(true, mm__read__, NULL, rt));
 
-    type->addMethod(NameId("size").id, makeFunctionInstanceObject(true, stringSizeMethod, NULL, rt));
-    type->addMethod(NameId("set").id, makeFunctionInstanceObject(true, stringSetMethod, NULL, rt));
+    type->addMethod(rt->nds->get("size").id, makeFunctionInstanceObject(true, stringSizeMethod, NULL, rt));
+    type->addMethod(rt->nds->get("set").id, makeFunctionInstanceObject(true, stringSetMethod, NULL, rt));
 }
 
 StringType::StringType(Runtime *rt)
@@ -280,7 +276,7 @@ StringType::StringType(Runtime *rt)
 
 Object *StringType::create(Runtime *rt) {
     ProfilerCAPTURE();
-    Instance *ins = new (rt->alloc(sizeof(StringInstance))) StringInstance(rt);
+    Instance *ins = new StringInstance(rt);
     Object   *obj = newObject(true, ins, this, rt);
     return obj;
 }
@@ -296,7 +292,7 @@ Object *StringType::copy(Object *obj, Runtime *rt) {
     return res;
 }
 
-std::string StringType::userRepr() {
+std::string StringType::userRepr(Runtime *rt) {
     ProfilerCAPTURE();
     if (this == NULL) {
         return "StringType(NULL)";

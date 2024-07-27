@@ -31,8 +31,7 @@ public:
 
     Instance   *copy(Runtime *rt);
     size_t      getSize();
-    std::string userRepr();
-    void        destroy(Runtime *rt);
+    std::string userRepr(Runtime *rt);
 };
 
 class NothingType: public Type {
@@ -41,7 +40,7 @@ public:
     NothingType(Runtime *rt);
     ~NothingType() = default;
     Object     *create(Runtime *rt);
-    std::string userRepr();
+    std::string userRepr(Runtime *rt);
     Object     *copy(Object *obj, Runtime *rt);
 };
 
