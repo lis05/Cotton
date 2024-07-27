@@ -28,19 +28,19 @@ namespace Cotton {
 TextArea::TextArea() {
     this->first_char = INT64_MAX;
     this->last_char  = INT64_MIN;
-    this->filename = NULL;
+    this->filename   = NULL;
 }
 
 TextArea::TextArea(Token &token) {
     this->first_char = token.begin_pos;
     this->last_char  = token.end_pos;
-    this->filename = &token.filename;
+    this->filename   = &token.filename;
 }
 
 TextArea::TextArea(const TextArea &first, const TextArea &last) {
     this->first_char = std::min(first.first_char, last.first_char);
     this->last_char  = std::max(first.last_char, last.last_char);
-    this->filename = (first.filename == NULL || first.filename->empty()) ? last.filename : first.filename;
+    this->filename   = (first.filename == NULL || first.filename->empty()) ? last.filename : first.filename;
 }
 
 ExprNode::~ExprNode() {
@@ -920,169 +920,164 @@ static bool skipSemicolons(Parser *parser, bool single = false) {
 #define EMPTY_PRIORITY 100
 
 Parser::ParsingResult Parser::parseExpr() {
-    TextArea ta;
-    if (this->consume(Token::FUNCTION_KW)) {
-        Token *function_token = &*prev(this->next_token);
-        Token *name           = NULL;
-        if (this->hasNext() && this->next_token->id == Token::IDENTIFIER) {
-            name = &*this->next_token;
-            this->consume();
-        }
-
-        if (!this->consume(Token::OPEN_BRACKET)) {
-            return ParsingResult("Expected an open bracket", this);
-        }
-
-        std::vector<Token *> list;
-        if (!this->consume(Token::CLOSE_BRACKET)) {
-            while (this->hasNext()) {
-                Token *param = &*this->next_token;
-                if (!this->consume(Token::IDENTIFIER)) {
-                    return ParsingResult("Expected an identifier", this);
-                }
-                list.push_back(param);
-
-                if (this->checkNext() == Token::CLOSE_BRACKET) {
-                    break;
-                }
-
-                if (!this->consume(Token::COMMA)) {
-                    return ParsingResult("Expected a comma", this);
-                }
+    TextArea                ta;
+    std::vector<ExprNode *> expr_stack;
+    while (this->hasNext()) {
+        if (this->consume(Token::FUNCTION_KW)) {
+            Token *function_token = &*prev(this->next_token);
+            Token *name           = NULL;
+            if (this->hasNext() && this->next_token->id == Token::IDENTIFIER) {
+                name = &*this->next_token;
+                this->consume();
             }
 
+            if (!this->consume(Token::OPEN_BRACKET)) {
+                return ParsingResult("Expected an open bracket", this);
+            }
+
+            std::vector<Token *> list;
             if (!this->consume(Token::CLOSE_BRACKET)) {
-                return ParsingResult("Expected a close bracket", this);
-            }
-        }
-
-        this->saveState();
-        auto body = this->parseStmt();
-        this->restoreState();
-
-        if (!body.verify(this, ParsingResult::STMT, "Expected a function body")) {
-            return ParsingResult("", this);
-        }
-
-        ta              = (list.empty()) ? TextArea() : TextArea(*list.front());
-        ta              = (list.empty()) ? TextArea() : TextArea(ta, TextArea(*list.back()));
-        auto param_list = new IdentListNode(list, ta);
-
-        ta            = TextArea(TextArea(*function_token), body.stmt->text_area);
-        auto func_def = new FuncDefNode(name, param_list, body.stmt, ta);
-        auto expr     = new ExprNode(func_def, ta);
-        return ParsingResult(expr, this);
-    }
-    else if (this->consume(Token::TYPE_KW)) {
-        Token *type_token = &*prev(this->next_token);
-        if (!this->hasNext() || this->checkNext() != Token::IDENTIFIER) {
-            return ParsingResult("Expected an identifier", this);
-        }
-        Token *name = &*this->next_token;
-        this->consume();
-
-        if (!this->consume(Token::OPEN_CURLY_BRACKET)) {
-            return ParsingResult("Expected an open curly bracket", this);
-        }
-
-        std::vector<Token *>       fields;
-        std::vector<FuncDefNode *> methods;
-        Token                     *last_bracket;
-        if (!this->consume(Token::CLOSE_CURLY_BRACKET)) {
-            while (this->hasNext()) {
-                if (this->consume(Token::METHOD_KW)) {
-                    Token *method_token = &*prev(this->next_token);
-                    if (!this->hasNext() || this->checkNext() != Token::IDENTIFIER) {
+                while (this->hasNext()) {
+                    Token *param = &*this->next_token;
+                    if (!this->consume(Token::IDENTIFIER)) {
                         return ParsingResult("Expected an identifier", this);
                     }
-                    Token *name = &*this->next_token;
-                    this->consume();
+                    list.push_back(param);
 
-                    if (!this->consume(Token::OPEN_BRACKET)) {
-                        return ParsingResult("Expected an open bracket", this);
+                    if (this->checkNext() == Token::CLOSE_BRACKET) {
+                        break;
                     }
 
-                    std::vector<Token *> list;
-                    Token               *last_bracket;
-                    if (!this->consume(Token::CLOSE_BRACKET)) {
-                        while (this->hasNext()) {
-                            Token *param = &*this->next_token;
-                            if (!this->consume(Token::IDENTIFIER)) {
-                                return ParsingResult("Expected an identifier", this);
-                            }
-                            list.push_back(param);
-
-                            if (this->checkNext() == Token::CLOSE_BRACKET) {
-                                break;
-                            }
-
-                            if (!this->consume(Token::COMMA)) {
-                                return ParsingResult("Expected a comma", this);
-                            }
-                        }
-
-                        last_bracket = &*this->next_token;
-
-                        if (!this->consume(Token::CLOSE_BRACKET)) {
-                            return ParsingResult("Expected a close bracket", this);
-                        }
-                    }
-
-                    this->saveState();
-                    auto body = this->parseStmt();
-                    this->restoreState();
-
-                    if (!body.verify(this, ParsingResult::STMT, "Expected a method body")) {
-                        return ParsingResult("", this);
-                    }
-
-                    ta              = (list.empty()) ? TextArea() : TextArea(*list.front());
-                    ta              = (list.empty()) ? TextArea() : TextArea(ta, TextArea(*list.back()));
-                    auto param_list = new IdentListNode(list, ta);
-
-                    ta              = TextArea(TextArea(*method_token), TextArea(*last_bracket));
-                    auto method_def = new FuncDefNode(name, param_list, body.stmt, ta);
-                    methods.push_back(method_def);
-                }
-                else if (this->checkNext() == Token::IDENTIFIER) {
-                    Token *field = &*this->next_token;
-                    this->consume();
-                    fields.push_back(field);
-
-                    if (!this->consume(Token::SEMICOLON)) {
-                        return ParsingResult("Expected a semicolon", this);
+                    if (!this->consume(Token::COMMA)) {
+                        return ParsingResult("Expected a comma", this);
                     }
                 }
-                else if (this->checkNext() == Token::CLOSE_CURLY_BRACKET) {
-                    break;
-                }
-                else {
-                    return ParsingResult("Expected either an indentifier or a method definition", this);
+
+                if (!this->consume(Token::CLOSE_BRACKET)) {
+                    return ParsingResult("Expected a close bracket", this);
                 }
             }
 
-            last_bracket = &*this->next_token;
+            this->saveState();
+            auto body = this->parseStmt();
+            this->restoreState();
 
-            if (!this->consume(Token::CLOSE_CURLY_BRACKET)) {
-                return ParsingResult("Expected a close curly bracket", this);
+            if (!body.verify(this, ParsingResult::STMT, "Expected a function body")) {
+                return ParsingResult("", this);
             }
+
+            ta              = (list.empty()) ? TextArea() : TextArea(*list.front());
+            ta              = (list.empty()) ? TextArea() : TextArea(ta, TextArea(*list.back()));
+            auto param_list = new IdentListNode(list, ta);
+
+            ta            = TextArea(TextArea(*function_token), body.stmt->text_area);
+            auto func_def = new FuncDefNode(name, param_list, body.stmt, ta);
+            auto expr     = new ExprNode(func_def, ta);
+            expr_stack.push_back(expr);
         }
+        else if (this->consume(Token::TYPE_KW)) {
+            Token *type_token = &*prev(this->next_token);
+            if (!this->hasNext() || this->checkNext() != Token::IDENTIFIER) {
+                return ParsingResult("Expected an identifier", this);
+            }
+            Token *name = &*this->next_token;
+            this->consume();
 
-        ta            = TextArea(TextArea(*type_token), TextArea(*last_bracket));
-        auto type_def = new TypeDefNode(name, fields, methods, ta);
-        auto expr     = new ExprNode(type_def, ta);
-        return ParsingResult(expr, this);
-    }
-    else {
-        // either an operator or an atom
-        std::vector<ExprNode *> expr_stack;    // expressions that haven't been used in any operators yet
+            if (!this->consume(Token::OPEN_CURLY_BRACKET)) {
+                return ParsingResult("Expected an open curly bracket", this);
+            }
 
-        auto init_priority      = this->state.cur_priority;
-        auto init_associativity = this->state.cur_associativity;
+            std::vector<Token *>       fields;
+            std::vector<FuncDefNode *> methods;
+            Token                     *last_bracket;
+            if (!this->consume(Token::CLOSE_CURLY_BRACKET)) {
+                while (this->hasNext()) {
+                    if (this->consume(Token::METHOD_KW)) {
+                        Token *method_token = &*prev(this->next_token);
+                        if (!this->hasNext() || this->checkNext() != Token::IDENTIFIER) {
+                            return ParsingResult("Expected an identifier", this);
+                        }
+                        Token *name = &*this->next_token;
+                        this->consume();
 
-        while (this->hasNext()) {
-            this->state.cur_priority      = init_priority;
-            this->state.cur_associativity = init_associativity;
+                        if (!this->consume(Token::OPEN_BRACKET)) {
+                            return ParsingResult("Expected an open bracket", this);
+                        }
+
+                        std::vector<Token *> list;
+                        Token               *last_bracket;
+                        if (!this->consume(Token::CLOSE_BRACKET)) {
+                            while (this->hasNext()) {
+                                Token *param = &*this->next_token;
+                                if (!this->consume(Token::IDENTIFIER)) {
+                                    return ParsingResult("Expected an identifier", this);
+                                }
+                                list.push_back(param);
+
+                                if (this->checkNext() == Token::CLOSE_BRACKET) {
+                                    break;
+                                }
+
+                                if (!this->consume(Token::COMMA)) {
+                                    return ParsingResult("Expected a comma", this);
+                                }
+                            }
+
+                            last_bracket = &*this->next_token;
+
+                            if (!this->consume(Token::CLOSE_BRACKET)) {
+                                return ParsingResult("Expected a close bracket", this);
+                            }
+                        }
+
+                        this->saveState();
+                        auto body = this->parseStmt();
+                        this->restoreState();
+
+                        if (!body.verify(this, ParsingResult::STMT, "Expected a method body")) {
+                            return ParsingResult("", this);
+                        }
+
+                        ta              = (list.empty()) ? TextArea() : TextArea(*list.front());
+                        ta              = (list.empty()) ? TextArea() : TextArea(ta, TextArea(*list.back()));
+                        auto param_list = new IdentListNode(list, ta);
+
+                        ta              = TextArea(TextArea(*method_token), TextArea(*last_bracket));
+                        auto method_def = new FuncDefNode(name, param_list, body.stmt, ta);
+                        methods.push_back(method_def);
+                    }
+                    else if (this->checkNext() == Token::IDENTIFIER) {
+                        Token *field = &*this->next_token;
+                        this->consume();
+                        fields.push_back(field);
+
+                        if (!this->consume(Token::SEMICOLON)) {
+                            return ParsingResult("Expected a semicolon", this);
+                        }
+                    }
+                    else if (this->checkNext() == Token::CLOSE_CURLY_BRACKET) {
+                        break;
+                    }
+                    else {
+                        return ParsingResult("Expected either an indentifier or a method definition", this);
+                    }
+                }
+
+                last_bracket = &*this->next_token;
+
+                if (!this->consume(Token::CLOSE_CURLY_BRACKET)) {
+                    return ParsingResult("Expected a close curly bracket", this);
+                }
+            }
+
+            ta            = TextArea(TextArea(*type_token), TextArea(*last_bracket));
+            auto type_def = new TypeDefNode(name, fields, methods, ta);
+            auto expr     = new ExprNode(type_def, ta);
+            expr_stack.push_back(expr);
+        }
+        else {
+            // either an operator or an atom
+
             switch (this->checkNext()) {
             case Token::CLOSE_BRACKET :
             case Token::CLOSE_CURLY_BRACKET :
@@ -1099,7 +1094,7 @@ Parser::ParsingResult Parser::parseExpr() {
             case Token::CONTINUE_KW :
             case Token::BREAK_KW :
             case Token::RETURN_KW :
-            case Token::UNSCOPED_KW          : goto END_OPERATOR_LOOP;
+            case Token::UNSCOPED_KW          : goto END_LOOP;
             }
 
             switch (this->checkNext()) {
@@ -1114,7 +1109,7 @@ Parser::ParsingResult Parser::parseExpr() {
                 }
 
                 if (!this->canPassThrough(op_info)) {
-                    goto END_OPERATOR_LOOP;
+                    goto END_LOOP;
                 }
 
                 auto operator_token = &*this->next_token;
@@ -1191,7 +1186,7 @@ Parser::ParsingResult Parser::parseExpr() {
                 }
 
                 if (!this->canPassThrough(op_info)) {
-                    goto END_OPERATOR_LOOP;
+                    goto END_LOOP;
                 }
 
                 auto operator_token = &*this->next_token;
@@ -1270,7 +1265,7 @@ Parser::ParsingResult Parser::parseExpr() {
                 }
 
                 if (!this->canPassThrough(op_info)) {
-                    goto END_OPERATOR_LOOP;
+                    goto END_LOOP;
                 }
 
                 auto operator_token = &*this->next_token;
@@ -1326,7 +1321,7 @@ Parser::ParsingResult Parser::parseExpr() {
                 op_info = this->getOperatorInfo(&*this->next_token, PRE_OP);    // !A
 
                 if (!this->canPassThrough(op_info)) {
-                    goto END_OPERATOR_LOOP;
+                    goto END_LOOP;
                 }
 
                 auto operator_token = &*this->next_token;
@@ -1384,7 +1379,7 @@ Parser::ParsingResult Parser::parseExpr() {
                 }
 
                 if (!this->canPassThrough(op_info)) {
-                    goto END_OPERATOR_LOOP;
+                    goto END_LOOP;
                 }
 
                 auto operator_token = &*this->next_token;
@@ -1434,15 +1429,14 @@ Parser::ParsingResult Parser::parseExpr() {
             default : return ParsingResult("Invalid expression", this);
             }
         }
-    END_OPERATOR_LOOP:;
-        if (expr_stack.size() != 1) {
-            this->highlightNext();
-            return ParsingResult("Expected an expression", this);
-        }
-
-        return ParsingResult(expr_stack[0], this);
     }
-    return ParsingResult("Unknown expression", this);
+END_LOOP:;
+    if (expr_stack.size() != 1) {
+        this->highlightNext();
+        return ParsingResult("Expected an expression", this);
+    }
+
+    return ParsingResult(expr_stack[0], this);
 }
 
 Parser::ParsingResult Parser::parseStmt() {
