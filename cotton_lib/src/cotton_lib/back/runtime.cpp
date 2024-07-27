@@ -1188,6 +1188,7 @@ Object *Runtime::execute(IfStmtNode *node, bool execution_result_matters) {
         return this->execute(node->else_body, execution_result_matters);
     }
     setExecFlagNONE(this);
+    this->popContext();
     return this->protected_nothing;
 }
 

@@ -130,7 +130,8 @@ static Object *ArrayEqAdapter(Object *self, Object *arg, Runtime *rt, bool execu
             rt->getContext().area      = ta;
             rt->getContext().sub_areas = {ta, ta};
             auto res                   = rt->runOperator(OperatorNode::EQUAL, a1[i], a2[i], true);
-            if (!getIntegerValueFast(res)) {
+            rt->popContext();
+            if (!getBooleanValueFast(res)) {
                 return rt->protected_false;
             }
         }
