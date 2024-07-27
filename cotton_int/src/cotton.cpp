@@ -34,6 +34,7 @@ void emergency_error_exit() {
 
 int main(int argc, char *argv[]) {
     bool  print_execution_time = false;
+    bool  disable_gc           = false;
     char *file                 = NULL;
 
     for (int i = 1; i < argc; i++) {
@@ -41,6 +42,11 @@ int main(int argc, char *argv[]) {
 
         if (strcmp(arg, "--time") == 0) {
             print_execution_time = true;
+            continue;
+        }
+
+        if (strcmp(arg, "--disable_gc") == 0) {
+            disable_gc = true;
             continue;
         }
 
@@ -62,12 +68,12 @@ int main(int argc, char *argv[]) {
     if (file == NULL) {
         file = DEFAULT_SOURCE_FILENAME;
     }
-#endif 
+#endif
 
     ErrorManager em(emergency_error_exit);
     Lexer        lx(&em);
     Parser       pr(&em);
-    NameIds nds;
+    NameIds      nds;
 
     auto tokens = lx.processFile(file);
     for (auto &token : tokens) {
@@ -77,6 +83,10 @@ int main(int argc, char *argv[]) {
 
     GCDefaultStrategy gcst;
     Runtime           rt(&gcst, &em, &nds);
+
+    if (disable_gc) {
+        rt.gc->disable();
+    }
 
     auto begin_time = duration_cast<milliseconds>(system_clock::now().time_since_epoch()).count();
     rt.execute(program, false);
