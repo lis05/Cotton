@@ -30,6 +30,8 @@ void emergency_error_exit() {
     exit(1);
 }
 
+// TODO: add --profiler flag
+
 int main(int argc, char *argv[]) {
     bool  print_execution_time = false;
     char *file                 = NULL;
@@ -49,18 +51,27 @@ int main(int argc, char *argv[]) {
 
         file = arg;
     }
-
+#ifndef DEFAULT_SOURCE_FILENAME
     if (file == NULL) {
         fprintf(stderr, "Expected a source file\n");
         exit(1);
     }
+#endif
+
+#ifdef DEFAULT_SOURCE_FILENAME
+    if (file == NULL) {
+        file = DEFAULT_SOURCE_FILENAME;
+    }
+#endif 
 
     ErrorManager em(emergency_error_exit);
     Lexer        lx(&em);
     Parser       pr(&em);
 
-    auto tokens  = lx.processFile(file);
-    for (auto &token: tokens) token.nameid = NameId(&token).id;
+    auto tokens = lx.processFile(file);
+    for (auto &token : tokens) {
+        token.nameid = NameId(&token).id;
+    }
     auto program = pr.parse(tokens);
 
     GCDefaultStrategy gcst;
