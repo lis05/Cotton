@@ -35,6 +35,7 @@ void emergency_error_exit() {
 int main(int argc, char *argv[]) {
     bool  print_execution_time = false;
     bool  disable_gc           = false;
+    bool  print_result         = false;
     char *file                 = NULL;
 
     for (int i = 1; i < argc; i++) {
@@ -47,6 +48,11 @@ int main(int argc, char *argv[]) {
 
         if (strcmp(arg, "--disable_gc") == 0) {
             disable_gc = true;
+            continue;
+        }
+
+        if (strcmp(arg, "--print_result") == 0) {
+            print_result = true;
             continue;
         }
 
@@ -89,8 +95,17 @@ int main(int argc, char *argv[]) {
     }
 
     auto begin_time = duration_cast<milliseconds>(system_clock::now().time_since_epoch()).count();
-    rt.execute(program, false);
+    auto res = rt.execute(program, print_result);
     auto end_time = duration_cast<milliseconds>(system_clock::now().time_since_epoch()).count();
+
+    if (print_result) {
+        if (!rt.isValidObject(res)) {
+            printf("Execution result: invalid object\n");
+        }
+        else {
+            printf("Execution result: %s\n", res->userRepr(&rt).c_str());
+        }
+    }
 
     if (print_execution_time) {
         printf("TIME: %.3fsec\n", (end_time - begin_time) / 1000.0);
