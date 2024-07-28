@@ -21,6 +21,7 @@
 #include "../../api.h"
 #include "../api.h"
 #include <cstdlib>
+#include <dlfcn.h>
 #include <filesystem>
 #include <unistd.h>
 
@@ -564,7 +565,6 @@ static Object *CF_smartrun(const std::vector<Object *> &args, Runtime *rt, bool 
     return res;
 }
 
-
 // dumbrun(file) - runs file and returns the result of running it.
 static Object *CF_dumbrun(const std::vector<Object *> &args, Runtime *rt, bool execution_result_matters) {
     ProfilerCAPTURE();
@@ -595,6 +595,41 @@ static Object *CF_dumbrun(const std::vector<Object *> &args, Runtime *rt, bool e
     rt->popFrame();
 
     rt->verifyIsValidObject(res);
+    return res;
+}
+
+//  loadlibrary(file) - loads C++ shared library
+static Object *CF_loadlibrary(const std::vector<Object *> &args, Runtime *rt, bool execution_result_matters) {
+    ProfilerCAPTURE();
+    rt->verifyExactArgsAmountFunc(args, 1);
+    auto arg1 = args[0];
+    rt->verifyIsInstanceObject(arg1, rt->string_type, rt->getContext().sub_areas[1]);
+
+    std::error_code ec;
+    auto            path = std::filesystem::canonical(std::filesystem::path(getStringDataFast(arg1)), ec);
+    if (ec) {
+        rt->signalError("Invalid path: " + ec.message(), rt->getContext().sub_areas[1]);
+    }
+    if (!std::filesystem::is_regular_file(path)) {
+        rt->signalError("Not a regular file: " + path.string(), rt->getContext().sub_areas[1]);
+    }
+
+    auto id = rt->nds->get("cotton loadlibrary: " + path.string()).id;
+    if (rt->checkGlobal(id)) {
+        return rt->getGlobal(id);
+    }
+    rt->setGlobal(id, rt->protected_nothing);
+
+    void *lib = dlopen(path.c_str(), RTLD_LAZY | RTLD_DEEPBIND);
+
+    auto llp = reinterpret_cast<LibraryLoadPoint>(dlsym(lib, "library_load_point"));
+    if (llp == NULL) {
+        rt->signalError("Failed to load library " + path.string(), rt->getContext().area);
+    }
+    auto res = llp(rt);
+
+    rt->verifyIsValidObject(res);
+    rt->setGlobal(id, res);
     return res;
 }
 
@@ -655,8 +690,9 @@ void installBuiltinFunctions(Runtime *rt) {
     rt->scope->addVariable(rt->nds->get("smartrun").id,
                            makeFunctionInstanceObject(true, CF_smartrun, NULL, rt),
                            rt);
-    rt->scope->addVariable(rt->nds->get("dumbrun").id,
-                           makeFunctionInstanceObject(true, CF_dumbrun, NULL, rt),
+    rt->scope->addVariable(rt->nds->get("dumbrun").id, makeFunctionInstanceObject(true, CF_dumbrun, NULL, rt), rt);
+    rt->scope->addVariable(rt->nds->get("loadlibrary").id,
+                           makeFunctionInstanceObject(true, CF_loadlibrary, NULL, rt),
                            rt);
 }
 }    // namespace Cotton::Builtin
