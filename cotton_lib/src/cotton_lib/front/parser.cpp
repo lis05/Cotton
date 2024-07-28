@@ -1702,6 +1702,10 @@ StmtNode *Parser::parse(const std::vector<Token> &tokens) {
         this->highlight((Token *)&(tokens[0]));
     }
 
+    if (tokens.empty()) {
+        return new StmtNode(new BlockStmtNode(false, {}, TextArea()), TextArea());
+    }
+
     std::vector<StmtNode *> statements;
     while (this->hasNext()) {
         skipSemicolons(this);
