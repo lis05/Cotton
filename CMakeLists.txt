@@ -9,3 +9,4 @@ add_compile_options("-g")
 
 add_subdirectory(cotton_lib)
 add_subdirectory(cotton_int)
+add_subdirectory(cotton_modules)
