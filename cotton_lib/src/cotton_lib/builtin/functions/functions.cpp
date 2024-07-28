@@ -21,6 +21,7 @@
 #include "../../api.h"
 #include "../api.h"
 #include <cstdlib>
+#include <filesystem>
 #include <unistd.h>
 
 namespace Cotton::Builtin {
@@ -523,6 +524,80 @@ static Object *CF_removeglobal(const std::vector<Object *> &args, Runtime *rt, b
     return rt->protected_nothing;
 }
 
+// smartrun(file) - runs file if it hasn't been run before; returns the result of running it.
+static Object *CF_smartrun(const std::vector<Object *> &args, Runtime *rt, bool execution_result_matters) {
+    ProfilerCAPTURE();
+    rt->verifyExactArgsAmountFunc(args, 1);
+    auto arg1 = args[0];
+    rt->verifyIsInstanceObject(arg1, rt->string_type, rt->getContext().sub_areas[1]);
+
+    std::error_code ec;
+    auto            path = std::filesystem::canonical(std::filesystem::path(getStringDataFast(arg1)), ec);
+    if (ec) {
+        rt->signalError("Invalid path: " + ec.message(), rt->getContext().sub_areas[1]);
+    }
+    if (!std::filesystem::is_regular_file(path)) {
+        rt->signalError("Not a regular file: " + path.string(), rt->getContext().sub_areas[1]);
+    }
+
+    auto id = rt->nds->get("cotton smartrun: " + path.string()).id;
+    if (rt->checkGlobal(id)) {
+        return rt->getGlobal(id);
+    }
+
+    Lexer  lexer(rt->error_manager);
+    Parser parser(rt->error_manager);
+
+    auto tokens = lexer.processFile(path.c_str());
+    for (auto &token : tokens) {
+        token.nameid = rt->nds->get(&token).id;
+    }
+    auto program = parser.parse(tokens);
+    rt->setGlobal(id, rt->protected_nothing);
+
+    rt->newFrame();
+    auto res = rt->execute(program, true);
+    rt->popFrame();
+
+    rt->verifyIsValidObject(res);
+    rt->setGlobal(id, res);
+    return res;
+}
+
+
+// dumbrun(file) - runs file and returns the result of running it.
+static Object *CF_dumbrun(const std::vector<Object *> &args, Runtime *rt, bool execution_result_matters) {
+    ProfilerCAPTURE();
+    rt->verifyExactArgsAmountFunc(args, 1);
+    auto arg1 = args[0];
+    rt->verifyIsInstanceObject(arg1, rt->string_type, rt->getContext().sub_areas[1]);
+
+    std::error_code ec;
+    auto            path = std::filesystem::canonical(std::filesystem::path(getStringDataFast(arg1)), ec);
+    if (ec) {
+        rt->signalError("Invalid path: " + ec.message(), rt->getContext().sub_areas[1]);
+    }
+    if (!std::filesystem::is_regular_file(path) || !std::filesystem::exists(path)) {
+        rt->signalError("Not a regular file: " + path.string(), rt->getContext().sub_areas[1]);
+    }
+
+    Lexer  lexer(rt->error_manager);
+    Parser parser(rt->error_manager);
+
+    auto tokens = lexer.processFile(path.c_str());
+    for (auto &token : tokens) {
+        token.nameid = rt->nds->get(&token).id;
+    }
+    auto program = parser.parse(tokens);
+
+    rt->newFrame();
+    auto res = rt->execute(program, true);
+    rt->popFrame();
+
+    rt->verifyIsValidObject(res);
+    return res;
+}
+
 void installBuiltinFunctions(Runtime *rt) {
     ProfilerCAPTURE();
     rt->scope->addVariable(rt->nds->get("make").id, makeFunctionInstanceObject(true, CF_make, NULL, rt), rt);
@@ -576,6 +651,12 @@ void installBuiltinFunctions(Runtime *rt) {
                            rt);
     rt->scope->addVariable(rt->nds->get("removeglobal").id,
                            makeFunctionInstanceObject(true, CF_removeglobal, NULL, rt),
+                           rt);
+    rt->scope->addVariable(rt->nds->get("smartrun").id,
+                           makeFunctionInstanceObject(true, CF_smartrun, NULL, rt),
+                           rt);
+    rt->scope->addVariable(rt->nds->get("dumbrun").id,
+                           makeFunctionInstanceObject(true, CF_dumbrun, NULL, rt),
                            rt);
 }
 }    // namespace Cotton::Builtin
