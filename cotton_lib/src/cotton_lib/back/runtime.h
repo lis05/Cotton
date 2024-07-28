@@ -79,10 +79,10 @@ public:
 
     __gnu_pbds::cc_hash_table<int64_t, Object *> globals;
 
-    bool checkGlobal(int64_t id);
+    bool    checkGlobal(int64_t id);
     Object *getGlobal(int64_t id);
-    void setGlobal(int64_t id, Object *obj);
-    void removeGlobal(int64_t id);
+    void    setGlobal(int64_t id, Object *obj);
+    void    removeGlobal(int64_t id);
 
     __gnu_pbds::cc_hash_table<Type *, Object *> type_objects;
     void                                        registerTypeObject(Type *type, Object *obj);
@@ -202,6 +202,9 @@ namespace MagicMethods {
     int64_t mm__repr__(Runtime *rt);
     int64_t mm__read__(Runtime *rt);
 }    // namespace MagicMethods
+
+// the function must be called "library_load_point"
+typedef Object *(*LibraryLoadPoint)(Runtime *rt);
 
 #define newObject(is_instance, instance, type, rt) new Object(is_instance, instance, type, rt)
 
