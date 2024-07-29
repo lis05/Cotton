@@ -52,6 +52,6 @@ void installBooleanMethods(Type *type, Runtime *rt);
 Object *makeBooleanInstanceObject(bool value, Runtime *rt);
 
 bool &getBooleanValue(Object *obj, Runtime *rt);
-bool &getBooleanValue(Object *obj, Runtime *rt, const TextArea &ta);
+bool &getBooleanValue(Object *obj, Runtime *rt, Runtime::ContextId ctx_id);
 #define getBooleanValueFast(obj) (icast(obj->instance, BooleanInstance)->value)
 }    // namespace Cotton::Builtin

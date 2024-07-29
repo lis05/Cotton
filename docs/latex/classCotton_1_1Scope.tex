@@ -1,0 +1,159 @@
+\hypertarget{classCotton_1_1Scope}{}\doxysection{Cotton\+::Scope Class Reference}
+\label{classCotton_1_1Scope}\index{Cotton::Scope@{Cotton::Scope}}
+
+
+{\ttfamily \#include $<$scope.\+h$>$}
+
+\doxysubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{classCotton_1_1Scope_a07e8e282113277c7effafa8f42bc81be}{Scope}} (\mbox{\hyperlink{classCotton_1_1Scope}{Scope}} $\ast$\mbox{\hyperlink{classCotton_1_1Scope_af297d2836a0c69f90abcf71811e9d1e3}{prev}}, \mbox{\hyperlink{classCotton_1_1Scope}{Scope}} $\ast$\mbox{\hyperlink{classCotton_1_1Scope_a744534501aeee0e927a83d968097cc3b}{master}}, bool \mbox{\hyperlink{classCotton_1_1Scope_ac768e788591a1e7336abacc0beb5149f}{can\+\_\+access\+\_\+prev}})
+\item 
+\mbox{\hyperlink{classCotton_1_1Scope_ac4f09aabac4399027a33cf8001dbb981}{$\sim$\+Scope}} ()
+\item 
+void \mbox{\hyperlink{classCotton_1_1Scope_acbdbd5c2221fe1086e119d19dc314b55}{add\+Variable}} (int64\+\_\+t id, \mbox{\hyperlink{classCotton_1_1Object}{Object}} $\ast$obj, \mbox{\hyperlink{classCotton_1_1Runtime}{Runtime}} $\ast$rt)
+\item 
+bool \mbox{\hyperlink{classCotton_1_1Scope_a974995cb53bf84af0092a21b562904c4}{query\+Variable}} (int64\+\_\+t id, \mbox{\hyperlink{classCotton_1_1Runtime}{Runtime}} $\ast$rt)
+\item 
+\mbox{\hyperlink{classCotton_1_1Object}{Object}} $\ast$ \mbox{\hyperlink{classCotton_1_1Scope_a81558ea33e9d2d069f63cfe5977385f1}{get\+Variable}} (int64\+\_\+t id, \mbox{\hyperlink{classCotton_1_1Runtime}{Runtime}} $\ast$rt)
+\end{DoxyCompactItemize}
+\doxysubsection*{Public Attributes}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{classCotton_1_1Scope}{Scope}} $\ast$ \mbox{\hyperlink{classCotton_1_1Scope_af297d2836a0c69f90abcf71811e9d1e3}{prev}}
+\item 
+\mbox{\hyperlink{classCotton_1_1Scope}{Scope}} $\ast$ \mbox{\hyperlink{classCotton_1_1Scope_a744534501aeee0e927a83d968097cc3b}{master}}
+\item 
+\+\_\+\+\_\+gnu\+\_\+pbds\+::cc\+\_\+hash\+\_\+table$<$ int64\+\_\+t, \mbox{\hyperlink{classCotton_1_1Object}{Object}} $\ast$ $>$ \mbox{\hyperlink{classCotton_1_1Scope_a13eae8003793da6d1a729a9a4e7af47a}{variables}}
+\item 
+std\+::vector$<$ \mbox{\hyperlink{classCotton_1_1Object}{Object}} $\ast$ $>$ \mbox{\hyperlink{classCotton_1_1Scope_ae38164913e49ff595379d554235749b5}{arguments}}
+\item 
+bool \mbox{\hyperlink{classCotton_1_1Scope_ac768e788591a1e7336abacc0beb5149f}{can\+\_\+access\+\_\+prev}}
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Constructor \& Destructor Documentation}
+\mbox{\Hypertarget{classCotton_1_1Scope_a07e8e282113277c7effafa8f42bc81be}\label{classCotton_1_1Scope_a07e8e282113277c7effafa8f42bc81be}} 
+\index{Cotton::Scope@{Cotton::Scope}!Scope@{Scope}}
+\index{Scope@{Scope}!Cotton::Scope@{Cotton::Scope}}
+\doxysubsubsection{\texorpdfstring{Scope()}{Scope()}}
+{\footnotesize\ttfamily Cotton\+::\+Scope\+::\+Scope (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{classCotton_1_1Scope}{Scope}} $\ast$}]{prev,  }\item[{\mbox{\hyperlink{classCotton_1_1Scope}{Scope}} $\ast$}]{master,  }\item[{bool}]{can\+\_\+access\+\_\+prev }\end{DoxyParamCaption})}
+
+
+
+References can\+\_\+access\+\_\+prev, master, prev, and Profiler\+CAPTURE.
+
+\mbox{\Hypertarget{classCotton_1_1Scope_ac4f09aabac4399027a33cf8001dbb981}\label{classCotton_1_1Scope_ac4f09aabac4399027a33cf8001dbb981}} 
+\index{Cotton::Scope@{Cotton::Scope}!````~Scope@{$\sim$Scope}}
+\index{````~Scope@{$\sim$Scope}!Cotton::Scope@{Cotton::Scope}}
+\doxysubsubsection{\texorpdfstring{$\sim$Scope()}{~Scope()}}
+{\footnotesize\ttfamily Cotton\+::\+Scope\+::$\sim$\+Scope (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+
+
+References arguments, can\+\_\+access\+\_\+prev, master, prev, Profiler\+CAPTURE, and variables.
+
+
+
+\doxysubsection{Member Function Documentation}
+\mbox{\Hypertarget{classCotton_1_1Scope_acbdbd5c2221fe1086e119d19dc314b55}\label{classCotton_1_1Scope_acbdbd5c2221fe1086e119d19dc314b55}} 
+\index{Cotton::Scope@{Cotton::Scope}!addVariable@{addVariable}}
+\index{addVariable@{addVariable}!Cotton::Scope@{Cotton::Scope}}
+\doxysubsubsection{\texorpdfstring{addVariable()}{addVariable()}}
+{\footnotesize\ttfamily void Cotton\+::\+Scope\+::add\+Variable (\begin{DoxyParamCaption}\item[{int64\+\_\+t}]{id,  }\item[{\mbox{\hyperlink{classCotton_1_1Object}{Object}} $\ast$}]{obj,  }\item[{\mbox{\hyperlink{classCotton_1_1Runtime}{Runtime}} $\ast$}]{rt }\end{DoxyParamCaption})}
+
+
+
+References Profiler\+CAPTURE, Cotton\+::\+Object\+::spread\+Multi\+Use(), and variables.
+
+
+
+Referenced by Cotton\+::\+Runtime\+::execute(), Cotton\+::\+Builtin\+::\+Function\+Call\+Adapter(), Cotton\+::\+Builtin\+::install\+Builtin\+Functions(), and Cotton\+::\+Runtime\+::\+Runtime().
+
+\mbox{\Hypertarget{classCotton_1_1Scope_a81558ea33e9d2d069f63cfe5977385f1}\label{classCotton_1_1Scope_a81558ea33e9d2d069f63cfe5977385f1}} 
+\index{Cotton::Scope@{Cotton::Scope}!getVariable@{getVariable}}
+\index{getVariable@{getVariable}!Cotton::Scope@{Cotton::Scope}}
+\doxysubsubsection{\texorpdfstring{getVariable()}{getVariable()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{classCotton_1_1Object}{Object}} $\ast$ Cotton\+::\+Scope\+::get\+Variable (\begin{DoxyParamCaption}\item[{int64\+\_\+t}]{id,  }\item[{\mbox{\hyperlink{classCotton_1_1Runtime}{Runtime}} $\ast$}]{rt }\end{DoxyParamCaption})}
+
+
+
+References Cotton\+::\+Runtime\+::\+Error\+Context\+::area, can\+\_\+access\+\_\+prev, Cotton\+::\+Runtime\+::get\+Context(), master, Cotton\+::\+Runtime\+::nds, prev, Profiler\+CAPTURE, Cotton\+::\+Runtime\+::signal\+Error(), Cotton\+::\+Name\+Ids\+::user\+Repr(), and variables.
+
+
+
+Referenced by Cotton\+::\+Runtime\+::execute().
+
+\mbox{\Hypertarget{classCotton_1_1Scope_a974995cb53bf84af0092a21b562904c4}\label{classCotton_1_1Scope_a974995cb53bf84af0092a21b562904c4}} 
+\index{Cotton::Scope@{Cotton::Scope}!queryVariable@{queryVariable}}
+\index{queryVariable@{queryVariable}!Cotton::Scope@{Cotton::Scope}}
+\doxysubsubsection{\texorpdfstring{queryVariable()}{queryVariable()}}
+{\footnotesize\ttfamily bool Cotton\+::\+Scope\+::query\+Variable (\begin{DoxyParamCaption}\item[{int64\+\_\+t}]{id,  }\item[{\mbox{\hyperlink{classCotton_1_1Runtime}{Runtime}} $\ast$}]{rt }\end{DoxyParamCaption})}
+
+
+
+References can\+\_\+access\+\_\+prev, master, prev, Profiler\+CAPTURE, and variables.
+
+
+
+Referenced by Cotton\+::\+Runtime\+::execute().
+
+
+
+\doxysubsection{Member Data Documentation}
+\mbox{\Hypertarget{classCotton_1_1Scope_ae38164913e49ff595379d554235749b5}\label{classCotton_1_1Scope_ae38164913e49ff595379d554235749b5}} 
+\index{Cotton::Scope@{Cotton::Scope}!arguments@{arguments}}
+\index{arguments@{arguments}!Cotton::Scope@{Cotton::Scope}}
+\doxysubsubsection{\texorpdfstring{arguments}{arguments}}
+{\footnotesize\ttfamily std\+::vector$<$\mbox{\hyperlink{classCotton_1_1Object}{Object}} $\ast$$>$ Cotton\+::\+Scope\+::arguments}
+
+
+
+Referenced by Cotton\+::\+Builtin\+::\+Function\+Call\+Adapter(), and $\sim$\+Scope().
+
+\mbox{\Hypertarget{classCotton_1_1Scope_ac768e788591a1e7336abacc0beb5149f}\label{classCotton_1_1Scope_ac768e788591a1e7336abacc0beb5149f}} 
+\index{Cotton::Scope@{Cotton::Scope}!can\_access\_prev@{can\_access\_prev}}
+\index{can\_access\_prev@{can\_access\_prev}!Cotton::Scope@{Cotton::Scope}}
+\doxysubsubsection{\texorpdfstring{can\_access\_prev}{can\_access\_prev}}
+{\footnotesize\ttfamily bool Cotton\+::\+Scope\+::can\+\_\+access\+\_\+prev}
+
+
+
+Referenced by get\+Variable(), query\+Variable(), Scope(), and $\sim$\+Scope().
+
+\mbox{\Hypertarget{classCotton_1_1Scope_a744534501aeee0e927a83d968097cc3b}\label{classCotton_1_1Scope_a744534501aeee0e927a83d968097cc3b}} 
+\index{Cotton::Scope@{Cotton::Scope}!master@{master}}
+\index{master@{master}!Cotton::Scope@{Cotton::Scope}}
+\doxysubsubsection{\texorpdfstring{master}{master}}
+{\footnotesize\ttfamily \mbox{\hyperlink{classCotton_1_1Scope}{Scope}} $\ast$ Cotton\+::\+Scope\+::master}
+
+
+
+Referenced by get\+Variable(), Cotton\+::\+Runtime\+::new\+Frame(), query\+Variable(), Cotton\+::\+Runtime\+::\+Runtime(), Scope(), and $\sim$\+Scope().
+
+\mbox{\Hypertarget{classCotton_1_1Scope_af297d2836a0c69f90abcf71811e9d1e3}\label{classCotton_1_1Scope_af297d2836a0c69f90abcf71811e9d1e3}} 
+\index{Cotton::Scope@{Cotton::Scope}!prev@{prev}}
+\index{prev@{prev}!Cotton::Scope@{Cotton::Scope}}
+\doxysubsubsection{\texorpdfstring{prev}{prev}}
+{\footnotesize\ttfamily \mbox{\hyperlink{classCotton_1_1Scope}{Scope}}$\ast$ Cotton\+::\+Scope\+::prev}
+
+
+
+Referenced by Cotton\+::\+Builtin\+::\+CF\+\_\+argc(), Cotton\+::\+Builtin\+::\+CF\+\_\+argg(), Cotton\+::\+Builtin\+::\+CF\+\_\+argv(), get\+Variable(), Cotton\+::\+Runtime\+::pop\+Frame(), query\+Variable(), Scope(), and $\sim$\+Scope().
+
+\mbox{\Hypertarget{classCotton_1_1Scope_a13eae8003793da6d1a729a9a4e7af47a}\label{classCotton_1_1Scope_a13eae8003793da6d1a729a9a4e7af47a}} 
+\index{Cotton::Scope@{Cotton::Scope}!variables@{variables}}
+\index{variables@{variables}!Cotton::Scope@{Cotton::Scope}}
+\doxysubsubsection{\texorpdfstring{variables}{variables}}
+{\footnotesize\ttfamily \+\_\+\+\_\+gnu\+\_\+pbds\+::cc\+\_\+hash\+\_\+table$<$int64\+\_\+t, \mbox{\hyperlink{classCotton_1_1Object}{Object}} $\ast$$>$ Cotton\+::\+Scope\+::variables}
+
+
+
+Referenced by add\+Variable(), get\+Variable(), query\+Variable(), and $\sim$\+Scope().
+
+
+
+The documentation for this class was generated from the following files\+:\begin{DoxyCompactItemize}
+\item 
+cotton\+\_\+lib/src/cotton\+\_\+lib/back/\mbox{\hyperlink{scope_8h}{scope.\+h}}\item 
+cotton\+\_\+lib/src/cotton\+\_\+lib/back/\mbox{\hyperlink{scope_8cpp}{scope.\+cpp}}\end{DoxyCompactItemize}

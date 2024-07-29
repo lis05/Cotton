@@ -1,0 +1,57 @@
+\hypertarget{string_8h}{}\doxysection{cotton\+\_\+lib/src/cotton\+\_\+lib/builtin/types/string.h File Reference}
+\label{string_8h}\index{cotton\_lib/src/cotton\_lib/builtin/types/string.h@{cotton\_lib/src/cotton\_lib/builtin/types/string.h}}
+{\ttfamily \#include \char`\"{}../../back/api.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}../../front/api.\+h\char`\"{}}\newline
+Include dependency graph for string.\+h\+:\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{string_8h__incl}
+\end{center}
+\end{figure}
+This graph shows which files directly or indirectly include this file\+:\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{string_8h__dep__incl}
+\end{center}
+\end{figure}
+\doxysubsection*{Classes}
+\begin{DoxyCompactItemize}
+\item 
+class \mbox{\hyperlink{classCotton_1_1Builtin_1_1StringInstance}{Cotton\+::\+Builtin\+::\+String\+Instance}}
+\item 
+class \mbox{\hyperlink{classCotton_1_1Builtin_1_1StringType}{Cotton\+::\+Builtin\+::\+String\+Type}}
+\end{DoxyCompactItemize}
+\doxysubsection*{Namespaces}
+\begin{DoxyCompactItemize}
+\item 
+ \mbox{\hyperlink{namespaceCotton}{Cotton}}
+\item 
+ \mbox{\hyperlink{namespaceCotton_1_1Builtin}{Cotton\+::\+Builtin}}
+\end{DoxyCompactItemize}
+\doxysubsection*{Macros}
+\begin{DoxyCompactItemize}
+\item 
+\#define \mbox{\hyperlink{string_8h_a907fe0e85f0763e36b27689ddc2658ba}{get\+String\+Data\+Fast}}(obj)~(\mbox{\hyperlink{runtime_8h_a66dae358d269173c947b4a054b604fb1}{icast}}(obj-\/$>$instance, String\+Instance)-\/$>$data)
+\end{DoxyCompactItemize}
+\doxysubsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+void \mbox{\hyperlink{namespaceCotton_1_1Builtin_ab0afaed1c59d3674b4fe8fc9573dd49d}{Cotton\+::\+Builtin\+::install\+String\+Methods}} (Type $\ast$type, Runtime $\ast$rt)
+\item 
+Object $\ast$ \mbox{\hyperlink{namespaceCotton_1_1Builtin_a6dc52dc4b130c1d942dbbc60510535a2}{Cotton\+::\+Builtin\+::make\+String\+Instance\+Object}} (const std\+::string \&value, Runtime $\ast$rt)
+\item 
+std\+::string \& \mbox{\hyperlink{namespaceCotton_1_1Builtin_a1ac083606d7cf3ef6b38c7efe16f072c}{Cotton\+::\+Builtin\+::get\+String\+Data}} (Object $\ast$obj, Runtime $\ast$rt)
+\item 
+std\+::string \& \mbox{\hyperlink{namespaceCotton_1_1Builtin_a1e5c65608b33a07fd7e446c90f23933f}{Cotton\+::\+Builtin\+::get\+String\+Data}} (Object $\ast$obj, Runtime $\ast$rt, const Text\+Area \&ta)
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Macro Definition Documentation}
+\mbox{\Hypertarget{string_8h_a907fe0e85f0763e36b27689ddc2658ba}\label{string_8h_a907fe0e85f0763e36b27689ddc2658ba}} 
+\index{string.h@{string.h}!getStringDataFast@{getStringDataFast}}
+\index{getStringDataFast@{getStringDataFast}!string.h@{string.h}}
+\doxysubsubsection{\texorpdfstring{getStringDataFast}{getStringDataFast}}
+{\footnotesize\ttfamily \#define get\+String\+Data\+Fast(\begin{DoxyParamCaption}\item[{}]{obj }\end{DoxyParamCaption})~(\mbox{\hyperlink{runtime_8h_a66dae358d269173c947b4a054b604fb1}{icast}}(obj-\/$>$instance, String\+Instance)-\/$>$data)}
+

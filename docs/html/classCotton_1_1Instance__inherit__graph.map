@@ -1,0 +1,12 @@
+<map id="Cotton::Instance" name="Cotton::Instance">
+<area shape="rect" id="node1" title="Class representing an instance of a type." alt="" coords="5,260,133,287"/>
+<area shape="rect" id="node2" href="$classCotton_1_1Builtin_1_1ArrayInstance.html" title=" " alt="" coords="186,5,399,32"/>
+<area shape="rect" id="node3" href="$classCotton_1_1Builtin_1_1BooleanInstance.html" title=" " alt="" coords="205,57,381,98"/>
+<area shape="rect" id="node4" href="$classCotton_1_1Builtin_1_1CharacterInstance.html" title=" " alt="" coords="199,122,386,163"/>
+<area shape="rect" id="node5" href="$classCotton_1_1Builtin_1_1FunctionInstance.html" title=" " alt="" coords="203,187,382,229"/>
+<area shape="rect" id="node6" href="$classCotton_1_1Builtin_1_1IntegerInstance.html" title=" " alt="" coords="208,253,377,294"/>
+<area shape="rect" id="node7" href="$classCotton_1_1Builtin_1_1NothingInstance.html" title=" " alt="" coords="205,318,380,359"/>
+<area shape="rect" id="node8" href="$classCotton_1_1Builtin_1_1RealInstance.html" title=" " alt="" coords="189,384,396,411"/>
+<area shape="rect" id="node9" href="$classCotton_1_1Builtin_1_1RecordInstance.html" title=" " alt="" coords="181,435,404,461"/>
+<area shape="rect" id="node10" href="$classCotton_1_1Builtin_1_1StringInstance.html" title=" " alt="" coords="185,485,401,512"/>
+</map>

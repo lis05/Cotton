@@ -1,0 +1,166 @@
+\hypertarget{runtime_8h}{}\doxysection{cotton\+\_\+lib/src/cotton\+\_\+lib/back/runtime.h File Reference}
+\label{runtime_8h}\index{cotton\_lib/src/cotton\_lib/back/runtime.h@{cotton\_lib/src/cotton\_lib/back/runtime.h}}
+{\ttfamily \#include \char`\"{}../front/parser.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}nameid.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}object.\+h\char`\"{}}\newline
+{\ttfamily \#include $<$ext/pb\+\_\+ds/assoc\+\_\+container.\+hpp$>$}\newline
+{\ttfamily \#include $<$string$>$}\newline
+{\ttfamily \#include $<$vector$>$}\newline
+Include dependency graph for runtime.\+h\+:\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{runtime_8h__incl}
+\end{center}
+\end{figure}
+This graph shows which files directly or indirectly include this file\+:\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{runtime_8h__dep__incl}
+\end{center}
+\end{figure}
+\doxysubsection*{Classes}
+\begin{DoxyCompactItemize}
+\item 
+class \mbox{\hyperlink{classCotton_1_1Runtime}{Cotton\+::\+Runtime}}
+\item 
+class \mbox{\hyperlink{classCotton_1_1Runtime_1_1ErrorContext}{Cotton\+::\+Runtime\+::\+Error\+Context}}
+\end{DoxyCompactItemize}
+\doxysubsection*{Namespaces}
+\begin{DoxyCompactItemize}
+\item 
+ \mbox{\hyperlink{namespaceCotton}{Cotton}}
+\item 
+ \mbox{\hyperlink{namespaceCotton_1_1Builtin}{Cotton\+::\+Builtin}}
+\item 
+ \mbox{\hyperlink{namespaceCotton_1_1MagicMethods}{Cotton\+::\+Magic\+Methods}}
+\end{DoxyCompactItemize}
+\doxysubsection*{Macros}
+\begin{DoxyCompactItemize}
+\item 
+\#define \mbox{\hyperlink{runtime_8h_ae8b493abff61223d7fbede133c4a5433}{new\+Object}}(is\+\_\+instance,  instance,  type,  rt)~new Object(is\+\_\+instance, instance, type, rt)
+\item 
+\#define \mbox{\hyperlink{runtime_8h_ae74051fbe72eb712feeadc88b8c7f8b6}{set\+Exec\+Flag\+NONE}}(rt)~rt-\/$>$execution\+\_\+flags = 0;
+\item 
+\#define \mbox{\hyperlink{runtime_8h_a473624a16d27f8dce5c45e0b62d8a6f7}{set\+Exec\+Flag\+CONTINUE}}(rt)~rt-\/$>$execution\+\_\+flags = 1;
+\item 
+\#define \mbox{\hyperlink{runtime_8h_a44e2d2a63b0c5458bb5e1330c7ac90e3}{set\+Exec\+Flag\+BREAK}}(rt)~rt-\/$>$execution\+\_\+flags = 2;
+\item 
+\#define \mbox{\hyperlink{runtime_8h_a89d0172199da03cd931ffb3dca55f364}{set\+Exec\+Flag\+RETURN}}(rt)~rt-\/$>$execution\+\_\+flags = 4;
+\item 
+\#define \mbox{\hyperlink{runtime_8h_ac508628cdba9f68a449095a5cbe6abb3}{set\+Exec\+Flag\+DIRECT\+\_\+\+PASS}}(rt)~rt-\/$>$execution\+\_\+flags = 8;
+\item 
+\#define \mbox{\hyperlink{runtime_8h_a417974abad8cba869055cf86682ffb3d}{is\+Exec\+Flag\+NONE}}(rt)~(rt-\/$>$execution\+\_\+flags == 0)
+\item 
+\#define \mbox{\hyperlink{runtime_8h_ac451e54119fa26d3033ee00fd90978b4}{is\+Exec\+Flag\+CONTINUE}}(rt)~(rt-\/$>$execution\+\_\+flags == 1)
+\item 
+\#define \mbox{\hyperlink{runtime_8h_a2fea3c78564c19f38a2b1ff13e7a12bc}{is\+Exec\+Flag\+BREAK}}(rt)~(rt-\/$>$execution\+\_\+flags == 2)
+\item 
+\#define \mbox{\hyperlink{runtime_8h_a487e7572dad092dcc196d2efbae11801}{is\+Exec\+Flag\+RETURN}}(rt)~(rt-\/$>$execution\+\_\+flags == 4)
+\item 
+\#define \mbox{\hyperlink{runtime_8h_ab66509a4120a4f442f6e0c6b80889ee5}{is\+Exec\+Flag\+DIRECT\+\_\+\+PASS}}(rt)~(rt-\/$>$execution\+\_\+flags == 8)
+\item 
+\#define \mbox{\hyperlink{runtime_8h_a66dae358d269173c947b4a054b604fb1}{icast}}(ins,  type)~((type $\ast$)ins)
+\end{DoxyCompactItemize}
+\doxysubsection*{Typedefs}
+\begin{DoxyCompactItemize}
+\item 
+typedef Object $\ast$($\ast$ \mbox{\hyperlink{namespaceCotton_a9eb1e20a339dd01caadb01bd0d6c557a}{Cotton\+::\+Library\+Load\+Point}}) (Runtime $\ast$rt)
+\end{DoxyCompactItemize}
+\doxysubsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+int64\+\_\+t \mbox{\hyperlink{namespaceCotton_1_1MagicMethods_ab4cde4710e89300bc5d582198f3dd793}{Cotton\+::\+Magic\+Methods\+::mm\+\_\+\+\_\+make\+\_\+\+\_\+}} (Runtime $\ast$rt)
+\item 
+int64\+\_\+t \mbox{\hyperlink{namespaceCotton_1_1MagicMethods_a45eae028e717dce90a1ac8251f1abacb}{Cotton\+::\+Magic\+Methods\+::mm\+\_\+\+\_\+copy\+\_\+\+\_\+}} (Runtime $\ast$rt)
+\item 
+int64\+\_\+t \mbox{\hyperlink{namespaceCotton_1_1MagicMethods_addc9ea1fcc7c137f6b5082b77ab48f8e}{Cotton\+::\+Magic\+Methods\+::mm\+\_\+\+\_\+bool\+\_\+\+\_\+}} (Runtime $\ast$rt)
+\item 
+int64\+\_\+t \mbox{\hyperlink{namespaceCotton_1_1MagicMethods_ae089812f0b55c46e6f25289232e4f9b0}{Cotton\+::\+Magic\+Methods\+::mm\+\_\+\+\_\+char\+\_\+\+\_\+}} (Runtime $\ast$rt)
+\item 
+int64\+\_\+t \mbox{\hyperlink{namespaceCotton_1_1MagicMethods_a3d0e0a9b2873140099616004dd143f83}{Cotton\+::\+Magic\+Methods\+::mm\+\_\+\+\_\+int\+\_\+\+\_\+}} (Runtime $\ast$rt)
+\item 
+int64\+\_\+t \mbox{\hyperlink{namespaceCotton_1_1MagicMethods_a5977c952ddc2810fcdcf592614b0eb21}{Cotton\+::\+Magic\+Methods\+::mm\+\_\+\+\_\+real\+\_\+\+\_\+}} (Runtime $\ast$rt)
+\item 
+int64\+\_\+t \mbox{\hyperlink{namespaceCotton_1_1MagicMethods_a6099d4b7cd7b55d1b0b99b43e2fb612e}{Cotton\+::\+Magic\+Methods\+::mm\+\_\+\+\_\+string\+\_\+\+\_\+}} (Runtime $\ast$rt)
+\item 
+int64\+\_\+t \mbox{\hyperlink{namespaceCotton_1_1MagicMethods_ab775ab6e410a128b04fc5bb0720caa74}{Cotton\+::\+Magic\+Methods\+::mm\+\_\+\+\_\+repr\+\_\+\+\_\+}} (Runtime $\ast$rt)
+\item 
+int64\+\_\+t \mbox{\hyperlink{namespaceCotton_1_1MagicMethods_aaea1318e442afe1c3753615c0fd01044}{Cotton\+::\+Magic\+Methods\+::mm\+\_\+\+\_\+read\+\_\+\+\_\+}} (Runtime $\ast$rt)
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Macro Definition Documentation}
+\mbox{\Hypertarget{runtime_8h_a66dae358d269173c947b4a054b604fb1}\label{runtime_8h_a66dae358d269173c947b4a054b604fb1}} 
+\index{runtime.h@{runtime.h}!icast@{icast}}
+\index{icast@{icast}!runtime.h@{runtime.h}}
+\doxysubsubsection{\texorpdfstring{icast}{icast}}
+{\footnotesize\ttfamily \#define icast(\begin{DoxyParamCaption}\item[{}]{ins,  }\item[{}]{type }\end{DoxyParamCaption})~((type $\ast$)ins)}
+
+\mbox{\Hypertarget{runtime_8h_a2fea3c78564c19f38a2b1ff13e7a12bc}\label{runtime_8h_a2fea3c78564c19f38a2b1ff13e7a12bc}} 
+\index{runtime.h@{runtime.h}!isExecFlagBREAK@{isExecFlagBREAK}}
+\index{isExecFlagBREAK@{isExecFlagBREAK}!runtime.h@{runtime.h}}
+\doxysubsubsection{\texorpdfstring{isExecFlagBREAK}{isExecFlagBREAK}}
+{\footnotesize\ttfamily \#define is\+Exec\+Flag\+BREAK(\begin{DoxyParamCaption}\item[{}]{rt }\end{DoxyParamCaption})~(rt-\/$>$execution\+\_\+flags == 2)}
+
+\mbox{\Hypertarget{runtime_8h_ac451e54119fa26d3033ee00fd90978b4}\label{runtime_8h_ac451e54119fa26d3033ee00fd90978b4}} 
+\index{runtime.h@{runtime.h}!isExecFlagCONTINUE@{isExecFlagCONTINUE}}
+\index{isExecFlagCONTINUE@{isExecFlagCONTINUE}!runtime.h@{runtime.h}}
+\doxysubsubsection{\texorpdfstring{isExecFlagCONTINUE}{isExecFlagCONTINUE}}
+{\footnotesize\ttfamily \#define is\+Exec\+Flag\+CONTINUE(\begin{DoxyParamCaption}\item[{}]{rt }\end{DoxyParamCaption})~(rt-\/$>$execution\+\_\+flags == 1)}
+
+\mbox{\Hypertarget{runtime_8h_ab66509a4120a4f442f6e0c6b80889ee5}\label{runtime_8h_ab66509a4120a4f442f6e0c6b80889ee5}} 
+\index{runtime.h@{runtime.h}!isExecFlagDIRECT\_PASS@{isExecFlagDIRECT\_PASS}}
+\index{isExecFlagDIRECT\_PASS@{isExecFlagDIRECT\_PASS}!runtime.h@{runtime.h}}
+\doxysubsubsection{\texorpdfstring{isExecFlagDIRECT\_PASS}{isExecFlagDIRECT\_PASS}}
+{\footnotesize\ttfamily \#define is\+Exec\+Flag\+DIRECT\+\_\+\+PASS(\begin{DoxyParamCaption}\item[{}]{rt }\end{DoxyParamCaption})~(rt-\/$>$execution\+\_\+flags == 8)}
+
+\mbox{\Hypertarget{runtime_8h_a417974abad8cba869055cf86682ffb3d}\label{runtime_8h_a417974abad8cba869055cf86682ffb3d}} 
+\index{runtime.h@{runtime.h}!isExecFlagNONE@{isExecFlagNONE}}
+\index{isExecFlagNONE@{isExecFlagNONE}!runtime.h@{runtime.h}}
+\doxysubsubsection{\texorpdfstring{isExecFlagNONE}{isExecFlagNONE}}
+{\footnotesize\ttfamily \#define is\+Exec\+Flag\+NONE(\begin{DoxyParamCaption}\item[{}]{rt }\end{DoxyParamCaption})~(rt-\/$>$execution\+\_\+flags == 0)}
+
+\mbox{\Hypertarget{runtime_8h_a487e7572dad092dcc196d2efbae11801}\label{runtime_8h_a487e7572dad092dcc196d2efbae11801}} 
+\index{runtime.h@{runtime.h}!isExecFlagRETURN@{isExecFlagRETURN}}
+\index{isExecFlagRETURN@{isExecFlagRETURN}!runtime.h@{runtime.h}}
+\doxysubsubsection{\texorpdfstring{isExecFlagRETURN}{isExecFlagRETURN}}
+{\footnotesize\ttfamily \#define is\+Exec\+Flag\+RETURN(\begin{DoxyParamCaption}\item[{}]{rt }\end{DoxyParamCaption})~(rt-\/$>$execution\+\_\+flags == 4)}
+
+\mbox{\Hypertarget{runtime_8h_ae8b493abff61223d7fbede133c4a5433}\label{runtime_8h_ae8b493abff61223d7fbede133c4a5433}} 
+\index{runtime.h@{runtime.h}!newObject@{newObject}}
+\index{newObject@{newObject}!runtime.h@{runtime.h}}
+\doxysubsubsection{\texorpdfstring{newObject}{newObject}}
+{\footnotesize\ttfamily \#define new\+Object(\begin{DoxyParamCaption}\item[{}]{is\+\_\+instance,  }\item[{}]{instance,  }\item[{}]{type,  }\item[{}]{rt }\end{DoxyParamCaption})~new Object(is\+\_\+instance, instance, type, rt)}
+
+\mbox{\Hypertarget{runtime_8h_a44e2d2a63b0c5458bb5e1330c7ac90e3}\label{runtime_8h_a44e2d2a63b0c5458bb5e1330c7ac90e3}} 
+\index{runtime.h@{runtime.h}!setExecFlagBREAK@{setExecFlagBREAK}}
+\index{setExecFlagBREAK@{setExecFlagBREAK}!runtime.h@{runtime.h}}
+\doxysubsubsection{\texorpdfstring{setExecFlagBREAK}{setExecFlagBREAK}}
+{\footnotesize\ttfamily \#define set\+Exec\+Flag\+BREAK(\begin{DoxyParamCaption}\item[{}]{rt }\end{DoxyParamCaption})~rt-\/$>$execution\+\_\+flags = 2;}
+
+\mbox{\Hypertarget{runtime_8h_a473624a16d27f8dce5c45e0b62d8a6f7}\label{runtime_8h_a473624a16d27f8dce5c45e0b62d8a6f7}} 
+\index{runtime.h@{runtime.h}!setExecFlagCONTINUE@{setExecFlagCONTINUE}}
+\index{setExecFlagCONTINUE@{setExecFlagCONTINUE}!runtime.h@{runtime.h}}
+\doxysubsubsection{\texorpdfstring{setExecFlagCONTINUE}{setExecFlagCONTINUE}}
+{\footnotesize\ttfamily \#define set\+Exec\+Flag\+CONTINUE(\begin{DoxyParamCaption}\item[{}]{rt }\end{DoxyParamCaption})~rt-\/$>$execution\+\_\+flags = 1;}
+
+\mbox{\Hypertarget{runtime_8h_ac508628cdba9f68a449095a5cbe6abb3}\label{runtime_8h_ac508628cdba9f68a449095a5cbe6abb3}} 
+\index{runtime.h@{runtime.h}!setExecFlagDIRECT\_PASS@{setExecFlagDIRECT\_PASS}}
+\index{setExecFlagDIRECT\_PASS@{setExecFlagDIRECT\_PASS}!runtime.h@{runtime.h}}
+\doxysubsubsection{\texorpdfstring{setExecFlagDIRECT\_PASS}{setExecFlagDIRECT\_PASS}}
+{\footnotesize\ttfamily \#define set\+Exec\+Flag\+DIRECT\+\_\+\+PASS(\begin{DoxyParamCaption}\item[{}]{rt }\end{DoxyParamCaption})~rt-\/$>$execution\+\_\+flags = 8;}
+
+\mbox{\Hypertarget{runtime_8h_ae74051fbe72eb712feeadc88b8c7f8b6}\label{runtime_8h_ae74051fbe72eb712feeadc88b8c7f8b6}} 
+\index{runtime.h@{runtime.h}!setExecFlagNONE@{setExecFlagNONE}}
+\index{setExecFlagNONE@{setExecFlagNONE}!runtime.h@{runtime.h}}
+\doxysubsubsection{\texorpdfstring{setExecFlagNONE}{setExecFlagNONE}}
+{\footnotesize\ttfamily \#define set\+Exec\+Flag\+NONE(\begin{DoxyParamCaption}\item[{}]{rt }\end{DoxyParamCaption})~rt-\/$>$execution\+\_\+flags = 0;}
+
+\mbox{\Hypertarget{runtime_8h_a89d0172199da03cd931ffb3dca55f364}\label{runtime_8h_a89d0172199da03cd931ffb3dca55f364}} 
+\index{runtime.h@{runtime.h}!setExecFlagRETURN@{setExecFlagRETURN}}
+\index{setExecFlagRETURN@{setExecFlagRETURN}!runtime.h@{runtime.h}}
+\doxysubsubsection{\texorpdfstring{setExecFlagRETURN}{setExecFlagRETURN}}
+{\footnotesize\ttfamily \#define set\+Exec\+Flag\+RETURN(\begin{DoxyParamCaption}\item[{}]{rt }\end{DoxyParamCaption})~rt-\/$>$execution\+\_\+flags = 4;}
+

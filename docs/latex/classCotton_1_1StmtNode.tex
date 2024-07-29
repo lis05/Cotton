@@ -1,0 +1,305 @@
+\hypertarget{classCotton_1_1StmtNode}{}\doxysection{Cotton\+::Stmt\+Node Class Reference}
+\label{classCotton_1_1StmtNode}\index{Cotton::StmtNode@{Cotton::StmtNode}}
+
+
+{\ttfamily \#include $<$parser.\+h$>$}
+
+\doxysubsection*{Public Types}
+\begin{DoxyCompactItemize}
+\item 
+enum \mbox{\hyperlink{classCotton_1_1StmtNode_acf642ae81b095652a00b2beec16ce67b}{Stmt\+Id}} \{ \newline
+\mbox{\hyperlink{classCotton_1_1StmtNode_acf642ae81b095652a00b2beec16ce67ba512d524390d75eb9ded9b64d5ff8d204}{WHILE}}
+, \mbox{\hyperlink{classCotton_1_1StmtNode_acf642ae81b095652a00b2beec16ce67ba2e5a252f5f57d3f33a66e26f6aa71d27}{FOR}}
+, \mbox{\hyperlink{classCotton_1_1StmtNode_acf642ae81b095652a00b2beec16ce67bafb886e0bedab01af934336162492409e}{IF}}
+, \mbox{\hyperlink{classCotton_1_1StmtNode_acf642ae81b095652a00b2beec16ce67ba897a0a0ded78415e89429de527276b9b}{CONTINUE}}
+, \newline
+\mbox{\hyperlink{classCotton_1_1StmtNode_acf642ae81b095652a00b2beec16ce67ba2478614765c6aa312f7baccda22bcb68}{BREAK}}
+, \mbox{\hyperlink{classCotton_1_1StmtNode_acf642ae81b095652a00b2beec16ce67ba44a6cd7d2bf7334f6f47899e448956b5}{RETURN}}
+, \mbox{\hyperlink{classCotton_1_1StmtNode_acf642ae81b095652a00b2beec16ce67ba4e97633f7ba247972d451f5608ece0ee}{BLOCK}}
+, \mbox{\hyperlink{classCotton_1_1StmtNode_acf642ae81b095652a00b2beec16ce67ba14b0785ba1e307083ef53112f88f433f}{EXPR}}
+ \}
+\end{DoxyCompactItemize}
+\doxysubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{classCotton_1_1StmtNode_a6e29b088ae18ed34291d7b911abfe444}{Stmt\+Node}} ()=delete
+\item 
+\mbox{\hyperlink{classCotton_1_1StmtNode_aaca795532003a1469d5ed1e039a3bc17}{$\sim$\+Stmt\+Node}} ()
+\item 
+\mbox{\hyperlink{classCotton_1_1StmtNode_ad63263ed480d4cb596957716fd244282}{Stmt\+Node}} (\mbox{\hyperlink{classCotton_1_1WhileStmtNode}{While\+Stmt\+Node}} $\ast$\mbox{\hyperlink{classCotton_1_1StmtNode_a17e8c11b1fdbd2fb9dfd6521582adc86}{while\+\_\+stmt}}, \mbox{\hyperlink{classCotton_1_1TextArea}{Text\+Area}} \mbox{\hyperlink{classCotton_1_1StmtNode_aab15a77ee0ba15d8c630d8d4d9d266e0}{text\+\_\+area}})
+\item 
+\mbox{\hyperlink{classCotton_1_1StmtNode_a3457b192cd6249c5d2f5c0b78def168b}{Stmt\+Node}} (\mbox{\hyperlink{classCotton_1_1ForStmtNode}{For\+Stmt\+Node}} $\ast$\mbox{\hyperlink{classCotton_1_1StmtNode_af456b1ddd1698c6054bfe4522575521e}{for\+\_\+stmt}}, \mbox{\hyperlink{classCotton_1_1TextArea}{Text\+Area}} \mbox{\hyperlink{classCotton_1_1StmtNode_aab15a77ee0ba15d8c630d8d4d9d266e0}{text\+\_\+area}})
+\item 
+\mbox{\hyperlink{classCotton_1_1StmtNode_ad3ca73984600b10cd832af9b53afaaec}{Stmt\+Node}} (\mbox{\hyperlink{classCotton_1_1IfStmtNode}{If\+Stmt\+Node}} $\ast$\mbox{\hyperlink{classCotton_1_1StmtNode_a6bc131178142b7c81e6330c345e49343}{if\+\_\+stmt}}, \mbox{\hyperlink{classCotton_1_1TextArea}{Text\+Area}} \mbox{\hyperlink{classCotton_1_1StmtNode_aab15a77ee0ba15d8c630d8d4d9d266e0}{text\+\_\+area}})
+\item 
+\mbox{\hyperlink{classCotton_1_1StmtNode_a3016be951b88ff5f2dd16c772887ef3d}{Stmt\+Node}} (\mbox{\hyperlink{classCotton_1_1StmtNode_acf642ae81b095652a00b2beec16ce67b}{Stmt\+Id}} \mbox{\hyperlink{classCotton_1_1StmtNode_a64a9847db5e2a5e29d0c9b9b1bbfb362}{id}}, \mbox{\hyperlink{classCotton_1_1TextArea}{Text\+Area}} \mbox{\hyperlink{classCotton_1_1StmtNode_aab15a77ee0ba15d8c630d8d4d9d266e0}{text\+\_\+area}})
+\item 
+\mbox{\hyperlink{classCotton_1_1StmtNode_ab1bffb67c573946ec34a7c31cae2b495}{Stmt\+Node}} (\mbox{\hyperlink{classCotton_1_1ReturnStmtNode}{Return\+Stmt\+Node}} $\ast$\mbox{\hyperlink{classCotton_1_1StmtNode_abebcce5c4d089d99f6ef1ac22511c4d0}{return\+\_\+stmt}}, \mbox{\hyperlink{classCotton_1_1TextArea}{Text\+Area}} \mbox{\hyperlink{classCotton_1_1StmtNode_aab15a77ee0ba15d8c630d8d4d9d266e0}{text\+\_\+area}})
+\item 
+\mbox{\hyperlink{classCotton_1_1StmtNode_aad8324dc88946bed318d464bd9823400}{Stmt\+Node}} (\mbox{\hyperlink{classCotton_1_1BlockStmtNode}{Block\+Stmt\+Node}} $\ast$\mbox{\hyperlink{classCotton_1_1StmtNode_aa50628eb2928cc17484257e01aba6feb}{block\+\_\+stmt}}, \mbox{\hyperlink{classCotton_1_1TextArea}{Text\+Area}} \mbox{\hyperlink{classCotton_1_1StmtNode_aab15a77ee0ba15d8c630d8d4d9d266e0}{text\+\_\+area}})
+\item 
+\mbox{\hyperlink{classCotton_1_1StmtNode_a47db6900a2ef502ef39c173035ec7890}{Stmt\+Node}} (\mbox{\hyperlink{classCotton_1_1ExprNode}{Expr\+Node}} $\ast$\mbox{\hyperlink{classCotton_1_1StmtNode_a2d3209060e55d46f21342dc1764a3af3}{expr}}, \mbox{\hyperlink{classCotton_1_1TextArea}{Text\+Area}} \mbox{\hyperlink{classCotton_1_1StmtNode_aab15a77ee0ba15d8c630d8d4d9d266e0}{text\+\_\+area}})
+\item 
+void \mbox{\hyperlink{classCotton_1_1StmtNode_a6508a64c5b14e9294a0d946e84008e60}{print}} (int indent=0, int step=2)
+\end{DoxyCompactItemize}
+\doxysubsection*{Public Attributes}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{classCotton_1_1TextArea}{Text\+Area}} \mbox{\hyperlink{classCotton_1_1StmtNode_aab15a77ee0ba15d8c630d8d4d9d266e0}{text\+\_\+area}}
+\item 
+enum \mbox{\hyperlink{classCotton_1_1StmtNode_acf642ae81b095652a00b2beec16ce67b}{Cotton\+::\+Stmt\+Node\+::\+Stmt\+Id}} \mbox{\hyperlink{classCotton_1_1StmtNode_a64a9847db5e2a5e29d0c9b9b1bbfb362}{id}}
+\item 
+\begin{tabbing}
+xx\=xx\=xx\=xx\=xx\=xx\=xx\=xx\=xx\=\kill
+union \{\\
+\>\mbox{\hyperlink{classCotton_1_1WhileStmtNode}{WhileStmtNode}} $\ast$ \mbox{\hyperlink{classCotton_1_1StmtNode_a17e8c11b1fdbd2fb9dfd6521582adc86}{while\_stmt}}\\
+\>\mbox{\hyperlink{classCotton_1_1ForStmtNode}{ForStmtNode}} $\ast$ \mbox{\hyperlink{classCotton_1_1StmtNode_af456b1ddd1698c6054bfe4522575521e}{for\_stmt}}\\
+\>\mbox{\hyperlink{classCotton_1_1IfStmtNode}{IfStmtNode}} $\ast$ \mbox{\hyperlink{classCotton_1_1StmtNode_a6bc131178142b7c81e6330c345e49343}{if\_stmt}}\\
+\>\mbox{\hyperlink{classCotton_1_1ReturnStmtNode}{ReturnStmtNode}} $\ast$ \mbox{\hyperlink{classCotton_1_1StmtNode_abebcce5c4d089d99f6ef1ac22511c4d0}{return\_stmt}}\\
+\>\mbox{\hyperlink{classCotton_1_1BlockStmtNode}{BlockStmtNode}} $\ast$ \mbox{\hyperlink{classCotton_1_1StmtNode_aa50628eb2928cc17484257e01aba6feb}{block\_stmt}}\\
+\>\mbox{\hyperlink{classCotton_1_1ExprNode}{ExprNode}} $\ast$ \mbox{\hyperlink{classCotton_1_1StmtNode_a2d3209060e55d46f21342dc1764a3af3}{expr}}\\
+\}; \\
+
+\end{tabbing}\end{DoxyCompactItemize}
+
+
+\doxysubsection{Member Enumeration Documentation}
+\mbox{\Hypertarget{classCotton_1_1StmtNode_acf642ae81b095652a00b2beec16ce67b}\label{classCotton_1_1StmtNode_acf642ae81b095652a00b2beec16ce67b}} 
+\index{Cotton::StmtNode@{Cotton::StmtNode}!StmtId@{StmtId}}
+\index{StmtId@{StmtId}!Cotton::StmtNode@{Cotton::StmtNode}}
+\doxysubsubsection{\texorpdfstring{StmtId}{StmtId}}
+{\footnotesize\ttfamily enum \mbox{\hyperlink{classCotton_1_1StmtNode_acf642ae81b095652a00b2beec16ce67b}{Cotton\+::\+Stmt\+Node\+::\+Stmt\+Id}}}
+
+\begin{DoxyEnumFields}{Enumerator}
+\raisebox{\heightof{T}}[0pt][0pt]{\index{WHILE@{WHILE}!Cotton::StmtNode@{Cotton::StmtNode}}\index{Cotton::StmtNode@{Cotton::StmtNode}!WHILE@{WHILE}}}\mbox{\Hypertarget{classCotton_1_1StmtNode_acf642ae81b095652a00b2beec16ce67ba512d524390d75eb9ded9b64d5ff8d204}\label{classCotton_1_1StmtNode_acf642ae81b095652a00b2beec16ce67ba512d524390d75eb9ded9b64d5ff8d204}} 
+WHILE&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{FOR@{FOR}!Cotton::StmtNode@{Cotton::StmtNode}}\index{Cotton::StmtNode@{Cotton::StmtNode}!FOR@{FOR}}}\mbox{\Hypertarget{classCotton_1_1StmtNode_acf642ae81b095652a00b2beec16ce67ba2e5a252f5f57d3f33a66e26f6aa71d27}\label{classCotton_1_1StmtNode_acf642ae81b095652a00b2beec16ce67ba2e5a252f5f57d3f33a66e26f6aa71d27}} 
+FOR&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{IF@{IF}!Cotton::StmtNode@{Cotton::StmtNode}}\index{Cotton::StmtNode@{Cotton::StmtNode}!IF@{IF}}}\mbox{\Hypertarget{classCotton_1_1StmtNode_acf642ae81b095652a00b2beec16ce67bafb886e0bedab01af934336162492409e}\label{classCotton_1_1StmtNode_acf642ae81b095652a00b2beec16ce67bafb886e0bedab01af934336162492409e}} 
+IF&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{CONTINUE@{CONTINUE}!Cotton::StmtNode@{Cotton::StmtNode}}\index{Cotton::StmtNode@{Cotton::StmtNode}!CONTINUE@{CONTINUE}}}\mbox{\Hypertarget{classCotton_1_1StmtNode_acf642ae81b095652a00b2beec16ce67ba897a0a0ded78415e89429de527276b9b}\label{classCotton_1_1StmtNode_acf642ae81b095652a00b2beec16ce67ba897a0a0ded78415e89429de527276b9b}} 
+CONTINUE&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{BREAK@{BREAK}!Cotton::StmtNode@{Cotton::StmtNode}}\index{Cotton::StmtNode@{Cotton::StmtNode}!BREAK@{BREAK}}}\mbox{\Hypertarget{classCotton_1_1StmtNode_acf642ae81b095652a00b2beec16ce67ba2478614765c6aa312f7baccda22bcb68}\label{classCotton_1_1StmtNode_acf642ae81b095652a00b2beec16ce67ba2478614765c6aa312f7baccda22bcb68}} 
+BREAK&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{RETURN@{RETURN}!Cotton::StmtNode@{Cotton::StmtNode}}\index{Cotton::StmtNode@{Cotton::StmtNode}!RETURN@{RETURN}}}\mbox{\Hypertarget{classCotton_1_1StmtNode_acf642ae81b095652a00b2beec16ce67ba44a6cd7d2bf7334f6f47899e448956b5}\label{classCotton_1_1StmtNode_acf642ae81b095652a00b2beec16ce67ba44a6cd7d2bf7334f6f47899e448956b5}} 
+RETURN&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{BLOCK@{BLOCK}!Cotton::StmtNode@{Cotton::StmtNode}}\index{Cotton::StmtNode@{Cotton::StmtNode}!BLOCK@{BLOCK}}}\mbox{\Hypertarget{classCotton_1_1StmtNode_acf642ae81b095652a00b2beec16ce67ba4e97633f7ba247972d451f5608ece0ee}\label{classCotton_1_1StmtNode_acf642ae81b095652a00b2beec16ce67ba4e97633f7ba247972d451f5608ece0ee}} 
+BLOCK&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{EXPR@{EXPR}!Cotton::StmtNode@{Cotton::StmtNode}}\index{Cotton::StmtNode@{Cotton::StmtNode}!EXPR@{EXPR}}}\mbox{\Hypertarget{classCotton_1_1StmtNode_acf642ae81b095652a00b2beec16ce67ba14b0785ba1e307083ef53112f88f433f}\label{classCotton_1_1StmtNode_acf642ae81b095652a00b2beec16ce67ba14b0785ba1e307083ef53112f88f433f}} 
+EXPR&\\
+\hline
+
+\end{DoxyEnumFields}
+
+
+\doxysubsection{Constructor \& Destructor Documentation}
+\mbox{\Hypertarget{classCotton_1_1StmtNode_a6e29b088ae18ed34291d7b911abfe444}\label{classCotton_1_1StmtNode_a6e29b088ae18ed34291d7b911abfe444}} 
+\index{Cotton::StmtNode@{Cotton::StmtNode}!StmtNode@{StmtNode}}
+\index{StmtNode@{StmtNode}!Cotton::StmtNode@{Cotton::StmtNode}}
+\doxysubsubsection{\texorpdfstring{StmtNode()}{StmtNode()}\hspace{0.1cm}{\footnotesize\ttfamily [1/8]}}
+{\footnotesize\ttfamily Cotton\+::\+Stmt\+Node\+::\+Stmt\+Node (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [delete]}}
+
+\mbox{\Hypertarget{classCotton_1_1StmtNode_aaca795532003a1469d5ed1e039a3bc17}\label{classCotton_1_1StmtNode_aaca795532003a1469d5ed1e039a3bc17}} 
+\index{Cotton::StmtNode@{Cotton::StmtNode}!````~StmtNode@{$\sim$StmtNode}}
+\index{````~StmtNode@{$\sim$StmtNode}!Cotton::StmtNode@{Cotton::StmtNode}}
+\doxysubsubsection{\texorpdfstring{$\sim$StmtNode()}{~StmtNode()}}
+{\footnotesize\ttfamily Cotton\+::\+Stmt\+Node\+::$\sim$\+Stmt\+Node (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+
+
+References BLOCK, block\+\_\+stmt, EXPR, expr, FOR, for\+\_\+stmt, IF, if\+\_\+stmt, RETURN, return\+\_\+stmt, WHILE, and while\+\_\+stmt.
+
+\mbox{\Hypertarget{classCotton_1_1StmtNode_ad63263ed480d4cb596957716fd244282}\label{classCotton_1_1StmtNode_ad63263ed480d4cb596957716fd244282}} 
+\index{Cotton::StmtNode@{Cotton::StmtNode}!StmtNode@{StmtNode}}
+\index{StmtNode@{StmtNode}!Cotton::StmtNode@{Cotton::StmtNode}}
+\doxysubsubsection{\texorpdfstring{StmtNode()}{StmtNode()}\hspace{0.1cm}{\footnotesize\ttfamily [2/8]}}
+{\footnotesize\ttfamily Cotton\+::\+Stmt\+Node\+::\+Stmt\+Node (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{classCotton_1_1WhileStmtNode}{While\+Stmt\+Node}} $\ast$}]{while\+\_\+stmt,  }\item[{\mbox{\hyperlink{classCotton_1_1TextArea}{Text\+Area}}}]{text\+\_\+area }\end{DoxyParamCaption})}
+
+
+
+References block\+\_\+stmt, expr, for\+\_\+stmt, if\+\_\+stmt, return\+\_\+stmt, text\+\_\+area, WHILE, and while\+\_\+stmt.
+
+\mbox{\Hypertarget{classCotton_1_1StmtNode_a3457b192cd6249c5d2f5c0b78def168b}\label{classCotton_1_1StmtNode_a3457b192cd6249c5d2f5c0b78def168b}} 
+\index{Cotton::StmtNode@{Cotton::StmtNode}!StmtNode@{StmtNode}}
+\index{StmtNode@{StmtNode}!Cotton::StmtNode@{Cotton::StmtNode}}
+\doxysubsubsection{\texorpdfstring{StmtNode()}{StmtNode()}\hspace{0.1cm}{\footnotesize\ttfamily [3/8]}}
+{\footnotesize\ttfamily Cotton\+::\+Stmt\+Node\+::\+Stmt\+Node (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{classCotton_1_1ForStmtNode}{For\+Stmt\+Node}} $\ast$}]{for\+\_\+stmt,  }\item[{\mbox{\hyperlink{classCotton_1_1TextArea}{Text\+Area}}}]{text\+\_\+area }\end{DoxyParamCaption})}
+
+
+
+References block\+\_\+stmt, expr, FOR, for\+\_\+stmt, if\+\_\+stmt, return\+\_\+stmt, text\+\_\+area, and while\+\_\+stmt.
+
+\mbox{\Hypertarget{classCotton_1_1StmtNode_ad3ca73984600b10cd832af9b53afaaec}\label{classCotton_1_1StmtNode_ad3ca73984600b10cd832af9b53afaaec}} 
+\index{Cotton::StmtNode@{Cotton::StmtNode}!StmtNode@{StmtNode}}
+\index{StmtNode@{StmtNode}!Cotton::StmtNode@{Cotton::StmtNode}}
+\doxysubsubsection{\texorpdfstring{StmtNode()}{StmtNode()}\hspace{0.1cm}{\footnotesize\ttfamily [4/8]}}
+{\footnotesize\ttfamily Cotton\+::\+Stmt\+Node\+::\+Stmt\+Node (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{classCotton_1_1IfStmtNode}{If\+Stmt\+Node}} $\ast$}]{if\+\_\+stmt,  }\item[{\mbox{\hyperlink{classCotton_1_1TextArea}{Text\+Area}}}]{text\+\_\+area }\end{DoxyParamCaption})}
+
+
+
+References block\+\_\+stmt, expr, for\+\_\+stmt, IF, if\+\_\+stmt, return\+\_\+stmt, text\+\_\+area, and while\+\_\+stmt.
+
+\mbox{\Hypertarget{classCotton_1_1StmtNode_a3016be951b88ff5f2dd16c772887ef3d}\label{classCotton_1_1StmtNode_a3016be951b88ff5f2dd16c772887ef3d}} 
+\index{Cotton::StmtNode@{Cotton::StmtNode}!StmtNode@{StmtNode}}
+\index{StmtNode@{StmtNode}!Cotton::StmtNode@{Cotton::StmtNode}}
+\doxysubsubsection{\texorpdfstring{StmtNode()}{StmtNode()}\hspace{0.1cm}{\footnotesize\ttfamily [5/8]}}
+{\footnotesize\ttfamily Cotton\+::\+Stmt\+Node\+::\+Stmt\+Node (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{classCotton_1_1StmtNode_acf642ae81b095652a00b2beec16ce67b}{Stmt\+Id}}}]{id,  }\item[{\mbox{\hyperlink{classCotton_1_1TextArea}{Text\+Area}}}]{text\+\_\+area }\end{DoxyParamCaption})}
+
+
+
+References block\+\_\+stmt, expr, for\+\_\+stmt, id, if\+\_\+stmt, return\+\_\+stmt, text\+\_\+area, and while\+\_\+stmt.
+
+\mbox{\Hypertarget{classCotton_1_1StmtNode_ab1bffb67c573946ec34a7c31cae2b495}\label{classCotton_1_1StmtNode_ab1bffb67c573946ec34a7c31cae2b495}} 
+\index{Cotton::StmtNode@{Cotton::StmtNode}!StmtNode@{StmtNode}}
+\index{StmtNode@{StmtNode}!Cotton::StmtNode@{Cotton::StmtNode}}
+\doxysubsubsection{\texorpdfstring{StmtNode()}{StmtNode()}\hspace{0.1cm}{\footnotesize\ttfamily [6/8]}}
+{\footnotesize\ttfamily Cotton\+::\+Stmt\+Node\+::\+Stmt\+Node (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{classCotton_1_1ReturnStmtNode}{Return\+Stmt\+Node}} $\ast$}]{return\+\_\+stmt,  }\item[{\mbox{\hyperlink{classCotton_1_1TextArea}{Text\+Area}}}]{text\+\_\+area }\end{DoxyParamCaption})}
+
+
+
+References block\+\_\+stmt, expr, for\+\_\+stmt, if\+\_\+stmt, RETURN, return\+\_\+stmt, text\+\_\+area, and while\+\_\+stmt.
+
+\mbox{\Hypertarget{classCotton_1_1StmtNode_aad8324dc88946bed318d464bd9823400}\label{classCotton_1_1StmtNode_aad8324dc88946bed318d464bd9823400}} 
+\index{Cotton::StmtNode@{Cotton::StmtNode}!StmtNode@{StmtNode}}
+\index{StmtNode@{StmtNode}!Cotton::StmtNode@{Cotton::StmtNode}}
+\doxysubsubsection{\texorpdfstring{StmtNode()}{StmtNode()}\hspace{0.1cm}{\footnotesize\ttfamily [7/8]}}
+{\footnotesize\ttfamily Cotton\+::\+Stmt\+Node\+::\+Stmt\+Node (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{classCotton_1_1BlockStmtNode}{Block\+Stmt\+Node}} $\ast$}]{block\+\_\+stmt,  }\item[{\mbox{\hyperlink{classCotton_1_1TextArea}{Text\+Area}}}]{text\+\_\+area }\end{DoxyParamCaption})}
+
+
+
+References BLOCK, block\+\_\+stmt, expr, for\+\_\+stmt, if\+\_\+stmt, return\+\_\+stmt, text\+\_\+area, and while\+\_\+stmt.
+
+\mbox{\Hypertarget{classCotton_1_1StmtNode_a47db6900a2ef502ef39c173035ec7890}\label{classCotton_1_1StmtNode_a47db6900a2ef502ef39c173035ec7890}} 
+\index{Cotton::StmtNode@{Cotton::StmtNode}!StmtNode@{StmtNode}}
+\index{StmtNode@{StmtNode}!Cotton::StmtNode@{Cotton::StmtNode}}
+\doxysubsubsection{\texorpdfstring{StmtNode()}{StmtNode()}\hspace{0.1cm}{\footnotesize\ttfamily [8/8]}}
+{\footnotesize\ttfamily Cotton\+::\+Stmt\+Node\+::\+Stmt\+Node (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{classCotton_1_1ExprNode}{Expr\+Node}} $\ast$}]{expr,  }\item[{\mbox{\hyperlink{classCotton_1_1TextArea}{Text\+Area}}}]{text\+\_\+area }\end{DoxyParamCaption})}
+
+
+
+References block\+\_\+stmt, EXPR, expr, for\+\_\+stmt, if\+\_\+stmt, return\+\_\+stmt, text\+\_\+area, and while\+\_\+stmt.
+
+
+
+\doxysubsection{Member Function Documentation}
+\mbox{\Hypertarget{classCotton_1_1StmtNode_a6508a64c5b14e9294a0d946e84008e60}\label{classCotton_1_1StmtNode_a6508a64c5b14e9294a0d946e84008e60}} 
+\index{Cotton::StmtNode@{Cotton::StmtNode}!print@{print}}
+\index{print@{print}!Cotton::StmtNode@{Cotton::StmtNode}}
+\doxysubsubsection{\texorpdfstring{print()}{print()}}
+{\footnotesize\ttfamily void Cotton\+::\+Stmt\+Node\+::print (\begin{DoxyParamCaption}\item[{int}]{indent = {\ttfamily 0},  }\item[{int}]{step = {\ttfamily 2} }\end{DoxyParamCaption})}
+
+
+
+References BLOCK, block\+\_\+stmt, BREAK, CONTINUE, EXPR, expr, FOR, for\+\_\+stmt, IF, if\+\_\+stmt, Cotton\+::\+Expr\+Node\+::print(), Cotton\+::\+While\+Stmt\+Node\+::print(), Cotton\+::\+For\+Stmt\+Node\+::print(), Cotton\+::\+If\+Stmt\+Node\+::print(), Cotton\+::\+Return\+Stmt\+Node\+::print(), Cotton\+::\+Block\+Stmt\+Node\+::print(), Cotton\+::print\+Prefix(), RETURN, return\+\_\+stmt, WHILE, and while\+\_\+stmt.
+
+
+
+Referenced by Cotton\+::\+Func\+Def\+Node\+::print(), Cotton\+::\+While\+Stmt\+Node\+::print(), Cotton\+::\+For\+Stmt\+Node\+::print(), and Cotton\+::\+If\+Stmt\+Node\+::print().
+
+
+
+\doxysubsection{Member Data Documentation}
+\mbox{\Hypertarget{classCotton_1_1StmtNode_a5e2aba3c147cd934986d394f479e747b}\label{classCotton_1_1StmtNode_a5e2aba3c147cd934986d394f479e747b}} 
+\doxysubsubsection{\texorpdfstring{}{}}
+{\footnotesize\ttfamily union \{ ... \} }
+
+\mbox{\Hypertarget{classCotton_1_1StmtNode_aa50628eb2928cc17484257e01aba6feb}\label{classCotton_1_1StmtNode_aa50628eb2928cc17484257e01aba6feb}} 
+\index{Cotton::StmtNode@{Cotton::StmtNode}!block\_stmt@{block\_stmt}}
+\index{block\_stmt@{block\_stmt}!Cotton::StmtNode@{Cotton::StmtNode}}
+\doxysubsubsection{\texorpdfstring{block\_stmt}{block\_stmt}}
+{\footnotesize\ttfamily \mbox{\hyperlink{classCotton_1_1BlockStmtNode}{Block\+Stmt\+Node}}$\ast$ Cotton\+::\+Stmt\+Node\+::block\+\_\+stmt}
+
+
+
+Referenced by Cotton\+::\+Runtime\+::execute(), print(), Stmt\+Node(), and $\sim$\+Stmt\+Node().
+
+\mbox{\Hypertarget{classCotton_1_1StmtNode_a2d3209060e55d46f21342dc1764a3af3}\label{classCotton_1_1StmtNode_a2d3209060e55d46f21342dc1764a3af3}} 
+\index{Cotton::StmtNode@{Cotton::StmtNode}!expr@{expr}}
+\index{expr@{expr}!Cotton::StmtNode@{Cotton::StmtNode}}
+\doxysubsubsection{\texorpdfstring{expr}{expr}}
+{\footnotesize\ttfamily \mbox{\hyperlink{classCotton_1_1ExprNode}{Expr\+Node}}$\ast$ Cotton\+::\+Stmt\+Node\+::expr}
+
+
+
+Referenced by Cotton\+::\+Runtime\+::execute(), print(), Stmt\+Node(), and $\sim$\+Stmt\+Node().
+
+\mbox{\Hypertarget{classCotton_1_1StmtNode_af456b1ddd1698c6054bfe4522575521e}\label{classCotton_1_1StmtNode_af456b1ddd1698c6054bfe4522575521e}} 
+\index{Cotton::StmtNode@{Cotton::StmtNode}!for\_stmt@{for\_stmt}}
+\index{for\_stmt@{for\_stmt}!Cotton::StmtNode@{Cotton::StmtNode}}
+\doxysubsubsection{\texorpdfstring{for\_stmt}{for\_stmt}}
+{\footnotesize\ttfamily \mbox{\hyperlink{classCotton_1_1ForStmtNode}{For\+Stmt\+Node}}$\ast$ Cotton\+::\+Stmt\+Node\+::for\+\_\+stmt}
+
+
+
+Referenced by Cotton\+::\+Runtime\+::execute(), print(), Stmt\+Node(), and $\sim$\+Stmt\+Node().
+
+\mbox{\Hypertarget{classCotton_1_1StmtNode_a64a9847db5e2a5e29d0c9b9b1bbfb362}\label{classCotton_1_1StmtNode_a64a9847db5e2a5e29d0c9b9b1bbfb362}} 
+\index{Cotton::StmtNode@{Cotton::StmtNode}!id@{id}}
+\index{id@{id}!Cotton::StmtNode@{Cotton::StmtNode}}
+\doxysubsubsection{\texorpdfstring{id}{id}}
+{\footnotesize\ttfamily enum \mbox{\hyperlink{classCotton_1_1StmtNode_acf642ae81b095652a00b2beec16ce67b}{Cotton\+::\+Stmt\+Node\+::\+Stmt\+Id}} Cotton\+::\+Stmt\+Node\+::id}
+
+
+
+Referenced by Cotton\+::\+Runtime\+::execute(), and Stmt\+Node().
+
+\mbox{\Hypertarget{classCotton_1_1StmtNode_a6bc131178142b7c81e6330c345e49343}\label{classCotton_1_1StmtNode_a6bc131178142b7c81e6330c345e49343}} 
+\index{Cotton::StmtNode@{Cotton::StmtNode}!if\_stmt@{if\_stmt}}
+\index{if\_stmt@{if\_stmt}!Cotton::StmtNode@{Cotton::StmtNode}}
+\doxysubsubsection{\texorpdfstring{if\_stmt}{if\_stmt}}
+{\footnotesize\ttfamily \mbox{\hyperlink{classCotton_1_1IfStmtNode}{If\+Stmt\+Node}}$\ast$ Cotton\+::\+Stmt\+Node\+::if\+\_\+stmt}
+
+
+
+Referenced by Cotton\+::\+Runtime\+::execute(), print(), Stmt\+Node(), and $\sim$\+Stmt\+Node().
+
+\mbox{\Hypertarget{classCotton_1_1StmtNode_abebcce5c4d089d99f6ef1ac22511c4d0}\label{classCotton_1_1StmtNode_abebcce5c4d089d99f6ef1ac22511c4d0}} 
+\index{Cotton::StmtNode@{Cotton::StmtNode}!return\_stmt@{return\_stmt}}
+\index{return\_stmt@{return\_stmt}!Cotton::StmtNode@{Cotton::StmtNode}}
+\doxysubsubsection{\texorpdfstring{return\_stmt}{return\_stmt}}
+{\footnotesize\ttfamily \mbox{\hyperlink{classCotton_1_1ReturnStmtNode}{Return\+Stmt\+Node}}$\ast$ Cotton\+::\+Stmt\+Node\+::return\+\_\+stmt}
+
+
+
+Referenced by Cotton\+::\+Runtime\+::execute(), print(), Stmt\+Node(), and $\sim$\+Stmt\+Node().
+
+\mbox{\Hypertarget{classCotton_1_1StmtNode_aab15a77ee0ba15d8c630d8d4d9d266e0}\label{classCotton_1_1StmtNode_aab15a77ee0ba15d8c630d8d4d9d266e0}} 
+\index{Cotton::StmtNode@{Cotton::StmtNode}!text\_area@{text\_area}}
+\index{text\_area@{text\_area}!Cotton::StmtNode@{Cotton::StmtNode}}
+\doxysubsubsection{\texorpdfstring{text\_area}{text\_area}}
+{\footnotesize\ttfamily \mbox{\hyperlink{classCotton_1_1TextArea}{Text\+Area}} Cotton\+::\+Stmt\+Node\+::text\+\_\+area}
+
+
+
+Referenced by Cotton\+::\+Runtime\+::execute(), and Stmt\+Node().
+
+\mbox{\Hypertarget{classCotton_1_1StmtNode_a17e8c11b1fdbd2fb9dfd6521582adc86}\label{classCotton_1_1StmtNode_a17e8c11b1fdbd2fb9dfd6521582adc86}} 
+\index{Cotton::StmtNode@{Cotton::StmtNode}!while\_stmt@{while\_stmt}}
+\index{while\_stmt@{while\_stmt}!Cotton::StmtNode@{Cotton::StmtNode}}
+\doxysubsubsection{\texorpdfstring{while\_stmt}{while\_stmt}}
+{\footnotesize\ttfamily \mbox{\hyperlink{classCotton_1_1WhileStmtNode}{While\+Stmt\+Node}}$\ast$ Cotton\+::\+Stmt\+Node\+::while\+\_\+stmt}
+
+
+
+Referenced by Cotton\+::\+Runtime\+::execute(), print(), Stmt\+Node(), and $\sim$\+Stmt\+Node().
+
+
+
+The documentation for this class was generated from the following files\+:\begin{DoxyCompactItemize}
+\item 
+cotton\+\_\+lib/src/cotton\+\_\+lib/front/\mbox{\hyperlink{parser_8h}{parser.\+h}}\item 
+cotton\+\_\+lib/src/cotton\+\_\+lib/front/\mbox{\hyperlink{parser_8cpp}{parser.\+cpp}}\end{DoxyCompactItemize}

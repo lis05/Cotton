@@ -64,15 +64,15 @@ size_t BooleanType::getInstanceSize() {
 
 static Object *BooleanNotAdapter(Object *self, Runtime *rt, bool execution_result_matters) {
     ProfilerCAPTURE();
-    rt->verifyIsInstanceObject(self, rt->boolean_type, rt->getContext().sub_areas[0]);
+    rt->verifyIsInstanceObject(self, rt->boolean_type, Runtime::SUB0_CTX);
 
     return (!getBooleanValueFast(self)) ? rt->protected_true : rt->protected_false;
 }
 
 static Object *BooleanEqAdapter(Object *self, Object *arg, Runtime *rt, bool execution_result_matters) {
     ProfilerCAPTURE();
-    rt->verifyIsOfType(self, rt->boolean_type, rt->getContext().sub_areas[0]);
-    rt->verifyIsValidObject(arg, rt->getContext().sub_areas[1]);
+    rt->verifyIsOfType(self, rt->boolean_type, Runtime::SUB0_CTX);
+    rt->verifyIsValidObject(arg, Runtime::SUB1_CTX);
 
     if (!rt->isOfType(arg, rt->boolean_type)) {
         return rt->protected_false;
@@ -102,16 +102,16 @@ static Object *BooleanNeqAdapter(Object *self, Object *arg, Runtime *rt, bool ex
 
 static Object *BooleanAndAdapter(Object *self, Object *arg, Runtime *rt, bool execution_result_matters) {
     ProfilerCAPTURE();
-    rt->verifyIsInstanceObject(self, rt->boolean_type, rt->getContext().sub_areas[0]);
-    rt->verifyIsInstanceObject(arg, rt->boolean_type, rt->getContext().sub_areas[1]);
+    rt->verifyIsInstanceObject(self, rt->boolean_type, Runtime::SUB0_CTX);
+    rt->verifyIsInstanceObject(arg, rt->boolean_type, Runtime::SUB1_CTX);
 
     return rt->protectedBoolean(getBooleanValueFast(self) && getBooleanValueFast(arg));
 }
 
 static Object *BooleanOrAdapter(Object *self, Object *arg, Runtime *rt, bool execution_result_matters) {
     ProfilerCAPTURE();
-    rt->verifyIsInstanceObject(self, rt->boolean_type, rt->getContext().sub_areas[0]);
-    rt->verifyIsInstanceObject(arg, rt->boolean_type, rt->getContext().sub_areas[1]);
+    rt->verifyIsInstanceObject(self, rt->boolean_type, Runtime::SUB0_CTX);
+    rt->verifyIsInstanceObject(arg, rt->boolean_type, Runtime::SUB1_CTX);
 
     return rt->protectedBoolean(getBooleanValueFast(self) || getBooleanValueFast(arg));
 }
@@ -120,7 +120,7 @@ static Object *mm__bool__(const std::vector<Object *> &args, Runtime *rt, bool e
     ProfilerCAPTURE();
     rt->verifyExactArgsAmountMethod(args, 0);
     auto self = args[0];
-    rt->verifyIsInstanceObject(self, rt->boolean_type, rt->getContext().sub_areas[1]);
+    rt->verifyIsInstanceObject(self, rt->boolean_type, Runtime::SUB1_CTX);
 
     if (!execution_result_matters) {
         return self;
@@ -137,7 +137,7 @@ static Object *mm__char__(const std::vector<Object *> &args, Runtime *rt, bool e
     ProfilerCAPTURE();
     rt->verifyExactArgsAmountMethod(args, 0);
     auto self = args[0];
-    rt->verifyIsInstanceObject(self, rt->boolean_type, rt->getContext().sub_areas[1]);
+    rt->verifyIsInstanceObject(self, rt->boolean_type, Runtime::SUB1_CTX);
 
     if (!execution_result_matters) {
         return self;
@@ -150,7 +150,7 @@ static Object *mm__int__(const std::vector<Object *> &args, Runtime *rt, bool ex
     ProfilerCAPTURE();
     rt->verifyExactArgsAmountMethod(args, 0);
     auto self = args[0];
-    rt->verifyIsInstanceObject(self, rt->boolean_type, rt->getContext().sub_areas[1]);
+    rt->verifyIsInstanceObject(self, rt->boolean_type, Runtime::SUB1_CTX);
 
     if (!execution_result_matters) {
         return self;
@@ -163,7 +163,7 @@ static Object *mm__real__(const std::vector<Object *> &args, Runtime *rt, bool e
     ProfilerCAPTURE();
     rt->verifyExactArgsAmountMethod(args, 0);
     auto self = args[0];
-    rt->verifyIsInstanceObject(self, rt->boolean_type, rt->getContext().sub_areas[1]);
+    rt->verifyIsInstanceObject(self, rt->boolean_type, Runtime::SUB1_CTX);
 
     if (!execution_result_matters) {
         return self;
@@ -176,7 +176,7 @@ static Object *mm__string__(const std::vector<Object *> &args, Runtime *rt, bool
     ProfilerCAPTURE();
     rt->verifyExactArgsAmountMethod(args, 0);
     auto self = args[0];
-    rt->verifyIsOfType(self, rt->boolean_type, rt->getContext().sub_areas[1]);
+    rt->verifyIsOfType(self, rt->boolean_type, Runtime::SUB1_CTX);
 
     if (!execution_result_matters) {
         return self;
@@ -193,7 +193,7 @@ static Object *mm__repr__(const std::vector<Object *> &args, Runtime *rt, bool e
     ProfilerCAPTURE();
     rt->verifyExactArgsAmountMethod(args, 0);
     auto self = args[0];
-    rt->verifyIsOfType(self, rt->boolean_type, rt->getContext().sub_areas[1]);
+    rt->verifyIsOfType(self, rt->boolean_type, Runtime::SUB1_CTX);
 
     if (!execution_result_matters) {
         return self;
@@ -210,7 +210,7 @@ static Object *mm__read__(const std::vector<Object *> &args, Runtime *rt, bool e
     ProfilerCAPTURE();
     rt->verifyExactArgsAmountMethod(args, 0);
     auto self = args[0];
-    rt->verifyIsOfType(self, rt->boolean_type, rt->getContext().sub_areas[1]);
+    rt->verifyIsOfType(self, rt->boolean_type, Runtime::SUB1_CTX);
 
     std::string s;
     std::cin >> s;
@@ -229,6 +229,7 @@ static Object *mm__read__(const std::vector<Object *> &args, Runtime *rt, bool e
 }
 
 void installBooleanMethods(Type *type, Runtime *rt) {
+    ProfilerCAPTURE();
     type->addMethod(MagicMethods::mm__bool__(rt), Builtin::makeFunctionInstanceObject(true, mm__bool__, NULL, rt));
     type->addMethod(MagicMethods::mm__char__(rt), Builtin::makeFunctionInstanceObject(true, mm__char__, NULL, rt));
     type->addMethod(MagicMethods::mm__int__(rt), Builtin::makeFunctionInstanceObject(true, mm__int__, NULL, rt));
@@ -282,9 +283,9 @@ bool &getBooleanValue(Object *obj, Runtime *rt) {
     return icast(obj->instance, BooleanInstance)->value;
 }
 
-bool &getBooleanValue(Object *obj, Runtime *rt, const TextArea &ta) {
+bool &getBooleanValue(Object *obj, Runtime *rt, Runtime::ContextId ctx_id) {
     ProfilerCAPTURE();
-    rt->verifyIsInstanceObject(obj, rt->boolean_type, ta);
+    rt->verifyIsInstanceObject(obj, rt->boolean_type, Runtime::SUB0_CTX);
     return icast(obj->instance, BooleanInstance)->value;
 }
 

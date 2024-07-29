@@ -1,0 +1,4 @@
+<map id="Cotton::GCStrategy" name="Cotton::GCStrategy">
+<area shape="rect" id="node1" title="An abstract class representing a garbage collector strategy." alt="" coords="29,5,176,32"/>
+<area shape="rect" id="node2" href="$classCotton_1_1GCDefaultStrategy.html" title="The default gc strategy." alt="" coords="5,80,200,107"/>
+</map>

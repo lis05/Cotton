@@ -70,12 +70,14 @@ std::vector<Object *> ArrayInstance::getGCReachable() {
 }
 
 void ArrayInstance::spreadSingleUse() {
+    ProfilerCAPTURE();
     for (auto obj : this->data) {
         obj->spreadSingleUse();
     }
 }
 
 void ArrayInstance::spreadMultiUse() {
+    ProfilerCAPTURE();
     for (auto obj : this->data) {
         obj->spreadMultiUse();
     }
@@ -90,10 +92,10 @@ static Object *
 ArrayIndexAdapter(Object *self, const std::vector<Object *> &args, Runtime *rt, bool execution_result_matters) {
     ProfilerCAPTURE();
 
-    rt->verifyIsInstanceObject(self, rt->array_type, rt->getContext().sub_areas[0]);
+    rt->verifyIsInstanceObject(self, rt->array_type, Runtime::SUB0_CTX);
     rt->verifyExactArgsAmountFunc(args, 1);
     auto &arg = args[0];
-    rt->verifyIsInstanceObject(arg, rt->integer_type, rt->getContext().sub_areas[1]);
+    rt->verifyIsInstanceObject(arg, rt->integer_type, Runtime::SUB1_CTX);
 
     if (!(0 <= getIntegerValueFast(arg) && getIntegerValueFast(arg) < getArrayDataFast(self).size())) {
         rt->signalError("Index " + arg->userRepr(rt) + " is out of array " + self->userRepr(rt) + " range",
@@ -104,8 +106,8 @@ ArrayIndexAdapter(Object *self, const std::vector<Object *> &args, Runtime *rt, 
 
 static Object *ArrayEqAdapter(Object *self, Object *arg, Runtime *rt, bool execution_result_matters) {
     ProfilerCAPTURE();
-    rt->verifyIsOfType(self, rt->array_type, rt->getContext().sub_areas[0]);
-    rt->verifyIsValidObject(arg, rt->getContext().sub_areas[1]);
+    rt->verifyIsOfType(self, rt->array_type, Runtime::SUB0_CTX);
+    rt->verifyIsValidObject(arg, Runtime::SUB1_CTX);
 
     if (!execution_result_matters) {
         return rt->protected_false;
@@ -157,7 +159,7 @@ static Object *arraySizeMethod(const std::vector<Object *> &args, Runtime *rt, b
     ProfilerCAPTURE();
     rt->verifyExactArgsAmountMethod(args, 0);
     auto self = args[0];
-    rt->verifyIsInstanceObject(self, rt->array_type, rt->getContext().sub_areas[0]);
+    rt->verifyIsInstanceObject(self, rt->array_type, Runtime::SUB0_CTX);
 
     if (!execution_result_matters) {
         return NULL;
@@ -171,8 +173,8 @@ static Object *arrayResizeMethod(const std::vector<Object *> &args, Runtime *rt,
     rt->verifyExactArgsAmountMethod(args, 1);
     auto self     = args[0];
     auto new_size = args[1];
-    rt->verifyIsInstanceObject(self, rt->array_type, rt->getContext().sub_areas[0]);
-    rt->verifyIsInstanceObject(new_size, rt->integer_type, rt->getContext().sub_areas[1]);
+    rt->verifyIsInstanceObject(self, rt->array_type, Runtime::SUB0_CTX);
+    rt->verifyIsInstanceObject(new_size, rt->integer_type, Runtime::SUB1_CTX);
 
     int64_t oldn = getArrayDataFast(self).size();
     int64_t newn = getIntegerValueFast(new_size);
@@ -193,7 +195,7 @@ static Object *mm__repr__(const std::vector<Object *> &args, Runtime *rt, bool e
     ProfilerCAPTURE();
     rt->verifyExactArgsAmountMethod(args, 0);
     auto self = args[0];
-    rt->verifyIsOfType(self, rt->array_type, rt->getContext().sub_areas[1]);
+    rt->verifyIsOfType(self, rt->array_type, Runtime::SUB1_CTX);
 
     if (!execution_result_matters) {
         return self;
@@ -207,13 +209,13 @@ static Object *mm__repr__(const std::vector<Object *> &args, Runtime *rt, bool e
     std::string res = "{";
     if (arr.size() != 0) {
         auto o = rt->runMethod(MagicMethods::mm__repr__(rt), arr[0], {arr[0]}, true);
-        rt->verifyIsInstanceObject(o, rt->string_type, rt->getContext().sub_areas[1]);
+        rt->verifyIsInstanceObject(o, rt->string_type, Runtime::SUB1_CTX);
         res += getStringDataFast(o);
     }
 
     for (int64_t i = 1; i < arr.size(); i++) {
         auto o = rt->runMethod(MagicMethods::mm__repr__(rt), arr[i], {arr[i]}, true);
-        rt->verifyIsInstanceObject(o, rt->string_type, rt->getContext().sub_areas[1]);
+        rt->verifyIsInstanceObject(o, rt->string_type, Runtime::SUB1_CTX);
         res += ", " + getStringDataFast(o);
     }
 
@@ -223,6 +225,7 @@ static Object *mm__repr__(const std::vector<Object *> &args, Runtime *rt, bool e
 }
 
 void installArrayMethods(Type *type, Runtime *rt) {
+    ProfilerCAPTURE();
     type->addMethod(MagicMethods::mm__repr__(rt), Builtin::makeFunctionInstanceObject(true, mm__repr__, NULL, rt));
 
     type->addMethod(rt->nds->get("size").id, makeFunctionInstanceObject(true, arraySizeMethod, NULL, rt));
@@ -269,9 +272,9 @@ std::vector<Object *> &getArrayData(Object *obj, Runtime *rt) {
     return icast(obj->instance, ArrayInstance)->data;
 }
 
-std::vector<Object *> &getArrayData(Object *obj, Runtime *rt, const TextArea &ta) {
+std::vector<Object *> &getArrayData(Object *obj, Runtime *rt, Runtime::ContextId ctx_id) {
     ProfilerCAPTURE();
-    rt->verifyIsInstanceObject(obj, rt->array_type, ta);
+    rt->verifyIsInstanceObject(obj, rt->array_type, Runtime::SUB0_CTX);
     return icast(obj->instance, ArrayInstance)->data;
 }
 

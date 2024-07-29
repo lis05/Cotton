@@ -1,0 +1,7 @@
+<map id="Cotton::GC::ping" name="Cotton::GC::ping">
+<area shape="rect" id="node1" title="Pings the gc. If the strategy&#39;s conditions are met, a gc cycle will be ran." alt="" coords="427,56,555,83"/>
+<area shape="rect" id="node2" href="$classCotton_1_1Runtime.html#aa3a9de823d0a2ee1b71aa1c317d2e0e0" title=" " alt="" coords="192,5,379,32"/>
+<area shape="rect" id="node3" href="$cotton__modules_2gc_8cpp.html#a981da9cc4c9c3432a0b263c3a01c1b5e" title=" " alt="" coords="244,56,327,83"/>
+<area shape="rect" id="node5" href="$cotton__modules_2gc_8cpp.html#a08d94a9228a66ff5ad1284c350e74a95" title=" " alt="" coords="260,107,311,133"/>
+<area shape="rect" id="node4" href="$cotton__modules_2gc_8cpp.html#a57a2d15a5ce8ecb3f9a5233ad739c792" title=" " alt="" coords="5,81,144,108"/>
+</map>

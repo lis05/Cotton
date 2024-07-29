@@ -1,0 +1,7 @@
+<map id="Cotton::GCStrategy::acknowledgeTrack" name="Cotton::GCStrategy::acknowledgeTrack">
+<area shape="rect" id="node1" title="Acknowledges track of an Object. This function is called by the gc." alt="" coords="425,49,576,90"/>
+<area shape="rect" id="node2" href="$classCotton_1_1GC.html#a409b4b05d777b2c01d6bd42493c9a791" title="Tracks the object;." alt="" coords="244,56,377,83"/>
+<area shape="rect" id="node3" href="$classCotton_1_1Instance.html#abdd66c65e03d3e7526596a165d52e66d" title="Construct a new Instance object." alt="" coords="5,5,196,32"/>
+<area shape="rect" id="node4" href="$classCotton_1_1Object.html#a32b038c4aab6ba85eb67968205b7511d" title=" " alt="" coords="18,56,183,83"/>
+<area shape="rect" id="node5" href="$classCotton_1_1Type.html#a42359090716346b4f20004244d0c0678" title=" " alt="" coords="30,107,171,133"/>
+</map>

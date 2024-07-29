@@ -1,0 +1,4 @@
+<map id="Graphical Class Hierarchy" name="Graphical Class Hierarchy">
+<area shape="rect" id="node1" href="$classCotton_1_1GCStrategy.html" title="An abstract class representing a garbage collector strategy." alt="" coords="5,5,152,32"/>
+<area shape="rect" id="node2" href="$classCotton_1_1GCDefaultStrategy.html" title="The default gc strategy." alt="" coords="200,5,395,32"/>
+</map>

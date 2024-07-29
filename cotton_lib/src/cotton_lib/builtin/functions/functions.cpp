@@ -32,7 +32,7 @@ static Object *CF_make(const std::vector<Object *> &args, Runtime *rt, bool exec
     ProfilerCAPTURE();
     rt->verifyExactArgsAmountFunc(args, 1);
     auto arg = args[0];
-    rt->verifyIsTypeObject(arg, NULL, rt->getContext().sub_areas[1]);
+    rt->verifyIsTypeObject(arg, NULL, Runtime::SUB1_CTX);
 
     auto res = rt->make(arg->type, Runtime::INSTANCE_OBJECT);
 
@@ -47,7 +47,7 @@ static Object *CF_copy(const std::vector<Object *> &args, Runtime *rt, bool exec
     ProfilerCAPTURE();
     rt->verifyExactArgsAmountFunc(args, 1);
     auto arg = args[0];
-    rt->verifyIsValidObject(arg, rt->getContext().sub_areas[1]);
+    rt->verifyIsValidObject(arg, Runtime::SUB1_CTX);
 
     if (arg->type->hasMethod(MagicMethods::mm__copy__(rt))) {
         return rt->runMethod(MagicMethods::mm__copy__(rt), arg, {arg}, true);
@@ -61,9 +61,9 @@ static Object *CF_bool(const std::vector<Object *> &args, Runtime *rt, bool exec
     ProfilerCAPTURE();
     rt->verifyExactArgsAmountFunc(args, 1);
     auto arg = args[0];
-    rt->verifyIsValidObject(arg, rt->getContext().sub_areas[1]);
+    rt->verifyIsValidObject(arg, Runtime::SUB1_CTX);
 
-    rt->verifyHasMethod(arg, MagicMethods::mm__bool__(rt), rt->getContext().sub_areas[1]);
+    rt->verifyHasMethod(arg, MagicMethods::mm__bool__(rt), Runtime::SUB1_CTX);
     return rt->runMethod(MagicMethods::mm__bool__(rt), arg, {arg}, execution_result_matters);
 }
 
@@ -72,9 +72,9 @@ static Object *CF_char(const std::vector<Object *> &args, Runtime *rt, bool exec
     ProfilerCAPTURE();
     rt->verifyExactArgsAmountFunc(args, 1);
     auto arg = args[0];
-    rt->verifyIsValidObject(arg, rt->getContext().sub_areas[1]);
+    rt->verifyIsValidObject(arg, Runtime::SUB1_CTX);
 
-    rt->verifyHasMethod(arg, MagicMethods::mm__char__(rt), rt->getContext().sub_areas[1]);
+    rt->verifyHasMethod(arg, MagicMethods::mm__char__(rt), Runtime::SUB1_CTX);
     return rt->runMethod(MagicMethods::mm__char__(rt), arg, {arg}, execution_result_matters);
 }
 
@@ -83,9 +83,9 @@ static Object *CF_int(const std::vector<Object *> &args, Runtime *rt, bool execu
     ProfilerCAPTURE();
     rt->verifyExactArgsAmountFunc(args, 1);
     auto arg = args[0];
-    rt->verifyIsValidObject(arg, rt->getContext().sub_areas[1]);
+    rt->verifyIsValidObject(arg, Runtime::SUB1_CTX);
 
-    rt->verifyHasMethod(arg, MagicMethods::mm__int__(rt), rt->getContext().sub_areas[1]);
+    rt->verifyHasMethod(arg, MagicMethods::mm__int__(rt), Runtime::SUB1_CTX);
     return rt->runMethod(MagicMethods::mm__int__(rt), arg, {arg}, execution_result_matters);
 }
 
@@ -94,9 +94,9 @@ static Object *CF_real(const std::vector<Object *> &args, Runtime *rt, bool exec
     ProfilerCAPTURE();
     rt->verifyExactArgsAmountFunc(args, 1);
     auto arg = args[0];
-    rt->verifyIsValidObject(arg, rt->getContext().sub_areas[1]);
+    rt->verifyIsValidObject(arg, Runtime::SUB1_CTX);
 
-    rt->verifyHasMethod(arg, MagicMethods::mm__real__(rt), rt->getContext().sub_areas[1]);
+    rt->verifyHasMethod(arg, MagicMethods::mm__real__(rt), Runtime::SUB1_CTX);
     return rt->runMethod(MagicMethods::mm__real__(rt), arg, {arg}, execution_result_matters);
 }
 
@@ -105,9 +105,9 @@ static Object *CF_string(const std::vector<Object *> &args, Runtime *rt, bool ex
     ProfilerCAPTURE();
     rt->verifyExactArgsAmountFunc(args, 1);
     auto arg = args[0];
-    rt->verifyIsValidObject(arg, rt->getContext().sub_areas[1]);
+    rt->verifyIsValidObject(arg, Runtime::SUB1_CTX);
 
-    rt->verifyHasMethod(arg, MagicMethods::mm__string__(rt), rt->getContext().sub_areas[1]);
+    rt->verifyHasMethod(arg, MagicMethods::mm__string__(rt), Runtime::SUB1_CTX);
     return rt->runMethod(MagicMethods::mm__string__(rt), arg, {arg}, execution_result_matters);
 }
 
@@ -117,13 +117,13 @@ static Object *CF_printraw(const std::vector<Object *> &args, Runtime *rt, bool 
     int64_t index = 0;
     for (auto arg : args) {
         index++;
-        rt->verifyIsValidObject(arg, rt->getContext().sub_areas[index]);
+        rt->verifyIsValidObject(arg, (Runtime::ContextId)index);
         if (rt->isInstanceObject(arg, rt->string_type)) {
             std::cout << getStringDataFast(arg);
             continue;
         }
 
-        rt->verifyHasMethod(arg, MagicMethods::mm__repr__(rt), rt->getContext().sub_areas[index]);
+        rt->verifyHasMethod(arg, MagicMethods::mm__repr__(rt), (Runtime::ContextId)index);
 
         auto &ta = rt->getContext().sub_areas[index];
         rt->newContext();
@@ -160,7 +160,7 @@ static Object *CF_print(const std::vector<Object *> &args, Runtime *rt, bool exe
 }
 
 // printf(fmt, ...) - prints arguments with a given format
-static Object *CF_printf(const std::vector<Object *> &args, Runtime *rt, bool execution_result_matters) {
+static Object *CF_printf(const std::vector<Object *> &args, Runtime *rt, bool execution_result_matters) {ProfilerCAPTURE();
     // TODO
 }
 
@@ -191,9 +191,9 @@ static Object *CF_read(const std::vector<Object *> &args, Runtime *rt, bool exec
     ProfilerCAPTURE();
     rt->verifyExactArgsAmountFunc(args, 1);
     auto arg = args[0];
-    rt->verifyIsTypeObject(arg, NULL, rt->getContext().sub_areas[1]);
+    rt->verifyIsTypeObject(arg, NULL, Runtime::SUB1_CTX);
 
-    rt->verifyHasMethod(arg, MagicMethods::mm__read__(rt), rt->getContext().sub_areas[1]);
+    rt->verifyHasMethod(arg, MagicMethods::mm__read__(rt), Runtime::SUB1_CTX);
     return rt->runMethod(MagicMethods::mm__read__(rt), arg, {arg}, execution_result_matters);
 }
 
@@ -216,7 +216,7 @@ static Object *CF_exit(const std::vector<Object *> &args, Runtime *rt, bool exec
     ProfilerCAPTURE();
     rt->verifyExactArgsAmountFunc(args, 1);
     auto arg = args[0];
-    rt->verifyIsInstanceObject(arg, rt->integer_type, rt->getContext().sub_areas[1]);
+    rt->verifyIsInstanceObject(arg, rt->integer_type, Runtime::SUB1_CTX);
 
     exit(getIntegerValueFast(arg));
 }
@@ -239,7 +239,7 @@ static Object *CF_system(const std::vector<Object *> &args, Runtime *rt, bool ex
     ProfilerCAPTURE();
     rt->verifyExactArgsAmountFunc(args, 1);
     auto arg = args[0];
-    rt->verifyIsInstanceObject(arg, rt->string_type, rt->getContext().sub_areas[1]);
+    rt->verifyIsInstanceObject(arg, rt->string_type, Runtime::SUB1_CTX);
 
     auto ret = system(getStringDataFast(arg).c_str());
     if (!execution_result_matters) {
@@ -254,7 +254,7 @@ static Object *CF_sleep(const std::vector<Object *> &args, Runtime *rt, bool exe
     ProfilerCAPTURE();
     rt->verifyExactArgsAmountFunc(args, 1);
     auto arg = args[0];
-    rt->verifyIsInstanceObject(arg, rt->real_type, rt->getContext().sub_areas[1]);
+    rt->verifyIsInstanceObject(arg, rt->real_type, Runtime::SUB1_CTX);
 
     ::usleep(getRealValueFast(arg) * 100'000);
 
@@ -266,7 +266,7 @@ static Object *CF_error(const std::vector<Object *> &args, Runtime *rt, bool exe
     ProfilerCAPTURE();
     rt->verifyExactArgsAmountFunc(args, 1);
     auto arg = args[0];
-    rt->verifyIsInstanceObject(arg, rt->string_type, rt->getContext().sub_areas[1]);
+    rt->verifyIsInstanceObject(arg, rt->string_type, Runtime::SUB1_CTX);
 
     rt->signalError(getStringDataFast(arg), rt->getContext().area);
 }
@@ -276,7 +276,7 @@ static Object *CF_cotton(const std::vector<Object *> &args, Runtime *rt, bool ex
     ProfilerCAPTURE();
     rt->verifyExactArgsAmountFunc(args, 1);
     auto arg = args[0];
-    rt->verifyIsInstanceObject(arg, rt->string_type, rt->getContext().sub_areas[1]);
+    rt->verifyIsInstanceObject(arg, rt->string_type, Runtime::SUB1_CTX);
 
     Lexer        lexer(rt->error_manager);
     std::string &str = getStringDataFast(arg);
@@ -338,7 +338,7 @@ static Object *CF_argg(const std::vector<Object *> &args, Runtime *rt, bool exec
     ProfilerCAPTURE();
     rt->verifyExactArgsAmountFunc(args, 1);
     auto arg = args[0];
-    rt->verifyIsInstanceObject(arg, rt->integer_type, rt->getContext().sub_areas[1]);
+    rt->verifyIsInstanceObject(arg, rt->integer_type, Runtime::SUB1_CTX);
 
     if (!execution_result_matters) {
         return NULL;
@@ -366,7 +366,7 @@ static Object *CF_typeof(const std::vector<Object *> &args, Runtime *rt, bool ex
     ProfilerCAPTURE();
     rt->verifyExactArgsAmountFunc(args, 1);
     auto arg = args[0];
-    rt->verifyIsValidObject(arg, rt->getContext().sub_areas[1]);
+    rt->verifyIsValidObject(arg, Runtime::SUB1_CTX);
 
     return rt->getTypeObject(arg->type);
 }
@@ -377,11 +377,11 @@ static Object *CF_isinsobj(const std::vector<Object *> &args, Runtime *rt, bool 
     ProfilerCAPTURE();
     rt->verifyMinArgsAmountFunc(args, 1);
     auto arg = args[0];
-    rt->verifyIsValidObject(arg, rt->getContext().sub_areas[1]);
+    rt->verifyIsValidObject(arg, Runtime::SUB1_CTX);
 
     if (args.size() == 2) {
         auto type = args[1];
-        rt->verifyIsTypeObject(type, NULL, rt->getContext().sub_areas[2]);
+        rt->verifyIsTypeObject(type, NULL, Runtime::SUB2_CTX);
 
         if (!execution_result_matters) {
             return rt->protected_nothing;
@@ -399,11 +399,11 @@ static Object *CF_istypeobj(const std::vector<Object *> &args, Runtime *rt, bool
     ProfilerCAPTURE();
     rt->verifyMinArgsAmountFunc(args, 1);
     auto arg = args[0];
-    rt->verifyIsValidObject(arg, rt->getContext().sub_areas[1]);
+    rt->verifyIsValidObject(arg, Runtime::SUB1_CTX);
 
     if (args.size() == 2) {
         auto type = args[1];
-        rt->verifyIsTypeObject(type, NULL, rt->getContext().sub_areas[2]);
+        rt->verifyIsTypeObject(type, NULL, Runtime::SUB2_CTX);
 
         if (!execution_result_matters) {
             return rt->protected_nothing;
@@ -420,9 +420,9 @@ static Object *CF_repr(const std::vector<Object *> &args, Runtime *rt, bool exec
     ProfilerCAPTURE();
     rt->verifyExactArgsAmountFunc(args, 1);
     auto arg = args[0];
-    rt->verifyIsValidObject(arg, rt->getContext().sub_areas[1]);
+    rt->verifyIsValidObject(arg, Runtime::SUB1_CTX);
 
-    rt->verifyHasMethod(arg, MagicMethods::mm__repr__(rt), rt->getContext().sub_areas[1]);
+    rt->verifyHasMethod(arg, MagicMethods::mm__repr__(rt), Runtime::SUB1_CTX);
     return rt->runMethod(MagicMethods::mm__repr__(rt), arg, {arg}, execution_result_matters);
 }
 
@@ -432,8 +432,8 @@ static Object *CF_hasfield(const std::vector<Object *> &args, Runtime *rt, bool 
     rt->verifyExactArgsAmountFunc(args, 2);
     auto obj = args[0];
     auto str = args[1];
-    rt->verifyIsInstanceObject(obj, NULL, rt->getContext().sub_areas[1]);
-    rt->verifyIsInstanceObject(str, rt->string_type, rt->getContext().sub_areas[2]);
+    rt->verifyIsInstanceObject(obj, NULL, Runtime::SUB1_CTX);
+    rt->verifyIsInstanceObject(str, rt->string_type, Runtime::SUB2_CTX);
 
     if (!execution_result_matters) {
         return rt->protected_nothing;
@@ -447,8 +447,8 @@ static Object *CF_hasmethod(const std::vector<Object *> &args, Runtime *rt, bool
     rt->verifyExactArgsAmountFunc(args, 2);
     auto obj = args[0];
     auto str = args[1];
-    rt->verifyIsValidObject(obj, rt->getContext().sub_areas[1]);
-    rt->verifyIsInstanceObject(str, rt->string_type, rt->getContext().sub_areas[2]);
+    rt->verifyIsValidObject(obj, Runtime::SUB1_CTX);
+    rt->verifyIsInstanceObject(str, rt->string_type, Runtime::SUB2_CTX);
 
     if (!execution_result_matters) {
         return rt->protected_nothing;
@@ -461,13 +461,13 @@ static Object *CF_assert(const std::vector<Object *> &args, Runtime *rt, bool ex
     ProfilerCAPTURE();
     rt->verifyMinArgsAmountFunc(args, 1);
     auto val = args[0];
-    rt->verifyIsInstanceObject(val, rt->boolean_type, rt->getContext().sub_areas[1]);
+    rt->verifyIsInstanceObject(val, rt->boolean_type, Runtime::SUB1_CTX);
 
     std::string message = "Assertion error";
 
     if (args.size() == 2) {
         auto str = args[1];
-        rt->verifyIsInstanceObject(str, rt->string_type, rt->getContext().sub_areas[2]);
+        rt->verifyIsInstanceObject(str, rt->string_type, Runtime::SUB2_CTX);
 
         message += ": " + getStringDataFast(str);
     }
@@ -486,7 +486,7 @@ static Object *CF_checkglobal(const std::vector<Object *> &args, Runtime *rt, bo
     ProfilerCAPTURE();
     rt->verifyExactArgsAmountFunc(args, 1);
     auto arg = args[0];
-    rt->verifyIsInstanceObject(arg, rt->string_type, rt->getContext().sub_areas[1]);
+    rt->verifyIsInstanceObject(arg, rt->string_type, Runtime::SUB1_CTX);
 
     return rt->protectedBoolean(rt->checkGlobal(rt->nds->get(getStringDataFast(arg)).id));
 }
@@ -496,7 +496,7 @@ static Object *CF_getglobal(const std::vector<Object *> &args, Runtime *rt, bool
     ProfilerCAPTURE();
     rt->verifyExactArgsAmountFunc(args, 1);
     auto arg = args[0];
-    rt->verifyIsInstanceObject(arg, rt->string_type, rt->getContext().sub_areas[1]);
+    rt->verifyIsInstanceObject(arg, rt->string_type, Runtime::SUB1_CTX);
 
     return rt->getGlobal(rt->nds->get(getStringDataFast(arg)).id);
 }
@@ -507,8 +507,8 @@ static Object *CF_setglobal(const std::vector<Object *> &args, Runtime *rt, bool
     rt->verifyExactArgsAmountFunc(args, 2);
     auto arg1 = args[0];
     auto arg2 = args[1];
-    rt->verifyIsInstanceObject(arg1, rt->string_type, rt->getContext().sub_areas[1]);
-    rt->verifyIsValidObject(arg2, rt->getContext().sub_areas[2]);
+    rt->verifyIsInstanceObject(arg1, rt->string_type, Runtime::SUB1_CTX);
+    rt->verifyIsValidObject(arg2, Runtime::SUB2_CTX);
 
     rt->setGlobal(rt->nds->get(getStringDataFast(arg1)).id, arg2);
     return arg2;
@@ -519,7 +519,7 @@ static Object *CF_removeglobal(const std::vector<Object *> &args, Runtime *rt, b
     ProfilerCAPTURE();
     rt->verifyExactArgsAmountFunc(args, 1);
     auto arg1 = args[0];
-    rt->verifyIsInstanceObject(arg1, rt->string_type, rt->getContext().sub_areas[1]);
+    rt->verifyIsInstanceObject(arg1, rt->string_type, Runtime::SUB1_CTX);
 
     rt->removeGlobal(rt->nds->get(getStringDataFast(arg1)).id);
     return rt->protected_nothing;
@@ -530,7 +530,7 @@ static Object *CF_smartrun(const std::vector<Object *> &args, Runtime *rt, bool 
     ProfilerCAPTURE();
     rt->verifyExactArgsAmountFunc(args, 1);
     auto arg1 = args[0];
-    rt->verifyIsInstanceObject(arg1, rt->string_type, rt->getContext().sub_areas[1]);
+    rt->verifyIsInstanceObject(arg1, rt->string_type, Runtime::SUB1_CTX);
 
     std::error_code ec;
     auto            path = std::filesystem::canonical(std::filesystem::path(getStringDataFast(arg1)), ec);
@@ -570,7 +570,7 @@ static Object *CF_dumbrun(const std::vector<Object *> &args, Runtime *rt, bool e
     ProfilerCAPTURE();
     rt->verifyExactArgsAmountFunc(args, 1);
     auto arg1 = args[0];
-    rt->verifyIsInstanceObject(arg1, rt->string_type, rt->getContext().sub_areas[1]);
+    rt->verifyIsInstanceObject(arg1, rt->string_type, Runtime::SUB1_CTX);
 
     std::error_code ec;
     auto            path = std::filesystem::canonical(std::filesystem::path(getStringDataFast(arg1)), ec);
@@ -603,7 +603,7 @@ static Object *CF_loadlibrary(const std::vector<Object *> &args, Runtime *rt, bo
     ProfilerCAPTURE();
     rt->verifyExactArgsAmountFunc(args, 1);
     auto arg1 = args[0];
-    rt->verifyIsInstanceObject(arg1, rt->string_type, rt->getContext().sub_areas[1]);
+    rt->verifyIsInstanceObject(arg1, rt->string_type, Runtime::SUB1_CTX);
 
     std::error_code ec;
     auto            path = std::filesystem::canonical(std::filesystem::path(getStringDataFast(arg1)), ec);

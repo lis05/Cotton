@@ -1,0 +1,19 @@
+<map id="Cotton::Runtime" name="Cotton::Runtime">
+<area shape="rect" id="node1" title=" " alt="" coords="639,336,767,363"/>
+<area shape="rect" id="node15" href="$classCotton_1_1GC.html" title="Garbage collector class." alt="" coords="905,361,997,388"/>
+<area shape="rect" id="node2" href="$classCotton_1_1Builtin_1_1CharacterType.html" title=" " alt="" coords="247,13,463,40"/>
+<area shape="rect" id="node3" href="$classCotton_1_1Type.html" title=" " alt="" coords="18,377,121,404"/>
+<area shape="rect" id="node4" href="$classCotton_1_1Object.html" title=" " alt="" coords="297,99,412,125"/>
+<area shape="rect" id="node7" href="$classCotton_1_1Builtin_1_1RealType.html" title=" " alt="" coords="263,208,446,235"/>
+<area shape="rect" id="node8" href="$classCotton_1_1Builtin_1_1BooleanType.html" title=" " alt="" coords="251,259,458,285"/>
+<area shape="rect" id="node9" href="$classCotton_1_1Builtin_1_1FunctionType.html" title=" " alt="" coords="251,309,459,336"/>
+<area shape="rect" id="node11" href="$classCotton_1_1Builtin_1_1ArrayType.html" title=" " alt="" coords="261,411,449,437"/>
+<area shape="rect" id="node12" href="$classCotton_1_1Builtin_1_1StringType.html" title=" " alt="" coords="259,461,450,488"/>
+<area shape="rect" id="node13" href="$classCotton_1_1Builtin_1_1IntegerType.html" title=" " alt="" coords="255,512,454,539"/>
+<area shape="rect" id="node14" href="$classCotton_1_1Builtin_1_1NothingType.html" title=" " alt="" coords="253,563,457,589"/>
+<area shape="rect" id="node5" href="$classCotton_1_1Instance.html" title="Class representing an instance of a type." alt="" coords="5,47,133,73"/>
+<area shape="rect" id="node6" href="$classCotton_1_1NameIds.html" title=" " alt="" coords="289,157,420,184"/>
+<area shape="rect" id="node10" href="$classCotton_1_1ErrorManager.html" title=" " alt="" coords="274,360,435,387"/>
+<area shape="rect" id="node16" href="$classCotton_1_1GCStrategy.html" title="An abstract class representing a garbage collector strategy." alt="" coords="629,407,776,433"/>
+<area shape="rect" id="node17" href="$classCotton_1_1Scope.html" title=" " alt="" coords="299,667,411,693"/>
+</map>

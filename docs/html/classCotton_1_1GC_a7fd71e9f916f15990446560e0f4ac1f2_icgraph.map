@@ -1,0 +1,6 @@
+<map id="Cotton::GC::disable" name="Cotton::GC::disable">
+<area shape="rect" id="node1" title="Disables the gc. Future ping calls will not run a gc cycle.z." alt="" coords="309,31,456,57"/>
+<area shape="rect" id="node2" href="$cotton__modules_2gc_8cpp.html#a0cebbbfee5f6c72c52d584f671c49881" title=" " alt="" coords="192,5,261,32"/>
+<area shape="rect" id="node4" href="$cotton_8cpp.html#a0ddf1224851353fc92bfbff6f499fa97" title=" " alt="" coords="199,56,254,83"/>
+<area shape="rect" id="node3" href="$cotton__modules_2gc_8cpp.html#a57a2d15a5ce8ecb3f9a5233ad739c792" title=" " alt="" coords="5,5,144,32"/>
+</map>

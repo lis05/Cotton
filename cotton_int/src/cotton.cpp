@@ -95,8 +95,8 @@ int main(int argc, char *argv[]) {
     }
 
     auto begin_time = duration_cast<milliseconds>(system_clock::now().time_since_epoch()).count();
-    auto res = rt.execute(program, print_result);
-    auto end_time = duration_cast<milliseconds>(system_clock::now().time_since_epoch()).count();
+    auto res        = rt.execute(program, print_result);
+    auto end_time   = duration_cast<milliseconds>(system_clock::now().time_since_epoch()).count();
 
     if (print_result) {
         if (!rt.isValidObject(res)) {
@@ -110,6 +110,10 @@ int main(int argc, char *argv[]) {
     if (print_execution_time) {
         printf("TIME: %.3fsec\n", (end_time - begin_time) / 1000.0);
     }
+
+#ifdef COTTON_ENABLE_PROFILER
+    Profiler::printResult();
+#endif
 
     delete program;
 }

@@ -1,0 +1,144 @@
+\hypertarget{classCotton_1_1Builtin_1_1RecordType}{}\doxysection{Cotton\+::Builtin\+::Record\+Type Class Reference}
+\label{classCotton_1_1Builtin_1_1RecordType}\index{Cotton::Builtin::RecordType@{Cotton::Builtin::RecordType}}
+
+
+{\ttfamily \#include $<$record.\+h$>$}
+
+
+
+Inheritance diagram for Cotton\+::Builtin\+::Record\+Type\+:\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=229pt]{classCotton_1_1Builtin_1_1RecordType__inherit__graph}
+\end{center}
+\end{figure}
+\doxysubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+size\+\_\+t \mbox{\hyperlink{classCotton_1_1Builtin_1_1RecordType_ac07f297f22a4e547faa4bc2f7c0498dd}{get\+Instance\+Size}} ()
+\item 
+\mbox{\hyperlink{classCotton_1_1Builtin_1_1RecordType_a1be6f14aca53c3c8caedeaa3895b2227}{Record\+Type}} (\mbox{\hyperlink{classCotton_1_1Runtime}{Runtime}} $\ast$rt)
+\item 
+\mbox{\hyperlink{classCotton_1_1Builtin_1_1RecordType_ad3c3089a27cb6017e4a481ca09267261}{$\sim$\+Record\+Type}} ()=default
+\item 
+\mbox{\hyperlink{classCotton_1_1Object}{Object}} $\ast$ \mbox{\hyperlink{classCotton_1_1Builtin_1_1RecordType_a0f44ff482ed2dbab9a8cdcfd28bcef16}{create}} (\mbox{\hyperlink{classCotton_1_1Runtime}{Runtime}} $\ast$rt)
+\item 
+std\+::string \mbox{\hyperlink{classCotton_1_1Builtin_1_1RecordType_af4c9211ca0f5f3bc7d8d8ff94a4d3d96}{user\+Repr}} (\mbox{\hyperlink{classCotton_1_1Runtime}{Runtime}} $\ast$rt)
+\item 
+\mbox{\hyperlink{classCotton_1_1Object}{Object}} $\ast$ \mbox{\hyperlink{classCotton_1_1Builtin_1_1RecordType_ae5be2a85febf29578622b083cf6aded6}{copy}} (\mbox{\hyperlink{classCotton_1_1Object}{Object}} $\ast$obj, \mbox{\hyperlink{classCotton_1_1Runtime}{Runtime}} $\ast$rt)
+\end{DoxyCompactItemize}
+\doxysubsection*{Public Attributes}
+\begin{DoxyCompactItemize}
+\item 
+int64\+\_\+t \mbox{\hyperlink{classCotton_1_1Builtin_1_1RecordType_a90af08fab203a6c820eed4468ef38c9a}{nameid}}
+\item 
+std\+::vector$<$ int64\+\_\+t $>$ \mbox{\hyperlink{classCotton_1_1Builtin_1_1RecordType_a836891541c552d6198cdf6d46d326cb2}{instance\+\_\+fields}}
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Constructor \& Destructor Documentation}
+\mbox{\Hypertarget{classCotton_1_1Builtin_1_1RecordType_a1be6f14aca53c3c8caedeaa3895b2227}\label{classCotton_1_1Builtin_1_1RecordType_a1be6f14aca53c3c8caedeaa3895b2227}} 
+\index{Cotton::Builtin::RecordType@{Cotton::Builtin::RecordType}!RecordType@{RecordType}}
+\index{RecordType@{RecordType}!Cotton::Builtin::RecordType@{Cotton::Builtin::RecordType}}
+\doxysubsubsection{\texorpdfstring{RecordType()}{RecordType()}}
+{\footnotesize\ttfamily Cotton\+::\+Builtin\+::\+Record\+Type\+::\+Record\+Type (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{classCotton_1_1Runtime}{Runtime}} $\ast$}]{rt }\end{DoxyParamCaption})}
+
+
+
+References Profiler\+CAPTURE.
+
+\mbox{\Hypertarget{classCotton_1_1Builtin_1_1RecordType_ad3c3089a27cb6017e4a481ca09267261}\label{classCotton_1_1Builtin_1_1RecordType_ad3c3089a27cb6017e4a481ca09267261}} 
+\index{Cotton::Builtin::RecordType@{Cotton::Builtin::RecordType}!````~RecordType@{$\sim$RecordType}}
+\index{````~RecordType@{$\sim$RecordType}!Cotton::Builtin::RecordType@{Cotton::Builtin::RecordType}}
+\doxysubsubsection{\texorpdfstring{$\sim$RecordType()}{~RecordType()}}
+{\footnotesize\ttfamily Cotton\+::\+Builtin\+::\+Record\+Type\+::$\sim$\+Record\+Type (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [default]}}
+
+
+
+\doxysubsection{Member Function Documentation}
+\mbox{\Hypertarget{classCotton_1_1Builtin_1_1RecordType_ae5be2a85febf29578622b083cf6aded6}\label{classCotton_1_1Builtin_1_1RecordType_ae5be2a85febf29578622b083cf6aded6}} 
+\index{Cotton::Builtin::RecordType@{Cotton::Builtin::RecordType}!copy@{copy}}
+\index{copy@{copy}!Cotton::Builtin::RecordType@{Cotton::Builtin::RecordType}}
+\doxysubsubsection{\texorpdfstring{copy()}{copy()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{classCotton_1_1Object}{Object}} $\ast$ Cotton\+::\+Builtin\+::\+Record\+Type\+::copy (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{classCotton_1_1Object}{Object}} $\ast$}]{obj,  }\item[{\mbox{\hyperlink{classCotton_1_1Runtime}{Runtime}} $\ast$}]{rt }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [virtual]}}
+
+
+
+Implements \mbox{\hyperlink{classCotton_1_1Type_a4545944cdc336e79fc2bf95d852e68f0}{Cotton\+::\+Type}}.
+
+
+
+References Cotton\+::\+Instance\+::copy(), Cotton\+::\+Object\+::instance, new\+Object, Profiler\+CAPTURE, and Cotton\+::\+Runtime\+::verify\+Is\+Valid\+Object().
+
+\mbox{\Hypertarget{classCotton_1_1Builtin_1_1RecordType_a0f44ff482ed2dbab9a8cdcfd28bcef16}\label{classCotton_1_1Builtin_1_1RecordType_a0f44ff482ed2dbab9a8cdcfd28bcef16}} 
+\index{Cotton::Builtin::RecordType@{Cotton::Builtin::RecordType}!create@{create}}
+\index{create@{create}!Cotton::Builtin::RecordType@{Cotton::Builtin::RecordType}}
+\doxysubsubsection{\texorpdfstring{create()}{create()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{classCotton_1_1Object}{Object}} $\ast$ Cotton\+::\+Builtin\+::\+Record\+Type\+::create (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{classCotton_1_1Runtime}{Runtime}} $\ast$}]{rt }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [virtual]}}
+
+
+
+Implements \mbox{\hyperlink{classCotton_1_1Type_a9a755686d1c500e58ac970d1ec00c680}{Cotton\+::\+Type}}.
+
+
+
+References instance\+\_\+fields, Cotton\+::\+Builtin\+::make\+Nothing\+Instance\+Object(), new\+Object, and Profiler\+CAPTURE.
+
+\mbox{\Hypertarget{classCotton_1_1Builtin_1_1RecordType_ac07f297f22a4e547faa4bc2f7c0498dd}\label{classCotton_1_1Builtin_1_1RecordType_ac07f297f22a4e547faa4bc2f7c0498dd}} 
+\index{Cotton::Builtin::RecordType@{Cotton::Builtin::RecordType}!getInstanceSize@{getInstanceSize}}
+\index{getInstanceSize@{getInstanceSize}!Cotton::Builtin::RecordType@{Cotton::Builtin::RecordType}}
+\doxysubsubsection{\texorpdfstring{getInstanceSize()}{getInstanceSize()}}
+{\footnotesize\ttfamily size\+\_\+t Cotton\+::\+Builtin\+::\+Record\+Type\+::get\+Instance\+Size (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [virtual]}}
+
+
+
+Implements \mbox{\hyperlink{classCotton_1_1Type_a8c7a16d0c9d7db095abd3c53caa22b9e}{Cotton\+::\+Type}}.
+
+
+
+References Profiler\+CAPTURE.
+
+\mbox{\Hypertarget{classCotton_1_1Builtin_1_1RecordType_af4c9211ca0f5f3bc7d8d8ff94a4d3d96}\label{classCotton_1_1Builtin_1_1RecordType_af4c9211ca0f5f3bc7d8d8ff94a4d3d96}} 
+\index{Cotton::Builtin::RecordType@{Cotton::Builtin::RecordType}!userRepr@{userRepr}}
+\index{userRepr@{userRepr}!Cotton::Builtin::RecordType@{Cotton::Builtin::RecordType}}
+\doxysubsubsection{\texorpdfstring{userRepr()}{userRepr()}}
+{\footnotesize\ttfamily std\+::string Cotton\+::\+Builtin\+::\+Record\+Type\+::user\+Repr (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{classCotton_1_1Runtime}{Runtime}} $\ast$}]{rt }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [virtual]}}
+
+
+
+Implements \mbox{\hyperlink{classCotton_1_1Type_a0bc4d3bd4f83889da1776841b0e09cad}{Cotton\+::\+Type}}.
+
+
+
+References nameid, Cotton\+::\+Runtime\+::nds, Profiler\+CAPTURE, and Cotton\+::\+Name\+Ids\+::user\+Repr().
+
+
+
+\doxysubsection{Member Data Documentation}
+\mbox{\Hypertarget{classCotton_1_1Builtin_1_1RecordType_a836891541c552d6198cdf6d46d326cb2}\label{classCotton_1_1Builtin_1_1RecordType_a836891541c552d6198cdf6d46d326cb2}} 
+\index{Cotton::Builtin::RecordType@{Cotton::Builtin::RecordType}!instance\_fields@{instance\_fields}}
+\index{instance\_fields@{instance\_fields}!Cotton::Builtin::RecordType@{Cotton::Builtin::RecordType}}
+\doxysubsubsection{\texorpdfstring{instance\_fields}{instance\_fields}}
+{\footnotesize\ttfamily std\+::vector$<$int64\+\_\+t$>$ Cotton\+::\+Builtin\+::\+Record\+Type\+::instance\+\_\+fields}
+
+
+
+Referenced by create().
+
+\mbox{\Hypertarget{classCotton_1_1Builtin_1_1RecordType_a90af08fab203a6c820eed4468ef38c9a}\label{classCotton_1_1Builtin_1_1RecordType_a90af08fab203a6c820eed4468ef38c9a}} 
+\index{Cotton::Builtin::RecordType@{Cotton::Builtin::RecordType}!nameid@{nameid}}
+\index{nameid@{nameid}!Cotton::Builtin::RecordType@{Cotton::Builtin::RecordType}}
+\doxysubsubsection{\texorpdfstring{nameid}{nameid}}
+{\footnotesize\ttfamily int64\+\_\+t Cotton\+::\+Builtin\+::\+Record\+Type\+::nameid}
+
+
+
+Referenced by user\+Repr().
+
+
+
+The documentation for this class was generated from the following files\+:\begin{DoxyCompactItemize}
+\item 
+cotton\+\_\+lib/src/cotton\+\_\+lib/builtin/types/\mbox{\hyperlink{record_8h}{record.\+h}}\item 
+cotton\+\_\+lib/src/cotton\+\_\+lib/builtin/types/\mbox{\hyperlink{record_8cpp}{record.\+cpp}}\end{DoxyCompactItemize}

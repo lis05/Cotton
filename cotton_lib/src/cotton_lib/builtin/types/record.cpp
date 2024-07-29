@@ -131,6 +131,7 @@ Object *makeRecordInstanceObject(Runtime *rt) {
 }
 
 RecordType *makeRecordType(int64_t nameid, Runtime *rt) {
+    ProfilerCAPTURE();
     auto res    = new RecordType(rt);
     res->nameid = nameid;
     return res;

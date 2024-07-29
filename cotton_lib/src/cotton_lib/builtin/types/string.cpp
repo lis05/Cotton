@@ -67,10 +67,10 @@ static Object *
 StringIndexAdapter(Object *self, const std::vector<Object *> &args, Runtime *rt, bool execution_result_matters) {
     ProfilerCAPTURE();
 
-    rt->verifyIsInstanceObject(self, rt->string_type, rt->getContext().sub_areas[0]);
+    rt->verifyIsInstanceObject(self, rt->string_type, Runtime::SUB0_CTX);
     rt->verifyExactArgsAmountFunc(args, 1);
     auto &arg = args[0];
-    rt->verifyIsInstanceObject(arg, rt->integer_type, rt->getContext().sub_areas[1]);
+    rt->verifyIsInstanceObject(arg, rt->integer_type, Runtime::SUB1_CTX);
     if (!(0 <= getIntegerValueFast(arg) && getIntegerValueFast(arg) < getStringDataFast(self).size())) {
         rt->signalError("Index " + arg->userRepr(rt) + " is out of string " + self->userRepr(rt) + " range",
                         rt->getContext().sub_areas[1]);
@@ -84,8 +84,8 @@ StringIndexAdapter(Object *self, const std::vector<Object *> &args, Runtime *rt,
 static Object *StringAddAdapter(Object *self, Object *arg, Runtime *rt, bool execution_result_matters) {
     ProfilerCAPTURE();
 
-    rt->verifyIsInstanceObject(self, rt->string_type, rt->getContext().sub_areas[0]);
-    rt->verifyIsInstanceObject(arg, rt->string_type, rt->getContext().sub_areas[1]);
+    rt->verifyIsInstanceObject(self, rt->string_type, Runtime::SUB0_CTX);
+    rt->verifyIsInstanceObject(arg, rt->string_type, Runtime::SUB1_CTX);
 
     if (!execution_result_matters) {
         return NULL;
@@ -99,8 +99,8 @@ static Object *StringAddAdapter(Object *self, Object *arg, Runtime *rt, bool exe
 
 static Object *StringEqAdapter(Object *self, Object *arg, Runtime *rt, bool execution_result_matters) {
     ProfilerCAPTURE();
-    rt->verifyIsOfType(self, rt->string_type, rt->getContext().sub_areas[0]);
-    rt->verifyIsValidObject(arg, rt->getContext().sub_areas[1]);
+    rt->verifyIsOfType(self, rt->string_type, Runtime::SUB0_CTX);
+    rt->verifyIsValidObject(arg, Runtime::SUB1_CTX);
 
     if (!rt->isOfType(arg, rt->string_type)) {
         return rt->protected_false;
@@ -132,7 +132,7 @@ static Object *stringSizeMethod(const std::vector<Object *> &args, Runtime *rt, 
     ProfilerCAPTURE();
     rt->verifyExactArgsAmountMethod(args, 0);
     auto self = args[0];
-    rt->verifyIsInstanceObject(self, rt->string_type, rt->getContext().sub_areas[1]);
+    rt->verifyIsInstanceObject(self, rt->string_type, Runtime::SUB1_CTX);
 
     if (!execution_result_matters) {
         return NULL;
@@ -148,9 +148,9 @@ static Object *stringSetMethod(const std::vector<Object *> &args, Runtime *rt, b
     auto index = args[1];
     auto value = args[2];
 
-    rt->verifyIsInstanceObject(self, rt->string_type, rt->getContext().sub_areas[1]);
-    rt->verifyIsInstanceObject(index, rt->integer_type, rt->getContext().sub_areas[2]);
-    rt->verifyIsInstanceObject(value, rt->character_type, rt->getContext().sub_areas[3]);
+    rt->verifyIsInstanceObject(self, rt->string_type, Runtime::SUB1_CTX);
+    rt->verifyIsInstanceObject(index, rt->integer_type, Runtime::SUB2_CTX);
+    rt->verifyIsInstanceObject(value, rt->character_type, Runtime::SUB3_CTX);
 
     int64_t ind  = getIntegerValueFast(index);
     auto   &data = getStringDataFast(self);
@@ -165,7 +165,7 @@ static Object *mm__bool__(const std::vector<Object *> &args, Runtime *rt, bool e
     ProfilerCAPTURE();
     rt->verifyExactArgsAmountMethod(args, 0);
     auto self = args[0];
-    rt->verifyIsInstanceObject(self, rt->string_type, rt->getContext().sub_areas[1]);
+    rt->verifyIsInstanceObject(self, rt->string_type, Runtime::SUB1_CTX);
 
     if (!execution_result_matters) {
         return self;
@@ -184,7 +184,7 @@ static Object *mm__int__(const std::vector<Object *> &args, Runtime *rt, bool ex
     ProfilerCAPTURE();
     rt->verifyExactArgsAmountMethod(args, 0);
     auto self = args[0];
-    rt->verifyIsInstanceObject(self, rt->string_type, rt->getContext().sub_areas[1]);
+    rt->verifyIsInstanceObject(self, rt->string_type, Runtime::SUB1_CTX);
 
     if (!execution_result_matters) {
         return self;
@@ -197,7 +197,7 @@ static Object *mm__real__(const std::vector<Object *> &args, Runtime *rt, bool e
     ProfilerCAPTURE();
     rt->verifyExactArgsAmountMethod(args, 0);
     auto self = args[0];
-    rt->verifyIsInstanceObject(self, rt->string_type, rt->getContext().sub_areas[1]);
+    rt->verifyIsInstanceObject(self, rt->string_type, Runtime::SUB1_CTX);
 
     if (!execution_result_matters) {
         return self;
@@ -210,7 +210,7 @@ static Object *mm__string__(const std::vector<Object *> &args, Runtime *rt, bool
     ProfilerCAPTURE();
     rt->verifyExactArgsAmountMethod(args, 0);
     auto self = args[0];
-    rt->verifyIsInstanceObject(self, rt->string_type, rt->getContext().sub_areas[1]);
+    rt->verifyIsInstanceObject(self, rt->string_type, Runtime::SUB1_CTX);
 
     if (!execution_result_matters) {
         return self;
@@ -223,7 +223,7 @@ static Object *mm__repr__(const std::vector<Object *> &args, Runtime *rt, bool e
     ProfilerCAPTURE();
     rt->verifyExactArgsAmountMethod(args, 0);
     auto self = args[0];
-    rt->verifyIsOfType(self, rt->string_type, rt->getContext().sub_areas[1]);
+    rt->verifyIsOfType(self, rt->string_type, Runtime::SUB1_CTX);
 
     if (!execution_result_matters) {
         return self;
@@ -240,7 +240,7 @@ static Object *mm__read__(const std::vector<Object *> &args, Runtime *rt, bool e
     ProfilerCAPTURE();
     rt->verifyExactArgsAmountMethod(args, 0);
     auto self = args[0];
-    rt->verifyIsOfType(self, rt->string_type, rt->getContext().sub_areas[1]);
+    rt->verifyIsOfType(self, rt->string_type, Runtime::SUB1_CTX);
 
     std::string v;
     std::cin >> v;
@@ -253,6 +253,7 @@ static Object *mm__read__(const std::vector<Object *> &args, Runtime *rt, bool e
 }
 
 void installStringMethods(Type *type, Runtime *rt) {
+    ProfilerCAPTURE();
     type->addMethod(MagicMethods::mm__bool__(rt), Builtin::makeFunctionInstanceObject(true, mm__bool__, NULL, rt));
     type->addMethod(MagicMethods::mm__int__(rt), Builtin::makeFunctionInstanceObject(true, mm__int__, NULL, rt));
     type->addMethod(MagicMethods::mm__real__(rt), Builtin::makeFunctionInstanceObject(true, mm__real__, NULL, rt));
@@ -306,9 +307,9 @@ std::string &getStringData(Object *obj, Runtime *rt) {
     return icast(obj->instance, StringInstance)->data;
 }
 
-std::string &getStringData(Object *obj, Runtime *rt, const TextArea &ta) {
+std::string &getStringData(Object *obj, Runtime *rt, Runtime::ContextId ctx_id) {
     ProfilerCAPTURE();
-    rt->verifyIsInstanceObject(obj, rt->string_type, ta);
+    rt->verifyIsInstanceObject(obj, rt->string_type, Runtime::SUB0_CTX);
     return icast(obj->instance, StringInstance)->data;
 }
 

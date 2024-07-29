@@ -1,0 +1,19 @@
+{\itshape A program in Cotton that checks if number 17 is prime}\hypertarget{md_README_autotoc_md1}{}\doxysection{@code\{js\}}\label{md_README_autotoc_md1}
+function check(n) \{ if n $<$= 1; return false; for i = 2; i $\ast$ i $<$= n; i++; \{ if n \% i == 0; return false; \} return true; \};
+
+num = 17; println(\char`\"{}\+Number\char`\"{}, num, \char`\"{}is prime\+:\char`\"{}, check(num)); 
+
+Cottot is my second programming language, which has been drastically improved and optimized relatively to my first language \href{https://github.com/lis05/Brua2}{\texttt{ Brua2}}.\hypertarget{md_README_autotoc_md2}{}\doxysection{Features}\label{md_README_autotoc_md2}
+The syntax of Cotton resembles that of C and Golang.
+
+A few builtin types are supported, namely {\ttfamily Boolean}, {\ttfamily Character}, {\ttfamily Integer}, {\ttfamily Real}, {\ttfamily String}, {\ttfamily Array}, {\ttfamily Function}, and {\ttfamily Nothing}. New data types can be defined both in Cotton (using the {\ttfamily type} expression) and in C++(using the internal Cotton API).
+
+All types in Cotton can define methods which can be used via the {\ttfamily .} operator. Therefore, expressions like {\ttfamily object.\+method(args)} are supproted. Methods are shared between all the objects of the same type. Types defined via the {\ttfamily type} expression can specify what methods if that type will be available.
+
+All objects may have fields which unlike methods are unique to each object. Types defined via the {\ttfamily type} expression can specify what fields objects of that type wil have.
+
+The builtin functions in Cotton use methods when operating on the objects. For example, the {\ttfamily print} function will call the {\ttfamily \+\_\+\+\_\+repr\+\_\+\+\_\+} method in order to get the string representation of the objects. More about such \char`\"{}special\char`\"{} (or magic) methods will be in the documentation.
+
+Cotton\textquotesingle{}s builtin library contains functions that are essential to any program. Example of such functions are {\ttfamily make}, {\ttfamily copy}, {\ttfamily println}, {\ttfamily int}, {\ttfamily exit}, {\ttfamily typeof}, {\ttfamily hasfield}, {\ttfamily argv}. More about these functions will be in the documentation.
+
+Cotton itself is a library that can be used to created extensions in C++. These extensions can be loaded into the program via the {\ttfamily load} function ({\bfseries{NOT IMPLEMENTED YET}}). The same function can also be used to load (include) other programs in Cotton. 

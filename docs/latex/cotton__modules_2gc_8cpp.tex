@@ -1,0 +1,108 @@
+\hypertarget{cotton__modules_2gc_8cpp}{}\doxysection{cotton\+\_\+modules/gc.cpp File Reference}
+\label{cotton__modules_2gc_8cpp}\index{cotton\_modules/gc.cpp@{cotton\_modules/gc.cpp}}
+{\ttfamily \#include \char`\"{}../cotton\+\_\+lib/src/cotton\+\_\+lib/api.\+h\char`\"{}}\newline
+Include dependency graph for gc.\+cpp\+:\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{cotton__modules_2gc_8cpp__incl}
+\end{center}
+\end{figure}
+\doxysubsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+static \mbox{\hyperlink{classCotton_1_1Object}{Object}} $\ast$ \mbox{\hyperlink{cotton__modules_2gc_8cpp_a0da1a07802f8c0cf511c531ad4b74800}{enable}} (const std\+::vector$<$ \mbox{\hyperlink{classCotton_1_1Object}{Object}} $\ast$ $>$ \&args, \mbox{\hyperlink{classCotton_1_1Runtime}{Runtime}} $\ast$rt, bool execution\+\_\+result\+\_\+matters)
+\item 
+static \mbox{\hyperlink{classCotton_1_1Object}{Object}} $\ast$ \mbox{\hyperlink{cotton__modules_2gc_8cpp_a0cebbbfee5f6c72c52d584f671c49881}{disable}} (const std\+::vector$<$ \mbox{\hyperlink{classCotton_1_1Object}{Object}} $\ast$ $>$ \&args, \mbox{\hyperlink{classCotton_1_1Runtime}{Runtime}} $\ast$rt, bool execution\+\_\+result\+\_\+matters)
+\item 
+static \mbox{\hyperlink{classCotton_1_1Object}{Object}} $\ast$ \mbox{\hyperlink{cotton__modules_2gc_8cpp_a8a9a931c8d2f228c4be3837eb7841716}{status}} (const std\+::vector$<$ \mbox{\hyperlink{classCotton_1_1Object}{Object}} $\ast$ $>$ \&args, \mbox{\hyperlink{classCotton_1_1Runtime}{Runtime}} $\ast$rt, bool execution\+\_\+result\+\_\+matters)
+\item 
+static \mbox{\hyperlink{classCotton_1_1Object}{Object}} $\ast$ \mbox{\hyperlink{cotton__modules_2gc_8cpp_a08d94a9228a66ff5ad1284c350e74a95}{ping}} (const std\+::vector$<$ \mbox{\hyperlink{classCotton_1_1Object}{Object}} $\ast$ $>$ \&args, \mbox{\hyperlink{classCotton_1_1Runtime}{Runtime}} $\ast$rt, bool execution\+\_\+result\+\_\+matters)
+\item 
+static \mbox{\hyperlink{classCotton_1_1Object}{Object}} $\ast$ \mbox{\hyperlink{cotton__modules_2gc_8cpp_a981da9cc4c9c3432a0b263c3a01c1b5e}{forceping}} (const std\+::vector$<$ \mbox{\hyperlink{classCotton_1_1Object}{Object}} $\ast$ $>$ \&args, \mbox{\hyperlink{classCotton_1_1Runtime}{Runtime}} $\ast$rt, bool execution\+\_\+result\+\_\+matters)
+\item 
+\mbox{\hyperlink{classCotton_1_1Object}{Object}} $\ast$ \mbox{\hyperlink{cotton__modules_2gc_8cpp_a57a2d15a5ce8ecb3f9a5233ad739c792}{library\+\_\+load\+\_\+point}} (\mbox{\hyperlink{classCotton_1_1Runtime}{Runtime}} $\ast$rt)
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Function Documentation}
+\mbox{\Hypertarget{cotton__modules_2gc_8cpp_a0cebbbfee5f6c72c52d584f671c49881}\label{cotton__modules_2gc_8cpp_a0cebbbfee5f6c72c52d584f671c49881}} 
+\index{gc.cpp@{gc.cpp}!disable@{disable}}
+\index{disable@{disable}!gc.cpp@{gc.cpp}}
+\doxysubsubsection{\texorpdfstring{disable()}{disable()}}
+{\footnotesize\ttfamily static \mbox{\hyperlink{classCotton_1_1Object}{Object}}$\ast$ disable (\begin{DoxyParamCaption}\item[{const std\+::vector$<$ \mbox{\hyperlink{classCotton_1_1Object}{Object}} $\ast$ $>$ \&}]{args,  }\item[{\mbox{\hyperlink{classCotton_1_1Runtime}{Runtime}} $\ast$}]{rt,  }\item[{bool}]{execution\+\_\+result\+\_\+matters }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}}
+
+
+
+References Cotton\+::\+GC\+::disable(), Cotton\+::\+Runtime\+::gc, Cotton\+::\+Runtime\+::protected\+\_\+nothing, and Cotton\+::\+Runtime\+::verify\+Exact\+Args\+Amount\+Method().
+
+
+
+Referenced by library\+\_\+load\+\_\+point().
+
+\mbox{\Hypertarget{cotton__modules_2gc_8cpp_a0da1a07802f8c0cf511c531ad4b74800}\label{cotton__modules_2gc_8cpp_a0da1a07802f8c0cf511c531ad4b74800}} 
+\index{gc.cpp@{gc.cpp}!enable@{enable}}
+\index{enable@{enable}!gc.cpp@{gc.cpp}}
+\doxysubsubsection{\texorpdfstring{enable()}{enable()}}
+{\footnotesize\ttfamily static \mbox{\hyperlink{classCotton_1_1Object}{Object}}$\ast$ enable (\begin{DoxyParamCaption}\item[{const std\+::vector$<$ \mbox{\hyperlink{classCotton_1_1Object}{Object}} $\ast$ $>$ \&}]{args,  }\item[{\mbox{\hyperlink{classCotton_1_1Runtime}{Runtime}} $\ast$}]{rt,  }\item[{bool}]{execution\+\_\+result\+\_\+matters }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}}
+
+
+
+References Cotton\+::\+GC\+::enable(), Cotton\+::\+Runtime\+::gc, Cotton\+::\+Runtime\+::protected\+\_\+nothing, and Cotton\+::\+Runtime\+::verify\+Exact\+Args\+Amount\+Method().
+
+
+
+Referenced by library\+\_\+load\+\_\+point().
+
+\mbox{\Hypertarget{cotton__modules_2gc_8cpp_a981da9cc4c9c3432a0b263c3a01c1b5e}\label{cotton__modules_2gc_8cpp_a981da9cc4c9c3432a0b263c3a01c1b5e}} 
+\index{gc.cpp@{gc.cpp}!forceping@{forceping}}
+\index{forceping@{forceping}!gc.cpp@{gc.cpp}}
+\doxysubsubsection{\texorpdfstring{forceping()}{forceping()}}
+{\footnotesize\ttfamily static \mbox{\hyperlink{classCotton_1_1Object}{Object}}$\ast$ forceping (\begin{DoxyParamCaption}\item[{const std\+::vector$<$ \mbox{\hyperlink{classCotton_1_1Object}{Object}} $\ast$ $>$ \&}]{args,  }\item[{\mbox{\hyperlink{classCotton_1_1Runtime}{Runtime}} $\ast$}]{rt,  }\item[{bool}]{execution\+\_\+result\+\_\+matters }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}}
+
+
+
+References Cotton\+::\+GC\+::enable(), Cotton\+::\+GC\+::enabled, Cotton\+::\+Runtime\+::gc, Cotton\+::\+GC\+::ping(), Cotton\+::\+Runtime\+::protected\+\_\+nothing, status(), and Cotton\+::\+Runtime\+::verify\+Exact\+Args\+Amount\+Method().
+
+
+
+Referenced by library\+\_\+load\+\_\+point().
+
+\mbox{\Hypertarget{cotton__modules_2gc_8cpp_a57a2d15a5ce8ecb3f9a5233ad739c792}\label{cotton__modules_2gc_8cpp_a57a2d15a5ce8ecb3f9a5233ad739c792}} 
+\index{gc.cpp@{gc.cpp}!library\_load\_point@{library\_load\_point}}
+\index{library\_load\_point@{library\_load\_point}!gc.cpp@{gc.cpp}}
+\doxysubsubsection{\texorpdfstring{library\_load\_point()}{library\_load\_point()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{classCotton_1_1Object}{Object}}$\ast$ library\+\_\+load\+\_\+point (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{classCotton_1_1Runtime}{Runtime}} $\ast$}]{rt }\end{DoxyParamCaption})}
+
+
+
+References disable(), enable(), forceping(), Cotton\+::\+Name\+Ids\+::get(), Cotton\+::\+Name\+Id\+::id, Cotton\+::\+Runtime\+::\+INSTANCE\+\_\+\+OBJECT, Cotton\+::\+Runtime\+::make(), Cotton\+::\+Builtin\+::make\+Function\+Instance\+Object(), Cotton\+::\+Builtin\+::make\+Record\+Type(), Cotton\+::\+Runtime\+::nds, ping(), and status().
+
+\mbox{\Hypertarget{cotton__modules_2gc_8cpp_a08d94a9228a66ff5ad1284c350e74a95}\label{cotton__modules_2gc_8cpp_a08d94a9228a66ff5ad1284c350e74a95}} 
+\index{gc.cpp@{gc.cpp}!ping@{ping}}
+\index{ping@{ping}!gc.cpp@{gc.cpp}}
+\doxysubsubsection{\texorpdfstring{ping()}{ping()}}
+{\footnotesize\ttfamily static \mbox{\hyperlink{classCotton_1_1Object}{Object}}$\ast$ ping (\begin{DoxyParamCaption}\item[{const std\+::vector$<$ \mbox{\hyperlink{classCotton_1_1Object}{Object}} $\ast$ $>$ \&}]{args,  }\item[{\mbox{\hyperlink{classCotton_1_1Runtime}{Runtime}} $\ast$}]{rt,  }\item[{bool}]{execution\+\_\+result\+\_\+matters }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}}
+
+
+
+References Cotton\+::\+Runtime\+::gc, Cotton\+::\+GC\+::ping(), Cotton\+::\+Runtime\+::protected\+\_\+nothing, and Cotton\+::\+Runtime\+::verify\+Exact\+Args\+Amount\+Method().
+
+
+
+Referenced by library\+\_\+load\+\_\+point().
+
+\mbox{\Hypertarget{cotton__modules_2gc_8cpp_a8a9a931c8d2f228c4be3837eb7841716}\label{cotton__modules_2gc_8cpp_a8a9a931c8d2f228c4be3837eb7841716}} 
+\index{gc.cpp@{gc.cpp}!status@{status}}
+\index{status@{status}!gc.cpp@{gc.cpp}}
+\doxysubsubsection{\texorpdfstring{status()}{status()}}
+{\footnotesize\ttfamily static \mbox{\hyperlink{classCotton_1_1Object}{Object}}$\ast$ status (\begin{DoxyParamCaption}\item[{const std\+::vector$<$ \mbox{\hyperlink{classCotton_1_1Object}{Object}} $\ast$ $>$ \&}]{args,  }\item[{\mbox{\hyperlink{classCotton_1_1Runtime}{Runtime}} $\ast$}]{rt,  }\item[{bool}]{execution\+\_\+result\+\_\+matters }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}}
+
+
+
+References Cotton\+::\+GC\+::enabled, Cotton\+::\+Runtime\+::gc, Cotton\+::\+Runtime\+::protected\+Boolean(), and Cotton\+::\+Runtime\+::verify\+Exact\+Args\+Amount\+Method().
+
+
+
+Referenced by forceping(), and library\+\_\+load\+\_\+point().
+

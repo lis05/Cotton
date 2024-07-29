@@ -1,0 +1,5 @@
+<map id="Cotton::Instance::Instance" name="Cotton::Instance::Instance">
+<area shape="rect" id="node1" title="Construct a new Instance object." alt="" coords="5,13,196,39"/>
+<area shape="rect" id="node2" href="$classCotton_1_1GC.html#a409b4b05d777b2c01d6bd42493c9a791" title="Tracks the object;." alt="" coords="244,13,377,39"/>
+<area shape="rect" id="node3" href="$classCotton_1_1GCStrategy.html#a69ba8d01763f0c0b83178ddfb70a0b42" title="Acknowledges track of an Object. This function is called by the gc." alt="" coords="425,5,576,47"/>
+</map>

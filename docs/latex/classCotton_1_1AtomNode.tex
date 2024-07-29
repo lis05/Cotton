@@ -1,0 +1,248 @@
+\hypertarget{classCotton_1_1AtomNode}{}\doxysection{Cotton\+::Atom\+Node Class Reference}
+\label{classCotton_1_1AtomNode}\index{Cotton::AtomNode@{Cotton::AtomNode}}
+
+
+{\ttfamily \#include $<$parser.\+h$>$}
+
+\doxysubsection*{Public Types}
+\begin{DoxyCompactItemize}
+\item 
+enum \mbox{\hyperlink{classCotton_1_1AtomNode_a0df93be522521136204cf58592f0501f}{Atom\+Id}} \{ \newline
+\mbox{\hyperlink{classCotton_1_1AtomNode_a0df93be522521136204cf58592f0501fa1bce525f2fc21549638fcc3ce15b29b3}{BOOLEAN}}
+, \mbox{\hyperlink{classCotton_1_1AtomNode_a0df93be522521136204cf58592f0501fa2f7bcbdfebda2178d825aafaec64a4fe}{CHARACTER}}
+, \mbox{\hyperlink{classCotton_1_1AtomNode_a0df93be522521136204cf58592f0501fadde5ac8d76b8d8cf14bd1e245259753a}{INTEGER}}
+, \mbox{\hyperlink{classCotton_1_1AtomNode_a0df93be522521136204cf58592f0501fa63a044de2aa07576a3ce3f5704b9f9ff}{REAL}}
+, \newline
+\mbox{\hyperlink{classCotton_1_1AtomNode_a0df93be522521136204cf58592f0501fa69459f28eaa10e195976c169f8cda6c8}{STRING}}
+, \mbox{\hyperlink{classCotton_1_1AtomNode_a0df93be522521136204cf58592f0501fab8048a4ec420c446f488362ed94a37be}{IDENTIFIER}}
+, \mbox{\hyperlink{classCotton_1_1AtomNode_a0df93be522521136204cf58592f0501fa12c0bcd868873e2a2ae9ecc7ed22d448}{NOTHING}}
+ \}
+\end{DoxyCompactItemize}
+\doxysubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{classCotton_1_1AtomNode_ad872141d45280578a29ba09e52309a8b}{Atom\+Node}} ()=delete
+\item 
+\mbox{\hyperlink{classCotton_1_1AtomNode_aa96d0e75f495d4a7f0f2c761593fedc0}{$\sim$\+Atom\+Node}} ()
+\item 
+\mbox{\hyperlink{classCotton_1_1AtomNode_a5b9052db4968e1e40e74aa1138ba1e75}{Atom\+Node}} (\mbox{\hyperlink{classCotton_1_1Token}{Token}} $\ast$\mbox{\hyperlink{classCotton_1_1AtomNode_a8a69a4202c25b5a7a46bb559633739bf}{token}}, \mbox{\hyperlink{classCotton_1_1TextArea}{Text\+Area}} \mbox{\hyperlink{classCotton_1_1AtomNode_a44107573d903ad150c28078f8fe3d053}{text\+\_\+area}})
+\item 
+void \mbox{\hyperlink{classCotton_1_1AtomNode_ae9c3b779215d2076d2081549cc3e0b32}{print}} (int indent=0, int step=2)
+\end{DoxyCompactItemize}
+\doxysubsection*{Public Attributes}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{classCotton_1_1TextArea}{Text\+Area}} \mbox{\hyperlink{classCotton_1_1AtomNode_a44107573d903ad150c28078f8fe3d053}{text\+\_\+area}}
+\item 
+enum \mbox{\hyperlink{classCotton_1_1AtomNode_a0df93be522521136204cf58592f0501f}{Cotton\+::\+Atom\+Node\+::\+Atom\+Id}} \mbox{\hyperlink{classCotton_1_1AtomNode_a889042069aa201749e57066e0cfae496}{id}}
+\item 
+bool \mbox{\hyperlink{classCotton_1_1AtomNode_a5d1c8ae1c3da8b888f326ea84379aa00}{bool\+\_\+value}}
+\item 
+char \mbox{\hyperlink{classCotton_1_1AtomNode_adce80ed0cab7b531981e7858b789d398}{char\+\_\+value}}
+\item 
+int64\+\_\+t \mbox{\hyperlink{classCotton_1_1AtomNode_a464310ff4eea45d94bdf8079680c4760}{int\+\_\+value}}
+\item 
+double \mbox{\hyperlink{classCotton_1_1AtomNode_a8de606062ed21b51b7a61fcaedb3d8bd}{real\+\_\+value}}
+\item 
+std\+::string \mbox{\hyperlink{classCotton_1_1AtomNode_a2117042234e3f29b330d27574ef59414}{string\+\_\+value}}
+\item 
+\mbox{\hyperlink{classCotton_1_1Token}{Token}} $\ast$ \mbox{\hyperlink{classCotton_1_1AtomNode_a690fc6cdcff84246fca571d414178ebf}{ident}}
+\item 
+\mbox{\hyperlink{classCotton_1_1Object}{Object}} $\ast$ \mbox{\hyperlink{classCotton_1_1AtomNode_a69cf855501af1f5f333be38f71007e9d}{lit\+\_\+obj}}
+\item 
+\mbox{\hyperlink{classCotton_1_1Token}{Token}} $\ast$ \mbox{\hyperlink{classCotton_1_1AtomNode_a8a69a4202c25b5a7a46bb559633739bf}{token}}
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Member Enumeration Documentation}
+\mbox{\Hypertarget{classCotton_1_1AtomNode_a0df93be522521136204cf58592f0501f}\label{classCotton_1_1AtomNode_a0df93be522521136204cf58592f0501f}} 
+\index{Cotton::AtomNode@{Cotton::AtomNode}!AtomId@{AtomId}}
+\index{AtomId@{AtomId}!Cotton::AtomNode@{Cotton::AtomNode}}
+\doxysubsubsection{\texorpdfstring{AtomId}{AtomId}}
+{\footnotesize\ttfamily enum \mbox{\hyperlink{classCotton_1_1AtomNode_a0df93be522521136204cf58592f0501f}{Cotton\+::\+Atom\+Node\+::\+Atom\+Id}}}
+
+\begin{DoxyEnumFields}{Enumerator}
+\raisebox{\heightof{T}}[0pt][0pt]{\index{BOOLEAN@{BOOLEAN}!Cotton::AtomNode@{Cotton::AtomNode}}\index{Cotton::AtomNode@{Cotton::AtomNode}!BOOLEAN@{BOOLEAN}}}\mbox{\Hypertarget{classCotton_1_1AtomNode_a0df93be522521136204cf58592f0501fa1bce525f2fc21549638fcc3ce15b29b3}\label{classCotton_1_1AtomNode_a0df93be522521136204cf58592f0501fa1bce525f2fc21549638fcc3ce15b29b3}} 
+BOOLEAN&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{CHARACTER@{CHARACTER}!Cotton::AtomNode@{Cotton::AtomNode}}\index{Cotton::AtomNode@{Cotton::AtomNode}!CHARACTER@{CHARACTER}}}\mbox{\Hypertarget{classCotton_1_1AtomNode_a0df93be522521136204cf58592f0501fa2f7bcbdfebda2178d825aafaec64a4fe}\label{classCotton_1_1AtomNode_a0df93be522521136204cf58592f0501fa2f7bcbdfebda2178d825aafaec64a4fe}} 
+CHARACTER&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{INTEGER@{INTEGER}!Cotton::AtomNode@{Cotton::AtomNode}}\index{Cotton::AtomNode@{Cotton::AtomNode}!INTEGER@{INTEGER}}}\mbox{\Hypertarget{classCotton_1_1AtomNode_a0df93be522521136204cf58592f0501fadde5ac8d76b8d8cf14bd1e245259753a}\label{classCotton_1_1AtomNode_a0df93be522521136204cf58592f0501fadde5ac8d76b8d8cf14bd1e245259753a}} 
+INTEGER&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{REAL@{REAL}!Cotton::AtomNode@{Cotton::AtomNode}}\index{Cotton::AtomNode@{Cotton::AtomNode}!REAL@{REAL}}}\mbox{\Hypertarget{classCotton_1_1AtomNode_a0df93be522521136204cf58592f0501fa63a044de2aa07576a3ce3f5704b9f9ff}\label{classCotton_1_1AtomNode_a0df93be522521136204cf58592f0501fa63a044de2aa07576a3ce3f5704b9f9ff}} 
+REAL&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{STRING@{STRING}!Cotton::AtomNode@{Cotton::AtomNode}}\index{Cotton::AtomNode@{Cotton::AtomNode}!STRING@{STRING}}}\mbox{\Hypertarget{classCotton_1_1AtomNode_a0df93be522521136204cf58592f0501fa69459f28eaa10e195976c169f8cda6c8}\label{classCotton_1_1AtomNode_a0df93be522521136204cf58592f0501fa69459f28eaa10e195976c169f8cda6c8}} 
+STRING&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{IDENTIFIER@{IDENTIFIER}!Cotton::AtomNode@{Cotton::AtomNode}}\index{Cotton::AtomNode@{Cotton::AtomNode}!IDENTIFIER@{IDENTIFIER}}}\mbox{\Hypertarget{classCotton_1_1AtomNode_a0df93be522521136204cf58592f0501fab8048a4ec420c446f488362ed94a37be}\label{classCotton_1_1AtomNode_a0df93be522521136204cf58592f0501fab8048a4ec420c446f488362ed94a37be}} 
+IDENTIFIER&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{NOTHING@{NOTHING}!Cotton::AtomNode@{Cotton::AtomNode}}\index{Cotton::AtomNode@{Cotton::AtomNode}!NOTHING@{NOTHING}}}\mbox{\Hypertarget{classCotton_1_1AtomNode_a0df93be522521136204cf58592f0501fa12c0bcd868873e2a2ae9ecc7ed22d448}\label{classCotton_1_1AtomNode_a0df93be522521136204cf58592f0501fa12c0bcd868873e2a2ae9ecc7ed22d448}} 
+NOTHING&\\
+\hline
+
+\end{DoxyEnumFields}
+
+
+\doxysubsection{Constructor \& Destructor Documentation}
+\mbox{\Hypertarget{classCotton_1_1AtomNode_ad872141d45280578a29ba09e52309a8b}\label{classCotton_1_1AtomNode_ad872141d45280578a29ba09e52309a8b}} 
+\index{Cotton::AtomNode@{Cotton::AtomNode}!AtomNode@{AtomNode}}
+\index{AtomNode@{AtomNode}!Cotton::AtomNode@{Cotton::AtomNode}}
+\doxysubsubsection{\texorpdfstring{AtomNode()}{AtomNode()}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
+{\footnotesize\ttfamily Cotton\+::\+Atom\+Node\+::\+Atom\+Node (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [delete]}}
+
+\mbox{\Hypertarget{classCotton_1_1AtomNode_aa96d0e75f495d4a7f0f2c761593fedc0}\label{classCotton_1_1AtomNode_aa96d0e75f495d4a7f0f2c761593fedc0}} 
+\index{Cotton::AtomNode@{Cotton::AtomNode}!````~AtomNode@{$\sim$AtomNode}}
+\index{````~AtomNode@{$\sim$AtomNode}!Cotton::AtomNode@{Cotton::AtomNode}}
+\doxysubsubsection{\texorpdfstring{$\sim$AtomNode()}{~AtomNode()}}
+{\footnotesize\ttfamily Cotton\+::\+Atom\+Node\+::$\sim$\+Atom\+Node (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+
+
+References ident, and token.
+
+\mbox{\Hypertarget{classCotton_1_1AtomNode_a5b9052db4968e1e40e74aa1138ba1e75}\label{classCotton_1_1AtomNode_a5b9052db4968e1e40e74aa1138ba1e75}} 
+\index{Cotton::AtomNode@{Cotton::AtomNode}!AtomNode@{AtomNode}}
+\index{AtomNode@{AtomNode}!Cotton::AtomNode@{Cotton::AtomNode}}
+\doxysubsubsection{\texorpdfstring{AtomNode()}{AtomNode()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
+{\footnotesize\ttfamily Cotton\+::\+Atom\+Node\+::\+Atom\+Node (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{classCotton_1_1Token}{Token}} $\ast$}]{token,  }\item[{\mbox{\hyperlink{classCotton_1_1TextArea}{Text\+Area}}}]{text\+\_\+area }\end{DoxyParamCaption})}
+
+
+
+References Cotton\+::\+Token\+::bool\+\_\+value, bool\+\_\+value, BOOLEAN, Cotton\+::\+Token\+::\+BOOLEAN\+\_\+\+LIT, Cotton\+::\+Token\+::\+CHAR\+\_\+\+LIT, Cotton\+::\+Token\+::char\+\_\+value, char\+\_\+value, CHARACTER, Cotton\+::\+Token\+::id, ident, Cotton\+::\+Token\+::\+IDENTIFIER, IDENTIFIER, Cotton\+::\+Token\+::\+INT\+\_\+\+LIT, Cotton\+::\+Token\+::int\+\_\+value, int\+\_\+value, INTEGER, lit\+\_\+obj, NOTHING, Cotton\+::\+Token\+::\+NOTHING\+\_\+\+LIT, REAL, Cotton\+::\+Token\+::\+REAL\+\_\+\+LIT, Cotton\+::\+Token\+::real\+\_\+value, real\+\_\+value, STRING, Cotton\+::\+Token\+::\+STRING\+\_\+\+LIT, Cotton\+::\+Token\+::string\+\_\+value, string\+\_\+value, text\+\_\+area, and token.
+
+
+
+\doxysubsection{Member Function Documentation}
+\mbox{\Hypertarget{classCotton_1_1AtomNode_ae9c3b779215d2076d2081549cc3e0b32}\label{classCotton_1_1AtomNode_ae9c3b779215d2076d2081549cc3e0b32}} 
+\index{Cotton::AtomNode@{Cotton::AtomNode}!print@{print}}
+\index{print@{print}!Cotton::AtomNode@{Cotton::AtomNode}}
+\doxysubsubsection{\texorpdfstring{print()}{print()}}
+{\footnotesize\ttfamily void Cotton\+::\+Atom\+Node\+::print (\begin{DoxyParamCaption}\item[{int}]{indent = {\ttfamily 0},  }\item[{int}]{step = {\ttfamily 2} }\end{DoxyParamCaption})}
+
+
+
+References BOOLEAN, CHARACTER, Cotton\+::\+Token\+::data, IDENTIFIER, INTEGER, NOTHING, Cotton\+::print\+Prefix(), REAL, STRING, and token.
+
+
+
+Referenced by Cotton\+::\+Expr\+Node\+::print().
+
+
+
+\doxysubsection{Member Data Documentation}
+\mbox{\Hypertarget{classCotton_1_1AtomNode_a5d1c8ae1c3da8b888f326ea84379aa00}\label{classCotton_1_1AtomNode_a5d1c8ae1c3da8b888f326ea84379aa00}} 
+\index{Cotton::AtomNode@{Cotton::AtomNode}!bool\_value@{bool\_value}}
+\index{bool\_value@{bool\_value}!Cotton::AtomNode@{Cotton::AtomNode}}
+\doxysubsubsection{\texorpdfstring{bool\_value}{bool\_value}}
+{\footnotesize\ttfamily bool Cotton\+::\+Atom\+Node\+::bool\+\_\+value}
+
+
+
+Referenced by Atom\+Node(), and Cotton\+::\+Runtime\+::execute().
+
+\mbox{\Hypertarget{classCotton_1_1AtomNode_adce80ed0cab7b531981e7858b789d398}\label{classCotton_1_1AtomNode_adce80ed0cab7b531981e7858b789d398}} 
+\index{Cotton::AtomNode@{Cotton::AtomNode}!char\_value@{char\_value}}
+\index{char\_value@{char\_value}!Cotton::AtomNode@{Cotton::AtomNode}}
+\doxysubsubsection{\texorpdfstring{char\_value}{char\_value}}
+{\footnotesize\ttfamily char Cotton\+::\+Atom\+Node\+::char\+\_\+value}
+
+
+
+Referenced by Atom\+Node(), and Cotton\+::\+Runtime\+::execute().
+
+\mbox{\Hypertarget{classCotton_1_1AtomNode_a889042069aa201749e57066e0cfae496}\label{classCotton_1_1AtomNode_a889042069aa201749e57066e0cfae496}} 
+\index{Cotton::AtomNode@{Cotton::AtomNode}!id@{id}}
+\index{id@{id}!Cotton::AtomNode@{Cotton::AtomNode}}
+\doxysubsubsection{\texorpdfstring{id}{id}}
+{\footnotesize\ttfamily enum \mbox{\hyperlink{classCotton_1_1AtomNode_a0df93be522521136204cf58592f0501f}{Cotton\+::\+Atom\+Node\+::\+Atom\+Id}} Cotton\+::\+Atom\+Node\+::id}
+
+
+
+Referenced by Cotton\+::\+Runtime\+::execute().
+
+\mbox{\Hypertarget{classCotton_1_1AtomNode_a690fc6cdcff84246fca571d414178ebf}\label{classCotton_1_1AtomNode_a690fc6cdcff84246fca571d414178ebf}} 
+\index{Cotton::AtomNode@{Cotton::AtomNode}!ident@{ident}}
+\index{ident@{ident}!Cotton::AtomNode@{Cotton::AtomNode}}
+\doxysubsubsection{\texorpdfstring{ident}{ident}}
+{\footnotesize\ttfamily \mbox{\hyperlink{classCotton_1_1Token}{Token}}$\ast$ Cotton\+::\+Atom\+Node\+::ident}
+
+
+
+Referenced by Atom\+Node(), Cotton\+::\+Runtime\+::execute(), and $\sim$\+Atom\+Node().
+
+\mbox{\Hypertarget{classCotton_1_1AtomNode_a464310ff4eea45d94bdf8079680c4760}\label{classCotton_1_1AtomNode_a464310ff4eea45d94bdf8079680c4760}} 
+\index{Cotton::AtomNode@{Cotton::AtomNode}!int\_value@{int\_value}}
+\index{int\_value@{int\_value}!Cotton::AtomNode@{Cotton::AtomNode}}
+\doxysubsubsection{\texorpdfstring{int\_value}{int\_value}}
+{\footnotesize\ttfamily int64\+\_\+t Cotton\+::\+Atom\+Node\+::int\+\_\+value}
+
+
+
+Referenced by Atom\+Node(), and Cotton\+::\+Runtime\+::execute().
+
+\mbox{\Hypertarget{classCotton_1_1AtomNode_a69cf855501af1f5f333be38f71007e9d}\label{classCotton_1_1AtomNode_a69cf855501af1f5f333be38f71007e9d}} 
+\index{Cotton::AtomNode@{Cotton::AtomNode}!lit\_obj@{lit\_obj}}
+\index{lit\_obj@{lit\_obj}!Cotton::AtomNode@{Cotton::AtomNode}}
+\doxysubsubsection{\texorpdfstring{lit\_obj}{lit\_obj}}
+{\footnotesize\ttfamily \mbox{\hyperlink{classCotton_1_1Object}{Object}}$\ast$ Cotton\+::\+Atom\+Node\+::lit\+\_\+obj}
+
+
+
+Referenced by Atom\+Node(), and Cotton\+::\+Runtime\+::execute().
+
+\mbox{\Hypertarget{classCotton_1_1AtomNode_a8de606062ed21b51b7a61fcaedb3d8bd}\label{classCotton_1_1AtomNode_a8de606062ed21b51b7a61fcaedb3d8bd}} 
+\index{Cotton::AtomNode@{Cotton::AtomNode}!real\_value@{real\_value}}
+\index{real\_value@{real\_value}!Cotton::AtomNode@{Cotton::AtomNode}}
+\doxysubsubsection{\texorpdfstring{real\_value}{real\_value}}
+{\footnotesize\ttfamily double Cotton\+::\+Atom\+Node\+::real\+\_\+value}
+
+
+
+Referenced by Atom\+Node(), and Cotton\+::\+Runtime\+::execute().
+
+\mbox{\Hypertarget{classCotton_1_1AtomNode_a2117042234e3f29b330d27574ef59414}\label{classCotton_1_1AtomNode_a2117042234e3f29b330d27574ef59414}} 
+\index{Cotton::AtomNode@{Cotton::AtomNode}!string\_value@{string\_value}}
+\index{string\_value@{string\_value}!Cotton::AtomNode@{Cotton::AtomNode}}
+\doxysubsubsection{\texorpdfstring{string\_value}{string\_value}}
+{\footnotesize\ttfamily std\+::string Cotton\+::\+Atom\+Node\+::string\+\_\+value}
+
+
+
+Referenced by Atom\+Node(), and Cotton\+::\+Runtime\+::execute().
+
+\mbox{\Hypertarget{classCotton_1_1AtomNode_a44107573d903ad150c28078f8fe3d053}\label{classCotton_1_1AtomNode_a44107573d903ad150c28078f8fe3d053}} 
+\index{Cotton::AtomNode@{Cotton::AtomNode}!text\_area@{text\_area}}
+\index{text\_area@{text\_area}!Cotton::AtomNode@{Cotton::AtomNode}}
+\doxysubsubsection{\texorpdfstring{text\_area}{text\_area}}
+{\footnotesize\ttfamily \mbox{\hyperlink{classCotton_1_1TextArea}{Text\+Area}} Cotton\+::\+Atom\+Node\+::text\+\_\+area}
+
+
+
+Referenced by Atom\+Node(), and Cotton\+::\+Runtime\+::execute().
+
+\mbox{\Hypertarget{classCotton_1_1AtomNode_a8a69a4202c25b5a7a46bb559633739bf}\label{classCotton_1_1AtomNode_a8a69a4202c25b5a7a46bb559633739bf}} 
+\index{Cotton::AtomNode@{Cotton::AtomNode}!token@{token}}
+\index{token@{token}!Cotton::AtomNode@{Cotton::AtomNode}}
+\doxysubsubsection{\texorpdfstring{token}{token}}
+{\footnotesize\ttfamily \mbox{\hyperlink{classCotton_1_1Token}{Token}}$\ast$ Cotton\+::\+Atom\+Node\+::token}
+
+
+
+Referenced by Atom\+Node(), Cotton\+::\+Runtime\+::execute(), print(), and $\sim$\+Atom\+Node().
+
+
+
+The documentation for this class was generated from the following files\+:\begin{DoxyCompactItemize}
+\item 
+cotton\+\_\+lib/src/cotton\+\_\+lib/front/\mbox{\hyperlink{parser_8h}{parser.\+h}}\item 
+cotton\+\_\+lib/src/cotton\+\_\+lib/front/\mbox{\hyperlink{parser_8cpp}{parser.\+cpp}}\end{DoxyCompactItemize}

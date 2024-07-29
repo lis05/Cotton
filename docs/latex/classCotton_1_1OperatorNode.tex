@@ -1,0 +1,351 @@
+\hypertarget{classCotton_1_1OperatorNode}{}\doxysection{Cotton\+::Operator\+Node Class Reference}
+\label{classCotton_1_1OperatorNode}\index{Cotton::OperatorNode@{Cotton::OperatorNode}}
+
+
+{\ttfamily \#include $<$parser.\+h$>$}
+
+\doxysubsection*{Public Types}
+\begin{DoxyCompactItemize}
+\item 
+enum \mbox{\hyperlink{classCotton_1_1OperatorNode_a7d2988f050c68843e9f59b389d32a241}{Operator\+Id}} \{ \newline
+\mbox{\hyperlink{classCotton_1_1OperatorNode_a7d2988f050c68843e9f59b389d32a241a92b6b3c58dbee6ac2baba636818ea144}{POST\+\_\+\+PLUS\+\_\+\+PLUS}}
+, \mbox{\hyperlink{classCotton_1_1OperatorNode_a7d2988f050c68843e9f59b389d32a241adb0665dcd6e7c34e7a7f7b8b7eb11219}{POST\+\_\+\+MINUS\+\_\+\+MINUS}}
+, \mbox{\hyperlink{classCotton_1_1OperatorNode_a7d2988f050c68843e9f59b389d32a241a6d02e8f7d1b411b79588ae1b58078998}{CALL}}
+, \mbox{\hyperlink{classCotton_1_1OperatorNode_a7d2988f050c68843e9f59b389d32a241a89fdd69f3c61694629e9360a4c1fc1b4}{INDEX}}
+, \newline
+\mbox{\hyperlink{classCotton_1_1OperatorNode_a7d2988f050c68843e9f59b389d32a241a1486a9d57bd43f05263d80fe40a765f7}{DOT}}
+, \mbox{\hyperlink{classCotton_1_1OperatorNode_a7d2988f050c68843e9f59b389d32a241a4d8a53934400f7413d4fbdab634d5bfb}{AT}}
+, \mbox{\hyperlink{classCotton_1_1OperatorNode_a7d2988f050c68843e9f59b389d32a241a5a0e541a78ca878cadf46229c120d3a7}{PRE\+\_\+\+PLUS\+\_\+\+PLUS}}
+, \mbox{\hyperlink{classCotton_1_1OperatorNode_a7d2988f050c68843e9f59b389d32a241a974fb5be1ced89ef7437a6971625c6b7}{PRE\+\_\+\+MINUS\+\_\+\+MINUS}}
+, \newline
+\mbox{\hyperlink{classCotton_1_1OperatorNode_a7d2988f050c68843e9f59b389d32a241a42c6b3ea5e7e9557be68dfe443194995}{PRE\+\_\+\+PLUS}}
+, \mbox{\hyperlink{classCotton_1_1OperatorNode_a7d2988f050c68843e9f59b389d32a241a702d8bfd160f6ff768c073b1d9f3b6bc}{PRE\+\_\+\+MINUS}}
+, \mbox{\hyperlink{classCotton_1_1OperatorNode_a7d2988f050c68843e9f59b389d32a241ad1e8c7b7418e971361b42154025ef0e2}{NOT}}
+, \mbox{\hyperlink{classCotton_1_1OperatorNode_a7d2988f050c68843e9f59b389d32a241a99025512806d3e3a26f2e05254e59828}{INVERSE}}
+, \newline
+\mbox{\hyperlink{classCotton_1_1OperatorNode_a7d2988f050c68843e9f59b389d32a241a5af59afb93cf1a8b62fbacdea5917a56}{MULT}}
+, \mbox{\hyperlink{classCotton_1_1OperatorNode_a7d2988f050c68843e9f59b389d32a241a08c52ef13232971a18c54acb3f4907da}{DIV}}
+, \mbox{\hyperlink{classCotton_1_1OperatorNode_a7d2988f050c68843e9f59b389d32a241aa9287534a36b3fd128a1e2ddeccf30df}{REM}}
+, \mbox{\hyperlink{classCotton_1_1OperatorNode_a7d2988f050c68843e9f59b389d32a241ae9d4f78c551466629be949c87347fa61}{RIGHT\+\_\+\+SHIFT}}
+, \newline
+\mbox{\hyperlink{classCotton_1_1OperatorNode_a7d2988f050c68843e9f59b389d32a241a6b7b8d3905585c5fb1d71865307c3d0a}{LEFT\+\_\+\+SHIFT}}
+, \mbox{\hyperlink{classCotton_1_1OperatorNode_a7d2988f050c68843e9f59b389d32a241a6c53b3f43796f90222e51e83c2102b87}{PLUS}}
+, \mbox{\hyperlink{classCotton_1_1OperatorNode_a7d2988f050c68843e9f59b389d32a241aa3b958d8585c6402a8a02b3e877578a8}{MINUS}}
+, \mbox{\hyperlink{classCotton_1_1OperatorNode_a7d2988f050c68843e9f59b389d32a241a96a97fbe8ffa8b5efa4acbb54d7aa7f6}{LESS}}
+, \newline
+\mbox{\hyperlink{classCotton_1_1OperatorNode_a7d2988f050c68843e9f59b389d32a241a1e285fd29143eb5313d15798802767c8}{LESS\+\_\+\+EQUAL}}
+, \mbox{\hyperlink{classCotton_1_1OperatorNode_a7d2988f050c68843e9f59b389d32a241ac50361d718275866160153f8793d4aac}{GREATER}}
+, \mbox{\hyperlink{classCotton_1_1OperatorNode_a7d2988f050c68843e9f59b389d32a241a421ca25b810c9b6763fabeb823ddf22d}{GREATER\+\_\+\+EQUAL}}
+, \mbox{\hyperlink{classCotton_1_1OperatorNode_a7d2988f050c68843e9f59b389d32a241adfa550171f24a9cdca64953f97cc90db}{EQUAL}}
+, \newline
+\mbox{\hyperlink{classCotton_1_1OperatorNode_a7d2988f050c68843e9f59b389d32a241a567b993109a3d26f82c3f11a4980bf31}{NOT\+\_\+\+EQUAL}}
+, \mbox{\hyperlink{classCotton_1_1OperatorNode_a7d2988f050c68843e9f59b389d32a241a8d1750420cb066e419ab6e2b1bda756f}{BITAND}}
+, \mbox{\hyperlink{classCotton_1_1OperatorNode_a7d2988f050c68843e9f59b389d32a241a139a1f1d313684dd9fc41c1cfe284d9f}{BITXOR}}
+, \mbox{\hyperlink{classCotton_1_1OperatorNode_a7d2988f050c68843e9f59b389d32a241aa0cc126acbbc7389d8d238081277837a}{BITOR}}
+, \newline
+\mbox{\hyperlink{classCotton_1_1OperatorNode_a7d2988f050c68843e9f59b389d32a241afe3f71a325fc6f273c92a65efec10285}{AND}}
+, \mbox{\hyperlink{classCotton_1_1OperatorNode_a7d2988f050c68843e9f59b389d32a241a02baa64e95fa65fac3d50ca944ca18e8}{OR}}
+, \mbox{\hyperlink{classCotton_1_1OperatorNode_a7d2988f050c68843e9f59b389d32a241ace9f16ad1a2dda618409fb9b459164d1}{ASSIGN}}
+, \mbox{\hyperlink{classCotton_1_1OperatorNode_a7d2988f050c68843e9f59b389d32a241a6af4cc93bd067c5f1d8fe569cb4c8ef8}{PLUS\+\_\+\+ASSIGN}}
+, \newline
+\mbox{\hyperlink{classCotton_1_1OperatorNode_a7d2988f050c68843e9f59b389d32a241afa9a324a7371f480ddf2802ca9fca343}{MINUS\+\_\+\+ASSIGN}}
+, \mbox{\hyperlink{classCotton_1_1OperatorNode_a7d2988f050c68843e9f59b389d32a241a4500d2bf4047b6ffe9bffd128d876b9c}{MULT\+\_\+\+ASSIGN}}
+, \mbox{\hyperlink{classCotton_1_1OperatorNode_a7d2988f050c68843e9f59b389d32a241a539498119e6f31e1ed32a85bb40feb37}{DIV\+\_\+\+ASSIGN}}
+, \mbox{\hyperlink{classCotton_1_1OperatorNode_a7d2988f050c68843e9f59b389d32a241aac0555ec57d1d583e1f49efaf0ff2559}{REM\+\_\+\+ASSIGN}}
+, \newline
+\mbox{\hyperlink{classCotton_1_1OperatorNode_a7d2988f050c68843e9f59b389d32a241ad8d5c00c049ae4e5cf0158a2e70ed191}{COMMA}}
+, \mbox{\hyperlink{classCotton_1_1OperatorNode_a7d2988f050c68843e9f59b389d32a241a52528e85f41a169783a76baeaf638a2f}{TOTAL\+\_\+\+OPERATORS}}
+ \}
+\end{DoxyCompactItemize}
+\doxysubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{classCotton_1_1OperatorNode_a268e895e79cf12c7f459be3f26673e7c}{Operator\+Node}} ()=delete
+\item 
+\mbox{\hyperlink{classCotton_1_1OperatorNode_a0747f5a9e7536a852345f4ac4a80c541}{$\sim$\+Operator\+Node}} ()
+\item 
+\mbox{\hyperlink{classCotton_1_1OperatorNode_a1fd8c7873f84eb054fb66e892ad2aa37}{Operator\+Node}} (\mbox{\hyperlink{classCotton_1_1OperatorNode_a7d2988f050c68843e9f59b389d32a241}{Operator\+Id}} \mbox{\hyperlink{classCotton_1_1OperatorNode_a33f359792a418153ddd58f0e6c482aa8}{id}}, \mbox{\hyperlink{classCotton_1_1ExprNode}{Expr\+Node}} $\ast$\mbox{\hyperlink{classCotton_1_1OperatorNode_a7fe40f81db3ff7583310768fbd68442e}{first}}, \mbox{\hyperlink{classCotton_1_1ExprNode}{Expr\+Node}} $\ast$\mbox{\hyperlink{classCotton_1_1OperatorNode_ad9286f860ea32451b1d1aa1ecd6baa87}{second}}, \mbox{\hyperlink{classCotton_1_1Token}{Token}} $\ast$\mbox{\hyperlink{classCotton_1_1OperatorNode_ae03be8d01b54bd9d334056a0942e58eb}{op}}, \mbox{\hyperlink{classCotton_1_1TextArea}{Text\+Area}} \mbox{\hyperlink{classCotton_1_1OperatorNode_a9a662d94dd309b3f85c8137ccc3695dd}{text\+\_\+area}})
+\item 
+void \mbox{\hyperlink{classCotton_1_1OperatorNode_a651314543bf4111463287b4f9aee47bb}{print}} (int indent=0, int step=2)
+\end{DoxyCompactItemize}
+\doxysubsection*{Public Attributes}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{classCotton_1_1TextArea}{Text\+Area}} \mbox{\hyperlink{classCotton_1_1OperatorNode_a9a662d94dd309b3f85c8137ccc3695dd}{text\+\_\+area}}
+\item 
+enum \mbox{\hyperlink{classCotton_1_1OperatorNode_a7d2988f050c68843e9f59b389d32a241}{Cotton\+::\+Operator\+Node\+::\+Operator\+Id}} \mbox{\hyperlink{classCotton_1_1OperatorNode_a33f359792a418153ddd58f0e6c482aa8}{id}}
+\item 
+\mbox{\hyperlink{classCotton_1_1ExprNode}{Expr\+Node}} $\ast$ \mbox{\hyperlink{classCotton_1_1OperatorNode_a7fe40f81db3ff7583310768fbd68442e}{first}}
+\item 
+\mbox{\hyperlink{classCotton_1_1ExprNode}{Expr\+Node}} $\ast$ \mbox{\hyperlink{classCotton_1_1OperatorNode_ad9286f860ea32451b1d1aa1ecd6baa87}{second}}
+\item 
+\mbox{\hyperlink{classCotton_1_1Token}{Token}} $\ast$ \mbox{\hyperlink{classCotton_1_1OperatorNode_ae03be8d01b54bd9d334056a0942e58eb}{op}}
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Member Enumeration Documentation}
+\mbox{\Hypertarget{classCotton_1_1OperatorNode_a7d2988f050c68843e9f59b389d32a241}\label{classCotton_1_1OperatorNode_a7d2988f050c68843e9f59b389d32a241}} 
+\index{Cotton::OperatorNode@{Cotton::OperatorNode}!OperatorId@{OperatorId}}
+\index{OperatorId@{OperatorId}!Cotton::OperatorNode@{Cotton::OperatorNode}}
+\doxysubsubsection{\texorpdfstring{OperatorId}{OperatorId}}
+{\footnotesize\ttfamily enum \mbox{\hyperlink{classCotton_1_1OperatorNode_a7d2988f050c68843e9f59b389d32a241}{Cotton\+::\+Operator\+Node\+::\+Operator\+Id}}}
+
+\begin{DoxyEnumFields}{Enumerator}
+\raisebox{\heightof{T}}[0pt][0pt]{\index{POST\_PLUS\_PLUS@{POST\_PLUS\_PLUS}!Cotton::OperatorNode@{Cotton::OperatorNode}}\index{Cotton::OperatorNode@{Cotton::OperatorNode}!POST\_PLUS\_PLUS@{POST\_PLUS\_PLUS}}}\mbox{\Hypertarget{classCotton_1_1OperatorNode_a7d2988f050c68843e9f59b389d32a241a92b6b3c58dbee6ac2baba636818ea144}\label{classCotton_1_1OperatorNode_a7d2988f050c68843e9f59b389d32a241a92b6b3c58dbee6ac2baba636818ea144}} 
+POST\+\_\+\+PLUS\+\_\+\+PLUS&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{POST\_MINUS\_MINUS@{POST\_MINUS\_MINUS}!Cotton::OperatorNode@{Cotton::OperatorNode}}\index{Cotton::OperatorNode@{Cotton::OperatorNode}!POST\_MINUS\_MINUS@{POST\_MINUS\_MINUS}}}\mbox{\Hypertarget{classCotton_1_1OperatorNode_a7d2988f050c68843e9f59b389d32a241adb0665dcd6e7c34e7a7f7b8b7eb11219}\label{classCotton_1_1OperatorNode_a7d2988f050c68843e9f59b389d32a241adb0665dcd6e7c34e7a7f7b8b7eb11219}} 
+POST\+\_\+\+MINUS\+\_\+\+MINUS&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{CALL@{CALL}!Cotton::OperatorNode@{Cotton::OperatorNode}}\index{Cotton::OperatorNode@{Cotton::OperatorNode}!CALL@{CALL}}}\mbox{\Hypertarget{classCotton_1_1OperatorNode_a7d2988f050c68843e9f59b389d32a241a6d02e8f7d1b411b79588ae1b58078998}\label{classCotton_1_1OperatorNode_a7d2988f050c68843e9f59b389d32a241a6d02e8f7d1b411b79588ae1b58078998}} 
+CALL&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{INDEX@{INDEX}!Cotton::OperatorNode@{Cotton::OperatorNode}}\index{Cotton::OperatorNode@{Cotton::OperatorNode}!INDEX@{INDEX}}}\mbox{\Hypertarget{classCotton_1_1OperatorNode_a7d2988f050c68843e9f59b389d32a241a89fdd69f3c61694629e9360a4c1fc1b4}\label{classCotton_1_1OperatorNode_a7d2988f050c68843e9f59b389d32a241a89fdd69f3c61694629e9360a4c1fc1b4}} 
+INDEX&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{DOT@{DOT}!Cotton::OperatorNode@{Cotton::OperatorNode}}\index{Cotton::OperatorNode@{Cotton::OperatorNode}!DOT@{DOT}}}\mbox{\Hypertarget{classCotton_1_1OperatorNode_a7d2988f050c68843e9f59b389d32a241a1486a9d57bd43f05263d80fe40a765f7}\label{classCotton_1_1OperatorNode_a7d2988f050c68843e9f59b389d32a241a1486a9d57bd43f05263d80fe40a765f7}} 
+DOT&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{AT@{AT}!Cotton::OperatorNode@{Cotton::OperatorNode}}\index{Cotton::OperatorNode@{Cotton::OperatorNode}!AT@{AT}}}\mbox{\Hypertarget{classCotton_1_1OperatorNode_a7d2988f050c68843e9f59b389d32a241a4d8a53934400f7413d4fbdab634d5bfb}\label{classCotton_1_1OperatorNode_a7d2988f050c68843e9f59b389d32a241a4d8a53934400f7413d4fbdab634d5bfb}} 
+AT&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{PRE\_PLUS\_PLUS@{PRE\_PLUS\_PLUS}!Cotton::OperatorNode@{Cotton::OperatorNode}}\index{Cotton::OperatorNode@{Cotton::OperatorNode}!PRE\_PLUS\_PLUS@{PRE\_PLUS\_PLUS}}}\mbox{\Hypertarget{classCotton_1_1OperatorNode_a7d2988f050c68843e9f59b389d32a241a5a0e541a78ca878cadf46229c120d3a7}\label{classCotton_1_1OperatorNode_a7d2988f050c68843e9f59b389d32a241a5a0e541a78ca878cadf46229c120d3a7}} 
+PRE\+\_\+\+PLUS\+\_\+\+PLUS&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{PRE\_MINUS\_MINUS@{PRE\_MINUS\_MINUS}!Cotton::OperatorNode@{Cotton::OperatorNode}}\index{Cotton::OperatorNode@{Cotton::OperatorNode}!PRE\_MINUS\_MINUS@{PRE\_MINUS\_MINUS}}}\mbox{\Hypertarget{classCotton_1_1OperatorNode_a7d2988f050c68843e9f59b389d32a241a974fb5be1ced89ef7437a6971625c6b7}\label{classCotton_1_1OperatorNode_a7d2988f050c68843e9f59b389d32a241a974fb5be1ced89ef7437a6971625c6b7}} 
+PRE\+\_\+\+MINUS\+\_\+\+MINUS&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{PRE\_PLUS@{PRE\_PLUS}!Cotton::OperatorNode@{Cotton::OperatorNode}}\index{Cotton::OperatorNode@{Cotton::OperatorNode}!PRE\_PLUS@{PRE\_PLUS}}}\mbox{\Hypertarget{classCotton_1_1OperatorNode_a7d2988f050c68843e9f59b389d32a241a42c6b3ea5e7e9557be68dfe443194995}\label{classCotton_1_1OperatorNode_a7d2988f050c68843e9f59b389d32a241a42c6b3ea5e7e9557be68dfe443194995}} 
+PRE\+\_\+\+PLUS&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{PRE\_MINUS@{PRE\_MINUS}!Cotton::OperatorNode@{Cotton::OperatorNode}}\index{Cotton::OperatorNode@{Cotton::OperatorNode}!PRE\_MINUS@{PRE\_MINUS}}}\mbox{\Hypertarget{classCotton_1_1OperatorNode_a7d2988f050c68843e9f59b389d32a241a702d8bfd160f6ff768c073b1d9f3b6bc}\label{classCotton_1_1OperatorNode_a7d2988f050c68843e9f59b389d32a241a702d8bfd160f6ff768c073b1d9f3b6bc}} 
+PRE\+\_\+\+MINUS&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{NOT@{NOT}!Cotton::OperatorNode@{Cotton::OperatorNode}}\index{Cotton::OperatorNode@{Cotton::OperatorNode}!NOT@{NOT}}}\mbox{\Hypertarget{classCotton_1_1OperatorNode_a7d2988f050c68843e9f59b389d32a241ad1e8c7b7418e971361b42154025ef0e2}\label{classCotton_1_1OperatorNode_a7d2988f050c68843e9f59b389d32a241ad1e8c7b7418e971361b42154025ef0e2}} 
+NOT&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{INVERSE@{INVERSE}!Cotton::OperatorNode@{Cotton::OperatorNode}}\index{Cotton::OperatorNode@{Cotton::OperatorNode}!INVERSE@{INVERSE}}}\mbox{\Hypertarget{classCotton_1_1OperatorNode_a7d2988f050c68843e9f59b389d32a241a99025512806d3e3a26f2e05254e59828}\label{classCotton_1_1OperatorNode_a7d2988f050c68843e9f59b389d32a241a99025512806d3e3a26f2e05254e59828}} 
+INVERSE&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{MULT@{MULT}!Cotton::OperatorNode@{Cotton::OperatorNode}}\index{Cotton::OperatorNode@{Cotton::OperatorNode}!MULT@{MULT}}}\mbox{\Hypertarget{classCotton_1_1OperatorNode_a7d2988f050c68843e9f59b389d32a241a5af59afb93cf1a8b62fbacdea5917a56}\label{classCotton_1_1OperatorNode_a7d2988f050c68843e9f59b389d32a241a5af59afb93cf1a8b62fbacdea5917a56}} 
+MULT&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{DIV@{DIV}!Cotton::OperatorNode@{Cotton::OperatorNode}}\index{Cotton::OperatorNode@{Cotton::OperatorNode}!DIV@{DIV}}}\mbox{\Hypertarget{classCotton_1_1OperatorNode_a7d2988f050c68843e9f59b389d32a241a08c52ef13232971a18c54acb3f4907da}\label{classCotton_1_1OperatorNode_a7d2988f050c68843e9f59b389d32a241a08c52ef13232971a18c54acb3f4907da}} 
+DIV&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{REM@{REM}!Cotton::OperatorNode@{Cotton::OperatorNode}}\index{Cotton::OperatorNode@{Cotton::OperatorNode}!REM@{REM}}}\mbox{\Hypertarget{classCotton_1_1OperatorNode_a7d2988f050c68843e9f59b389d32a241aa9287534a36b3fd128a1e2ddeccf30df}\label{classCotton_1_1OperatorNode_a7d2988f050c68843e9f59b389d32a241aa9287534a36b3fd128a1e2ddeccf30df}} 
+REM&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{RIGHT\_SHIFT@{RIGHT\_SHIFT}!Cotton::OperatorNode@{Cotton::OperatorNode}}\index{Cotton::OperatorNode@{Cotton::OperatorNode}!RIGHT\_SHIFT@{RIGHT\_SHIFT}}}\mbox{\Hypertarget{classCotton_1_1OperatorNode_a7d2988f050c68843e9f59b389d32a241ae9d4f78c551466629be949c87347fa61}\label{classCotton_1_1OperatorNode_a7d2988f050c68843e9f59b389d32a241ae9d4f78c551466629be949c87347fa61}} 
+RIGHT\+\_\+\+SHIFT&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{LEFT\_SHIFT@{LEFT\_SHIFT}!Cotton::OperatorNode@{Cotton::OperatorNode}}\index{Cotton::OperatorNode@{Cotton::OperatorNode}!LEFT\_SHIFT@{LEFT\_SHIFT}}}\mbox{\Hypertarget{classCotton_1_1OperatorNode_a7d2988f050c68843e9f59b389d32a241a6b7b8d3905585c5fb1d71865307c3d0a}\label{classCotton_1_1OperatorNode_a7d2988f050c68843e9f59b389d32a241a6b7b8d3905585c5fb1d71865307c3d0a}} 
+LEFT\+\_\+\+SHIFT&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{PLUS@{PLUS}!Cotton::OperatorNode@{Cotton::OperatorNode}}\index{Cotton::OperatorNode@{Cotton::OperatorNode}!PLUS@{PLUS}}}\mbox{\Hypertarget{classCotton_1_1OperatorNode_a7d2988f050c68843e9f59b389d32a241a6c53b3f43796f90222e51e83c2102b87}\label{classCotton_1_1OperatorNode_a7d2988f050c68843e9f59b389d32a241a6c53b3f43796f90222e51e83c2102b87}} 
+PLUS&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{MINUS@{MINUS}!Cotton::OperatorNode@{Cotton::OperatorNode}}\index{Cotton::OperatorNode@{Cotton::OperatorNode}!MINUS@{MINUS}}}\mbox{\Hypertarget{classCotton_1_1OperatorNode_a7d2988f050c68843e9f59b389d32a241aa3b958d8585c6402a8a02b3e877578a8}\label{classCotton_1_1OperatorNode_a7d2988f050c68843e9f59b389d32a241aa3b958d8585c6402a8a02b3e877578a8}} 
+MINUS&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{LESS@{LESS}!Cotton::OperatorNode@{Cotton::OperatorNode}}\index{Cotton::OperatorNode@{Cotton::OperatorNode}!LESS@{LESS}}}\mbox{\Hypertarget{classCotton_1_1OperatorNode_a7d2988f050c68843e9f59b389d32a241a96a97fbe8ffa8b5efa4acbb54d7aa7f6}\label{classCotton_1_1OperatorNode_a7d2988f050c68843e9f59b389d32a241a96a97fbe8ffa8b5efa4acbb54d7aa7f6}} 
+LESS&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{LESS\_EQUAL@{LESS\_EQUAL}!Cotton::OperatorNode@{Cotton::OperatorNode}}\index{Cotton::OperatorNode@{Cotton::OperatorNode}!LESS\_EQUAL@{LESS\_EQUAL}}}\mbox{\Hypertarget{classCotton_1_1OperatorNode_a7d2988f050c68843e9f59b389d32a241a1e285fd29143eb5313d15798802767c8}\label{classCotton_1_1OperatorNode_a7d2988f050c68843e9f59b389d32a241a1e285fd29143eb5313d15798802767c8}} 
+LESS\+\_\+\+EQUAL&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{GREATER@{GREATER}!Cotton::OperatorNode@{Cotton::OperatorNode}}\index{Cotton::OperatorNode@{Cotton::OperatorNode}!GREATER@{GREATER}}}\mbox{\Hypertarget{classCotton_1_1OperatorNode_a7d2988f050c68843e9f59b389d32a241ac50361d718275866160153f8793d4aac}\label{classCotton_1_1OperatorNode_a7d2988f050c68843e9f59b389d32a241ac50361d718275866160153f8793d4aac}} 
+GREATER&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{GREATER\_EQUAL@{GREATER\_EQUAL}!Cotton::OperatorNode@{Cotton::OperatorNode}}\index{Cotton::OperatorNode@{Cotton::OperatorNode}!GREATER\_EQUAL@{GREATER\_EQUAL}}}\mbox{\Hypertarget{classCotton_1_1OperatorNode_a7d2988f050c68843e9f59b389d32a241a421ca25b810c9b6763fabeb823ddf22d}\label{classCotton_1_1OperatorNode_a7d2988f050c68843e9f59b389d32a241a421ca25b810c9b6763fabeb823ddf22d}} 
+GREATER\+\_\+\+EQUAL&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{EQUAL@{EQUAL}!Cotton::OperatorNode@{Cotton::OperatorNode}}\index{Cotton::OperatorNode@{Cotton::OperatorNode}!EQUAL@{EQUAL}}}\mbox{\Hypertarget{classCotton_1_1OperatorNode_a7d2988f050c68843e9f59b389d32a241adfa550171f24a9cdca64953f97cc90db}\label{classCotton_1_1OperatorNode_a7d2988f050c68843e9f59b389d32a241adfa550171f24a9cdca64953f97cc90db}} 
+EQUAL&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{NOT\_EQUAL@{NOT\_EQUAL}!Cotton::OperatorNode@{Cotton::OperatorNode}}\index{Cotton::OperatorNode@{Cotton::OperatorNode}!NOT\_EQUAL@{NOT\_EQUAL}}}\mbox{\Hypertarget{classCotton_1_1OperatorNode_a7d2988f050c68843e9f59b389d32a241a567b993109a3d26f82c3f11a4980bf31}\label{classCotton_1_1OperatorNode_a7d2988f050c68843e9f59b389d32a241a567b993109a3d26f82c3f11a4980bf31}} 
+NOT\+\_\+\+EQUAL&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{BITAND@{BITAND}!Cotton::OperatorNode@{Cotton::OperatorNode}}\index{Cotton::OperatorNode@{Cotton::OperatorNode}!BITAND@{BITAND}}}\mbox{\Hypertarget{classCotton_1_1OperatorNode_a7d2988f050c68843e9f59b389d32a241a8d1750420cb066e419ab6e2b1bda756f}\label{classCotton_1_1OperatorNode_a7d2988f050c68843e9f59b389d32a241a8d1750420cb066e419ab6e2b1bda756f}} 
+BITAND&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{BITXOR@{BITXOR}!Cotton::OperatorNode@{Cotton::OperatorNode}}\index{Cotton::OperatorNode@{Cotton::OperatorNode}!BITXOR@{BITXOR}}}\mbox{\Hypertarget{classCotton_1_1OperatorNode_a7d2988f050c68843e9f59b389d32a241a139a1f1d313684dd9fc41c1cfe284d9f}\label{classCotton_1_1OperatorNode_a7d2988f050c68843e9f59b389d32a241a139a1f1d313684dd9fc41c1cfe284d9f}} 
+BITXOR&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{BITOR@{BITOR}!Cotton::OperatorNode@{Cotton::OperatorNode}}\index{Cotton::OperatorNode@{Cotton::OperatorNode}!BITOR@{BITOR}}}\mbox{\Hypertarget{classCotton_1_1OperatorNode_a7d2988f050c68843e9f59b389d32a241aa0cc126acbbc7389d8d238081277837a}\label{classCotton_1_1OperatorNode_a7d2988f050c68843e9f59b389d32a241aa0cc126acbbc7389d8d238081277837a}} 
+BITOR&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{AND@{AND}!Cotton::OperatorNode@{Cotton::OperatorNode}}\index{Cotton::OperatorNode@{Cotton::OperatorNode}!AND@{AND}}}\mbox{\Hypertarget{classCotton_1_1OperatorNode_a7d2988f050c68843e9f59b389d32a241afe3f71a325fc6f273c92a65efec10285}\label{classCotton_1_1OperatorNode_a7d2988f050c68843e9f59b389d32a241afe3f71a325fc6f273c92a65efec10285}} 
+AND&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{OR@{OR}!Cotton::OperatorNode@{Cotton::OperatorNode}}\index{Cotton::OperatorNode@{Cotton::OperatorNode}!OR@{OR}}}\mbox{\Hypertarget{classCotton_1_1OperatorNode_a7d2988f050c68843e9f59b389d32a241a02baa64e95fa65fac3d50ca944ca18e8}\label{classCotton_1_1OperatorNode_a7d2988f050c68843e9f59b389d32a241a02baa64e95fa65fac3d50ca944ca18e8}} 
+OR&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{ASSIGN@{ASSIGN}!Cotton::OperatorNode@{Cotton::OperatorNode}}\index{Cotton::OperatorNode@{Cotton::OperatorNode}!ASSIGN@{ASSIGN}}}\mbox{\Hypertarget{classCotton_1_1OperatorNode_a7d2988f050c68843e9f59b389d32a241ace9f16ad1a2dda618409fb9b459164d1}\label{classCotton_1_1OperatorNode_a7d2988f050c68843e9f59b389d32a241ace9f16ad1a2dda618409fb9b459164d1}} 
+ASSIGN&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{PLUS\_ASSIGN@{PLUS\_ASSIGN}!Cotton::OperatorNode@{Cotton::OperatorNode}}\index{Cotton::OperatorNode@{Cotton::OperatorNode}!PLUS\_ASSIGN@{PLUS\_ASSIGN}}}\mbox{\Hypertarget{classCotton_1_1OperatorNode_a7d2988f050c68843e9f59b389d32a241a6af4cc93bd067c5f1d8fe569cb4c8ef8}\label{classCotton_1_1OperatorNode_a7d2988f050c68843e9f59b389d32a241a6af4cc93bd067c5f1d8fe569cb4c8ef8}} 
+PLUS\+\_\+\+ASSIGN&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{MINUS\_ASSIGN@{MINUS\_ASSIGN}!Cotton::OperatorNode@{Cotton::OperatorNode}}\index{Cotton::OperatorNode@{Cotton::OperatorNode}!MINUS\_ASSIGN@{MINUS\_ASSIGN}}}\mbox{\Hypertarget{classCotton_1_1OperatorNode_a7d2988f050c68843e9f59b389d32a241afa9a324a7371f480ddf2802ca9fca343}\label{classCotton_1_1OperatorNode_a7d2988f050c68843e9f59b389d32a241afa9a324a7371f480ddf2802ca9fca343}} 
+MINUS\+\_\+\+ASSIGN&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{MULT\_ASSIGN@{MULT\_ASSIGN}!Cotton::OperatorNode@{Cotton::OperatorNode}}\index{Cotton::OperatorNode@{Cotton::OperatorNode}!MULT\_ASSIGN@{MULT\_ASSIGN}}}\mbox{\Hypertarget{classCotton_1_1OperatorNode_a7d2988f050c68843e9f59b389d32a241a4500d2bf4047b6ffe9bffd128d876b9c}\label{classCotton_1_1OperatorNode_a7d2988f050c68843e9f59b389d32a241a4500d2bf4047b6ffe9bffd128d876b9c}} 
+MULT\+\_\+\+ASSIGN&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{DIV\_ASSIGN@{DIV\_ASSIGN}!Cotton::OperatorNode@{Cotton::OperatorNode}}\index{Cotton::OperatorNode@{Cotton::OperatorNode}!DIV\_ASSIGN@{DIV\_ASSIGN}}}\mbox{\Hypertarget{classCotton_1_1OperatorNode_a7d2988f050c68843e9f59b389d32a241a539498119e6f31e1ed32a85bb40feb37}\label{classCotton_1_1OperatorNode_a7d2988f050c68843e9f59b389d32a241a539498119e6f31e1ed32a85bb40feb37}} 
+DIV\+\_\+\+ASSIGN&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{REM\_ASSIGN@{REM\_ASSIGN}!Cotton::OperatorNode@{Cotton::OperatorNode}}\index{Cotton::OperatorNode@{Cotton::OperatorNode}!REM\_ASSIGN@{REM\_ASSIGN}}}\mbox{\Hypertarget{classCotton_1_1OperatorNode_a7d2988f050c68843e9f59b389d32a241aac0555ec57d1d583e1f49efaf0ff2559}\label{classCotton_1_1OperatorNode_a7d2988f050c68843e9f59b389d32a241aac0555ec57d1d583e1f49efaf0ff2559}} 
+REM\+\_\+\+ASSIGN&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{COMMA@{COMMA}!Cotton::OperatorNode@{Cotton::OperatorNode}}\index{Cotton::OperatorNode@{Cotton::OperatorNode}!COMMA@{COMMA}}}\mbox{\Hypertarget{classCotton_1_1OperatorNode_a7d2988f050c68843e9f59b389d32a241ad8d5c00c049ae4e5cf0158a2e70ed191}\label{classCotton_1_1OperatorNode_a7d2988f050c68843e9f59b389d32a241ad8d5c00c049ae4e5cf0158a2e70ed191}} 
+COMMA&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{TOTAL\_OPERATORS@{TOTAL\_OPERATORS}!Cotton::OperatorNode@{Cotton::OperatorNode}}\index{Cotton::OperatorNode@{Cotton::OperatorNode}!TOTAL\_OPERATORS@{TOTAL\_OPERATORS}}}\mbox{\Hypertarget{classCotton_1_1OperatorNode_a7d2988f050c68843e9f59b389d32a241a52528e85f41a169783a76baeaf638a2f}\label{classCotton_1_1OperatorNode_a7d2988f050c68843e9f59b389d32a241a52528e85f41a169783a76baeaf638a2f}} 
+TOTAL\+\_\+\+OPERATORS&\\
+\hline
+
+\end{DoxyEnumFields}
+
+
+\doxysubsection{Constructor \& Destructor Documentation}
+\mbox{\Hypertarget{classCotton_1_1OperatorNode_a268e895e79cf12c7f459be3f26673e7c}\label{classCotton_1_1OperatorNode_a268e895e79cf12c7f459be3f26673e7c}} 
+\index{Cotton::OperatorNode@{Cotton::OperatorNode}!OperatorNode@{OperatorNode}}
+\index{OperatorNode@{OperatorNode}!Cotton::OperatorNode@{Cotton::OperatorNode}}
+\doxysubsubsection{\texorpdfstring{OperatorNode()}{OperatorNode()}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
+{\footnotesize\ttfamily Cotton\+::\+Operator\+Node\+::\+Operator\+Node (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [delete]}}
+
+\mbox{\Hypertarget{classCotton_1_1OperatorNode_a0747f5a9e7536a852345f4ac4a80c541}\label{classCotton_1_1OperatorNode_a0747f5a9e7536a852345f4ac4a80c541}} 
+\index{Cotton::OperatorNode@{Cotton::OperatorNode}!````~OperatorNode@{$\sim$OperatorNode}}
+\index{````~OperatorNode@{$\sim$OperatorNode}!Cotton::OperatorNode@{Cotton::OperatorNode}}
+\doxysubsubsection{\texorpdfstring{$\sim$OperatorNode()}{~OperatorNode()}}
+{\footnotesize\ttfamily Cotton\+::\+Operator\+Node\+::$\sim$\+Operator\+Node (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+
+
+References first, op, and second.
+
+\mbox{\Hypertarget{classCotton_1_1OperatorNode_a1fd8c7873f84eb054fb66e892ad2aa37}\label{classCotton_1_1OperatorNode_a1fd8c7873f84eb054fb66e892ad2aa37}} 
+\index{Cotton::OperatorNode@{Cotton::OperatorNode}!OperatorNode@{OperatorNode}}
+\index{OperatorNode@{OperatorNode}!Cotton::OperatorNode@{Cotton::OperatorNode}}
+\doxysubsubsection{\texorpdfstring{OperatorNode()}{OperatorNode()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
+{\footnotesize\ttfamily Cotton\+::\+Operator\+Node\+::\+Operator\+Node (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{classCotton_1_1OperatorNode_a7d2988f050c68843e9f59b389d32a241}{Operator\+Id}}}]{id,  }\item[{\mbox{\hyperlink{classCotton_1_1ExprNode}{Expr\+Node}} $\ast$}]{first,  }\item[{\mbox{\hyperlink{classCotton_1_1ExprNode}{Expr\+Node}} $\ast$}]{second,  }\item[{\mbox{\hyperlink{classCotton_1_1Token}{Token}} $\ast$}]{op,  }\item[{\mbox{\hyperlink{classCotton_1_1TextArea}{Text\+Area}}}]{text\+\_\+area }\end{DoxyParamCaption})}
+
+
+
+References first, id, op, second, and text\+\_\+area.
+
+
+
+\doxysubsection{Member Function Documentation}
+\mbox{\Hypertarget{classCotton_1_1OperatorNode_a651314543bf4111463287b4f9aee47bb}\label{classCotton_1_1OperatorNode_a651314543bf4111463287b4f9aee47bb}} 
+\index{Cotton::OperatorNode@{Cotton::OperatorNode}!print@{print}}
+\index{print@{print}!Cotton::OperatorNode@{Cotton::OperatorNode}}
+\doxysubsubsection{\texorpdfstring{print()}{print()}}
+{\footnotesize\ttfamily void Cotton\+::\+Operator\+Node\+::print (\begin{DoxyParamCaption}\item[{int}]{indent = {\ttfamily 0},  }\item[{int}]{step = {\ttfamily 2} }\end{DoxyParamCaption})}
+
+
+
+References Cotton\+::\+Token\+::data, first, op, Cotton\+::\+Expr\+Node\+::print(), Cotton\+::print\+Prefix(), and second.
+
+
+
+Referenced by Cotton\+::\+Expr\+Node\+::print().
+
+
+
+\doxysubsection{Member Data Documentation}
+\mbox{\Hypertarget{classCotton_1_1OperatorNode_a7fe40f81db3ff7583310768fbd68442e}\label{classCotton_1_1OperatorNode_a7fe40f81db3ff7583310768fbd68442e}} 
+\index{Cotton::OperatorNode@{Cotton::OperatorNode}!first@{first}}
+\index{first@{first}!Cotton::OperatorNode@{Cotton::OperatorNode}}
+\doxysubsubsection{\texorpdfstring{first}{first}}
+{\footnotesize\ttfamily \mbox{\hyperlink{classCotton_1_1ExprNode}{Expr\+Node}}$\ast$ Cotton\+::\+Operator\+Node\+::first}
+
+
+
+Referenced by Cotton\+::\+Runtime\+::execute(), Cotton\+::get\+List(), Cotton\+::get\+List\+\_\+add\+To\+Context(), Operator\+Node(), print(), and $\sim$\+Operator\+Node().
+
+\mbox{\Hypertarget{classCotton_1_1OperatorNode_a33f359792a418153ddd58f0e6c482aa8}\label{classCotton_1_1OperatorNode_a33f359792a418153ddd58f0e6c482aa8}} 
+\index{Cotton::OperatorNode@{Cotton::OperatorNode}!id@{id}}
+\index{id@{id}!Cotton::OperatorNode@{Cotton::OperatorNode}}
+\doxysubsubsection{\texorpdfstring{id}{id}}
+{\footnotesize\ttfamily enum \mbox{\hyperlink{classCotton_1_1OperatorNode_a7d2988f050c68843e9f59b389d32a241}{Cotton\+::\+Operator\+Node\+::\+Operator\+Id}} Cotton\+::\+Operator\+Node\+::id}
+
+
+
+Referenced by Cotton\+::\+Runtime\+::execute(), Cotton\+::get\+List(), Cotton\+::get\+List\+\_\+add\+To\+Context(), and Operator\+Node().
+
+\mbox{\Hypertarget{classCotton_1_1OperatorNode_ae03be8d01b54bd9d334056a0942e58eb}\label{classCotton_1_1OperatorNode_ae03be8d01b54bd9d334056a0942e58eb}} 
+\index{Cotton::OperatorNode@{Cotton::OperatorNode}!op@{op}}
+\index{op@{op}!Cotton::OperatorNode@{Cotton::OperatorNode}}
+\doxysubsubsection{\texorpdfstring{op}{op}}
+{\footnotesize\ttfamily \mbox{\hyperlink{classCotton_1_1Token}{Token}}$\ast$ Cotton\+::\+Operator\+Node\+::op}
+
+
+
+Referenced by Operator\+Node(), print(), and $\sim$\+Operator\+Node().
+
+\mbox{\Hypertarget{classCotton_1_1OperatorNode_ad9286f860ea32451b1d1aa1ecd6baa87}\label{classCotton_1_1OperatorNode_ad9286f860ea32451b1d1aa1ecd6baa87}} 
+\index{Cotton::OperatorNode@{Cotton::OperatorNode}!second@{second}}
+\index{second@{second}!Cotton::OperatorNode@{Cotton::OperatorNode}}
+\doxysubsubsection{\texorpdfstring{second}{second}}
+{\footnotesize\ttfamily \mbox{\hyperlink{classCotton_1_1ExprNode}{Expr\+Node}} $\ast$ Cotton\+::\+Operator\+Node\+::second}
+
+
+
+Referenced by Cotton\+::\+Runtime\+::execute(), Cotton\+::get\+List(), Cotton\+::get\+List\+\_\+add\+To\+Context(), Operator\+Node(), print(), and $\sim$\+Operator\+Node().
+
+\mbox{\Hypertarget{classCotton_1_1OperatorNode_a9a662d94dd309b3f85c8137ccc3695dd}\label{classCotton_1_1OperatorNode_a9a662d94dd309b3f85c8137ccc3695dd}} 
+\index{Cotton::OperatorNode@{Cotton::OperatorNode}!text\_area@{text\_area}}
+\index{text\_area@{text\_area}!Cotton::OperatorNode@{Cotton::OperatorNode}}
+\doxysubsubsection{\texorpdfstring{text\_area}{text\_area}}
+{\footnotesize\ttfamily \mbox{\hyperlink{classCotton_1_1TextArea}{Text\+Area}} Cotton\+::\+Operator\+Node\+::text\+\_\+area}
+
+
+
+Referenced by Cotton\+::\+Runtime\+::execute(), and Operator\+Node().
+
+
+
+The documentation for this class was generated from the following files\+:\begin{DoxyCompactItemize}
+\item 
+cotton\+\_\+lib/src/cotton\+\_\+lib/front/\mbox{\hyperlink{parser_8h}{parser.\+h}}\item 
+cotton\+\_\+lib/src/cotton\+\_\+lib/front/\mbox{\hyperlink{parser_8cpp}{parser.\+cpp}}\end{DoxyCompactItemize}

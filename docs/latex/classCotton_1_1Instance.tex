@@ -1,0 +1,329 @@
+\hypertarget{classCotton_1_1Instance}{}\doxysection{Cotton\+::Instance Class Reference}
+\label{classCotton_1_1Instance}\index{Cotton::Instance@{Cotton::Instance}}
+
+
+Class representing an instance of a type.  
+
+
+
+
+{\ttfamily \#include $<$instance.\+h$>$}
+
+
+
+Inheritance diagram for Cotton\+::Instance\+:\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{classCotton_1_1Instance__inherit__graph}
+\end{center}
+\end{figure}
+\doxysubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{classCotton_1_1Instance_abdd66c65e03d3e7526596a165d52e66d}{Instance}} (\mbox{\hyperlink{classCotton_1_1Runtime}{Runtime}} $\ast$rt, size\+\_\+t bytes)
+\begin{DoxyCompactList}\small\item\em Construct a new \mbox{\hyperlink{classCotton_1_1Instance}{Instance}} object. \end{DoxyCompactList}\item 
+virtual \mbox{\hyperlink{classCotton_1_1Instance_ad9dc486c1c3b8021c5f73b2bc4179919}{$\sim$\+Instance}} ()=default
+\begin{DoxyCompactList}\small\item\em Destroy the \mbox{\hyperlink{classCotton_1_1Instance}{Instance}} object. \end{DoxyCompactList}\item 
+virtual \mbox{\hyperlink{classCotton_1_1Object}{Object}} $\ast$ \mbox{\hyperlink{classCotton_1_1Instance_ab215fd454c6c2cf013d4f8d51c502f3d}{select\+Field}} (int64\+\_\+t \mbox{\hyperlink{classCotton_1_1Instance_aa488f7d84b6a6b5306916bca8bafd30c}{id}}, \mbox{\hyperlink{classCotton_1_1Runtime}{Runtime}} $\ast$rt)
+\begin{DoxyCompactList}\small\item\em Selects the field given by id from the instance. By default, the instance doesn\textquotesingle{}t have any fields, and therefore an error is signaled. \end{DoxyCompactList}\item 
+virtual bool \mbox{\hyperlink{classCotton_1_1Instance_a4e84fe1efc9c987b212a3f5f2aea800f}{has\+Field}} (int64\+\_\+t \mbox{\hyperlink{classCotton_1_1Instance_aa488f7d84b6a6b5306916bca8bafd30c}{id}}, \mbox{\hyperlink{classCotton_1_1Runtime}{Runtime}} $\ast$rt)
+\begin{DoxyCompactList}\small\item\em Returns whether the instance has the field given by id. By default, the instance doesn\textquotesingle{}t have any fields, and therefore {\ttfamily false} is returned. \end{DoxyCompactList}\item 
+virtual void \mbox{\hyperlink{classCotton_1_1Instance_a9c069faf90e16d2ec766b8d284d31273}{add\+Field}} (int64\+\_\+t \mbox{\hyperlink{classCotton_1_1Instance_aa488f7d84b6a6b5306916bca8bafd30c}{id}}, \mbox{\hyperlink{classCotton_1_1Object}{Object}} $\ast$obj, \mbox{\hyperlink{classCotton_1_1Runtime}{Runtime}} $\ast$rt)
+\begin{DoxyCompactList}\small\item\em Adds the field to the instance. By default, the instance does not support the addition of new fields, and therefore nothing happens when this function is called. \end{DoxyCompactList}\item 
+virtual std\+::vector$<$ \mbox{\hyperlink{classCotton_1_1Object}{Object}} $\ast$ $>$ \mbox{\hyperlink{classCotton_1_1Instance_a4cac198d36dc6b1f7a3ff956ba3cc316}{get\+GCReachable}} ()
+\item 
+virtual \mbox{\hyperlink{classCotton_1_1Instance}{Instance}} $\ast$ \mbox{\hyperlink{classCotton_1_1Instance_a2c82715c2e0853547dd2f516e35a103a}{copy}} (\mbox{\hyperlink{classCotton_1_1Runtime}{Runtime}} $\ast$rt)=0
+\item 
+virtual size\+\_\+t \mbox{\hyperlink{classCotton_1_1Instance_ad96f1111cc09cce5faeae8facb81287c}{get\+Size}} ()=0
+\item 
+virtual std\+::string \mbox{\hyperlink{classCotton_1_1Instance_a0d1a87723788bca45510540c0f3d6ce3}{user\+Repr}} (\mbox{\hyperlink{classCotton_1_1Runtime}{Runtime}} $\ast$rt)=0
+\item 
+virtual void \mbox{\hyperlink{classCotton_1_1Instance_ac089071cc2112cde4ea2828958006963}{spread\+Single\+Use}} ()
+\item 
+virtual void \mbox{\hyperlink{classCotton_1_1Instance_a91d87a497d770f335d1aa57cfb906e8c}{spread\+Multi\+Use}} ()
+\end{DoxyCompactItemize}
+\doxysubsection*{Public Attributes}
+\begin{DoxyCompactItemize}
+\item 
+int64\+\_\+t \mbox{\hyperlink{classCotton_1_1Instance_aa488f7d84b6a6b5306916bca8bafd30c}{id}}
+\begin{DoxyCompactList}\small\item\em id of the instance \end{DoxyCompactList}\item 
+bool \mbox{\hyperlink{classCotton_1_1Instance_a6698bfc90ed39e2b897f18e92e76438b}{gc\+\_\+mark}}\+: 1
+\begin{DoxyCompactList}\small\item\em gc mark of the instance \end{DoxyCompactList}\end{DoxyCompactItemize}
+\doxysubsection*{Static Public Attributes}
+\begin{DoxyCompactItemize}
+\item 
+static int64\+\_\+t \mbox{\hyperlink{classCotton_1_1Instance_a344cb4282dda97ab3e22669b645d02a0}{total\+\_\+instances}} = 0
+\begin{DoxyCompactList}\small\item\em The total number of instances created. \end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+\doxysubsection{Detailed Description}
+Class representing an instance of a type. 
+
+\doxysubsection{Constructor \& Destructor Documentation}
+\mbox{\Hypertarget{classCotton_1_1Instance_abdd66c65e03d3e7526596a165d52e66d}\label{classCotton_1_1Instance_abdd66c65e03d3e7526596a165d52e66d}} 
+\index{Cotton::Instance@{Cotton::Instance}!Instance@{Instance}}
+\index{Instance@{Instance}!Cotton::Instance@{Cotton::Instance}}
+\doxysubsubsection{\texorpdfstring{Instance()}{Instance()}}
+{\footnotesize\ttfamily Cotton\+::\+Instance\+::\+Instance (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{classCotton_1_1Runtime}{Runtime}} $\ast$}]{rt,  }\item[{size\+\_\+t}]{bytes }\end{DoxyParamCaption})}
+
+
+
+Construct a new \mbox{\hyperlink{classCotton_1_1Instance}{Instance}} object. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em rt} & The \mbox{\hyperlink{classCotton_1_1Runtime}{Runtime}}. Assumed to be valid. \\
+\hline
+{\em bytes} & Size of instance in bytes. \\
+\hline
+\end{DoxyParams}
+
+
+References Cotton\+::\+Runtime\+::gc, Cotton\+::\+GC\+::gc\+\_\+mark, gc\+\_\+mark, Profiler\+CAPTURE, total\+\_\+instances, and Cotton\+::\+GC\+::track().
+
+\mbox{\Hypertarget{classCotton_1_1Instance_ad9dc486c1c3b8021c5f73b2bc4179919}\label{classCotton_1_1Instance_ad9dc486c1c3b8021c5f73b2bc4179919}} 
+\index{Cotton::Instance@{Cotton::Instance}!````~Instance@{$\sim$Instance}}
+\index{````~Instance@{$\sim$Instance}!Cotton::Instance@{Cotton::Instance}}
+\doxysubsubsection{\texorpdfstring{$\sim$Instance()}{~Instance()}}
+{\footnotesize\ttfamily virtual Cotton\+::\+Instance\+::$\sim$\+Instance (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [virtual]}, {\ttfamily [default]}}
+
+
+
+Destroy the \mbox{\hyperlink{classCotton_1_1Instance}{Instance}} object. 
+
+
+
+\doxysubsection{Member Function Documentation}
+\mbox{\Hypertarget{classCotton_1_1Instance_a9c069faf90e16d2ec766b8d284d31273}\label{classCotton_1_1Instance_a9c069faf90e16d2ec766b8d284d31273}} 
+\index{Cotton::Instance@{Cotton::Instance}!addField@{addField}}
+\index{addField@{addField}!Cotton::Instance@{Cotton::Instance}}
+\doxysubsubsection{\texorpdfstring{addField()}{addField()}}
+{\footnotesize\ttfamily void Cotton\+::\+Instance\+::add\+Field (\begin{DoxyParamCaption}\item[{int64\+\_\+t}]{id,  }\item[{\mbox{\hyperlink{classCotton_1_1Object}{Object}} $\ast$}]{obj,  }\item[{\mbox{\hyperlink{classCotton_1_1Runtime}{Runtime}} $\ast$}]{rt }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [virtual]}}
+
+
+
+Adds the field to the instance. By default, the instance does not support the addition of new fields, and therefore nothing happens when this function is called. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em id} & id of the field. \\
+\hline
+{\em rt} & The \mbox{\hyperlink{classCotton_1_1Runtime}{Runtime}}. Assumed to be valid. \\
+\hline
+\end{DoxyParams}
+
+
+Reimplemented in \mbox{\hyperlink{classCotton_1_1Builtin_1_1RecordInstance_ae7c36e605917dd22b9b0f2d2c5e39c9d}{Cotton\+::\+Builtin\+::\+Record\+Instance}}.
+
+
+
+References Profiler\+CAPTURE.
+
+\mbox{\Hypertarget{classCotton_1_1Instance_a2c82715c2e0853547dd2f516e35a103a}\label{classCotton_1_1Instance_a2c82715c2e0853547dd2f516e35a103a}} 
+\index{Cotton::Instance@{Cotton::Instance}!copy@{copy}}
+\index{copy@{copy}!Cotton::Instance@{Cotton::Instance}}
+\doxysubsubsection{\texorpdfstring{copy()}{copy()}}
+{\footnotesize\ttfamily virtual \mbox{\hyperlink{classCotton_1_1Instance}{Instance}}$\ast$ Cotton\+::\+Instance\+::copy (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{classCotton_1_1Runtime}{Runtime}} $\ast$}]{rt }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [pure virtual]}}
+
+
+
+Implemented in \mbox{\hyperlink{classCotton_1_1Builtin_1_1StringInstance_a69d11e5837ebb38c4bb675882e838831}{Cotton\+::\+Builtin\+::\+String\+Instance}}, \mbox{\hyperlink{classCotton_1_1Builtin_1_1RecordInstance_aae9bb26d91f1a442064e53b5d1e2adcc}{Cotton\+::\+Builtin\+::\+Record\+Instance}}, \mbox{\hyperlink{classCotton_1_1Builtin_1_1RealInstance_adb2233ed90a49ac0ed4f83c4ad882b66}{Cotton\+::\+Builtin\+::\+Real\+Instance}}, \mbox{\hyperlink{classCotton_1_1Builtin_1_1NothingInstance_aaf8708caa1ce55bf216412371a3c4046}{Cotton\+::\+Builtin\+::\+Nothing\+Instance}}, \mbox{\hyperlink{classCotton_1_1Builtin_1_1IntegerInstance_a62ab55c1e1af8475b6b93a3fde86a8c8}{Cotton\+::\+Builtin\+::\+Integer\+Instance}}, \mbox{\hyperlink{classCotton_1_1Builtin_1_1FunctionInstance_a7a6e0524c0fea52118026372714055a0}{Cotton\+::\+Builtin\+::\+Function\+Instance}}, \mbox{\hyperlink{classCotton_1_1Builtin_1_1CharacterInstance_ab26feef19302e7e5d2940a3f2f932a02}{Cotton\+::\+Builtin\+::\+Character\+Instance}}, \mbox{\hyperlink{classCotton_1_1Builtin_1_1BooleanInstance_a04411e86b346df9d1f70fb4cdd85f7e0}{Cotton\+::\+Builtin\+::\+Boolean\+Instance}}, and \mbox{\hyperlink{classCotton_1_1Builtin_1_1ArrayInstance_aaf7f5a1df7f3ca4340c59ec2c0c04c2d}{Cotton\+::\+Builtin\+::\+Array\+Instance}}.
+
+
+
+Referenced by Cotton\+::\+Builtin\+::\+Array\+Type\+::copy(), Cotton\+::\+Builtin\+::\+Boolean\+Type\+::copy(), Cotton\+::\+Builtin\+::\+Character\+Type\+::copy(), Cotton\+::\+Builtin\+::\+Function\+Type\+::copy(), Cotton\+::\+Builtin\+::\+Integer\+Type\+::copy(), Cotton\+::\+Builtin\+::\+Nothing\+Type\+::copy(), Cotton\+::\+Builtin\+::\+Real\+Type\+::copy(), Cotton\+::\+Builtin\+::\+Record\+Type\+::copy(), and Cotton\+::\+Builtin\+::\+String\+Type\+::copy().
+
+\mbox{\Hypertarget{classCotton_1_1Instance_a4cac198d36dc6b1f7a3ff956ba3cc316}\label{classCotton_1_1Instance_a4cac198d36dc6b1f7a3ff956ba3cc316}} 
+\index{Cotton::Instance@{Cotton::Instance}!getGCReachable@{getGCReachable}}
+\index{getGCReachable@{getGCReachable}!Cotton::Instance@{Cotton::Instance}}
+\doxysubsubsection{\texorpdfstring{getGCReachable()}{getGCReachable()}}
+{\footnotesize\ttfamily std\+::vector$<$ \mbox{\hyperlink{classCotton_1_1Object}{Object}} $\ast$ $>$ Cotton\+::\+Instance\+::get\+GCReachable (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [virtual]}}
+
+
+
+Reimplemented in \mbox{\hyperlink{classCotton_1_1Builtin_1_1RecordInstance_a199a76b3a6603dd54d0fa04cbc447895}{Cotton\+::\+Builtin\+::\+Record\+Instance}}, and \mbox{\hyperlink{classCotton_1_1Builtin_1_1ArrayInstance_a1ec499ace9d0db03c1bff7eb5ad322d7}{Cotton\+::\+Builtin\+::\+Array\+Instance}}.
+
+
+
+References Profiler\+CAPTURE.
+
+
+
+Referenced by Cotton\+::\+Object\+::get\+GCReachable(), Cotton\+::\+Builtin\+::\+Array\+Instance\+::get\+GCReachable(), and Cotton\+::mark().
+
+\mbox{\Hypertarget{classCotton_1_1Instance_ad96f1111cc09cce5faeae8facb81287c}\label{classCotton_1_1Instance_ad96f1111cc09cce5faeae8facb81287c}} 
+\index{Cotton::Instance@{Cotton::Instance}!getSize@{getSize}}
+\index{getSize@{getSize}!Cotton::Instance@{Cotton::Instance}}
+\doxysubsubsection{\texorpdfstring{getSize()}{getSize()}}
+{\footnotesize\ttfamily virtual size\+\_\+t Cotton\+::\+Instance\+::get\+Size (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [pure virtual]}}
+
+
+
+Implemented in \mbox{\hyperlink{classCotton_1_1Builtin_1_1StringInstance_aea76bab1752005173dd3ace4fcf03c60}{Cotton\+::\+Builtin\+::\+String\+Instance}}, \mbox{\hyperlink{classCotton_1_1Builtin_1_1RecordInstance_a1678d70910f5712cf889bdc9b4df16c2}{Cotton\+::\+Builtin\+::\+Record\+Instance}}, \mbox{\hyperlink{classCotton_1_1Builtin_1_1RealInstance_a9c4d8098b05cf16a7c7d112fc03953a1}{Cotton\+::\+Builtin\+::\+Real\+Instance}}, \mbox{\hyperlink{classCotton_1_1Builtin_1_1NothingInstance_aaf853a1dd14663cd8a4b0deb147a4e5a}{Cotton\+::\+Builtin\+::\+Nothing\+Instance}}, \mbox{\hyperlink{classCotton_1_1Builtin_1_1IntegerInstance_a1d978c7ffe36fc822c7a5fa03f754500}{Cotton\+::\+Builtin\+::\+Integer\+Instance}}, \mbox{\hyperlink{classCotton_1_1Builtin_1_1FunctionInstance_a08cde71b0c83c024ba2e7f5d50d90e20}{Cotton\+::\+Builtin\+::\+Function\+Instance}}, \mbox{\hyperlink{classCotton_1_1Builtin_1_1CharacterInstance_ac30a7793d1488c43474c678d81cea39e}{Cotton\+::\+Builtin\+::\+Character\+Instance}}, \mbox{\hyperlink{classCotton_1_1Builtin_1_1BooleanInstance_a242ecc2b4d43496ede94cdb1b5b7c9fa}{Cotton\+::\+Builtin\+::\+Boolean\+Instance}}, and \mbox{\hyperlink{classCotton_1_1Builtin_1_1ArrayInstance_ae4b3401808059530be5fada89ae11a6c}{Cotton\+::\+Builtin\+::\+Array\+Instance}}.
+
+
+
+Referenced by Cotton\+::\+GCDefault\+Strategy\+::acknowledge\+Untrack().
+
+\mbox{\Hypertarget{classCotton_1_1Instance_a4e84fe1efc9c987b212a3f5f2aea800f}\label{classCotton_1_1Instance_a4e84fe1efc9c987b212a3f5f2aea800f}} 
+\index{Cotton::Instance@{Cotton::Instance}!hasField@{hasField}}
+\index{hasField@{hasField}!Cotton::Instance@{Cotton::Instance}}
+\doxysubsubsection{\texorpdfstring{hasField()}{hasField()}}
+{\footnotesize\ttfamily bool Cotton\+::\+Instance\+::has\+Field (\begin{DoxyParamCaption}\item[{int64\+\_\+t}]{id,  }\item[{\mbox{\hyperlink{classCotton_1_1Runtime}{Runtime}} $\ast$}]{rt }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [virtual]}}
+
+
+
+Returns whether the instance has the field given by id. By default, the instance doesn\textquotesingle{}t have any fields, and therefore {\ttfamily false} is returned. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em id} & id of the field. \\
+\hline
+{\em rt} & The \mbox{\hyperlink{classCotton_1_1Runtime}{Runtime}}. Assumed to be valid. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+{\ttfamily true} if the instance has the field, {\ttfamily false} otherwise. 
+\end{DoxyReturn}
+
+
+Reimplemented in \mbox{\hyperlink{classCotton_1_1Builtin_1_1RecordInstance_af8e5e95f79bbef3ee1062a486ede27e1}{Cotton\+::\+Builtin\+::\+Record\+Instance}}.
+
+
+
+References Profiler\+CAPTURE.
+
+\mbox{\Hypertarget{classCotton_1_1Instance_ab215fd454c6c2cf013d4f8d51c502f3d}\label{classCotton_1_1Instance_ab215fd454c6c2cf013d4f8d51c502f3d}} 
+\index{Cotton::Instance@{Cotton::Instance}!selectField@{selectField}}
+\index{selectField@{selectField}!Cotton::Instance@{Cotton::Instance}}
+\doxysubsubsection{\texorpdfstring{selectField()}{selectField()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{classCotton_1_1Object}{Object}} $\ast$ Cotton\+::\+Instance\+::select\+Field (\begin{DoxyParamCaption}\item[{int64\+\_\+t}]{id,  }\item[{\mbox{\hyperlink{classCotton_1_1Runtime}{Runtime}} $\ast$}]{rt }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [virtual]}}
+
+
+
+Selects the field given by id from the instance. By default, the instance doesn\textquotesingle{}t have any fields, and therefore an error is signaled. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em id} & id of the field. Assumed to be valid. \\
+\hline
+{\em rt} & The \mbox{\hyperlink{classCotton_1_1Runtime}{Runtime}}. Assumed to be valid. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+The selected field. 
+\end{DoxyReturn}
+
+
+Reimplemented in \mbox{\hyperlink{classCotton_1_1Builtin_1_1RecordInstance_ad9b1f1c08f52a9c2f6542632ac9e1838}{Cotton\+::\+Builtin\+::\+Record\+Instance}}.
+
+
+
+References Cotton\+::\+Runtime\+::\+Error\+Context\+::area, Cotton\+::\+Runtime\+::get\+Context(), Cotton\+::\+Runtime\+::nds, Profiler\+CAPTURE, Cotton\+::\+Runtime\+::signal\+Error(), and Cotton\+::\+Name\+Ids\+::user\+Repr().
+
+
+
+Referenced by Cotton\+::\+Runtime\+::execute().
+
+\mbox{\Hypertarget{classCotton_1_1Instance_a91d87a497d770f335d1aa57cfb906e8c}\label{classCotton_1_1Instance_a91d87a497d770f335d1aa57cfb906e8c}} 
+\index{Cotton::Instance@{Cotton::Instance}!spreadMultiUse@{spreadMultiUse}}
+\index{spreadMultiUse@{spreadMultiUse}!Cotton::Instance@{Cotton::Instance}}
+\doxysubsubsection{\texorpdfstring{spreadMultiUse()}{spreadMultiUse()}}
+{\footnotesize\ttfamily void Cotton\+::\+Instance\+::spread\+Multi\+Use (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [virtual]}}
+
+
+
+Reimplemented in \mbox{\hyperlink{classCotton_1_1Builtin_1_1ArrayInstance_a473ea62372da78a43d3313fb1c5b4118}{Cotton\+::\+Builtin\+::\+Array\+Instance}}.
+
+
+
+References Profiler\+CAPTURE.
+
+
+
+Referenced by Cotton\+::\+Object\+::spread\+Multi\+Use().
+
+\mbox{\Hypertarget{classCotton_1_1Instance_ac089071cc2112cde4ea2828958006963}\label{classCotton_1_1Instance_ac089071cc2112cde4ea2828958006963}} 
+\index{Cotton::Instance@{Cotton::Instance}!spreadSingleUse@{spreadSingleUse}}
+\index{spreadSingleUse@{spreadSingleUse}!Cotton::Instance@{Cotton::Instance}}
+\doxysubsubsection{\texorpdfstring{spreadSingleUse()}{spreadSingleUse()}}
+{\footnotesize\ttfamily void Cotton\+::\+Instance\+::spread\+Single\+Use (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [virtual]}}
+
+
+
+Reimplemented in \mbox{\hyperlink{classCotton_1_1Builtin_1_1ArrayInstance_aef137dd089bc4f19b38cab36ce76d7ac}{Cotton\+::\+Builtin\+::\+Array\+Instance}}.
+
+
+
+References Profiler\+CAPTURE.
+
+
+
+Referenced by Cotton\+::\+Object\+::spread\+Single\+Use().
+
+\mbox{\Hypertarget{classCotton_1_1Instance_a0d1a87723788bca45510540c0f3d6ce3}\label{classCotton_1_1Instance_a0d1a87723788bca45510540c0f3d6ce3}} 
+\index{Cotton::Instance@{Cotton::Instance}!userRepr@{userRepr}}
+\index{userRepr@{userRepr}!Cotton::Instance@{Cotton::Instance}}
+\doxysubsubsection{\texorpdfstring{userRepr()}{userRepr()}}
+{\footnotesize\ttfamily virtual std\+::string Cotton\+::\+Instance\+::user\+Repr (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{classCotton_1_1Runtime}{Runtime}} $\ast$}]{rt }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [pure virtual]}}
+
+
+
+Implemented in \mbox{\hyperlink{classCotton_1_1Builtin_1_1StringInstance_a8858f2608dba07d99c27280fb89d4201}{Cotton\+::\+Builtin\+::\+String\+Instance}}, \mbox{\hyperlink{classCotton_1_1Builtin_1_1RecordInstance_a4eda0aabc2e1e03264a9d78f05b12628}{Cotton\+::\+Builtin\+::\+Record\+Instance}}, \mbox{\hyperlink{classCotton_1_1Builtin_1_1RealInstance_a46f0523322ab45dbe2dc9bad4592af25}{Cotton\+::\+Builtin\+::\+Real\+Instance}}, \mbox{\hyperlink{classCotton_1_1Builtin_1_1NothingInstance_a6aab95ed229525addd45d6b806d8e29f}{Cotton\+::\+Builtin\+::\+Nothing\+Instance}}, \mbox{\hyperlink{classCotton_1_1Builtin_1_1IntegerInstance_a12a846600560148d0170f3c6dbbdf494}{Cotton\+::\+Builtin\+::\+Integer\+Instance}}, \mbox{\hyperlink{classCotton_1_1Builtin_1_1FunctionInstance_a8273fefd2e28fc6fc77623e3a9973ac2}{Cotton\+::\+Builtin\+::\+Function\+Instance}}, \mbox{\hyperlink{classCotton_1_1Builtin_1_1CharacterInstance_a16be2e29dd4d1eb4eddcbf36d6948f57}{Cotton\+::\+Builtin\+::\+Character\+Instance}}, \mbox{\hyperlink{classCotton_1_1Builtin_1_1BooleanInstance_a7e1ded597c934e0d987d042ecb5501e9}{Cotton\+::\+Builtin\+::\+Boolean\+Instance}}, and \mbox{\hyperlink{classCotton_1_1Builtin_1_1ArrayInstance_a8a8642a46634880a3336771605b8247f}{Cotton\+::\+Builtin\+::\+Array\+Instance}}.
+
+
+
+Referenced by Cotton\+::\+Object\+::user\+Repr().
+
+
+
+\doxysubsection{Member Data Documentation}
+\mbox{\Hypertarget{classCotton_1_1Instance_a6698bfc90ed39e2b897f18e92e76438b}\label{classCotton_1_1Instance_a6698bfc90ed39e2b897f18e92e76438b}} 
+\index{Cotton::Instance@{Cotton::Instance}!gc\_mark@{gc\_mark}}
+\index{gc\_mark@{gc\_mark}!Cotton::Instance@{Cotton::Instance}}
+\doxysubsubsection{\texorpdfstring{gc\_mark}{gc\_mark}}
+{\footnotesize\ttfamily bool Cotton\+::\+Instance\+::gc\+\_\+mark}
+
+
+
+gc mark of the instance 
+
+
+
+Referenced by Instance(), and Cotton\+::mark().
+
+\mbox{\Hypertarget{classCotton_1_1Instance_aa488f7d84b6a6b5306916bca8bafd30c}\label{classCotton_1_1Instance_aa488f7d84b6a6b5306916bca8bafd30c}} 
+\index{Cotton::Instance@{Cotton::Instance}!id@{id}}
+\index{id@{id}!Cotton::Instance@{Cotton::Instance}}
+\doxysubsubsection{\texorpdfstring{id}{id}}
+{\footnotesize\ttfamily int64\+\_\+t Cotton\+::\+Instance\+::id}
+
+
+
+id of the instance 
+
+
+
+Referenced by Cotton\+::\+Builtin\+::\+Record\+Instance\+::add\+Field().
+
+\mbox{\Hypertarget{classCotton_1_1Instance_a344cb4282dda97ab3e22669b645d02a0}\label{classCotton_1_1Instance_a344cb4282dda97ab3e22669b645d02a0}} 
+\index{Cotton::Instance@{Cotton::Instance}!total\_instances@{total\_instances}}
+\index{total\_instances@{total\_instances}!Cotton::Instance@{Cotton::Instance}}
+\doxysubsubsection{\texorpdfstring{total\_instances}{total\_instances}}
+{\footnotesize\ttfamily int64\+\_\+t Cotton\+::\+Instance\+::total\+\_\+instances = 0\hspace{0.3cm}{\ttfamily [static]}}
+
+
+
+The total number of instances created. 
+
+
+
+Referenced by Instance().
+
+
+
+The documentation for this class was generated from the following files\+:\begin{DoxyCompactItemize}
+\item 
+cotton\+\_\+lib/src/cotton\+\_\+lib/back/\mbox{\hyperlink{instance_8h}{instance.\+h}}\item 
+cotton\+\_\+lib/src/cotton\+\_\+lib/back/\mbox{\hyperlink{instance_8cpp}{instance.\+cpp}}\end{DoxyCompactItemize}

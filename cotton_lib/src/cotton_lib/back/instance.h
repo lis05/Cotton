@@ -30,25 +30,90 @@ namespace Cotton {
 class Runtime;
 class Object;
 
+/**
+ * @brief Class representing an instance of a type.
+ *
+ */
 class Instance {
 public:
-    static int64_t  total_instances;
-    int64_t         id;
-    // returns a valid object (non-null)
-    virtual Object *selectField(int64_t id, Runtime *rt);
-    virtual bool    hasField(int64_t id, Runtime *rt);
-    virtual void    addField(int64_t id, Object *obj, Runtime *rt);
-    bool            gc_mark : 1;
+    /// @brief The total number of instances created.
+    static int64_t total_instances;
+    /// @brief id of the instance
+    int64_t        id;
+    /// @brief gc mark of the instance
+    bool           gc_mark : 1;
 
+    /**
+     * @brief Construct a new Instance object.
+     *
+     * @param rt The Runtime. Assumed to be valid.
+     * @param bytes Size of instance in bytes.
+     */
     Instance(Runtime *rt, size_t bytes);
+
+    /// @brief Destroy the Instance object
     virtual ~Instance() = default;
 
-    virtual std::vector<Object *> getGCReachable();
-    virtual Instance             *copy(Runtime *rt) = 0;
-    virtual size_t                getSize()         = 0;    // in bytes
-    virtual std::string           userRepr(Runtime *rt)        = 0;
+    /**
+     * @brief Selects the field given by id from the instance.
+     *
+     * @param id id of the field. Assumed to be valid.
+     * @param rt The Runtime. Assumed to be valid.
+     * @return The selected field.
+     */
+    virtual Object *selectField(int64_t id, Runtime *rt);
 
+    /**
+     * @brief Returns whether the instance has the field given by id. B
+     *
+     * @param id id of the field.
+     * @param rt The Runtime. Assumed to be valid.
+     * @return `true` if the instance has the field, `false` otherwise.
+     */
+    virtual bool hasField(int64_t id, Runtime *rt);
+
+    /**
+     * @brief Adds the field to the instance.
+     *
+     * @param id id of the field.
+     * @param rt The Runtime. Assumed to be valid.
+     */
+    virtual void addField(int64_t id, Object *obj, Runtime *rt);
+
+    /**
+     * @brief Returns a list of all objects that are reachable from the instance.
+     *
+     * @return List of valid objects.
+     */
+    virtual std::vector<Object *> getGCReachable();
+
+    /**
+     * @brief Returns a copy of the instance.
+     *
+     * @param rt The Runtime. Assumed to be valid.
+     * @return A valid copy of the instance.
+     */
+    virtual Instance *copy(Runtime *rt) = 0;
+
+    /**
+     * @brief Returns the size of the instance.
+     *
+     * @return Size of the instance in bytes.
+     */
+    virtual size_t getSize() = 0;
+
+    /**
+     * @brief Returns string representation of the instance.
+     *
+     * @param rt The Runtime. Assumed to be valid.
+     * @return String representation.
+     */
+    virtual std::string userRepr(Runtime *rt) = 0;
+
+    /// @brief Spreads single use mark to all of the internals of the instance.
     virtual void spreadSingleUse();
+
+    /// @brief Spreads multi use mark to all of the internals of the instance.
     virtual void spreadMultiUse();
 };
 

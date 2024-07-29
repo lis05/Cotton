@@ -1,0 +1,37 @@
+\hypertarget{lexer_8cpp}{}\doxysection{cotton\+\_\+lib/src/cotton\+\_\+lib/front/lexer.cpp File Reference}
+\label{lexer_8cpp}\index{cotton\_lib/src/cotton\_lib/front/lexer.cpp@{cotton\_lib/src/cotton\_lib/front/lexer.cpp}}
+{\ttfamily \#include \char`\"{}lexer.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}../errors.\+h\char`\"{}}\newline
+{\ttfamily \#include $<$cctype$>$}\newline
+Include dependency graph for lexer.\+cpp\+:\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{lexer_8cpp__incl}
+\end{center}
+\end{figure}
+\doxysubsection*{Namespaces}
+\begin{DoxyCompactItemize}
+\item 
+ \mbox{\hyperlink{namespaceCotton}{Cotton}}
+\end{DoxyCompactItemize}
+\doxysubsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+static char \mbox{\hyperlink{namespaceCotton_a8f5f703c4f5bd829cf81763358f951b2}{Cotton\+::get\+Character}} (std\+::string\+::const\+\_\+iterator \&it, const std\+::string \&str, Error\+Manager $\ast$error\+\_\+manager)
+\item 
+static std\+::string \mbox{\hyperlink{namespaceCotton_a674d3807d5f4f5e6017e5ef3b7b55fe3}{Cotton\+::parse\+String}} (const std\+::string \&str, Error\+Manager $\ast$error\+\_\+manager)
+\item 
+std\+::ostream \& \mbox{\hyperlink{namespaceCotton_aa64fc92ae82e82cf586b2f08458682a4}{Cotton\+::operator$<$$<$}} (std\+::ostream \&out, const Token \&token)
+\item 
+static void \mbox{\hyperlink{namespaceCotton_a10b45b6e01ecd482af12ce645b2ebaaa}{Cotton\+::skip\+String}} (Lexer \&lexer, std\+::string\+::iterator \&it, std\+::string \&str)
+\item 
+static void \mbox{\hyperlink{namespaceCotton_a84b21d1a230a37ff150720ab71f9b1ca}{Cotton\+::skip\+Character}} (Lexer \&lexer, std\+::string\+::iterator \&it, std\+::string \&str)
+\item 
+static void \mbox{\hyperlink{namespaceCotton_ae64aaa8d00f29cee0ef1b90bbc8f9610}{Cotton\+::split\+By\+Operator}} (const Token \&token, std\+::string\+::const\+\_\+iterator \&split\+\_\+end, std\+::string\+::const\+\_\+iterator \&it, std\+::vector$<$ Token $>$ \&res, const std\+::string \&splitter)
+\end{DoxyCompactItemize}
+\doxysubsection*{Variables}
+\begin{DoxyCompactItemize}
+\item 
+static std\+::vector$<$ std\+::string $>$ \mbox{\hyperlink{namespaceCotton_a560eed0338a50b1570d02ec9580a9d62}{Cotton\+::sorted\+Splitters}}
+\end{DoxyCompactItemize}

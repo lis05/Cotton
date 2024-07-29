@@ -65,8 +65,8 @@ std::string NothingInstance::userRepr(Runtime *rt) {
 
 static Object *NothingEqAdapter(Object *self, Object *arg, Runtime *rt, bool execution_result_matters) {
     ProfilerCAPTURE();
-    rt->verifyIsOfType(self, rt->nothing_type, rt->getContext().sub_areas[0]);
-    rt->verifyIsValidObject(arg, rt->getContext().sub_areas[1]);
+    rt->verifyIsOfType(self, rt->nothing_type, Runtime::SUB0_CTX);
+    rt->verifyIsValidObject(arg, Runtime::SUB1_CTX);
 
     if (!rt->isOfType(arg, rt->nothing_type)) {
         return rt->protected_false;
@@ -85,7 +85,7 @@ static Object *mm__repr__(const std::vector<Object *> &args, Runtime *rt, bool e
     ProfilerCAPTURE();
     rt->verifyExactArgsAmountMethod(args, 0);
     auto self = args[0];
-    rt->verifyIsOfType(self, rt->nothing_type, rt->getContext().sub_areas[1]);
+    rt->verifyIsOfType(self, rt->nothing_type, Runtime::SUB1_CTX);
 
     if (!execution_result_matters) {
         return self;
@@ -99,6 +99,7 @@ static Object *mm__repr__(const std::vector<Object *> &args, Runtime *rt, bool e
 }
 
 void installNothingMethods(Type *type, Runtime *rt) {
+    ProfilerCAPTURE();
     type->addMethod(MagicMethods::mm__repr__(rt), Builtin::makeFunctionInstanceObject(true, mm__repr__, NULL, rt));
 }
 

@@ -1,0 +1,404 @@
+\hypertarget{classCotton_1_1Parser}{}\doxysection{Cotton\+::Parser Class Reference}
+\label{classCotton_1_1Parser}\index{Cotton::Parser@{Cotton::Parser}}
+
+
+{\ttfamily \#include $<$parser.\+h$>$}
+
+\doxysubsection*{Classes}
+\begin{DoxyCompactItemize}
+\item 
+class \mbox{\hyperlink{classCotton_1_1Parser_1_1OperatorInfo}{Operator\+Info}}
+\item 
+class \mbox{\hyperlink{classCotton_1_1Parser_1_1ParserState}{Parser\+State}}
+\item 
+class \mbox{\hyperlink{classCotton_1_1Parser_1_1ParsingResult}{Parsing\+Result}}
+\end{DoxyCompactItemize}
+\doxysubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{classCotton_1_1Parser_a5ebc5637e76c3f31b422ebe4cf5c6e8f}{Parser}} ()=delete
+\item 
+\mbox{\hyperlink{classCotton_1_1Parser_aae27536ff73e1d9a32c93fd81cb91c4f}{$\sim$\+Parser}} ()=default
+\item 
+\mbox{\hyperlink{classCotton_1_1Parser_a118f427ad6f34ad0ba61636df2377144}{Parser}} (\mbox{\hyperlink{classCotton_1_1ErrorManager}{Error\+Manager}} $\ast$\mbox{\hyperlink{classCotton_1_1Parser_ad4614e6c52a572813f81fbe52a76544a}{error\+\_\+manager}})
+\item 
+\mbox{\hyperlink{classCotton_1_1Parser_1_1OperatorInfo}{Operator\+Info}} \mbox{\hyperlink{classCotton_1_1Parser_a5b0755b437821240003162dd6e9cdcf4}{get\+Operator\+Info}} (\mbox{\hyperlink{classCotton_1_1Token}{Token}} $\ast$token, bool is\+\_\+pre\+\_\+op, int special=0)
+\item 
+void \mbox{\hyperlink{classCotton_1_1Parser_a3ee362bdf6d9c971fc3841e4c959c2d1}{go\+Through}} (\mbox{\hyperlink{classCotton_1_1Parser_1_1OperatorInfo}{Operator\+Info}} op\+\_\+info)
+\item 
+void \mbox{\hyperlink{classCotton_1_1Parser_a563340c21673a9d9b8ef5ce4c2488117}{save\+State}} ()
+\item 
+void \mbox{\hyperlink{classCotton_1_1Parser_a5aff1599e298f480f67e3580bca7cc99}{restore\+State}} ()
+\item 
+void \mbox{\hyperlink{classCotton_1_1Parser_aa37159fb9cc92d2b45fe6d68216373ed}{highlight}} (\mbox{\hyperlink{classCotton_1_1Token}{Token}} $\ast$token)
+\item 
+void \mbox{\hyperlink{classCotton_1_1Parser_ad1f38b83cd3ca3f9e6cc09bf8d9ea9b3}{highlight\+Next}} ()
+\item 
+void \mbox{\hyperlink{classCotton_1_1Parser_ae68be88fadc2afbaceab00795cc6c3e1}{signal\+Error}} (const std\+::string \&message)
+\item 
+bool \mbox{\hyperlink{classCotton_1_1Parser_af75a57060d8b95e19549afe16d4907de}{can\+Pass\+Through}} (\mbox{\hyperlink{classCotton_1_1Parser_1_1OperatorInfo}{Operator\+Info}} op\+\_\+info)
+\item 
+bool \mbox{\hyperlink{classCotton_1_1Parser_ae26634e27a2bd373e644c91fd61a91f5}{has\+Next}} ()
+\item 
+\mbox{\hyperlink{classCotton_1_1Token_a4e313ae9c82cba755be5877b3fd99dd8}{Token\+::\+Token\+Id}} \mbox{\hyperlink{classCotton_1_1Parser_a134b47ded30ae82c26dc11e61da1163a}{check\+Next}} ()
+\item 
+bool \mbox{\hyperlink{classCotton_1_1Parser_a0ec732a87c0417e0c501af6e36aacc17}{consume}} (\mbox{\hyperlink{classCotton_1_1Token_a4e313ae9c82cba755be5877b3fd99dd8}{Token\+::\+Token\+Id}} id)
+\item 
+\mbox{\hyperlink{classCotton_1_1Token_a4e313ae9c82cba755be5877b3fd99dd8}{Token\+::\+Token\+Id}} \mbox{\hyperlink{classCotton_1_1Parser_ad46e8d54b38c6fb25187655da8d764eb}{consume}} ()
+\item 
+bool \mbox{\hyperlink{classCotton_1_1Parser_ab59875cb093adc8f2034c0bb29c7c7d5}{has\+Prev}} ()
+\item 
+void \mbox{\hyperlink{classCotton_1_1Parser_a8b272c93837dde24935eddb7a3465cc1}{rollback}} ()
+\item 
+\mbox{\hyperlink{classCotton_1_1Parser_1_1ParsingResult}{Parsing\+Result}} \mbox{\hyperlink{classCotton_1_1Parser_a2d5f0383b2024d06d8986585a7d9fbf0}{parse\+Expr}} ()
+\item 
+\mbox{\hyperlink{classCotton_1_1Parser_1_1ParsingResult}{Parsing\+Result}} \mbox{\hyperlink{classCotton_1_1Parser_a9f96a98f3b488343b0f921ce95b97bc0}{parse\+Stmt}} ()
+\item 
+\mbox{\hyperlink{classCotton_1_1StmtNode}{Stmt\+Node}} $\ast$ \mbox{\hyperlink{classCotton_1_1Parser_a01a6b291d38bab2fd17453d0f2f993ad}{parse}} (const std\+::vector$<$ \mbox{\hyperlink{classCotton_1_1Token}{Token}} $>$ \&\mbox{\hyperlink{classCotton_1_1Parser_a721ff7759a43c5fd2376468deb34f082}{tokens}})
+\end{DoxyCompactItemize}
+\doxysubsection*{Public Attributes}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{classCotton_1_1ErrorManager}{Error\+Manager}} $\ast$ \mbox{\hyperlink{classCotton_1_1Parser_ad4614e6c52a572813f81fbe52a76544a}{error\+\_\+manager}}
+\item 
+std\+::vector$<$ \mbox{\hyperlink{classCotton_1_1Token}{Token}} $>$ \mbox{\hyperlink{classCotton_1_1Parser_a721ff7759a43c5fd2376468deb34f082}{tokens}}
+\item 
+std\+::vector$<$ \mbox{\hyperlink{classCotton_1_1Token}{Token}} $>$\+::iterator \mbox{\hyperlink{classCotton_1_1Parser_a9a69c1f669ca0aa4d51c16410f8bfa1b}{next\+\_\+token}}
+\item 
+\mbox{\hyperlink{classCotton_1_1Parser_1_1ParserState}{Parser\+State}} \mbox{\hyperlink{classCotton_1_1Parser_a4c75f7239e799ce9054bc71d2c567a7f}{state}}
+\item 
+std\+::vector$<$ \mbox{\hyperlink{classCotton_1_1Parser_1_1ParserState}{Parser\+State}} $>$ \mbox{\hyperlink{classCotton_1_1Parser_a5a8baaf402e130e5f75f347550b6f93a}{saved\+\_\+states}}
+\item 
+std\+::vector$<$ std\+::pair$<$ \mbox{\hyperlink{classCotton_1_1Parser_1_1ParserState}{Parser\+State}}, std\+::string $>$ $>$ \mbox{\hyperlink{classCotton_1_1Parser_ac0e95e17c60c7ec7f63e73995274cfd7}{errors\+\_\+stack}}
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Constructor \& Destructor Documentation}
+\mbox{\Hypertarget{classCotton_1_1Parser_a5ebc5637e76c3f31b422ebe4cf5c6e8f}\label{classCotton_1_1Parser_a5ebc5637e76c3f31b422ebe4cf5c6e8f}} 
+\index{Cotton::Parser@{Cotton::Parser}!Parser@{Parser}}
+\index{Parser@{Parser}!Cotton::Parser@{Cotton::Parser}}
+\doxysubsubsection{\texorpdfstring{Parser()}{Parser()}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
+{\footnotesize\ttfamily Cotton\+::\+Parser\+::\+Parser (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [delete]}}
+
+\mbox{\Hypertarget{classCotton_1_1Parser_aae27536ff73e1d9a32c93fd81cb91c4f}\label{classCotton_1_1Parser_aae27536ff73e1d9a32c93fd81cb91c4f}} 
+\index{Cotton::Parser@{Cotton::Parser}!````~Parser@{$\sim$Parser}}
+\index{````~Parser@{$\sim$Parser}!Cotton::Parser@{Cotton::Parser}}
+\doxysubsubsection{\texorpdfstring{$\sim$Parser()}{~Parser()}}
+{\footnotesize\ttfamily Cotton\+::\+Parser\+::$\sim$\+Parser (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [default]}}
+
+\mbox{\Hypertarget{classCotton_1_1Parser_a118f427ad6f34ad0ba61636df2377144}\label{classCotton_1_1Parser_a118f427ad6f34ad0ba61636df2377144}} 
+\index{Cotton::Parser@{Cotton::Parser}!Parser@{Parser}}
+\index{Parser@{Parser}!Cotton::Parser@{Cotton::Parser}}
+\doxysubsubsection{\texorpdfstring{Parser()}{Parser()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
+{\footnotesize\ttfamily Cotton\+::\+Parser\+::\+Parser (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{classCotton_1_1ErrorManager}{Error\+Manager}} $\ast$}]{error\+\_\+manager }\end{DoxyParamCaption})}
+
+
+
+References error\+\_\+manager.
+
+
+
+\doxysubsection{Member Function Documentation}
+\mbox{\Hypertarget{classCotton_1_1Parser_af75a57060d8b95e19549afe16d4907de}\label{classCotton_1_1Parser_af75a57060d8b95e19549afe16d4907de}} 
+\index{Cotton::Parser@{Cotton::Parser}!canPassThrough@{canPassThrough}}
+\index{canPassThrough@{canPassThrough}!Cotton::Parser@{Cotton::Parser}}
+\doxysubsubsection{\texorpdfstring{canPassThrough()}{canPassThrough()}}
+{\footnotesize\ttfamily bool Cotton\+::\+Parser\+::can\+Pass\+Through (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{classCotton_1_1Parser_1_1OperatorInfo}{Operator\+Info}}}]{op\+\_\+info }\end{DoxyParamCaption})}
+
+
+
+References Cotton\+::\+Parser\+::\+Operator\+Info\+::associativity, Cotton\+::\+Parser\+::\+Parser\+State\+::cur\+\_\+priority, Cotton\+::\+Parser\+::\+Operator\+Info\+::priority, RIGHT\+\_\+\+TO\+\_\+\+LEFT, and state.
+
+
+
+Referenced by parse\+Expr().
+
+\mbox{\Hypertarget{classCotton_1_1Parser_a134b47ded30ae82c26dc11e61da1163a}\label{classCotton_1_1Parser_a134b47ded30ae82c26dc11e61da1163a}} 
+\index{Cotton::Parser@{Cotton::Parser}!checkNext@{checkNext}}
+\index{checkNext@{checkNext}!Cotton::Parser@{Cotton::Parser}}
+\doxysubsubsection{\texorpdfstring{checkNext()}{checkNext()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{classCotton_1_1Token_a4e313ae9c82cba755be5877b3fd99dd8}{Token\+::\+Token\+Id}} Cotton\+::\+Parser\+::check\+Next (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+
+
+References next\+\_\+token.
+
+
+
+Referenced by parse\+Expr().
+
+\mbox{\Hypertarget{classCotton_1_1Parser_ad46e8d54b38c6fb25187655da8d764eb}\label{classCotton_1_1Parser_ad46e8d54b38c6fb25187655da8d764eb}} 
+\index{Cotton::Parser@{Cotton::Parser}!consume@{consume}}
+\index{consume@{consume}!Cotton::Parser@{Cotton::Parser}}
+\doxysubsubsection{\texorpdfstring{consume()}{consume()}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
+{\footnotesize\ttfamily \mbox{\hyperlink{classCotton_1_1Token_a4e313ae9c82cba755be5877b3fd99dd8}{Token\+::\+Token\+Id}} Cotton\+::\+Parser\+::consume (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+
+
+References highlight(), next\+\_\+token, and tokens.
+
+
+
+Referenced by parse\+Expr(), and parse\+Stmt().
+
+\mbox{\Hypertarget{classCotton_1_1Parser_a0ec732a87c0417e0c501af6e36aacc17}\label{classCotton_1_1Parser_a0ec732a87c0417e0c501af6e36aacc17}} 
+\index{Cotton::Parser@{Cotton::Parser}!consume@{consume}}
+\index{consume@{consume}!Cotton::Parser@{Cotton::Parser}}
+\doxysubsubsection{\texorpdfstring{consume()}{consume()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
+{\footnotesize\ttfamily bool Cotton\+::\+Parser\+::consume (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{classCotton_1_1Token_a4e313ae9c82cba755be5877b3fd99dd8}{Token\+::\+Token\+Id}}}]{id }\end{DoxyParamCaption})}
+
+
+
+References highlight(), and next\+\_\+token.
+
+
+
+Referenced by Cotton\+::skip\+Semicolons().
+
+\mbox{\Hypertarget{classCotton_1_1Parser_a5b0755b437821240003162dd6e9cdcf4}\label{classCotton_1_1Parser_a5b0755b437821240003162dd6e9cdcf4}} 
+\index{Cotton::Parser@{Cotton::Parser}!getOperatorInfo@{getOperatorInfo}}
+\index{getOperatorInfo@{getOperatorInfo}!Cotton::Parser@{Cotton::Parser}}
+\doxysubsubsection{\texorpdfstring{getOperatorInfo()}{getOperatorInfo()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{classCotton_1_1Parser_1_1OperatorInfo}{Parser\+::\+Operator\+Info}} Cotton\+::\+Parser\+::get\+Operator\+Info (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{classCotton_1_1Token}{Token}} $\ast$}]{token,  }\item[{bool}]{is\+\_\+pre\+\_\+op,  }\item[{int}]{special = {\ttfamily 0} }\end{DoxyParamCaption})}
+
+
+
+References Cotton\+::\+Operator\+Node\+::\+AND, Cotton\+::\+Token\+::\+AND\+\_\+\+OP, Cotton\+::\+Operator\+Node\+::\+ASSIGN, Cotton\+::\+Token\+::\+ASSIGN\+\_\+\+DIV\+\_\+\+OP, Cotton\+::\+Token\+::\+ASSIGN\+\_\+\+MINUS\+\_\+\+OP, Cotton\+::\+Token\+::\+ASSIGN\+\_\+\+MULT\+\_\+\+OP, Cotton\+::\+Token\+::\+ASSIGN\+\_\+\+OP, Cotton\+::\+Token\+::\+ASSIGN\+\_\+\+PLUS\+\_\+\+OP, Cotton\+::\+Token\+::\+ASSIGN\+\_\+\+REMAINDER\+\_\+\+OP, Cotton\+::\+Operator\+Node\+::\+AT, Cotton\+::\+Token\+::\+AT\+\_\+\+OP, Cotton\+::\+Operator\+Node\+::\+BITAND, Cotton\+::\+Token\+::\+BITAND\+\_\+\+OP, Cotton\+::\+Operator\+Node\+::\+BITOR, Cotton\+::\+Token\+::\+BITOR\+\_\+\+OP, Cotton\+::\+Operator\+Node\+::\+BITXOR, Cotton\+::\+Token\+::\+BITXOR\+\_\+\+OP, Cotton\+::\+Operator\+Node\+::\+CALL, Cotton\+::\+Token\+::\+COMMA, Cotton\+::\+Operator\+Node\+::\+COMMA, Cotton\+::\+Operator\+Node\+::\+DIV, Cotton\+::\+Operator\+Node\+::\+DIV\+\_\+\+ASSIGN, Cotton\+::\+Token\+::\+DIV\+\_\+\+OP, Cotton\+::\+Operator\+Node\+::\+DOT, Cotton\+::\+Token\+::\+DOT\+\_\+\+OP, Cotton\+::\+Operator\+Node\+::\+EQUAL, Cotton\+::\+Token\+::\+EQUAL\+\_\+\+OP, Cotton\+::\+Operator\+Node\+::\+GREATER, Cotton\+::\+Operator\+Node\+::\+GREATER\+\_\+\+EQUAL, Cotton\+::\+Token\+::\+GREATER\+\_\+\+EQUAL\+\_\+\+OP, Cotton\+::\+Token\+::\+GREATER\+\_\+\+OP, highlight(), Cotton\+::\+Token\+::id, Cotton\+::\+Operator\+Node\+::\+INDEX, Cotton\+::\+Operator\+Node\+::\+INVERSE, Cotton\+::\+Token\+::\+INVERSE\+\_\+\+OP, Cotton\+::\+Operator\+Node\+::\+LEFT\+\_\+\+SHIFT, Cotton\+::\+Token\+::\+LEFT\+\_\+\+SHIFT\+\_\+\+OP, LEFT\+\_\+\+TO\+\_\+\+RIGHT, Cotton\+::\+Operator\+Node\+::\+LESS, Cotton\+::\+Operator\+Node\+::\+LESS\+\_\+\+EQUAL, Cotton\+::\+Token\+::\+LESS\+\_\+\+EQUAL\+\_\+\+OP, Cotton\+::\+Token\+::\+LESS\+\_\+\+OP, Cotton\+::\+Operator\+Node\+::\+MINUS, Cotton\+::\+Operator\+Node\+::\+MINUS\+\_\+\+ASSIGN, Cotton\+::\+Token\+::\+MINUS\+\_\+\+MINUS\+\_\+\+OP, Cotton\+::\+Token\+::\+MINUS\+\_\+\+OP, Cotton\+::\+Operator\+Node\+::\+MULT, Cotton\+::\+Operator\+Node\+::\+MULT\+\_\+\+ASSIGN, Cotton\+::\+Token\+::\+MULT\+\_\+\+OP, Cotton\+::\+Operator\+Node\+::\+NOT, Cotton\+::\+Operator\+Node\+::\+NOT\+\_\+\+EQUAL, Cotton\+::\+Token\+::\+NOT\+\_\+\+EQUAL\+\_\+\+OP, Cotton\+::\+Token\+::\+NOT\+\_\+\+OP, Cotton\+::\+Operator\+Node\+::\+OR, Cotton\+::\+Token\+::\+OR\+\_\+\+OP, passert, Cotton\+::\+Operator\+Node\+::\+PLUS, Cotton\+::\+Operator\+Node\+::\+PLUS\+\_\+\+ASSIGN, Cotton\+::\+Token\+::\+PLUS\+\_\+\+OP, Cotton\+::\+Token\+::\+PLUS\+\_\+\+PLUS\+\_\+\+OP, Cotton\+::\+Operator\+Node\+::\+POST\+\_\+\+MINUS\+\_\+\+MINUS, Cotton\+::\+Operator\+Node\+::\+POST\+\_\+\+PLUS\+\_\+\+PLUS, Cotton\+::\+Operator\+Node\+::\+PRE\+\_\+\+MINUS, Cotton\+::\+Operator\+Node\+::\+PRE\+\_\+\+MINUS\+\_\+\+MINUS, Cotton\+::\+Operator\+Node\+::\+PRE\+\_\+\+PLUS, Cotton\+::\+Operator\+Node\+::\+PRE\+\_\+\+PLUS\+\_\+\+PLUS, Cotton\+::\+Operator\+Node\+::\+REM, Cotton\+::\+Operator\+Node\+::\+REM\+\_\+\+ASSIGN, Cotton\+::\+Token\+::\+REMAINDER\+\_\+\+OP, Cotton\+::\+Operator\+Node\+::\+RIGHT\+\_\+\+SHIFT, Cotton\+::\+Token\+::\+RIGHT\+\_\+\+SHIFT\+\_\+\+OP, RIGHT\+\_\+\+TO\+\_\+\+LEFT, and signal\+Error().
+
+
+
+Referenced by parse\+Expr().
+
+\mbox{\Hypertarget{classCotton_1_1Parser_a3ee362bdf6d9c971fc3841e4c959c2d1}\label{classCotton_1_1Parser_a3ee362bdf6d9c971fc3841e4c959c2d1}} 
+\index{Cotton::Parser@{Cotton::Parser}!goThrough@{goThrough}}
+\index{goThrough@{goThrough}!Cotton::Parser@{Cotton::Parser}}
+\doxysubsubsection{\texorpdfstring{goThrough()}{goThrough()}}
+{\footnotesize\ttfamily void Cotton\+::\+Parser\+::go\+Through (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{classCotton_1_1Parser_1_1OperatorInfo}{Operator\+Info}}}]{op\+\_\+info }\end{DoxyParamCaption})}
+
+
+
+References Cotton\+::\+Parser\+::\+Operator\+Info\+::associativity, Cotton\+::\+Parser\+::\+Parser\+State\+::cur\+\_\+associativity, Cotton\+::\+Parser\+::\+Parser\+State\+::cur\+\_\+priority, Cotton\+::\+Parser\+::\+Operator\+Info\+::priority, and state.
+
+
+
+Referenced by parse\+Expr().
+
+\mbox{\Hypertarget{classCotton_1_1Parser_ae26634e27a2bd373e644c91fd61a91f5}\label{classCotton_1_1Parser_ae26634e27a2bd373e644c91fd61a91f5}} 
+\index{Cotton::Parser@{Cotton::Parser}!hasNext@{hasNext}}
+\index{hasNext@{hasNext}!Cotton::Parser@{Cotton::Parser}}
+\doxysubsubsection{\texorpdfstring{hasNext()}{hasNext()}}
+{\footnotesize\ttfamily bool Cotton\+::\+Parser\+::has\+Next (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+
+
+References next\+\_\+token, and tokens.
+
+
+
+Referenced by parse(), parse\+Expr(), parse\+Stmt(), and Cotton\+::skip\+Semicolons().
+
+\mbox{\Hypertarget{classCotton_1_1Parser_ab59875cb093adc8f2034c0bb29c7c7d5}\label{classCotton_1_1Parser_ab59875cb093adc8f2034c0bb29c7c7d5}} 
+\index{Cotton::Parser@{Cotton::Parser}!hasPrev@{hasPrev}}
+\index{hasPrev@{hasPrev}!Cotton::Parser@{Cotton::Parser}}
+\doxysubsubsection{\texorpdfstring{hasPrev()}{hasPrev()}}
+{\footnotesize\ttfamily bool Cotton\+::\+Parser\+::has\+Prev (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+
+
+References next\+\_\+token, and tokens.
+
+\mbox{\Hypertarget{classCotton_1_1Parser_aa37159fb9cc92d2b45fe6d68216373ed}\label{classCotton_1_1Parser_aa37159fb9cc92d2b45fe6d68216373ed}} 
+\index{Cotton::Parser@{Cotton::Parser}!highlight@{highlight}}
+\index{highlight@{highlight}!Cotton::Parser@{Cotton::Parser}}
+\doxysubsubsection{\texorpdfstring{highlight()}{highlight()}}
+{\footnotesize\ttfamily void Cotton\+::\+Parser\+::highlight (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{classCotton_1_1Token}{Token}} $\ast$}]{token }\end{DoxyParamCaption})}
+
+
+
+References state, and Cotton\+::\+Parser\+::\+Parser\+State\+::token.
+
+
+
+Referenced by consume(), get\+Operator\+Info(), highlight\+Next(), parse(), and rollback().
+
+\mbox{\Hypertarget{classCotton_1_1Parser_ad1f38b83cd3ca3f9e6cc09bf8d9ea9b3}\label{classCotton_1_1Parser_ad1f38b83cd3ca3f9e6cc09bf8d9ea9b3}} 
+\index{Cotton::Parser@{Cotton::Parser}!highlightNext@{highlightNext}}
+\index{highlightNext@{highlightNext}!Cotton::Parser@{Cotton::Parser}}
+\doxysubsubsection{\texorpdfstring{highlightNext()}{highlightNext()}}
+{\footnotesize\ttfamily void Cotton\+::\+Parser\+::highlight\+Next (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+
+
+References highlight(), next\+\_\+token, and tokens.
+
+
+
+Referenced by parse\+Expr(), parse\+Stmt(), and Cotton\+::\+Parser\+::\+Parsing\+Result\+::verify().
+
+\mbox{\Hypertarget{classCotton_1_1Parser_a01a6b291d38bab2fd17453d0f2f993ad}\label{classCotton_1_1Parser_a01a6b291d38bab2fd17453d0f2f993ad}} 
+\index{Cotton::Parser@{Cotton::Parser}!parse@{parse}}
+\index{parse@{parse}!Cotton::Parser@{Cotton::Parser}}
+\doxysubsubsection{\texorpdfstring{parse()}{parse()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{classCotton_1_1StmtNode}{Stmt\+Node}} $\ast$ Cotton\+::\+Parser\+::parse (\begin{DoxyParamCaption}\item[{const std\+::vector$<$ \mbox{\hyperlink{classCotton_1_1Token}{Token}} $>$ \&}]{tokens }\end{DoxyParamCaption})}
+
+
+
+References Cotton\+::\+Parser\+::\+Parser\+State\+::cur\+\_\+associativity, Cotton\+::\+Parser\+::\+Parser\+State\+::cur\+\_\+priority, EMPTY\+\_\+\+PRIORITY, error\+\_\+manager, has\+Next(), highlight(), LEFT\+\_\+\+TO\+\_\+\+RIGHT, next\+\_\+token, parse\+Stmt(), Cotton\+::\+Parser\+::\+Parser\+State\+::report\+\_\+errors, restore\+State(), save\+State(), Cotton\+::\+Error\+Manager\+::set\+Error\+Char\+Pos(), Cotton\+::\+Error\+Manager\+::set\+Error\+Message(), Cotton\+::skip\+Semicolons(), state, Cotton\+::\+Parser\+::\+Parsing\+Result\+::\+STMT, Cotton\+::\+Parser\+::\+Parsing\+Result\+::stmt, Cotton\+::\+Parser\+::\+Parser\+State\+::token, tokens, and Cotton\+::\+Parser\+::\+Parsing\+Result\+::verify().
+
+
+
+Referenced by Cotton\+::\+Builtin\+::\+CF\+\_\+cotton(), Cotton\+::\+Builtin\+::\+CF\+\_\+dumbrun(), Cotton\+::\+Builtin\+::\+CF\+\_\+smartrun(), and main().
+
+\mbox{\Hypertarget{classCotton_1_1Parser_a2d5f0383b2024d06d8986585a7d9fbf0}\label{classCotton_1_1Parser_a2d5f0383b2024d06d8986585a7d9fbf0}} 
+\index{Cotton::Parser@{Cotton::Parser}!parseExpr@{parseExpr}}
+\index{parseExpr@{parseExpr}!Cotton::Parser@{Cotton::Parser}}
+\doxysubsubsection{\texorpdfstring{parseExpr()}{parseExpr()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{classCotton_1_1Parser_1_1ParsingResult}{Parser\+::\+Parsing\+Result}} Cotton\+::\+Parser\+::parse\+Expr (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+
+
+References Cotton\+::\+Token\+::\+AND\+\_\+\+OP, Cotton\+::\+Token\+::\+ASSIGN\+\_\+\+DIV\+\_\+\+OP, Cotton\+::\+Token\+::\+ASSIGN\+\_\+\+MINUS\+\_\+\+OP, Cotton\+::\+Token\+::\+ASSIGN\+\_\+\+MULT\+\_\+\+OP, Cotton\+::\+Token\+::\+ASSIGN\+\_\+\+OP, Cotton\+::\+Token\+::\+ASSIGN\+\_\+\+PLUS\+\_\+\+OP, Cotton\+::\+Token\+::\+ASSIGN\+\_\+\+REMAINDER\+\_\+\+OP, Cotton\+::\+Token\+::\+AT\+\_\+\+OP, Cotton\+::\+Token\+::\+BITAND\+\_\+\+OP, Cotton\+::\+Token\+::\+BITOR\+\_\+\+OP, Cotton\+::\+Token\+::\+BITXOR\+\_\+\+OP, Cotton\+::\+Token\+::\+BOOLEAN\+\_\+\+LIT, Cotton\+::\+Token\+::\+BREAK\+\_\+\+KW, can\+Pass\+Through(), Cotton\+::\+Token\+::\+CHAR\+\_\+\+LIT, check\+Next(), Cotton\+::\+Token\+::\+CLOSE\+\_\+\+BRACKET, Cotton\+::\+Token\+::\+CLOSE\+\_\+\+CURLY\+\_\+\+BRACKET, Cotton\+::\+Token\+::\+CLOSE\+\_\+\+SQUARE\+\_\+\+BRACKET, Cotton\+::\+Token\+::\+COMMA, consume(), Cotton\+::\+Token\+::\+CONTINUE\+\_\+\+KW, Cotton\+::\+Parser\+::\+Parser\+State\+::cur\+\_\+associativity, Cotton\+::\+Parser\+::\+Parser\+State\+::cur\+\_\+priority, Cotton\+::\+Token\+::\+DIV\+\_\+\+OP, Cotton\+::\+Token\+::\+DOT\+\_\+\+OP, Cotton\+::\+Token\+::\+ELSE\+\_\+\+KW, EMPTY\+\_\+\+PRIORITY, Cotton\+::\+Token\+::\+EQUAL\+\_\+\+OP, Cotton\+::\+Parser\+::\+Parsing\+Result\+::\+EXPR, Cotton\+::\+Token\+::\+FOR\+\_\+\+KW, Cotton\+::\+Token\+::\+FUNCTION\+\_\+\+KW, get\+Operator\+Info(), go\+Through(), Cotton\+::\+Token\+::\+GREATER\+\_\+\+EQUAL\+\_\+\+OP, Cotton\+::\+Token\+::\+GREATER\+\_\+\+OP, has\+Next(), highlight\+Next(), Cotton\+::\+Parser\+::\+Operator\+Info\+::id, Cotton\+::\+Token\+::\+IDENTIFIER, Cotton\+::\+Token\+::\+IF\+\_\+\+KW, Cotton\+::\+Token\+::\+INT\+\_\+\+LIT, Cotton\+::\+Token\+::\+INVERSE\+\_\+\+OP, Cotton\+::\+Token\+::\+LEFT\+\_\+\+SHIFT\+\_\+\+OP, LEFT\+\_\+\+TO\+\_\+\+RIGHT, Cotton\+::\+Token\+::\+LESS\+\_\+\+EQUAL\+\_\+\+OP, Cotton\+::\+Token\+::\+LESS\+\_\+\+OP, Cotton\+::\+Token\+::\+METHOD\+\_\+\+KW, Cotton\+::\+Token\+::\+MINUS\+\_\+\+MINUS\+\_\+\+OP, Cotton\+::\+Token\+::\+MINUS\+\_\+\+OP, Cotton\+::\+Token\+::\+MULT\+\_\+\+OP, next\+\_\+token, Cotton\+::\+Token\+::\+NOT\+\_\+\+EQUAL\+\_\+\+OP, Cotton\+::\+Token\+::\+NOT\+\_\+\+OP, Cotton\+::\+Token\+::\+NOTHING\+\_\+\+LIT, Cotton\+::\+Token\+::\+OPEN\+\_\+\+BRACKET, Cotton\+::\+Token\+::\+OPEN\+\_\+\+CURLY\+\_\+\+BRACKET, Cotton\+::\+Token\+::\+OPEN\+\_\+\+SQUARE\+\_\+\+BRACKET, Cotton\+::\+Token\+::\+OR\+\_\+\+OP, parse\+Stmt(), Cotton\+::\+Token\+::\+PLUS\+\_\+\+OP, Cotton\+::\+Token\+::\+PLUS\+\_\+\+PLUS\+\_\+\+OP, POST\+\_\+\+OP, PRE\+\_\+\+OP, Cotton\+::\+Token\+::\+REAL\+\_\+\+LIT, Cotton\+::\+Token\+::\+REMAINDER\+\_\+\+OP, restore\+State(), Cotton\+::\+Token\+::\+RETURN\+\_\+\+KW, Cotton\+::\+Token\+::\+RIGHT\+\_\+\+SHIFT\+\_\+\+OP, save\+State(), Cotton\+::\+Token\+::\+SEMICOLON, state, Cotton\+::\+Parser\+::\+Parsing\+Result\+::\+STMT, Cotton\+::\+Token\+::\+STRING\+\_\+\+LIT, Cotton\+::\+Token\+::\+TYPE\+\_\+\+KW, Cotton\+::\+Token\+::\+UNSCOPED\+\_\+\+KW, and Cotton\+::\+Token\+::\+WHILE\+\_\+\+KW.
+
+
+
+Referenced by parse\+Stmt().
+
+\mbox{\Hypertarget{classCotton_1_1Parser_a9f96a98f3b488343b0f921ce95b97bc0}\label{classCotton_1_1Parser_a9f96a98f3b488343b0f921ce95b97bc0}} 
+\index{Cotton::Parser@{Cotton::Parser}!parseStmt@{parseStmt}}
+\index{parseStmt@{parseStmt}!Cotton::Parser@{Cotton::Parser}}
+\doxysubsubsection{\texorpdfstring{parseStmt()}{parseStmt()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{classCotton_1_1Parser_1_1ParsingResult}{Parser\+::\+Parsing\+Result}} Cotton\+::\+Parser\+::parse\+Stmt (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+
+
+References Cotton\+::\+Stmt\+Node\+::\+BREAK, Cotton\+::\+Token\+::\+BREAK\+\_\+\+KW, Cotton\+::\+Token\+::\+CLOSE\+\_\+\+BRACKET, Cotton\+::\+Token\+::\+CLOSE\+\_\+\+CURLY\+\_\+\+BRACKET, Cotton\+::\+Token\+::\+CLOSE\+\_\+\+SQUARE\+\_\+\+BRACKET, consume(), Cotton\+::\+Stmt\+Node\+::\+CONTINUE, Cotton\+::\+Token\+::\+CONTINUE\+\_\+\+KW, Cotton\+::\+Token\+::\+ELSE\+\_\+\+KW, Cotton\+::\+Parser\+::\+Parsing\+Result\+::\+EXPR, Cotton\+::\+Parser\+::\+Parsing\+Result\+::expr, Cotton\+::\+Token\+::\+FOR\+\_\+\+KW, has\+Next(), highlight\+Next(), Cotton\+::\+Token\+::\+IF\+\_\+\+KW, next\+\_\+token, Cotton\+::\+Token\+::\+OPEN\+\_\+\+CURLY\+\_\+\+BRACKET, parse\+Expr(), restore\+State(), Cotton\+::\+Token\+::\+RETURN\+\_\+\+KW, rollback(), save\+State(), Cotton\+::\+Token\+::\+SEMICOLON, signal\+Error(), Cotton\+::skip\+Semicolons(), Cotton\+::\+Parser\+::\+Parsing\+Result\+::\+STMT, Cotton\+::\+Token\+::\+UNSCOPED\+\_\+\+KW, Cotton\+::\+Parser\+::\+Parsing\+Result\+::verify(), and Cotton\+::\+Token\+::\+WHILE\+\_\+\+KW.
+
+
+
+Referenced by parse(), and parse\+Expr().
+
+\mbox{\Hypertarget{classCotton_1_1Parser_a5aff1599e298f480f67e3580bca7cc99}\label{classCotton_1_1Parser_a5aff1599e298f480f67e3580bca7cc99}} 
+\index{Cotton::Parser@{Cotton::Parser}!restoreState@{restoreState}}
+\index{restoreState@{restoreState}!Cotton::Parser@{Cotton::Parser}}
+\doxysubsubsection{\texorpdfstring{restoreState()}{restoreState()}}
+{\footnotesize\ttfamily void Cotton\+::\+Parser\+::restore\+State (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+
+
+References saved\+\_\+states, signal\+Error(), and state.
+
+
+
+Referenced by parse(), parse\+Expr(), and parse\+Stmt().
+
+\mbox{\Hypertarget{classCotton_1_1Parser_a8b272c93837dde24935eddb7a3465cc1}\label{classCotton_1_1Parser_a8b272c93837dde24935eddb7a3465cc1}} 
+\index{Cotton::Parser@{Cotton::Parser}!rollback@{rollback}}
+\index{rollback@{rollback}!Cotton::Parser@{Cotton::Parser}}
+\doxysubsubsection{\texorpdfstring{rollback()}{rollback()}}
+{\footnotesize\ttfamily void Cotton\+::\+Parser\+::rollback (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+
+
+References highlight(), next\+\_\+token, and tokens.
+
+
+
+Referenced by parse\+Stmt().
+
+\mbox{\Hypertarget{classCotton_1_1Parser_a563340c21673a9d9b8ef5ce4c2488117}\label{classCotton_1_1Parser_a563340c21673a9d9b8ef5ce4c2488117}} 
+\index{Cotton::Parser@{Cotton::Parser}!saveState@{saveState}}
+\index{saveState@{saveState}!Cotton::Parser@{Cotton::Parser}}
+\doxysubsubsection{\texorpdfstring{saveState()}{saveState()}}
+{\footnotesize\ttfamily void Cotton\+::\+Parser\+::save\+State (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+
+
+References saved\+\_\+states, and state.
+
+
+
+Referenced by parse(), parse\+Expr(), and parse\+Stmt().
+
+\mbox{\Hypertarget{classCotton_1_1Parser_ae68be88fadc2afbaceab00795cc6c3e1}\label{classCotton_1_1Parser_ae68be88fadc2afbaceab00795cc6c3e1}} 
+\index{Cotton::Parser@{Cotton::Parser}!signalError@{signalError}}
+\index{signalError@{signalError}!Cotton::Parser@{Cotton::Parser}}
+\doxysubsubsection{\texorpdfstring{signalError()}{signalError()}}
+{\footnotesize\ttfamily void Cotton\+::\+Parser\+::signal\+Error (\begin{DoxyParamCaption}\item[{const std\+::string \&}]{message }\end{DoxyParamCaption})}
+
+
+
+References error\+\_\+manager, errors\+\_\+stack, Cotton\+::\+Parser\+::\+Parser\+State\+::report\+\_\+errors, Cotton\+::\+Error\+Manager\+::signal\+Error(), and state.
+
+
+
+Referenced by Cotton\+::\+\_\+\+\_\+passert\+\_\+\+\_\+(), get\+Operator\+Info(), parse\+Stmt(), restore\+State(), and Cotton\+::\+Parser\+::\+Parsing\+Result\+::verify().
+
+
+
+\doxysubsection{Member Data Documentation}
+\mbox{\Hypertarget{classCotton_1_1Parser_ad4614e6c52a572813f81fbe52a76544a}\label{classCotton_1_1Parser_ad4614e6c52a572813f81fbe52a76544a}} 
+\index{Cotton::Parser@{Cotton::Parser}!error\_manager@{error\_manager}}
+\index{error\_manager@{error\_manager}!Cotton::Parser@{Cotton::Parser}}
+\doxysubsubsection{\texorpdfstring{error\_manager}{error\_manager}}
+{\footnotesize\ttfamily \mbox{\hyperlink{classCotton_1_1ErrorManager}{Error\+Manager}}$\ast$ Cotton\+::\+Parser\+::error\+\_\+manager}
+
+
+
+Referenced by parse(), Parser(), and signal\+Error().
+
+\mbox{\Hypertarget{classCotton_1_1Parser_ac0e95e17c60c7ec7f63e73995274cfd7}\label{classCotton_1_1Parser_ac0e95e17c60c7ec7f63e73995274cfd7}} 
+\index{Cotton::Parser@{Cotton::Parser}!errors\_stack@{errors\_stack}}
+\index{errors\_stack@{errors\_stack}!Cotton::Parser@{Cotton::Parser}}
+\doxysubsubsection{\texorpdfstring{errors\_stack}{errors\_stack}}
+{\footnotesize\ttfamily std\+::vector$<$std\+::pair$<$\mbox{\hyperlink{classCotton_1_1Parser_1_1ParserState}{Parser\+State}}, std\+::string$>$ $>$ Cotton\+::\+Parser\+::errors\+\_\+stack}
+
+
+
+Referenced by signal\+Error(), and Cotton\+::\+Parser\+::\+Parsing\+Result\+::verify().
+
+\mbox{\Hypertarget{classCotton_1_1Parser_a9a69c1f669ca0aa4d51c16410f8bfa1b}\label{classCotton_1_1Parser_a9a69c1f669ca0aa4d51c16410f8bfa1b}} 
+\index{Cotton::Parser@{Cotton::Parser}!next\_token@{next\_token}}
+\index{next\_token@{next\_token}!Cotton::Parser@{Cotton::Parser}}
+\doxysubsubsection{\texorpdfstring{next\_token}{next\_token}}
+{\footnotesize\ttfamily std\+::vector$<$\mbox{\hyperlink{classCotton_1_1Token}{Token}}$>$\+::iterator Cotton\+::\+Parser\+::next\+\_\+token}
+
+
+
+Referenced by check\+Next(), consume(), has\+Next(), has\+Prev(), highlight\+Next(), parse(), parse\+Expr(), parse\+Stmt(), and rollback().
+
+\mbox{\Hypertarget{classCotton_1_1Parser_a5a8baaf402e130e5f75f347550b6f93a}\label{classCotton_1_1Parser_a5a8baaf402e130e5f75f347550b6f93a}} 
+\index{Cotton::Parser@{Cotton::Parser}!saved\_states@{saved\_states}}
+\index{saved\_states@{saved\_states}!Cotton::Parser@{Cotton::Parser}}
+\doxysubsubsection{\texorpdfstring{saved\_states}{saved\_states}}
+{\footnotesize\ttfamily std\+::vector$<$\mbox{\hyperlink{classCotton_1_1Parser_1_1ParserState}{Parser\+State}}$>$ Cotton\+::\+Parser\+::saved\+\_\+states}
+
+
+
+Referenced by restore\+State(), and save\+State().
+
+\mbox{\Hypertarget{classCotton_1_1Parser_a4c75f7239e799ce9054bc71d2c567a7f}\label{classCotton_1_1Parser_a4c75f7239e799ce9054bc71d2c567a7f}} 
+\index{Cotton::Parser@{Cotton::Parser}!state@{state}}
+\index{state@{state}!Cotton::Parser@{Cotton::Parser}}
+\doxysubsubsection{\texorpdfstring{state}{state}}
+{\footnotesize\ttfamily \mbox{\hyperlink{classCotton_1_1Parser_1_1ParserState}{Parser\+State}} Cotton\+::\+Parser\+::state}
+
+
+
+Referenced by can\+Pass\+Through(), go\+Through(), highlight(), parse(), parse\+Expr(), Cotton\+::\+Parser\+::\+Parsing\+Result\+::\+Parsing\+Result(), restore\+State(), save\+State(), and signal\+Error().
+
+\mbox{\Hypertarget{classCotton_1_1Parser_a721ff7759a43c5fd2376468deb34f082}\label{classCotton_1_1Parser_a721ff7759a43c5fd2376468deb34f082}} 
+\index{Cotton::Parser@{Cotton::Parser}!tokens@{tokens}}
+\index{tokens@{tokens}!Cotton::Parser@{Cotton::Parser}}
+\doxysubsubsection{\texorpdfstring{tokens}{tokens}}
+{\footnotesize\ttfamily std\+::vector$<$\mbox{\hyperlink{classCotton_1_1Token}{Token}}$>$ Cotton\+::\+Parser\+::tokens}
+
+
+
+Referenced by consume(), has\+Next(), has\+Prev(), highlight\+Next(), parse(), and rollback().
+
+
+
+The documentation for this class was generated from the following files\+:\begin{DoxyCompactItemize}
+\item 
+cotton\+\_\+lib/src/cotton\+\_\+lib/front/\mbox{\hyperlink{parser_8h}{parser.\+h}}\item 
+cotton\+\_\+lib/src/cotton\+\_\+lib/front/\mbox{\hyperlink{parser_8cpp}{parser.\+cpp}}\end{DoxyCompactItemize}

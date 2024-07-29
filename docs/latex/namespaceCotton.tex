@@ -1,0 +1,374 @@
+\hypertarget{namespaceCotton}{}\doxysection{Cotton Namespace Reference}
+\label{namespaceCotton}\index{Cotton@{Cotton}}
+\doxysubsection*{Namespaces}
+\begin{DoxyCompactItemize}
+\item 
+ \mbox{\hyperlink{namespaceCotton_1_1Builtin}{Builtin}}
+\item 
+ \mbox{\hyperlink{namespaceCotton_1_1MagicMethods}{Magic\+Methods}}
+\item 
+ \mbox{\hyperlink{namespaceCotton_1_1Profiler}{Profiler}}
+\end{DoxyCompactItemize}
+\doxysubsection*{Classes}
+\begin{DoxyCompactItemize}
+\item 
+class \mbox{\hyperlink{classCotton_1_1GCStrategy}{GCStrategy}}
+\begin{DoxyCompactList}\small\item\em An abstract class representing a garbage collector strategy. \end{DoxyCompactList}\item 
+class \mbox{\hyperlink{classCotton_1_1GCDefaultStrategy}{GCDefault\+Strategy}}
+\begin{DoxyCompactList}\small\item\em The default gc strategy. \end{DoxyCompactList}\item 
+class \mbox{\hyperlink{classCotton_1_1GC}{GC}}
+\begin{DoxyCompactList}\small\item\em Garbage collector class. \end{DoxyCompactList}\item 
+class \mbox{\hyperlink{classCotton_1_1Instance}{Instance}}
+\begin{DoxyCompactList}\small\item\em Class representing an instance of a type. \end{DoxyCompactList}\item 
+class \mbox{\hyperlink{classCotton_1_1NameId}{Name\+Id}}
+\item 
+class \mbox{\hyperlink{classCotton_1_1NameIds}{Name\+Ids}}
+\item 
+class \mbox{\hyperlink{classCotton_1_1Object}{Object}}
+\item 
+class \mbox{\hyperlink{classCotton_1_1Runtime}{Runtime}}
+\item 
+class \mbox{\hyperlink{classCotton_1_1Scope}{Scope}}
+\item 
+class \mbox{\hyperlink{classCotton_1_1Type}{Type}}
+\item 
+class \mbox{\hyperlink{classCotton_1_1ErrorManager}{Error\+Manager}}
+\item 
+class \mbox{\hyperlink{classCotton_1_1Token}{Token}}
+\item 
+class \mbox{\hyperlink{classCotton_1_1Lexer}{Lexer}}
+\item 
+class \mbox{\hyperlink{classCotton_1_1TextArea}{Text\+Area}}
+\item 
+class \mbox{\hyperlink{classCotton_1_1ExprNode}{Expr\+Node}}
+\item 
+class \mbox{\hyperlink{classCotton_1_1FuncDefNode}{Func\+Def\+Node}}
+\item 
+class \mbox{\hyperlink{classCotton_1_1TypeDefNode}{Type\+Def\+Node}}
+\item 
+class \mbox{\hyperlink{classCotton_1_1OperatorNode}{Operator\+Node}}
+\item 
+class \mbox{\hyperlink{classCotton_1_1AtomNode}{Atom\+Node}}
+\item 
+class \mbox{\hyperlink{classCotton_1_1ParExprNode}{Par\+Expr\+Node}}
+\item 
+class \mbox{\hyperlink{classCotton_1_1IdentListNode}{Ident\+List\+Node}}
+\item 
+class \mbox{\hyperlink{classCotton_1_1StmtNode}{Stmt\+Node}}
+\item 
+class \mbox{\hyperlink{classCotton_1_1WhileStmtNode}{While\+Stmt\+Node}}
+\item 
+class \mbox{\hyperlink{classCotton_1_1ForStmtNode}{For\+Stmt\+Node}}
+\item 
+class \mbox{\hyperlink{classCotton_1_1IfStmtNode}{If\+Stmt\+Node}}
+\item 
+class \mbox{\hyperlink{classCotton_1_1ReturnStmtNode}{Return\+Stmt\+Node}}
+\item 
+class \mbox{\hyperlink{classCotton_1_1BlockStmtNode}{Block\+Stmt\+Node}}
+\item 
+class \mbox{\hyperlink{classCotton_1_1Parser}{Parser}}
+\end{DoxyCompactItemize}
+\doxysubsection*{Typedefs}
+\begin{DoxyCompactItemize}
+\item 
+typedef \mbox{\hyperlink{classCotton_1_1Object}{Object}} $\ast$($\ast$ \mbox{\hyperlink{namespaceCotton_a9eb1e20a339dd01caadb01bd0d6c557a}{Library\+Load\+Point}}) (\mbox{\hyperlink{classCotton_1_1Runtime}{Runtime}} $\ast$rt)
+\item 
+typedef \mbox{\hyperlink{classCotton_1_1Object}{Object}} $\ast$($\ast$ \mbox{\hyperlink{namespaceCotton_a786827371b99b78038c49209261e0f40}{Unary\+Operator\+Adapter}}) (\mbox{\hyperlink{classCotton_1_1Object}{Object}} $\ast$self, \mbox{\hyperlink{classCotton_1_1Runtime}{Runtime}} $\ast$rt, bool execution\+\_\+result\+\_\+matters)
+\item 
+typedef \mbox{\hyperlink{classCotton_1_1Object}{Object}} $\ast$($\ast$ \mbox{\hyperlink{namespaceCotton_a9e7023bcd4a0477c8d3e142178ccfcd1}{Binary\+Operator\+Adapter}}) (\mbox{\hyperlink{classCotton_1_1Object}{Object}} $\ast$self, \mbox{\hyperlink{classCotton_1_1Object}{Object}} $\ast$arg, \mbox{\hyperlink{classCotton_1_1Runtime}{Runtime}} $\ast$rt, bool execution\+\_\+result\+\_\+matters)
+\item 
+typedef \mbox{\hyperlink{classCotton_1_1Object}{Object}} $\ast$($\ast$ \mbox{\hyperlink{namespaceCotton_ab396e7651ff27975dc2f7725fe437def}{Nary\+Operator\+Adapter}}) (\mbox{\hyperlink{classCotton_1_1Object}{Object}} $\ast$self, const std\+::vector$<$ \mbox{\hyperlink{classCotton_1_1Object}{Object}} $\ast$ $>$ \&args, \mbox{\hyperlink{classCotton_1_1Runtime}{Runtime}} $\ast$rt, bool execution\+\_\+result\+\_\+matters)
+\end{DoxyCompactItemize}
+\doxysubsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+static void \mbox{\hyperlink{namespaceCotton_a0ae4664c5c588878fe81d999369d01ec}{mark}} (\mbox{\hyperlink{classCotton_1_1Instance}{Instance}} $\ast$ins, \mbox{\hyperlink{classCotton_1_1Runtime}{Runtime}} $\ast$rt)
+\item 
+static void \mbox{\hyperlink{namespaceCotton_ac334e51c68e7bf83ad45963fd142dfdc}{mark}} (\mbox{\hyperlink{classCotton_1_1Type}{Type}} $\ast$type, \mbox{\hyperlink{classCotton_1_1Runtime}{Runtime}} $\ast$rt)
+\item 
+static void \mbox{\hyperlink{namespaceCotton_a41307a194b9a0edc9dd2ea0130a4a360}{mark}} (\mbox{\hyperlink{classCotton_1_1Object}{Object}} $\ast$obj, \mbox{\hyperlink{classCotton_1_1Runtime}{Runtime}} $\ast$rt)
+\item 
+std\+::ostream \& \mbox{\hyperlink{namespaceCotton_a5aba6a00a9d98acaf139974346d403ee}{operator$<$$<$}} (std\+::ostream \&stream, \mbox{\hyperlink{classCotton_1_1Object}{Object}} $\ast$obj)
+\item 
+static std\+::vector$<$ \mbox{\hyperlink{classCotton_1_1Object}{Object}} $\ast$ $>$ \mbox{\hyperlink{namespaceCotton_a23e89c555bdb5aaf0c5ee25c5c710946}{get\+List}} (\mbox{\hyperlink{classCotton_1_1ExprNode}{Expr\+Node}} $\ast$expr, \mbox{\hyperlink{classCotton_1_1Runtime}{Runtime}} $\ast$rt)
+\item 
+static void \mbox{\hyperlink{namespaceCotton_a306e07b0bec5affd739e10a04d80eb40}{get\+List\+\_\+add\+To\+Context}} (\mbox{\hyperlink{classCotton_1_1ExprNode}{Expr\+Node}} $\ast$expr, \mbox{\hyperlink{classCotton_1_1Runtime}{Runtime}} $\ast$rt)
+\item 
+static bool \mbox{\hyperlink{namespaceCotton_a6be7166a333d9f3693d796933fa07cc3}{intersection}} (int64\+\_\+t l, int64\+\_\+t r, int64\+\_\+t L, int64\+\_\+t R)
+\item 
+void \mbox{\hyperlink{namespaceCotton_a73418ada675ebb208ef88a1dd8d2099d}{\+\_\+\+\_\+assert\+\_\+\+\_\+}} (bool value, const char $\ast$assertion, const std\+::string \&message, \mbox{\hyperlink{classCotton_1_1ErrorManager}{Error\+Manager}} $\ast$error\+\_\+manager, const char $\ast$filename, int line)
+\item 
+static char \mbox{\hyperlink{namespaceCotton_a8f5f703c4f5bd829cf81763358f951b2}{get\+Character}} (std\+::string\+::const\+\_\+iterator \&it, const std\+::string \&str, \mbox{\hyperlink{classCotton_1_1ErrorManager}{Error\+Manager}} $\ast$error\+\_\+manager)
+\item 
+static std\+::string \mbox{\hyperlink{namespaceCotton_a674d3807d5f4f5e6017e5ef3b7b55fe3}{parse\+String}} (const std\+::string \&str, \mbox{\hyperlink{classCotton_1_1ErrorManager}{Error\+Manager}} $\ast$error\+\_\+manager)
+\item 
+std\+::ostream \& \mbox{\hyperlink{namespaceCotton_aa64fc92ae82e82cf586b2f08458682a4}{operator$<$$<$}} (std\+::ostream \&out, const \mbox{\hyperlink{classCotton_1_1Token}{Token}} \&token)
+\item 
+static void \mbox{\hyperlink{namespaceCotton_a10b45b6e01ecd482af12ce645b2ebaaa}{skip\+String}} (\mbox{\hyperlink{classCotton_1_1Lexer}{Lexer}} \&lexer, std\+::string\+::iterator \&it, std\+::string \&str)
+\item 
+static void \mbox{\hyperlink{namespaceCotton_a84b21d1a230a37ff150720ab71f9b1ca}{skip\+Character}} (\mbox{\hyperlink{classCotton_1_1Lexer}{Lexer}} \&lexer, std\+::string\+::iterator \&it, std\+::string \&str)
+\item 
+static void \mbox{\hyperlink{namespaceCotton_ae64aaa8d00f29cee0ef1b90bbc8f9610}{split\+By\+Operator}} (const \mbox{\hyperlink{classCotton_1_1Token}{Token}} \&token, std\+::string\+::const\+\_\+iterator \&split\+\_\+end, std\+::string\+::const\+\_\+iterator \&it, std\+::vector$<$ \mbox{\hyperlink{classCotton_1_1Token}{Token}} $>$ \&res, const std\+::string \&splitter)
+\item 
+static void \mbox{\hyperlink{namespaceCotton_a64888620ac6de129c3ec260c1a348ee4}{print\+Prefix}} (int indent, int step, bool init=true)
+\item 
+void \mbox{\hyperlink{namespaceCotton_a56eeda33d6a8d55ee5826bc4aeb84fd7}{\+\_\+\+\_\+passert\+\_\+\+\_\+}} (bool value, const char $\ast$assertion, const std\+::string \&message, \mbox{\hyperlink{classCotton_1_1Parser}{Parser}} $\ast$parser, const char $\ast$filename, int line)
+\item 
+static bool \mbox{\hyperlink{namespaceCotton_aed4b9121fae2e3083770b9116807dcf4}{skip\+Semicolons}} (\mbox{\hyperlink{classCotton_1_1Parser}{Parser}} $\ast$parser, bool single=false)
+\end{DoxyCompactItemize}
+\doxysubsection*{Variables}
+\begin{DoxyCompactItemize}
+\item 
+static std\+::vector$<$ std\+::string $>$ \mbox{\hyperlink{namespaceCotton_a560eed0338a50b1570d02ec9580a9d62}{sorted\+Splitters}}
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Typedef Documentation}
+\mbox{\Hypertarget{namespaceCotton_a9e7023bcd4a0477c8d3e142178ccfcd1}\label{namespaceCotton_a9e7023bcd4a0477c8d3e142178ccfcd1}} 
+\index{Cotton@{Cotton}!BinaryOperatorAdapter@{BinaryOperatorAdapter}}
+\index{BinaryOperatorAdapter@{BinaryOperatorAdapter}!Cotton@{Cotton}}
+\doxysubsubsection{\texorpdfstring{BinaryOperatorAdapter}{BinaryOperatorAdapter}}
+{\footnotesize\ttfamily typedef \mbox{\hyperlink{classCotton_1_1Object}{Object}}$\ast$($\ast$ Cotton\+::\+Binary\+Operator\+Adapter) (\mbox{\hyperlink{classCotton_1_1Object}{Object}} $\ast$self, \mbox{\hyperlink{classCotton_1_1Object}{Object}} $\ast$arg, \mbox{\hyperlink{classCotton_1_1Runtime}{Runtime}} $\ast$rt, bool execution\+\_\+result\+\_\+matters)}
+
+\mbox{\Hypertarget{namespaceCotton_a9eb1e20a339dd01caadb01bd0d6c557a}\label{namespaceCotton_a9eb1e20a339dd01caadb01bd0d6c557a}} 
+\index{Cotton@{Cotton}!LibraryLoadPoint@{LibraryLoadPoint}}
+\index{LibraryLoadPoint@{LibraryLoadPoint}!Cotton@{Cotton}}
+\doxysubsubsection{\texorpdfstring{LibraryLoadPoint}{LibraryLoadPoint}}
+{\footnotesize\ttfamily typedef \mbox{\hyperlink{classCotton_1_1Object}{Object}}$\ast$($\ast$ Cotton\+::\+Library\+Load\+Point) (\mbox{\hyperlink{classCotton_1_1Runtime}{Runtime}} $\ast$rt)}
+
+\mbox{\Hypertarget{namespaceCotton_ab396e7651ff27975dc2f7725fe437def}\label{namespaceCotton_ab396e7651ff27975dc2f7725fe437def}} 
+\index{Cotton@{Cotton}!NaryOperatorAdapter@{NaryOperatorAdapter}}
+\index{NaryOperatorAdapter@{NaryOperatorAdapter}!Cotton@{Cotton}}
+\doxysubsubsection{\texorpdfstring{NaryOperatorAdapter}{NaryOperatorAdapter}}
+{\footnotesize\ttfamily typedef \mbox{\hyperlink{classCotton_1_1Object}{Object}}$\ast$($\ast$ Cotton\+::\+Nary\+Operator\+Adapter) (\mbox{\hyperlink{classCotton_1_1Object}{Object}} $\ast$self, const std\+::vector$<$ \mbox{\hyperlink{classCotton_1_1Object}{Object}} $\ast$ $>$ \&args, \mbox{\hyperlink{classCotton_1_1Runtime}{Runtime}} $\ast$rt, bool execution\+\_\+result\+\_\+matters)}
+
+\mbox{\Hypertarget{namespaceCotton_a786827371b99b78038c49209261e0f40}\label{namespaceCotton_a786827371b99b78038c49209261e0f40}} 
+\index{Cotton@{Cotton}!UnaryOperatorAdapter@{UnaryOperatorAdapter}}
+\index{UnaryOperatorAdapter@{UnaryOperatorAdapter}!Cotton@{Cotton}}
+\doxysubsubsection{\texorpdfstring{UnaryOperatorAdapter}{UnaryOperatorAdapter}}
+{\footnotesize\ttfamily typedef \mbox{\hyperlink{classCotton_1_1Object}{Object}}$\ast$($\ast$ Cotton\+::\+Unary\+Operator\+Adapter) (\mbox{\hyperlink{classCotton_1_1Object}{Object}} $\ast$self, \mbox{\hyperlink{classCotton_1_1Runtime}{Runtime}} $\ast$rt, bool execution\+\_\+result\+\_\+matters)}
+
+
+
+\doxysubsection{Function Documentation}
+\mbox{\Hypertarget{namespaceCotton_a73418ada675ebb208ef88a1dd8d2099d}\label{namespaceCotton_a73418ada675ebb208ef88a1dd8d2099d}} 
+\index{Cotton@{Cotton}!\_\_assert\_\_@{\_\_assert\_\_}}
+\index{\_\_assert\_\_@{\_\_assert\_\_}!Cotton@{Cotton}}
+\doxysubsubsection{\texorpdfstring{\_\_assert\_\_()}{\_\_assert\_\_()}}
+{\footnotesize\ttfamily void Cotton\+::\+\_\+\+\_\+assert\+\_\+\+\_\+ (\begin{DoxyParamCaption}\item[{bool}]{value,  }\item[{const char $\ast$}]{assertion,  }\item[{const std\+::string \&}]{message,  }\item[{\mbox{\hyperlink{classCotton_1_1ErrorManager}{Error\+Manager}} $\ast$}]{error\+\_\+manager,  }\item[{const char $\ast$}]{filename,  }\item[{int}]{line }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{namespaceCotton_a56eeda33d6a8d55ee5826bc4aeb84fd7}\label{namespaceCotton_a56eeda33d6a8d55ee5826bc4aeb84fd7}} 
+\index{Cotton@{Cotton}!\_\_passert\_\_@{\_\_passert\_\_}}
+\index{\_\_passert\_\_@{\_\_passert\_\_}!Cotton@{Cotton}}
+\doxysubsubsection{\texorpdfstring{\_\_passert\_\_()}{\_\_passert\_\_()}}
+{\footnotesize\ttfamily void Cotton\+::\+\_\+\+\_\+passert\+\_\+\+\_\+ (\begin{DoxyParamCaption}\item[{bool}]{value,  }\item[{const char $\ast$}]{assertion,  }\item[{const std\+::string \&}]{message,  }\item[{\mbox{\hyperlink{classCotton_1_1Parser}{Parser}} $\ast$}]{parser,  }\item[{const char $\ast$}]{filename,  }\item[{int}]{line }\end{DoxyParamCaption})}
+
+
+
+References Cotton\+::\+Parser\+::signal\+Error().
+
+\mbox{\Hypertarget{namespaceCotton_a8f5f703c4f5bd829cf81763358f951b2}\label{namespaceCotton_a8f5f703c4f5bd829cf81763358f951b2}} 
+\index{Cotton@{Cotton}!getCharacter@{getCharacter}}
+\index{getCharacter@{getCharacter}!Cotton@{Cotton}}
+\doxysubsubsection{\texorpdfstring{getCharacter()}{getCharacter()}}
+{\footnotesize\ttfamily static char Cotton\+::get\+Character (\begin{DoxyParamCaption}\item[{std\+::string\+::const\+\_\+iterator \&}]{it,  }\item[{const std\+::string \&}]{str,  }\item[{\mbox{\hyperlink{classCotton_1_1ErrorManager}{Error\+Manager}} $\ast$}]{error\+\_\+manager }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}}
+
+
+
+References Cotton\+::\+Error\+Manager\+::signal\+Error().
+
+
+
+Referenced by Cotton\+::\+Lexer\+::faze2\+Form\+Connected\+Tokens(), and parse\+String().
+
+\mbox{\Hypertarget{namespaceCotton_a23e89c555bdb5aaf0c5ee25c5c710946}\label{namespaceCotton_a23e89c555bdb5aaf0c5ee25c5c710946}} 
+\index{Cotton@{Cotton}!getList@{getList}}
+\index{getList@{getList}!Cotton@{Cotton}}
+\doxysubsubsection{\texorpdfstring{getList()}{getList()}}
+{\footnotesize\ttfamily static std\+::vector$<$\mbox{\hyperlink{classCotton_1_1Object}{Object}} $\ast$$>$ Cotton\+::get\+List (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{classCotton_1_1ExprNode}{Expr\+Node}} $\ast$}]{expr,  }\item[{\mbox{\hyperlink{classCotton_1_1Runtime}{Runtime}} $\ast$}]{rt }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}}
+
+
+
+References Cotton\+::\+Runtime\+::\+Error\+Context\+::area, Cotton\+::\+Operator\+Node\+::\+COMMA, Cotton\+::\+Runtime\+::copy(), Cotton\+::\+Runtime\+::execute(), Cotton\+::\+Operator\+Node\+::first, Cotton\+::\+Runtime\+::gc, Cotton\+::\+Runtime\+::get\+Context(), Cotton\+::\+GC\+::hold(), Cotton\+::\+Expr\+Node\+::id, Cotton\+::\+Operator\+Node\+::id, is\+Exec\+Flag\+DIRECT\+\_\+\+PASS, Cotton\+::\+Runtime\+::new\+Context(), Cotton\+::\+Expr\+Node\+::op, Cotton\+::\+Expr\+Node\+::\+OPERATOR, Cotton\+::\+Runtime\+::pop\+Context(), Profiler\+CAPTURE, Cotton\+::\+Operator\+Node\+::second, and Cotton\+::\+Expr\+Node\+::text\+\_\+area.
+
+
+
+Referenced by Cotton\+::\+Runtime\+::execute().
+
+\mbox{\Hypertarget{namespaceCotton_a306e07b0bec5affd739e10a04d80eb40}\label{namespaceCotton_a306e07b0bec5affd739e10a04d80eb40}} 
+\index{Cotton@{Cotton}!getList\_addToContext@{getList\_addToContext}}
+\index{getList\_addToContext@{getList\_addToContext}!Cotton@{Cotton}}
+\doxysubsubsection{\texorpdfstring{getList\_addToContext()}{getList\_addToContext()}}
+{\footnotesize\ttfamily static void Cotton\+::get\+List\+\_\+add\+To\+Context (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{classCotton_1_1ExprNode}{Expr\+Node}} $\ast$}]{expr,  }\item[{\mbox{\hyperlink{classCotton_1_1Runtime}{Runtime}} $\ast$}]{rt }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}}
+
+
+
+References Cotton\+::\+Operator\+Node\+::\+COMMA, Cotton\+::\+Operator\+Node\+::first, Cotton\+::\+Runtime\+::get\+Context(), Cotton\+::\+Expr\+Node\+::id, Cotton\+::\+Operator\+Node\+::id, Cotton\+::\+Expr\+Node\+::op, Cotton\+::\+Expr\+Node\+::\+OPERATOR, Profiler\+CAPTURE, Cotton\+::\+Operator\+Node\+::second, Cotton\+::\+Runtime\+::\+Error\+Context\+::sub\+\_\+areas, and Cotton\+::\+Expr\+Node\+::text\+\_\+area.
+
+
+
+Referenced by Cotton\+::\+Runtime\+::execute().
+
+\mbox{\Hypertarget{namespaceCotton_a6be7166a333d9f3693d796933fa07cc3}\label{namespaceCotton_a6be7166a333d9f3693d796933fa07cc3}} 
+\index{Cotton@{Cotton}!intersection@{intersection}}
+\index{intersection@{intersection}!Cotton@{Cotton}}
+\doxysubsubsection{\texorpdfstring{intersection()}{intersection()}}
+{\footnotesize\ttfamily static bool Cotton\+::intersection (\begin{DoxyParamCaption}\item[{int64\+\_\+t}]{l,  }\item[{int64\+\_\+t}]{r,  }\item[{int64\+\_\+t}]{L,  }\item[{int64\+\_\+t}]{R }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}}
+
+
+
+Referenced by Cotton\+::\+Error\+Manager\+::signal\+Error().
+
+\mbox{\Hypertarget{namespaceCotton_a0ae4664c5c588878fe81d999369d01ec}\label{namespaceCotton_a0ae4664c5c588878fe81d999369d01ec}} 
+\index{Cotton@{Cotton}!mark@{mark}}
+\index{mark@{mark}!Cotton@{Cotton}}
+\doxysubsubsection{\texorpdfstring{mark()}{mark()}\hspace{0.1cm}{\footnotesize\ttfamily [1/3]}}
+{\footnotesize\ttfamily static void Cotton\+::mark (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{classCotton_1_1Instance}{Instance}} $\ast$}]{ins,  }\item[{\mbox{\hyperlink{classCotton_1_1Runtime}{Runtime}} $\ast$}]{rt }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}}
+
+
+
+References Cotton\+::\+Runtime\+::gc, Cotton\+::\+GC\+::gc\+\_\+mark, Cotton\+::\+Instance\+::gc\+\_\+mark, Cotton\+::\+Instance\+::get\+GCReachable(), and Profiler\+CAPTURE.
+
+
+
+Referenced by mark(), and Cotton\+::\+GC\+::run\+Cycle().
+
+\mbox{\Hypertarget{namespaceCotton_a41307a194b9a0edc9dd2ea0130a4a360}\label{namespaceCotton_a41307a194b9a0edc9dd2ea0130a4a360}} 
+\index{Cotton@{Cotton}!mark@{mark}}
+\index{mark@{mark}!Cotton@{Cotton}}
+\doxysubsubsection{\texorpdfstring{mark()}{mark()}\hspace{0.1cm}{\footnotesize\ttfamily [2/3]}}
+{\footnotesize\ttfamily static void Cotton\+::mark (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{classCotton_1_1Object}{Object}} $\ast$}]{obj,  }\item[{\mbox{\hyperlink{classCotton_1_1Runtime}{Runtime}} $\ast$}]{rt }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}}
+
+
+
+References Cotton\+::\+Runtime\+::gc, Cotton\+::\+GC\+::gc\+\_\+mark, Cotton\+::\+Object\+::gc\+\_\+mark, Cotton\+::\+Object\+::get\+GCReachable(), Cotton\+::\+Object\+::instance, mark(), Profiler\+CAPTURE, and Cotton\+::\+Object\+::type.
+
+\mbox{\Hypertarget{namespaceCotton_ac334e51c68e7bf83ad45963fd142dfdc}\label{namespaceCotton_ac334e51c68e7bf83ad45963fd142dfdc}} 
+\index{Cotton@{Cotton}!mark@{mark}}
+\index{mark@{mark}!Cotton@{Cotton}}
+\doxysubsubsection{\texorpdfstring{mark()}{mark()}\hspace{0.1cm}{\footnotesize\ttfamily [3/3]}}
+{\footnotesize\ttfamily static void Cotton\+::mark (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{classCotton_1_1Type}{Type}} $\ast$}]{type,  }\item[{\mbox{\hyperlink{classCotton_1_1Runtime}{Runtime}} $\ast$}]{rt }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}}
+
+
+
+References Cotton\+::\+Runtime\+::gc, Cotton\+::\+GC\+::gc\+\_\+mark, Cotton\+::\+Type\+::gc\+\_\+mark, Cotton\+::\+Type\+::get\+GCReachable(), mark(), and Profiler\+CAPTURE.
+
+\mbox{\Hypertarget{namespaceCotton_aa64fc92ae82e82cf586b2f08458682a4}\label{namespaceCotton_aa64fc92ae82e82cf586b2f08458682a4}} 
+\index{Cotton@{Cotton}!operator$<$$<$@{operator$<$$<$}}
+\index{operator$<$$<$@{operator$<$$<$}!Cotton@{Cotton}}
+\doxysubsubsection{\texorpdfstring{operator$<$$<$()}{operator<<()}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
+{\footnotesize\ttfamily std\+::ostream \& Cotton\+::operator$<$$<$ (\begin{DoxyParamCaption}\item[{std\+::ostream \&}]{out,  }\item[{const \mbox{\hyperlink{classCotton_1_1Token}{Token}} \&}]{token }\end{DoxyParamCaption})}
+
+
+
+References Cotton\+::\+Token\+::\+AND\+\_\+\+OP, Cotton\+::\+Token\+::\+ASSIGN\+\_\+\+DIV\+\_\+\+OP, Cotton\+::\+Token\+::\+ASSIGN\+\_\+\+MINUS\+\_\+\+OP, Cotton\+::\+Token\+::\+ASSIGN\+\_\+\+MULT\+\_\+\+OP, Cotton\+::\+Token\+::\+ASSIGN\+\_\+\+OP, Cotton\+::\+Token\+::\+ASSIGN\+\_\+\+PLUS\+\_\+\+OP, Cotton\+::\+Token\+::\+ASSIGN\+\_\+\+REMAINDER\+\_\+\+OP, Cotton\+::\+Token\+::\+AT\+\_\+\+OP, Cotton\+::\+Token\+::\+BITAND\+\_\+\+OP, Cotton\+::\+Token\+::\+BITOR\+\_\+\+OP, Cotton\+::\+Token\+::\+BITXOR\+\_\+\+OP, Cotton\+::\+Token\+::bool\+\_\+value, Cotton\+::\+Token\+::\+BOOLEAN\+\_\+\+LIT, Cotton\+::\+Token\+::\+BREAK\+\_\+\+KW, Cotton\+::\+Token\+::\+CHAR\+\_\+\+LIT, Cotton\+::\+Token\+::char\+\_\+value, Cotton\+::\+Token\+::\+CLOSE\+\_\+\+BRACKET, Cotton\+::\+Token\+::\+CLOSE\+\_\+\+CURLY\+\_\+\+BRACKET, Cotton\+::\+Token\+::\+CLOSE\+\_\+\+SQUARE\+\_\+\+BRACKET, Cotton\+::\+Token\+::\+COMMA, Cotton\+::\+Token\+::\+CONTINUE\+\_\+\+KW, Cotton\+::\+Token\+::data, Cotton\+::\+Token\+::\+DIV\+\_\+\+OP, Cotton\+::\+Token\+::\+DOT\+\_\+\+OP, Cotton\+::\+Token\+::\+ELSE\+\_\+\+KW, Cotton\+::\+Token\+::\+EQUAL\+\_\+\+OP, Cotton\+::\+Token\+::\+FOR\+\_\+\+KW, Cotton\+::\+Token\+::\+FUNCTION\+\_\+\+KW, Cotton\+::\+Token\+::\+GREATER\+\_\+\+EQUAL\+\_\+\+OP, Cotton\+::\+Token\+::\+GREATER\+\_\+\+OP, Cotton\+::\+Token\+::id, Cotton\+::\+Token\+::\+IDENTIFIER, Cotton\+::\+Token\+::\+IF\+\_\+\+KW, Cotton\+::\+Token\+::\+INT\+\_\+\+LIT, Cotton\+::\+Token\+::int\+\_\+value, Cotton\+::\+Token\+::\+INVERSE\+\_\+\+OP, Cotton\+::\+Token\+::\+LEFT\+\_\+\+SHIFT\+\_\+\+OP, Cotton\+::\+Token\+::\+LESS\+\_\+\+EQUAL\+\_\+\+OP, Cotton\+::\+Token\+::\+LESS\+\_\+\+OP, Cotton\+::\+Token\+::\+METHOD\+\_\+\+KW, Cotton\+::\+Token\+::\+MINUS\+\_\+\+MINUS\+\_\+\+OP, Cotton\+::\+Token\+::\+MINUS\+\_\+\+OP, Cotton\+::\+Token\+::\+MULT\+\_\+\+OP, Cotton\+::\+Token\+::\+NOT\+\_\+\+EQUAL\+\_\+\+OP, Cotton\+::\+Token\+::\+NOT\+\_\+\+OP, Cotton\+::\+Token\+::\+NOTHING\+\_\+\+LIT, Cotton\+::\+Token\+::\+OPEN\+\_\+\+BRACKET, Cotton\+::\+Token\+::\+OPEN\+\_\+\+CURLY\+\_\+\+BRACKET, Cotton\+::\+Token\+::\+OPEN\+\_\+\+SQUARE\+\_\+\+BRACKET, Cotton\+::\+Token\+::\+OR\+\_\+\+OP, Cotton\+::\+Token\+::\+PLUS\+\_\+\+OP, Cotton\+::\+Token\+::\+PLUS\+\_\+\+PLUS\+\_\+\+OP, Cotton\+::\+Token\+::\+REAL\+\_\+\+LIT, Cotton\+::\+Token\+::real\+\_\+value, Cotton\+::\+Token\+::\+REMAINDER\+\_\+\+OP, Cotton\+::\+Token\+::\+RETURN\+\_\+\+KW, Cotton\+::\+Token\+::\+RIGHT\+\_\+\+SHIFT\+\_\+\+OP, Cotton\+::\+Token\+::\+SEMICOLON, Cotton\+::\+Token\+::\+STRING\+\_\+\+LIT, Cotton\+::\+Token\+::string\+\_\+value, Cotton\+::\+Token\+::\+TYPE\+\_\+\+KW, Cotton\+::\+Token\+::\+UNSCOPED\+\_\+\+KW, and Cotton\+::\+Token\+::\+WHILE\+\_\+\+KW.
+
+\mbox{\Hypertarget{namespaceCotton_a5aba6a00a9d98acaf139974346d403ee}\label{namespaceCotton_a5aba6a00a9d98acaf139974346d403ee}} 
+\index{Cotton@{Cotton}!operator$<$$<$@{operator$<$$<$}}
+\index{operator$<$$<$@{operator$<$$<$}!Cotton@{Cotton}}
+\doxysubsubsection{\texorpdfstring{operator$<$$<$()}{operator<<()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
+{\footnotesize\ttfamily std\+::ostream \& Cotton\+::operator$<$$<$ (\begin{DoxyParamCaption}\item[{std\+::ostream \&}]{stream,  }\item[{\mbox{\hyperlink{classCotton_1_1Object}{Object}} $\ast$}]{obj }\end{DoxyParamCaption})}
+
+
+
+References Cotton\+::\+Object\+::gc\+\_\+mark, Cotton\+::\+Object\+::instance, Cotton\+::\+Object\+::is\+\_\+instance, Profiler\+CAPTURE, and Cotton\+::\+Object\+::type.
+
+\mbox{\Hypertarget{namespaceCotton_a674d3807d5f4f5e6017e5ef3b7b55fe3}\label{namespaceCotton_a674d3807d5f4f5e6017e5ef3b7b55fe3}} 
+\index{Cotton@{Cotton}!parseString@{parseString}}
+\index{parseString@{parseString}!Cotton@{Cotton}}
+\doxysubsubsection{\texorpdfstring{parseString()}{parseString()}}
+{\footnotesize\ttfamily static std\+::string Cotton\+::parse\+String (\begin{DoxyParamCaption}\item[{const std\+::string \&}]{str,  }\item[{\mbox{\hyperlink{classCotton_1_1ErrorManager}{Error\+Manager}} $\ast$}]{error\+\_\+manager }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}}
+
+
+
+References eassert, and get\+Character().
+
+
+
+Referenced by Cotton\+::\+Token\+::identify().
+
+\mbox{\Hypertarget{namespaceCotton_a64888620ac6de129c3ec260c1a348ee4}\label{namespaceCotton_a64888620ac6de129c3ec260c1a348ee4}} 
+\index{Cotton@{Cotton}!printPrefix@{printPrefix}}
+\index{printPrefix@{printPrefix}!Cotton@{Cotton}}
+\doxysubsubsection{\texorpdfstring{printPrefix()}{printPrefix()}}
+{\footnotesize\ttfamily static void Cotton\+::print\+Prefix (\begin{DoxyParamCaption}\item[{int}]{indent,  }\item[{int}]{step,  }\item[{bool}]{init = {\ttfamily true} }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}}
+
+
+
+Referenced by Cotton\+::\+Expr\+Node\+::print(), Cotton\+::\+Func\+Def\+Node\+::print(), Cotton\+::\+Type\+Def\+Node\+::print(), Cotton\+::\+Operator\+Node\+::print(), Cotton\+::\+Atom\+Node\+::print(), Cotton\+::\+Par\+Expr\+Node\+::print(), Cotton\+::\+Ident\+List\+Node\+::print(), Cotton\+::\+Stmt\+Node\+::print(), Cotton\+::\+While\+Stmt\+Node\+::print(), Cotton\+::\+For\+Stmt\+Node\+::print(), Cotton\+::\+If\+Stmt\+Node\+::print(), Cotton\+::\+Return\+Stmt\+Node\+::print(), and Cotton\+::\+Block\+Stmt\+Node\+::print().
+
+\mbox{\Hypertarget{namespaceCotton_a84b21d1a230a37ff150720ab71f9b1ca}\label{namespaceCotton_a84b21d1a230a37ff150720ab71f9b1ca}} 
+\index{Cotton@{Cotton}!skipCharacter@{skipCharacter}}
+\index{skipCharacter@{skipCharacter}!Cotton@{Cotton}}
+\doxysubsubsection{\texorpdfstring{skipCharacter()}{skipCharacter()}}
+{\footnotesize\ttfamily static void Cotton\+::skip\+Character (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{classCotton_1_1Lexer}{Lexer}} \&}]{lexer,  }\item[{std\+::string\+::iterator \&}]{it,  }\item[{std\+::string \&}]{str }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}}
+
+
+
+References Cotton\+::\+Lexer\+::error\+\_\+manager, and Cotton\+::\+Error\+Manager\+::signal\+Error().
+
+
+
+Referenced by Cotton\+::\+Lexer\+::faze1\+Fill\+Comments().
+
+\mbox{\Hypertarget{namespaceCotton_aed4b9121fae2e3083770b9116807dcf4}\label{namespaceCotton_aed4b9121fae2e3083770b9116807dcf4}} 
+\index{Cotton@{Cotton}!skipSemicolons@{skipSemicolons}}
+\index{skipSemicolons@{skipSemicolons}!Cotton@{Cotton}}
+\doxysubsubsection{\texorpdfstring{skipSemicolons()}{skipSemicolons()}}
+{\footnotesize\ttfamily static bool Cotton\+::skip\+Semicolons (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{classCotton_1_1Parser}{Parser}} $\ast$}]{parser,  }\item[{bool}]{single = {\ttfamily false} }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}}
+
+
+
+References Cotton\+::\+Parser\+::consume(), Cotton\+::\+Parser\+::has\+Next(), and Cotton\+::\+Token\+::\+SEMICOLON.
+
+
+
+Referenced by Cotton\+::\+Parser\+::parse(), and Cotton\+::\+Parser\+::parse\+Stmt().
+
+\mbox{\Hypertarget{namespaceCotton_a10b45b6e01ecd482af12ce645b2ebaaa}\label{namespaceCotton_a10b45b6e01ecd482af12ce645b2ebaaa}} 
+\index{Cotton@{Cotton}!skipString@{skipString}}
+\index{skipString@{skipString}!Cotton@{Cotton}}
+\doxysubsubsection{\texorpdfstring{skipString()}{skipString()}}
+{\footnotesize\ttfamily static void Cotton\+::skip\+String (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{classCotton_1_1Lexer}{Lexer}} \&}]{lexer,  }\item[{std\+::string\+::iterator \&}]{it,  }\item[{std\+::string \&}]{str }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}}
+
+
+
+References Cotton\+::\+Lexer\+::error\+\_\+manager, and Cotton\+::\+Error\+Manager\+::signal\+Error().
+
+
+
+Referenced by Cotton\+::\+Lexer\+::faze1\+Fill\+Comments().
+
+\mbox{\Hypertarget{namespaceCotton_ae64aaa8d00f29cee0ef1b90bbc8f9610}\label{namespaceCotton_ae64aaa8d00f29cee0ef1b90bbc8f9610}} 
+\index{Cotton@{Cotton}!splitByOperator@{splitByOperator}}
+\index{splitByOperator@{splitByOperator}!Cotton@{Cotton}}
+\doxysubsubsection{\texorpdfstring{splitByOperator()}{splitByOperator()}}
+{\footnotesize\ttfamily static void Cotton\+::split\+By\+Operator (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{classCotton_1_1Token}{Token}} \&}]{token,  }\item[{std\+::string\+::const\+\_\+iterator \&}]{split\+\_\+end,  }\item[{std\+::string\+::const\+\_\+iterator \&}]{it,  }\item[{std\+::vector$<$ \mbox{\hyperlink{classCotton_1_1Token}{Token}} $>$ \&}]{res,  }\item[{const std\+::string \&}]{splitter }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}}
+
+
+
+References Cotton\+::\+Token\+::begin\+\_\+pos, and Cotton\+::\+Token\+::data.
+
+
+
+Referenced by Cotton\+::\+Lexer\+::faze3\+Split\+By\+Operators\+And\+Separators(), and Cotton\+::\+Lexer\+::faze4\+Find\+Real\+Numbers().
+
+
+
+\doxysubsection{Variable Documentation}
+\mbox{\Hypertarget{namespaceCotton_a560eed0338a50b1570d02ec9580a9d62}\label{namespaceCotton_a560eed0338a50b1570d02ec9580a9d62}} 
+\index{Cotton@{Cotton}!sortedSplitters@{sortedSplitters}}
+\index{sortedSplitters@{sortedSplitters}!Cotton@{Cotton}}
+\doxysubsubsection{\texorpdfstring{sortedSplitters}{sortedSplitters}}
+{\footnotesize\ttfamily std\+::vector$<$std\+::string$>$ Cotton\+::sorted\+Splitters\hspace{0.3cm}{\ttfamily [static]}}
+
+{\bfseries Initial value\+:}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{= \{\textcolor{stringliteral}{"{}("{}},  \textcolor{stringliteral}{"{})"{}},  \textcolor{stringliteral}{"{}\{"{}}, \textcolor{stringliteral}{"{}\}"{}},  \textcolor{stringliteral}{"{}@"{}}, \textcolor{stringliteral}{"{};"{}},  \textcolor{stringliteral}{"{}++"{}}, \textcolor{stringliteral}{"{}-\/-\/"{}}, \textcolor{stringliteral}{"{}["{}}, \textcolor{stringliteral}{"{}]"{}}, \textcolor{stringliteral}{"{}+="{}}, \textcolor{stringliteral}{"{}-\/="{}}, \textcolor{stringliteral}{"{}!="{}}, \textcolor{stringliteral}{"{}\string~"{}}, \textcolor{stringliteral}{"{}*="{}}, \textcolor{stringliteral}{"{}/="{}}, \textcolor{stringliteral}{"{}\%="{}}, \textcolor{stringliteral}{"{}>>"{}},}
+\DoxyCodeLine{   \textcolor{stringliteral}{"{}<<"{}}, \textcolor{stringliteral}{"{}<="{}}, \textcolor{stringliteral}{"{}<"{}}, \textcolor{stringliteral}{"{}>="{}}, \textcolor{stringliteral}{"{}>"{}}, \textcolor{stringliteral}{"{}=="{}}, \textcolor{stringliteral}{"{}!"{}},  \textcolor{stringliteral}{"{}\&"{}},  \textcolor{stringliteral}{"{}\string^"{}}, \textcolor{stringliteral}{"{}|"{}}, \textcolor{stringliteral}{"{}="{}},  \textcolor{stringliteral}{"{}+"{}},  \textcolor{stringliteral}{"{}-\/"{}},  \textcolor{stringliteral}{"{}*"{}}, \textcolor{stringliteral}{"{}/"{}},  \textcolor{stringliteral}{"{}\%"{}},  \textcolor{stringliteral}{"{},"{}}\}}
+
+\end{DoxyCode}
+
+
+Referenced by Cotton\+::\+Lexer\+::faze3\+Split\+By\+Operators\+And\+Separators().
+

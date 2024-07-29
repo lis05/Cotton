@@ -1,0 +1,8 @@
+<map id="Cotton::GCDefaultStrategy::acknowledgePing" name="Cotton::GCDefaultStrategy::acknowledgePing">
+<area shape="rect" id="node1" title="Acknowledges a gc ping event. This function is called by the gc." alt="" coords="5,35,200,76"/>
+<area shape="rect" id="node2" href="$classCotton_1_1GCDefaultStrategy.html#a6cefe2e42fe59e9195c816427ff1776c" title=" " alt="" coords="248,35,443,76"/>
+<area shape="rect" id="node3" href="$classCotton_1_1GC.html#a69087d0bc5f560caa8a46bd373adab31" title="Runs a gc cycle." alt="" coords="491,42,648,69"/>
+<area shape="rect" id="node4" href="$classCotton_1_1GCStrategy.html#acea671df451fe3d6fe9d261aa039f799" title="Acknowledges the end of a gc cycle. This function is called by the gc." alt="" coords="696,5,887,47"/>
+<area shape="rect" id="node5" href="$namespaceCotton.html#a0ae4664c5c588878fe81d999369d01ec" title=" " alt="" coords="738,71,845,98"/>
+<area shape="rect" id="node6" href="$classCotton_1_1Instance.html#a4cac198d36dc6b1f7a3ff956ba3cc316" title=" " alt="" coords="935,71,1179,98"/>
+</map>

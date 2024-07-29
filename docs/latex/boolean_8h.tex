@@ -1,0 +1,57 @@
+\hypertarget{boolean_8h}{}\doxysection{cotton\+\_\+lib/src/cotton\+\_\+lib/builtin/types/boolean.h File Reference}
+\label{boolean_8h}\index{cotton\_lib/src/cotton\_lib/builtin/types/boolean.h@{cotton\_lib/src/cotton\_lib/builtin/types/boolean.h}}
+{\ttfamily \#include \char`\"{}../../back/api.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}../../front/api.\+h\char`\"{}}\newline
+Include dependency graph for boolean.\+h\+:\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{boolean_8h__incl}
+\end{center}
+\end{figure}
+This graph shows which files directly or indirectly include this file\+:\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{boolean_8h__dep__incl}
+\end{center}
+\end{figure}
+\doxysubsection*{Classes}
+\begin{DoxyCompactItemize}
+\item 
+class \mbox{\hyperlink{classCotton_1_1Builtin_1_1BooleanInstance}{Cotton\+::\+Builtin\+::\+Boolean\+Instance}}
+\item 
+class \mbox{\hyperlink{classCotton_1_1Builtin_1_1BooleanType}{Cotton\+::\+Builtin\+::\+Boolean\+Type}}
+\end{DoxyCompactItemize}
+\doxysubsection*{Namespaces}
+\begin{DoxyCompactItemize}
+\item 
+ \mbox{\hyperlink{namespaceCotton}{Cotton}}
+\item 
+ \mbox{\hyperlink{namespaceCotton_1_1Builtin}{Cotton\+::\+Builtin}}
+\end{DoxyCompactItemize}
+\doxysubsection*{Macros}
+\begin{DoxyCompactItemize}
+\item 
+\#define \mbox{\hyperlink{boolean_8h_aac7114a475d707a7ad7eee5e051505c3}{get\+Boolean\+Value\+Fast}}(obj)~(\mbox{\hyperlink{runtime_8h_a66dae358d269173c947b4a054b604fb1}{icast}}(obj-\/$>$instance, Boolean\+Instance)-\/$>$value)
+\end{DoxyCompactItemize}
+\doxysubsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+void \mbox{\hyperlink{namespaceCotton_1_1Builtin_a932a9aafa443608621984f46d46ce6b9}{Cotton\+::\+Builtin\+::install\+Boolean\+Methods}} (Type $\ast$type, Runtime $\ast$rt)
+\item 
+Object $\ast$ \mbox{\hyperlink{namespaceCotton_1_1Builtin_a71c39123dc638b389ee0f7adba1dc871}{Cotton\+::\+Builtin\+::make\+Boolean\+Instance\+Object}} (bool value, Runtime $\ast$rt)
+\item 
+bool \& \mbox{\hyperlink{namespaceCotton_1_1Builtin_abe4a18baefc0961bb2366741b758c70b}{Cotton\+::\+Builtin\+::get\+Boolean\+Value}} (Object $\ast$obj, Runtime $\ast$rt)
+\item 
+bool \& \mbox{\hyperlink{namespaceCotton_1_1Builtin_a24d17561b46f9facfeb2f5752aa50255}{Cotton\+::\+Builtin\+::get\+Boolean\+Value}} (Object $\ast$obj, Runtime $\ast$rt, const Text\+Area \&ta)
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Macro Definition Documentation}
+\mbox{\Hypertarget{boolean_8h_aac7114a475d707a7ad7eee5e051505c3}\label{boolean_8h_aac7114a475d707a7ad7eee5e051505c3}} 
+\index{boolean.h@{boolean.h}!getBooleanValueFast@{getBooleanValueFast}}
+\index{getBooleanValueFast@{getBooleanValueFast}!boolean.h@{boolean.h}}
+\doxysubsubsection{\texorpdfstring{getBooleanValueFast}{getBooleanValueFast}}
+{\footnotesize\ttfamily \#define get\+Boolean\+Value\+Fast(\begin{DoxyParamCaption}\item[{}]{obj }\end{DoxyParamCaption})~(\mbox{\hyperlink{runtime_8h_a66dae358d269173c947b4a054b604fb1}{icast}}(obj-\/$>$instance, Boolean\+Instance)-\/$>$value)}
+

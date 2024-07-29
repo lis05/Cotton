@@ -1,0 +1,6 @@
+<map id="Cotton::GC::runCycle" name="Cotton::GC::runCycle">
+<area shape="rect" id="node1" title="Runs a gc cycle." alt="" coords="5,42,163,69"/>
+<area shape="rect" id="node2" href="$classCotton_1_1GCStrategy.html#acea671df451fe3d6fe9d261aa039f799" title="Acknowledges the end of a gc cycle. This function is called by the gc." alt="" coords="211,5,401,47"/>
+<area shape="rect" id="node3" href="$namespaceCotton.html#a0ae4664c5c588878fe81d999369d01ec" title=" " alt="" coords="253,71,359,98"/>
+<area shape="rect" id="node4" href="$classCotton_1_1Instance.html#a4cac198d36dc6b1f7a3ff956ba3cc316" title=" " alt="" coords="449,71,693,98"/>
+</map>

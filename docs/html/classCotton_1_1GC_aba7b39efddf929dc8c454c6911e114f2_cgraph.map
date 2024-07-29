@@ -1,0 +1,4 @@
+<map id="Cotton::GC::track" name="Cotton::GC::track">
+<area shape="rect" id="node1" title="Tracks the instance;." alt="" coords="5,13,139,39"/>
+<area shape="rect" id="node2" href="$classCotton_1_1GCStrategy.html#a69ba8d01763f0c0b83178ddfb70a0b42" title="Acknowledges track of an Object. This function is called by the gc." alt="" coords="187,5,337,47"/>
+</map>

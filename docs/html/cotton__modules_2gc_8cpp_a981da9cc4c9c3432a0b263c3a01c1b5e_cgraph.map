@@ -1,0 +1,11 @@
+<map id="forceping" name="forceping">
+<area shape="rect" id="node1" title=" " alt="" coords="5,81,88,108"/>
+<area shape="rect" id="node2" href="$classCotton_1_1GC.html#a2d7666fe8fa167be6a23f5a5cf7ea136" title="Enables the gc." alt="" coords="136,5,280,32"/>
+<area shape="rect" id="node3" href="$classCotton_1_1GC.html#a880c5c701fb5f82cdd0976ee134b6904" title="Pings the gc. If the strategy&#39;s conditions are met, a gc cycle will be ran." alt="" coords="144,56,272,83"/>
+<area shape="rect" id="node5" href="$cotton__modules_2gc_8cpp.html#a8a9a931c8d2f228c4be3837eb7841716" title=" " alt="" coords="177,107,239,133"/>
+<area shape="rect" id="node7" href="$classCotton_1_1Runtime.html#ad0c19843334ad0f5d9691ce1f4c24433" title=" " alt="" coords="328,161,537,202"/>
+<area shape="rect" id="node4" href="$classCotton_1_1GCStrategy.html#ac2cbf5793795ddf5e5ec9a6729a48523" title="Acknowledges a gc ping event. This function is called by the gc." alt="" coords="359,30,506,71"/>
+<area shape="rect" id="node6" href="$classCotton_1_1Runtime.html#a2024ccb0ac390a0a5a3c0eae6a3b6998" title=" " alt="" coords="333,95,532,137"/>
+<area shape="rect" id="node8" href="$classCotton_1_1Runtime.html#af58dfac27bc82e7bedcd4192a41a2582" title=" " alt="" coords="585,168,792,195"/>
+<area shape="rect" id="node9" href="$classCotton_1_1ErrorManager.html#afb675bde7b9e68e912387eaecd15fb29" title=" " alt="" coords="840,161,1001,202"/>
+</map>

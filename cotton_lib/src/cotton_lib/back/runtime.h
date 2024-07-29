@@ -166,29 +166,28 @@ public:
     bool isOfType(Object *obj, BuiltinTypes type);
     bool isOfType(Object *obj, Type *type);
 
-    void verifyIsValidObject(Object *obj);
-    void verifyIsValidObject(Object *obj, const TextArea &ta);
-    void verifyIsTypeObject(Object *obj, Type *type);
-    void verifyIsTypeObject(Object *obj, Type *type, const TextArea &ta);
-    void verifyIsInstanceObject(Object *obj, Type *type);
-    void verifyIsInstanceObject(Object *obj, Type *type, const TextArea &ta);
-    void verifyIsOfType(Object *obj, BuiltinTypes type);
-    void verifyIsOfType(Object *obj, BuiltinTypes type, const TextArea &ta);
-    void verifyIsOfType(Object *obj, Type *type);
-    void verifyIsOfType(Object *obj, Type *type, const TextArea &ta);
+    enum ContextId { AREA_CTX = -1, SUB0_CTX = 0, SUB1_CTX = 1, SUB2_CTX = 2, SUB3_CTX = 3 };
 
-    void verifyMinArgsAmountFunc(const std::vector<Object *> &args, int64_t amount);
-    void verifyMinArgsAmountFunc(const std::vector<Object *> &args, int64_t amount, const TextArea &ta);
-    void verifyExactArgsAmountFunc(const std::vector<Object *> &args, int64_t amount);
-    void verifyExactArgsAmountFunc(const std::vector<Object *> &args, int64_t amount, const TextArea &ta);
+    TextArea &getTextArea(ContextId ctx_id);
 
-    void verifyMinArgsAmountMethod(const std::vector<Object *> &args, int64_t amount);
-    void verifyMinArgsAmountMethod(const std::vector<Object *> &args, int64_t amount, const TextArea &ta);
-    void verifyExactArgsAmountMethod(const std::vector<Object *> &args, int64_t amount);
-    void verifyExactArgsAmountMethod(const std::vector<Object *> &args, int64_t amount, const TextArea &ta);
-
-    void verifyHasMethod(Object *obj, int64_t id);
-    void verifyHasMethod(Object *obj, int64_t id, const TextArea &ta);
+    void verifyIsValidObject(Object *obj, ContextId ctx_id = ContextId::AREA_CTX);
+    void verifyIsTypeObject(Object *obj, Type *type, ContextId ctx_id = ContextId::AREA_CTX);
+    void verifyIsInstanceObject(Object *obj, Type *type, ContextId ctx_id = ContextId::AREA_CTX);
+    void verifyIsOfType(Object *obj, BuiltinTypes type, ContextId ctx_id = ContextId::AREA_CTX);
+    void verifyIsOfType(Object *obj, Type *type, ContextId ctx_id = ContextId::AREA_CTX);
+    void verifyMinArgsAmountFunc(const std::vector<Object *> &args,
+                                 int64_t                      amount,
+                                 ContextId                    ctx_id = ContextId::AREA_CTX);
+    void verifyExactArgsAmountFunc(const std::vector<Object *> &args,
+                                   int64_t                      amount,
+                                   ContextId                    ctx_id = ContextId::AREA_CTX);
+    void verifyMinArgsAmountMethod(const std::vector<Object *> &args,
+                                   int64_t                      amount,
+                                   ContextId                    ctx_id = ContextId::AREA_CTX);
+    void verifyExactArgsAmountMethod(const std::vector<Object *> &args,
+                                     int64_t                      amount,
+                                     ContextId                    ctx_id = ContextId::AREA_CTX);
+    void verifyHasMethod(Object *obj, int64_t id, ContextId ctx_id = ContextId::AREA_CTX);
 };
 
 namespace MagicMethods {

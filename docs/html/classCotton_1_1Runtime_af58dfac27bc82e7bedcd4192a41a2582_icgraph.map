@@ -1,0 +1,52 @@
+<map id="Cotton::Runtime::signalError" name="Cotton::Runtime::signalError">
+<area shape="rect" id="node1" title=" " alt="" coords="775,1181,981,1208"/>
+<area shape="rect" id="node2" href="$namespaceCotton_1_1Builtin.html#a642ae59c554b4232cc458132cc9565e4" title=" " alt="" coords="251,665,446,706"/>
+<area shape="rect" id="node4" href="$namespaceCotton_1_1Builtin.html#afcf1d271fb4867af0899836ac2cab7d7" title=" " alt="" coords="249,1799,449,1841"/>
+<area shape="rect" id="node6" href="$classCotton_1_1Object.html#a7e9cb6c7b209d630917cf44ff1a1b5dc" title=" " alt="" coords="526,119,705,145"/>
+<area shape="rect" id="node7" href="$classCotton_1_1Object.html#a0d094ab35778a57d84bb7f5d37cc7d8f" title=" " alt="" coords="259,18,438,59"/>
+<area shape="rect" id="node8" href="$namespaceCotton_1_1Builtin.html#a7392486716910060cc30131c4c02914e" title=" " alt="" coords="261,497,437,524"/>
+<area shape="rect" id="node10" href="$namespaceCotton_1_1Builtin.html#af40037088571d909b92952ba80af1ce9" title=" " alt="" coords="279,362,419,403"/>
+<area shape="rect" id="node11" href="$namespaceCotton_1_1Builtin.html#a5e0230b60ed966908f5570b279397900" title=" " alt="" coords="279,890,419,931"/>
+<area shape="rect" id="node12" href="$namespaceCotton_1_1Builtin.html#a9c00c73c6ab98726fa752713b6d46418" title=" " alt="" coords="279,730,419,771"/>
+<area shape="rect" id="node13" href="$namespaceCotton_1_1Builtin.html#a5447ec7ca80f9af021ac5b57ae5d706b" title=" " alt="" coords="279,1251,419,1293"/>
+<area shape="rect" id="node14" href="$namespaceCotton_1_1Builtin.html#a6e8b262b1d5356473ae46d071a1c7fe0" title=" " alt="" coords="279,1139,419,1181"/>
+<area shape="rect" id="node15" href="$classCotton_1_1Runtime.html#a3cbb87f39ece78bbf8b845291d184d26" title=" " alt="" coords="532,169,699,196"/>
+<area shape="rect" id="node17" href="$classCotton_1_1Builtin_1_1ArrayInstance.html#aaf7f5a1df7f3ca4340c59ec2c0c04c2d" title=" " alt="" coords="242,90,455,131"/>
+<area shape="rect" id="node21" href="$classCotton_1_1Builtin_1_1BooleanInstance.html#a04411e86b346df9d1f70fb4cdd85f7e0" title=" " alt="" coords="527,658,703,699"/>
+<area shape="rect" id="node22" href="$classCotton_1_1Builtin_1_1CharacterInstance.html#ab26feef19302e7e5d2940a3f2f932a02" title=" " alt="" coords="522,723,709,765"/>
+<area shape="rect" id="node23" href="$classCotton_1_1Builtin_1_1FunctionInstance.html#a7a6e0524c0fea52118026372714055a0" title=" " alt="" coords="526,789,705,830"/>
+<area shape="rect" id="node24" href="$classCotton_1_1Builtin_1_1IntegerInstance.html#a62ab55c1e1af8475b6b93a3fde86a8c8" title=" " alt="" coords="531,854,700,895"/>
+<area shape="rect" id="node25" href="$classCotton_1_1Builtin_1_1NothingInstance.html#aaf8708caa1ce55bf216412371a3c4046" title=" " alt="" coords="528,919,703,961"/>
+<area shape="rect" id="node26" href="$classCotton_1_1Builtin_1_1RealInstance.html#adb2233ed90a49ac0ed4f83c4ad882b66" title=" " alt="" coords="512,985,719,1026"/>
+<area shape="rect" id="node27" href="$classCotton_1_1Builtin_1_1StringInstance.html#a69d11e5837ebb38c4bb675882e838831" title=" " alt="" coords="507,1050,723,1091"/>
+<area shape="rect" id="node28" href="$classCotton_1_1Runtime.html#aea23f3d9844036d34f99ef10794b0cd1" title=" " alt="" coords="522,439,709,465"/>
+<area shape="rect" id="node30" href="$namespaceCotton_1_1Builtin.html#a542bbc3d4beaead24fec93c4bab83cfe" title=" " alt="" coords="259,431,438,473"/>
+<area shape="rect" id="node31" href="$classCotton_1_1Runtime.html#a9b81c470065f0254f5551bce533cfd1d" title=" " alt="" coords="516,1283,715,1309"/>
+<area shape="rect" id="node32" href="$classCotton_1_1Type.html#a34f99b749b6ae9d40d926ccd8c379c76" title=" " alt="" coords="258,1545,439,1572"/>
+<area shape="rect" id="node33" href="$classCotton_1_1Scope.html#a81558ea33e9d2d069f63cfe5977385f1" title=" " alt="" coords="518,1333,713,1360"/>
+<area shape="rect" id="node34" href="$classCotton_1_1Runtime.html#a15277c00df3ffec1418099dad1a366d9" title=" " alt="" coords="529,1384,701,1411"/>
+<area shape="rect" id="node35" href="$namespaceCotton_1_1Builtin.html#addc058eb52be8466e08d2a2bc9faa02d" title=" " alt="" coords="274,1865,423,1906"/>
+<area shape="rect" id="node36" href="$namespaceCotton_1_1Builtin.html#a974672e56d7417107a4353a0117727b8" title=" " alt="" coords="25,1989,174,2030"/>
+<area shape="rect" id="node37" href="$classCotton_1_1Runtime.html#a869d6bf384cc6f64c625462e2fceda88" title=" " alt="" coords="241,1647,456,1673"/>
+<area shape="rect" id="node38" href="$classCotton_1_1Instance.html#ab215fd454c6c2cf013d4f8d51c502f3d" title="Selects the field given by id from the instance. By default, the instance doesn&#39;t have any fields,..." alt="" coords="528,1603,703,1645"/>
+<area shape="rect" id="node39" href="$classCotton_1_1Builtin_1_1RecordInstance.html#ad9b1f1c08f52a9c2f6542632ac9e1838" title="Selects the field given by id from the instance. By default, the instance doesn&#39;t have any fields,..." alt="" coords="504,1669,727,1710"/>
+<area shape="rect" id="node40" href="$namespaceCotton_1_1Builtin.html#a4f841887deced01968006304f9c1bb06" title=" " alt="" coords="250,1074,447,1115"/>
+<area shape="rect" id="node41" href="$namespaceCotton_1_1Builtin.html#a9eec83054cb30f3f39bffac2200dafa5" title=" " alt="" coords="258,2047,439,2089"/>
+<area shape="rect" id="node42" href="$classCotton_1_1Runtime.html#a628ede56be5420c59dc5b83bee764b26" title=" " alt="" coords="511,541,720,582"/>
+<area shape="rect" id="node43" href="$classCotton_1_1Runtime.html#ad0c19843334ad0f5d9691ce1f4c24433" title=" " alt="" coords="511,1989,720,2030"/>
+<area shape="rect" id="node44" href="$classCotton_1_1Runtime.html#a328ab18e718a77b5c2a3964b92ea0de9" title=" " alt="" coords="249,1433,448,1474"/>
+<area shape="rect" id="node45" href="$classCotton_1_1Runtime.html#ade4191c66ab9079cc2ccda2a9282865a" title=" " alt="" coords="523,1115,707,1157"/>
+<area shape="rect" id="node46" href="$classCotton_1_1Runtime.html#ab6f1da74bfbbd4fefb9e3648b251b7b7" title=" " alt="" coords="257,1930,441,1971"/>
+<area shape="rect" id="node47" href="$classCotton_1_1Runtime.html#a6e26a136ecdd503b33b32c2fff89a9dc" title=" " alt="" coords="523,2106,707,2147"/>
+<area shape="rect" id="node48" href="$classCotton_1_1Runtime.html#a09e6eb493c46ca21c3334542f71c1088" title=" " alt="" coords="523,1486,707,1527"/>
+<area shape="rect" id="node49" href="$classCotton_1_1Runtime.html#a4fd275e26598059573a41f76a153c363" title=" " alt="" coords="517,221,714,262"/>
+<area shape="rect" id="node50" href="$classCotton_1_1Runtime.html#a9d9e06d86b5906ba1d11c2db21d8483a" title=" " alt="" coords="517,2274,714,2315"/>
+<area shape="rect" id="node3" href="$classCotton_1_1Builtin_1_1ArrayType.html#a7eb55818e3c73778b83bd104f9e0dbb2" title=" " alt="" coords="5,665,193,706"/>
+<area shape="rect" id="node5" href="$namespaceCotton_1_1Builtin.html#ad5da6e9016341ca39d76800cef4cd4d3" title=" " alt="" coords="18,1799,181,1841"/>
+<area shape="rect" id="node9" href="$namespaceCotton_1_1Builtin.html#af2c0c1ff49bb22aff2d97f9946579ca7" title=" " alt="" coords="18,599,181,641"/>
+<area shape="rect" id="node16" href="$namespaceCotton_1_1Builtin.html#a89db7247274c6ee4efd84eb6428012a6" title=" " alt="" coords="259,548,438,575"/>
+<area shape="rect" id="node18" href="$classCotton_1_1Runtime.html#ae2d1ce416a6585d000a9b5ea8f371223" title=" " alt="" coords="255,169,442,196"/>
+<area shape="rect" id="node19" href="$namespaceCotton.html#a23e89c555bdb5aaf0c5ee25c5c710946" title=" " alt="" coords="290,224,407,251"/>
+<area shape="rect" id="node20" href="$namespaceCotton_1_1Builtin.html#a76bc82e6124619aa65ebcd752658e71e" title=" " alt="" coords="255,282,442,323"/>
+<area shape="rect" id="node29" href="$namespaceCotton_1_1Builtin.html#af189204e834e39044af9dfaec00358cf" title=" " alt="" coords="279,599,419,641"/>
+</map>

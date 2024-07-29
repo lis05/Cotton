@@ -1,0 +1,182 @@
+\hypertarget{classCotton_1_1Lexer}{}\doxysection{Cotton\+::Lexer Class Reference}
+\label{classCotton_1_1Lexer}\index{Cotton::Lexer@{Cotton::Lexer}}
+
+
+{\ttfamily \#include $<$lexer.\+h$>$}
+
+\doxysubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+std\+::vector$<$ \mbox{\hyperlink{classCotton_1_1Token}{Token}} $>$ \mbox{\hyperlink{classCotton_1_1Lexer_ae12ff28ac608be3e941a6ae889765bc4}{process}} (std\+::string \&input)
+\item 
+std\+::vector$<$ \mbox{\hyperlink{classCotton_1_1Token}{Token}} $>$ \mbox{\hyperlink{classCotton_1_1Lexer_ae95e4bf2ec32af3c54fa68db02c2c589}{process\+File}} (const std\+::string \&filename)
+\item 
+\mbox{\hyperlink{classCotton_1_1Lexer_a59c17311984c0e16bb3202519ffdd14a}{Lexer}} ()=delete
+\item 
+\mbox{\hyperlink{classCotton_1_1Lexer_a9b17f6c4806156a71a3a6802ca1e09cc}{$\sim$\+Lexer}} ()=default
+\item 
+\mbox{\hyperlink{classCotton_1_1Lexer_a682d5edba8a057368c75f7c723cc02c3}{Lexer}} (\mbox{\hyperlink{classCotton_1_1ErrorManager}{Error\+Manager}} $\ast$\mbox{\hyperlink{classCotton_1_1Lexer_aaa5b8795ef201b0c453a4821d4bdda5d}{error\+\_\+manager}})
+\end{DoxyCompactItemize}
+\doxysubsection*{Public Attributes}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{classCotton_1_1ErrorManager}{Error\+Manager}} $\ast$ \mbox{\hyperlink{classCotton_1_1Lexer_aaa5b8795ef201b0c453a4821d4bdda5d}{error\+\_\+manager}}
+\end{DoxyCompactItemize}
+\doxysubsection*{Private Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+void \mbox{\hyperlink{classCotton_1_1Lexer_ab8f593b365d4b4a7931defae5955dc94}{faze1\+Fill\+Comments}} (std\+::string \&input)
+\item 
+std\+::vector$<$ \mbox{\hyperlink{classCotton_1_1Token}{Token}} $>$ \mbox{\hyperlink{classCotton_1_1Lexer_a9ecca5402ea2e7cb37f7b2194cc7007d}{faze2\+Form\+Connected\+Tokens}} (const std\+::string \&input)
+\item 
+std\+::vector$<$ \mbox{\hyperlink{classCotton_1_1Token}{Token}} $>$ \mbox{\hyperlink{classCotton_1_1Lexer_a18e2482ee3b41ee612bf5de238743d29}{faze3\+Split\+By\+Operators\+And\+Separators}} (const std\+::vector$<$ \mbox{\hyperlink{classCotton_1_1Token}{Token}} $>$ \&tokens)
+\item 
+std\+::vector$<$ \mbox{\hyperlink{classCotton_1_1Token}{Token}} $>$ \mbox{\hyperlink{classCotton_1_1Lexer_a5c5668d92429d7f9ae778ee05010bd6a}{faze4\+Find\+Real\+Numbers}} (const std\+::vector$<$ \mbox{\hyperlink{classCotton_1_1Token}{Token}} $>$ \&tokens)
+\item 
+void \mbox{\hyperlink{classCotton_1_1Lexer_a5e96d37b00ba1509a2e9d9ffbccb09a8}{faze5\+Identify\+Tokens}} (std\+::vector$<$ \mbox{\hyperlink{classCotton_1_1Token}{Token}} $>$ \&tokens)
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Constructor \& Destructor Documentation}
+\mbox{\Hypertarget{classCotton_1_1Lexer_a59c17311984c0e16bb3202519ffdd14a}\label{classCotton_1_1Lexer_a59c17311984c0e16bb3202519ffdd14a}} 
+\index{Cotton::Lexer@{Cotton::Lexer}!Lexer@{Lexer}}
+\index{Lexer@{Lexer}!Cotton::Lexer@{Cotton::Lexer}}
+\doxysubsubsection{\texorpdfstring{Lexer()}{Lexer()}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
+{\footnotesize\ttfamily Cotton\+::\+Lexer\+::\+Lexer (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [delete]}}
+
+\mbox{\Hypertarget{classCotton_1_1Lexer_a9b17f6c4806156a71a3a6802ca1e09cc}\label{classCotton_1_1Lexer_a9b17f6c4806156a71a3a6802ca1e09cc}} 
+\index{Cotton::Lexer@{Cotton::Lexer}!````~Lexer@{$\sim$Lexer}}
+\index{````~Lexer@{$\sim$Lexer}!Cotton::Lexer@{Cotton::Lexer}}
+\doxysubsubsection{\texorpdfstring{$\sim$Lexer()}{~Lexer()}}
+{\footnotesize\ttfamily Cotton\+::\+Lexer\+::$\sim$\+Lexer (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [default]}}
+
+\mbox{\Hypertarget{classCotton_1_1Lexer_a682d5edba8a057368c75f7c723cc02c3}\label{classCotton_1_1Lexer_a682d5edba8a057368c75f7c723cc02c3}} 
+\index{Cotton::Lexer@{Cotton::Lexer}!Lexer@{Lexer}}
+\index{Lexer@{Lexer}!Cotton::Lexer@{Cotton::Lexer}}
+\doxysubsubsection{\texorpdfstring{Lexer()}{Lexer()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
+{\footnotesize\ttfamily Cotton\+::\+Lexer\+::\+Lexer (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{classCotton_1_1ErrorManager}{Error\+Manager}} $\ast$}]{error\+\_\+manager }\end{DoxyParamCaption})}
+
+
+
+References error\+\_\+manager.
+
+
+
+\doxysubsection{Member Function Documentation}
+\mbox{\Hypertarget{classCotton_1_1Lexer_ab8f593b365d4b4a7931defae5955dc94}\label{classCotton_1_1Lexer_ab8f593b365d4b4a7931defae5955dc94}} 
+\index{Cotton::Lexer@{Cotton::Lexer}!faze1FillComments@{faze1FillComments}}
+\index{faze1FillComments@{faze1FillComments}!Cotton::Lexer@{Cotton::Lexer}}
+\doxysubsubsection{\texorpdfstring{faze1FillComments()}{faze1FillComments()}}
+{\footnotesize\ttfamily void Cotton\+::\+Lexer\+::faze1\+Fill\+Comments (\begin{DoxyParamCaption}\item[{std\+::string \&}]{input }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [private]}}
+
+
+
+References Cotton\+::skip\+Character(), and Cotton\+::skip\+String().
+
+
+
+Referenced by process().
+
+\mbox{\Hypertarget{classCotton_1_1Lexer_a9ecca5402ea2e7cb37f7b2194cc7007d}\label{classCotton_1_1Lexer_a9ecca5402ea2e7cb37f7b2194cc7007d}} 
+\index{Cotton::Lexer@{Cotton::Lexer}!faze2FormConnectedTokens@{faze2FormConnectedTokens}}
+\index{faze2FormConnectedTokens@{faze2FormConnectedTokens}!Cotton::Lexer@{Cotton::Lexer}}
+\doxysubsubsection{\texorpdfstring{faze2FormConnectedTokens()}{faze2FormConnectedTokens()}}
+{\footnotesize\ttfamily std\+::vector$<$ \mbox{\hyperlink{classCotton_1_1Token}{Token}} $>$ Cotton\+::\+Lexer\+::faze2\+Form\+Connected\+Tokens (\begin{DoxyParamCaption}\item[{const std\+::string \&}]{input }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [private]}}
+
+
+
+References Cotton\+::\+Token\+::\+CHAR\+\_\+\+LIT, eassert, error\+\_\+manager, Cotton\+::get\+Character(), Cotton\+::\+Error\+Manager\+::set\+Error\+Char\+Pos(), and Cotton\+::\+Token\+::\+STRING\+\_\+\+LIT.
+
+
+
+Referenced by process().
+
+\mbox{\Hypertarget{classCotton_1_1Lexer_a18e2482ee3b41ee612bf5de238743d29}\label{classCotton_1_1Lexer_a18e2482ee3b41ee612bf5de238743d29}} 
+\index{Cotton::Lexer@{Cotton::Lexer}!faze3SplitByOperatorsAndSeparators@{faze3SplitByOperatorsAndSeparators}}
+\index{faze3SplitByOperatorsAndSeparators@{faze3SplitByOperatorsAndSeparators}!Cotton::Lexer@{Cotton::Lexer}}
+\doxysubsubsection{\texorpdfstring{faze3SplitByOperatorsAndSeparators()}{faze3SplitByOperatorsAndSeparators()}}
+{\footnotesize\ttfamily std\+::vector$<$ \mbox{\hyperlink{classCotton_1_1Token}{Token}} $>$ Cotton\+::\+Lexer\+::faze3\+Split\+By\+Operators\+And\+Separators (\begin{DoxyParamCaption}\item[{const std\+::vector$<$ \mbox{\hyperlink{classCotton_1_1Token}{Token}} $>$ \&}]{tokens }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [private]}}
+
+
+
+References Cotton\+::\+Token\+::\+CHAR\+\_\+\+LIT, Cotton\+::sorted\+Splitters, Cotton\+::split\+By\+Operator(), and Cotton\+::\+Token\+::\+STRING\+\_\+\+LIT.
+
+
+
+Referenced by process().
+
+\mbox{\Hypertarget{classCotton_1_1Lexer_a5c5668d92429d7f9ae778ee05010bd6a}\label{classCotton_1_1Lexer_a5c5668d92429d7f9ae778ee05010bd6a}} 
+\index{Cotton::Lexer@{Cotton::Lexer}!faze4FindRealNumbers@{faze4FindRealNumbers}}
+\index{faze4FindRealNumbers@{faze4FindRealNumbers}!Cotton::Lexer@{Cotton::Lexer}}
+\doxysubsubsection{\texorpdfstring{faze4FindRealNumbers()}{faze4FindRealNumbers()}}
+{\footnotesize\ttfamily std\+::vector$<$ \mbox{\hyperlink{classCotton_1_1Token}{Token}} $>$ Cotton\+::\+Lexer\+::faze4\+Find\+Real\+Numbers (\begin{DoxyParamCaption}\item[{const std\+::vector$<$ \mbox{\hyperlink{classCotton_1_1Token}{Token}} $>$ \&}]{tokens }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [private]}}
+
+
+
+References Cotton\+::split\+By\+Operator().
+
+
+
+Referenced by process().
+
+\mbox{\Hypertarget{classCotton_1_1Lexer_a5e96d37b00ba1509a2e9d9ffbccb09a8}\label{classCotton_1_1Lexer_a5e96d37b00ba1509a2e9d9ffbccb09a8}} 
+\index{Cotton::Lexer@{Cotton::Lexer}!faze5IdentifyTokens@{faze5IdentifyTokens}}
+\index{faze5IdentifyTokens@{faze5IdentifyTokens}!Cotton::Lexer@{Cotton::Lexer}}
+\doxysubsubsection{\texorpdfstring{faze5IdentifyTokens()}{faze5IdentifyTokens()}}
+{\footnotesize\ttfamily void Cotton\+::\+Lexer\+::faze5\+Identify\+Tokens (\begin{DoxyParamCaption}\item[{std\+::vector$<$ \mbox{\hyperlink{classCotton_1_1Token}{Token}} $>$ \&}]{tokens }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [private]}}
+
+
+
+References error\+\_\+manager.
+
+
+
+Referenced by process().
+
+\mbox{\Hypertarget{classCotton_1_1Lexer_ae12ff28ac608be3e941a6ae889765bc4}\label{classCotton_1_1Lexer_ae12ff28ac608be3e941a6ae889765bc4}} 
+\index{Cotton::Lexer@{Cotton::Lexer}!process@{process}}
+\index{process@{process}!Cotton::Lexer@{Cotton::Lexer}}
+\doxysubsubsection{\texorpdfstring{process()}{process()}}
+{\footnotesize\ttfamily std\+::vector$<$ \mbox{\hyperlink{classCotton_1_1Token}{Token}} $>$ Cotton\+::\+Lexer\+::process (\begin{DoxyParamCaption}\item[{std\+::string \&}]{input }\end{DoxyParamCaption})}
+
+
+
+References faze1\+Fill\+Comments(), faze2\+Form\+Connected\+Tokens(), faze3\+Split\+By\+Operators\+And\+Separators(), faze4\+Find\+Real\+Numbers(), and faze5\+Identify\+Tokens().
+
+
+
+Referenced by Cotton\+::\+Builtin\+::\+CF\+\_\+cotton(), and process\+File().
+
+\mbox{\Hypertarget{classCotton_1_1Lexer_ae95e4bf2ec32af3c54fa68db02c2c589}\label{classCotton_1_1Lexer_ae95e4bf2ec32af3c54fa68db02c2c589}} 
+\index{Cotton::Lexer@{Cotton::Lexer}!processFile@{processFile}}
+\index{processFile@{processFile}!Cotton::Lexer@{Cotton::Lexer}}
+\doxysubsubsection{\texorpdfstring{processFile()}{processFile()}}
+{\footnotesize\ttfamily std\+::vector$<$ \mbox{\hyperlink{classCotton_1_1Token}{Token}} $>$ Cotton\+::\+Lexer\+::process\+File (\begin{DoxyParamCaption}\item[{const std\+::string \&}]{filename }\end{DoxyParamCaption})}
+
+
+
+References error\+\_\+manager, process(), Cotton\+::\+Error\+Manager\+::set\+Error\+Filename(), and Cotton\+::\+Error\+Manager\+::signal\+Error().
+
+
+
+Referenced by Cotton\+::\+Builtin\+::\+CF\+\_\+dumbrun(), Cotton\+::\+Builtin\+::\+CF\+\_\+smartrun(), and main().
+
+
+
+\doxysubsection{Member Data Documentation}
+\mbox{\Hypertarget{classCotton_1_1Lexer_aaa5b8795ef201b0c453a4821d4bdda5d}\label{classCotton_1_1Lexer_aaa5b8795ef201b0c453a4821d4bdda5d}} 
+\index{Cotton::Lexer@{Cotton::Lexer}!error\_manager@{error\_manager}}
+\index{error\_manager@{error\_manager}!Cotton::Lexer@{Cotton::Lexer}}
+\doxysubsubsection{\texorpdfstring{error\_manager}{error\_manager}}
+{\footnotesize\ttfamily \mbox{\hyperlink{classCotton_1_1ErrorManager}{Error\+Manager}}$\ast$ Cotton\+::\+Lexer\+::error\+\_\+manager}
+
+
+
+Referenced by faze2\+Form\+Connected\+Tokens(), faze5\+Identify\+Tokens(), Lexer(), process\+File(), Cotton\+::skip\+Character(), and Cotton\+::skip\+String().
+
+
+
+The documentation for this class was generated from the following files\+:\begin{DoxyCompactItemize}
+\item 
+cotton\+\_\+lib/src/cotton\+\_\+lib/front/\mbox{\hyperlink{lexer_8h}{lexer.\+h}}\item 
+cotton\+\_\+lib/src/cotton\+\_\+lib/front/\mbox{\hyperlink{lexer_8cpp}{lexer.\+cpp}}\end{DoxyCompactItemize}

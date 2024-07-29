@@ -1,0 +1,1182 @@
+\hypertarget{classCotton_1_1Runtime}{}\doxysection{Cotton\+::Runtime Class Reference}
+\label{classCotton_1_1Runtime}\index{Cotton::Runtime@{Cotton::Runtime}}
+
+
+{\ttfamily \#include $<$runtime.\+h$>$}
+
+\doxysubsection*{Classes}
+\begin{DoxyCompactItemize}
+\item 
+class \mbox{\hyperlink{classCotton_1_1Runtime_1_1ErrorContext}{Error\+Context}}
+\end{DoxyCompactItemize}
+\doxysubsection*{Public Types}
+\begin{DoxyCompactItemize}
+\item 
+enum \mbox{\hyperlink{classCotton_1_1Runtime_a6c45beea9184c9a5c8e55d2cf6acc6d6}{Builtin\+Types}} \{ \newline
+\mbox{\hyperlink{classCotton_1_1Runtime_a6c45beea9184c9a5c8e55d2cf6acc6d6ad19d163c73ae96278b2a61cff9a1ad96}{FUNCTION\+\_\+\+TYPE\+\_\+\+ID}} = 1
+, \mbox{\hyperlink{classCotton_1_1Runtime_a6c45beea9184c9a5c8e55d2cf6acc6d6a21f63044049e69566b87d09ec4da41b9}{NOTHING\+\_\+\+TYPE\+\_\+\+ID}} = 2
+, \mbox{\hyperlink{classCotton_1_1Runtime_a6c45beea9184c9a5c8e55d2cf6acc6d6a288a7abca40797511ce4f7df714cb0df}{BOOLEAN\+\_\+\+TYPE\+\_\+\+ID}} = 3
+, \mbox{\hyperlink{classCotton_1_1Runtime_a6c45beea9184c9a5c8e55d2cf6acc6d6ab9408ed42523a8a32c04d325415abe91}{INTEGER\+\_\+\+TYPE\+\_\+\+ID}} = 4
+, \newline
+\mbox{\hyperlink{classCotton_1_1Runtime_a6c45beea9184c9a5c8e55d2cf6acc6d6ad1e171e50106ce943978bffa2208d676}{REAL\+\_\+\+TYPE\+\_\+\+ID}} = 5
+, \mbox{\hyperlink{classCotton_1_1Runtime_a6c45beea9184c9a5c8e55d2cf6acc6d6a5f88e61b21ee7cd903f037069e162d63}{CHARACTER\+\_\+\+TYPE\+\_\+\+ID}} = 6
+, \mbox{\hyperlink{classCotton_1_1Runtime_a6c45beea9184c9a5c8e55d2cf6acc6d6ac94507235f11b14925ea2e5b499175e4}{STRING\+\_\+\+TYPE\+\_\+\+ID}} = 7
+, \mbox{\hyperlink{classCotton_1_1Runtime_a6c45beea9184c9a5c8e55d2cf6acc6d6acf75fa01ca2ef117f5399b874fbb07d4}{ARRAY\+\_\+\+TYPE\+\_\+\+ID}} = 8
+ \}
+\item 
+enum \mbox{\hyperlink{classCotton_1_1Runtime_a1ec7c7d1e8f863a6c222d9df84afa8c0}{Object\+Options}} \{ \mbox{\hyperlink{classCotton_1_1Runtime_a1ec7c7d1e8f863a6c222d9df84afa8c0aa6785edb34ada6aa263f64707daa385c}{INSTANCE\+\_\+\+OBJECT}}
+, \mbox{\hyperlink{classCotton_1_1Runtime_a1ec7c7d1e8f863a6c222d9df84afa8c0a83ef6d6c1341bd2aaefea22e853ef114}{TYPE\+\_\+\+OBJECT}}
+ \}
+\end{DoxyCompactItemize}
+\doxysubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{classCotton_1_1Runtime_af7882f57df09c65bf463a2bdf7ffd63c}{Runtime}} (\mbox{\hyperlink{classCotton_1_1GCStrategy}{GCStrategy}} $\ast$gc\+\_\+strategy, \mbox{\hyperlink{classCotton_1_1ErrorManager}{Error\+Manager}} $\ast$\mbox{\hyperlink{classCotton_1_1Runtime_a0260f2a1a469f79b753c2a8fea606609}{error\+\_\+manager}}, \mbox{\hyperlink{classCotton_1_1NameIds}{Name\+Ids}} $\ast$\mbox{\hyperlink{classCotton_1_1Runtime_a301efc8ae7c0a184437e3a11c2aaed0a}{nds}})
+\item 
+\mbox{\hyperlink{classCotton_1_1Runtime_ac6e9b4001b73e4182acf8bdd061b6670}{$\sim$\+Runtime}} ()=default
+\item 
+bool \mbox{\hyperlink{classCotton_1_1Runtime_a9f9bbcdf679e751b499fe7f4b5c475e5}{check\+Global}} (int64\+\_\+t id)
+\item 
+\mbox{\hyperlink{classCotton_1_1Object}{Object}} $\ast$ \mbox{\hyperlink{classCotton_1_1Runtime_a9b81c470065f0254f5551bce533cfd1d}{get\+Global}} (int64\+\_\+t id)
+\item 
+void \mbox{\hyperlink{classCotton_1_1Runtime_aec2ead491ab0d1dd66a6070025db8707}{set\+Global}} (int64\+\_\+t id, \mbox{\hyperlink{classCotton_1_1Object}{Object}} $\ast$obj)
+\item 
+void \mbox{\hyperlink{classCotton_1_1Runtime_a4cb16a3556137634f1b2be4517fd31bd}{remove\+Global}} (int64\+\_\+t id)
+\item 
+void \mbox{\hyperlink{classCotton_1_1Runtime_a8f100d067e2337b5f442ee603683cb10}{register\+Type\+Object}} (\mbox{\hyperlink{classCotton_1_1Type}{Type}} $\ast$type, \mbox{\hyperlink{classCotton_1_1Object}{Object}} $\ast$obj)
+\item 
+\mbox{\hyperlink{classCotton_1_1Object}{Object}} $\ast$ \mbox{\hyperlink{classCotton_1_1Runtime_a8f82772bae59dad801abeeb6324c2fa2}{get\+Type\+Object}} (\mbox{\hyperlink{classCotton_1_1Type}{Type}} $\ast$type)
+\item 
+void $\ast$ \mbox{\hyperlink{classCotton_1_1Runtime_a6c560437ba224d127909ee336cc8e158}{alloc}} (size\+\_\+t size)
+\item 
+void \mbox{\hyperlink{classCotton_1_1Runtime_a3b8f6c2599cb11b55fd12da117dc9cb1}{dealloc}} (void $\ast$ptr, size\+\_\+t size)
+\item 
+\mbox{\hyperlink{classCotton_1_1Object}{Object}} $\ast$ \mbox{\hyperlink{classCotton_1_1Runtime_a2024ccb0ac390a0a5a3c0eae6a3b6998}{protected\+Boolean}} (bool val)
+\item 
+void \mbox{\hyperlink{classCotton_1_1Runtime_a44c9e8dee999dfef685002eb721d58c9}{new\+Frame}} (bool can\+\_\+access\+\_\+prev\+\_\+scope=true)
+\item 
+void \mbox{\hyperlink{classCotton_1_1Runtime_a0b97f4e7063aa189bccb0c7c61b63200}{pop\+Frame}} ()
+\item 
+void \mbox{\hyperlink{classCotton_1_1Runtime_ae7b02d2eeabd8200973305c633e9cc44}{new\+Context}} ()
+\item 
+void \mbox{\hyperlink{classCotton_1_1Runtime_ab8d4a9ae7bd1b1e8b9a77f7e1b4d8601}{pop\+Context}} ()
+\item 
+\mbox{\hyperlink{classCotton_1_1Runtime_1_1ErrorContext}{Error\+Context}} \& \mbox{\hyperlink{classCotton_1_1Runtime_a890333525bab6b9e3811f7ecff1238d6}{get\+Context}} ()
+\item 
+void \mbox{\hyperlink{classCotton_1_1Runtime_af58dfac27bc82e7bedcd4192a41a2582}{signal\+Error}} (const std\+::string \&message, const \mbox{\hyperlink{classCotton_1_1TextArea}{Text\+Area}} \&ta)
+\item 
+\mbox{\hyperlink{classCotton_1_1Object}{Object}} $\ast$ \mbox{\hyperlink{classCotton_1_1Runtime_aea23f3d9844036d34f99ef10794b0cd1}{execute}} (\mbox{\hyperlink{classCotton_1_1ExprNode}{Expr\+Node}} $\ast$node, bool execution\+\_\+result\+\_\+matters)
+\item 
+\mbox{\hyperlink{classCotton_1_1Object}{Object}} $\ast$ \mbox{\hyperlink{classCotton_1_1Runtime_a71c52f2638e2a77972ada64abac93a2d}{execute}} (\mbox{\hyperlink{classCotton_1_1FuncDefNode}{Func\+Def\+Node}} $\ast$node, bool execution\+\_\+result\+\_\+matters)
+\item 
+\mbox{\hyperlink{classCotton_1_1Object}{Object}} $\ast$ \mbox{\hyperlink{classCotton_1_1Runtime_ac5062816b6bd3d1c5ce3609de74e1587}{execute}} (\mbox{\hyperlink{classCotton_1_1TypeDefNode}{Type\+Def\+Node}} $\ast$node, bool execution\+\_\+result\+\_\+matters)
+\item 
+\mbox{\hyperlink{classCotton_1_1Object}{Object}} $\ast$ \mbox{\hyperlink{classCotton_1_1Runtime_a312b4179e08668062bd4f89ba93197d4}{execute}} (\mbox{\hyperlink{classCotton_1_1OperatorNode}{Operator\+Node}} $\ast$node, bool execution\+\_\+result\+\_\+matters)
+\item 
+\mbox{\hyperlink{classCotton_1_1Object}{Object}} $\ast$ \mbox{\hyperlink{classCotton_1_1Runtime_ac844364696c6d80377624d7a155bd62f}{execute}} (\mbox{\hyperlink{classCotton_1_1AtomNode}{Atom\+Node}} $\ast$node, bool execution\+\_\+result\+\_\+matters)
+\item 
+\mbox{\hyperlink{classCotton_1_1Object}{Object}} $\ast$ \mbox{\hyperlink{classCotton_1_1Runtime_a13f4fe34bff25813cbc096c332c20ea4}{execute}} (\mbox{\hyperlink{classCotton_1_1ParExprNode}{Par\+Expr\+Node}} $\ast$node, bool execution\+\_\+result\+\_\+matters)
+\item 
+\mbox{\hyperlink{classCotton_1_1Object}{Object}} $\ast$ \mbox{\hyperlink{classCotton_1_1Runtime_aa3a9de823d0a2ee1b71aa1c317d2e0e0}{execute}} (\mbox{\hyperlink{classCotton_1_1StmtNode}{Stmt\+Node}} $\ast$node, bool execution\+\_\+result\+\_\+matters)
+\item 
+\mbox{\hyperlink{classCotton_1_1Object}{Object}} $\ast$ \mbox{\hyperlink{classCotton_1_1Runtime_ae2d1ce416a6585d000a9b5ea8f371223}{execute}} (\mbox{\hyperlink{classCotton_1_1WhileStmtNode}{While\+Stmt\+Node}} $\ast$node, bool execution\+\_\+result\+\_\+matters)
+\item 
+\mbox{\hyperlink{classCotton_1_1Object}{Object}} $\ast$ \mbox{\hyperlink{classCotton_1_1Runtime_a72a81ebc11abbdf56cff86b0e714dead}{execute}} (\mbox{\hyperlink{classCotton_1_1ForStmtNode}{For\+Stmt\+Node}} $\ast$node, bool execution\+\_\+result\+\_\+matters)
+\item 
+\mbox{\hyperlink{classCotton_1_1Object}{Object}} $\ast$ \mbox{\hyperlink{classCotton_1_1Runtime_aefa536dd1e0d7dd1e0c6a0bb34acad50}{execute}} (\mbox{\hyperlink{classCotton_1_1IfStmtNode}{If\+Stmt\+Node}} $\ast$node, bool execution\+\_\+result\+\_\+matters)
+\item 
+\mbox{\hyperlink{classCotton_1_1Object}{Object}} $\ast$ \mbox{\hyperlink{classCotton_1_1Runtime_a06229192b0e8a86064de6088277bee23}{execute}} (\mbox{\hyperlink{classCotton_1_1ReturnStmtNode}{Return\+Stmt\+Node}} $\ast$node, bool execution\+\_\+result\+\_\+matters)
+\item 
+\mbox{\hyperlink{classCotton_1_1Object}{Object}} $\ast$ \mbox{\hyperlink{classCotton_1_1Runtime_aee7bae4c9da64418fdf0812b38f29158}{execute}} (\mbox{\hyperlink{classCotton_1_1BlockStmtNode}{Block\+Stmt\+Node}} $\ast$node, bool execution\+\_\+result\+\_\+matters)
+\item 
+\mbox{\hyperlink{classCotton_1_1Object}{Object}} $\ast$ \mbox{\hyperlink{classCotton_1_1Runtime_a15277c00df3ffec1418099dad1a366d9}{make}} (\mbox{\hyperlink{classCotton_1_1Type}{Type}} $\ast$type, \mbox{\hyperlink{classCotton_1_1Runtime_a1ec7c7d1e8f863a6c222d9df84afa8c0}{Object\+Options}} object\+\_\+opt)
+\item 
+\mbox{\hyperlink{classCotton_1_1Object}{Object}} $\ast$ \mbox{\hyperlink{classCotton_1_1Runtime_a3cbb87f39ece78bbf8b845291d184d26}{copy}} (\mbox{\hyperlink{classCotton_1_1Object}{Object}} $\ast$obj)
+\item 
+\mbox{\hyperlink{classCotton_1_1Object}{Object}} $\ast$ \mbox{\hyperlink{classCotton_1_1Runtime_a869d6bf384cc6f64c625462e2fceda88}{run\+Operator}} (\mbox{\hyperlink{classCotton_1_1OperatorNode_a7d2988f050c68843e9f59b389d32a241}{Operator\+Node\+::\+Operator\+Id}} id, \mbox{\hyperlink{classCotton_1_1Object}{Object}} $\ast$obj, bool execution\+\_\+result\+\_\+matters)
+\item 
+\mbox{\hyperlink{classCotton_1_1Object}{Object}} $\ast$ \mbox{\hyperlink{classCotton_1_1Runtime_a9e5362ae40fd50fb400e1e17d6083454}{run\+Operator}} (\mbox{\hyperlink{classCotton_1_1OperatorNode_a7d2988f050c68843e9f59b389d32a241}{Operator\+Node\+::\+Operator\+Id}} id, \mbox{\hyperlink{classCotton_1_1Object}{Object}} $\ast$obj, \mbox{\hyperlink{classCotton_1_1Object}{Object}} $\ast$arg, bool execution\+\_\+result\+\_\+matters)
+\item 
+\mbox{\hyperlink{classCotton_1_1Object}{Object}} $\ast$ \mbox{\hyperlink{classCotton_1_1Runtime_aa38f95de68985e953cb812988cf1e672}{run\+Operator}} (\mbox{\hyperlink{classCotton_1_1OperatorNode_a7d2988f050c68843e9f59b389d32a241}{Operator\+Node\+::\+Operator\+Id}} id, \mbox{\hyperlink{classCotton_1_1Object}{Object}} $\ast$obj, const std\+::vector$<$ \mbox{\hyperlink{classCotton_1_1Object}{Object}} $\ast$ $>$ \&args, bool execution\+\_\+result\+\_\+matters)
+\item 
+\mbox{\hyperlink{classCotton_1_1Object}{Object}} $\ast$ \mbox{\hyperlink{classCotton_1_1Runtime_a383c2ad075510f0ff3f99e1d257caca7}{run\+Method}} (int64\+\_\+t id, \mbox{\hyperlink{classCotton_1_1Object}{Object}} $\ast$obj, const std\+::vector$<$ \mbox{\hyperlink{classCotton_1_1Object}{Object}} $\ast$ $>$ \&args, bool execution\+\_\+result\+\_\+matters)
+\item 
+bool \mbox{\hyperlink{classCotton_1_1Runtime_a49d61d5040d4ad2e8751f4a19cdca48b}{is\+Valid\+Object}} (\mbox{\hyperlink{classCotton_1_1Object}{Object}} $\ast$obj)
+\item 
+bool \mbox{\hyperlink{classCotton_1_1Runtime_a8f1098a10b57074d4c3812ced3c5d3d5}{is\+Type\+Object}} (\mbox{\hyperlink{classCotton_1_1Object}{Object}} $\ast$obj, \mbox{\hyperlink{classCotton_1_1Type}{Type}} $\ast$type=NULL)
+\item 
+bool \mbox{\hyperlink{classCotton_1_1Runtime_a3f5510c81d802d79d92adfc67190a97d}{is\+Instance\+Object}} (\mbox{\hyperlink{classCotton_1_1Object}{Object}} $\ast$obj, \mbox{\hyperlink{classCotton_1_1Type}{Type}} $\ast$type=NULL)
+\item 
+bool \mbox{\hyperlink{classCotton_1_1Runtime_abd1d55c59d4c804347699035ee7fa73c}{is\+Of\+Type}} (\mbox{\hyperlink{classCotton_1_1Object}{Object}} $\ast$obj, \mbox{\hyperlink{classCotton_1_1Runtime_a6c45beea9184c9a5c8e55d2cf6acc6d6}{Builtin\+Types}} type)
+\item 
+bool \mbox{\hyperlink{classCotton_1_1Runtime_a5a4cc359b6dea6fe878befd0c6adab03}{is\+Of\+Type}} (\mbox{\hyperlink{classCotton_1_1Object}{Object}} $\ast$obj, \mbox{\hyperlink{classCotton_1_1Type}{Type}} $\ast$type)
+\item 
+void \mbox{\hyperlink{classCotton_1_1Runtime_a09e6eb493c46ca21c3334542f71c1088}{verify\+Is\+Valid\+Object}} (\mbox{\hyperlink{classCotton_1_1Object}{Object}} $\ast$obj)
+\item 
+void \mbox{\hyperlink{classCotton_1_1Runtime_a76041801b9d63825ced839db8714c6c1}{verify\+Is\+Valid\+Object}} (\mbox{\hyperlink{classCotton_1_1Object}{Object}} $\ast$obj, const \mbox{\hyperlink{classCotton_1_1TextArea}{Text\+Area}} \&ta)
+\item 
+void \mbox{\hyperlink{classCotton_1_1Runtime_a6e26a136ecdd503b33b32c2fff89a9dc}{verify\+Is\+Type\+Object}} (\mbox{\hyperlink{classCotton_1_1Object}{Object}} $\ast$obj, \mbox{\hyperlink{classCotton_1_1Type}{Type}} $\ast$type)
+\item 
+void \mbox{\hyperlink{classCotton_1_1Runtime_ac344a8be20c4ebdd9034216d61d24122}{verify\+Is\+Type\+Object}} (\mbox{\hyperlink{classCotton_1_1Object}{Object}} $\ast$obj, \mbox{\hyperlink{classCotton_1_1Type}{Type}} $\ast$type, const \mbox{\hyperlink{classCotton_1_1TextArea}{Text\+Area}} \&ta)
+\item 
+void \mbox{\hyperlink{classCotton_1_1Runtime_ade4191c66ab9079cc2ccda2a9282865a}{verify\+Is\+Instance\+Object}} (\mbox{\hyperlink{classCotton_1_1Object}{Object}} $\ast$obj, \mbox{\hyperlink{classCotton_1_1Type}{Type}} $\ast$type)
+\item 
+void \mbox{\hyperlink{classCotton_1_1Runtime_a7508b3b7c01a25ddb1f4b44b4fc5abf2}{verify\+Is\+Instance\+Object}} (\mbox{\hyperlink{classCotton_1_1Object}{Object}} $\ast$obj, \mbox{\hyperlink{classCotton_1_1Type}{Type}} $\ast$type, const \mbox{\hyperlink{classCotton_1_1TextArea}{Text\+Area}} \&ta)
+\item 
+void \mbox{\hyperlink{classCotton_1_1Runtime_ab6f1da74bfbbd4fefb9e3648b251b7b7}{verify\+Is\+Of\+Type}} (\mbox{\hyperlink{classCotton_1_1Object}{Object}} $\ast$obj, \mbox{\hyperlink{classCotton_1_1Runtime_a6c45beea9184c9a5c8e55d2cf6acc6d6}{Builtin\+Types}} type)
+\item 
+void \mbox{\hyperlink{classCotton_1_1Runtime_a64e3c52e39495a7cf3ce0ae0141249a5}{verify\+Is\+Of\+Type}} (\mbox{\hyperlink{classCotton_1_1Object}{Object}} $\ast$obj, \mbox{\hyperlink{classCotton_1_1Runtime_a6c45beea9184c9a5c8e55d2cf6acc6d6}{Builtin\+Types}} type, const \mbox{\hyperlink{classCotton_1_1TextArea}{Text\+Area}} \&ta)
+\item 
+void \mbox{\hyperlink{classCotton_1_1Runtime_aca45cc5c395e1844a79bbe46c11dc82e}{verify\+Is\+Of\+Type}} (\mbox{\hyperlink{classCotton_1_1Object}{Object}} $\ast$obj, \mbox{\hyperlink{classCotton_1_1Type}{Type}} $\ast$type)
+\item 
+void \mbox{\hyperlink{classCotton_1_1Runtime_a9927c7bd2cf1c3272c028648ad81a289}{verify\+Is\+Of\+Type}} (\mbox{\hyperlink{classCotton_1_1Object}{Object}} $\ast$obj, \mbox{\hyperlink{classCotton_1_1Type}{Type}} $\ast$type, const \mbox{\hyperlink{classCotton_1_1TextArea}{Text\+Area}} \&ta)
+\item 
+void \mbox{\hyperlink{classCotton_1_1Runtime_a4fd275e26598059573a41f76a153c363}{verify\+Min\+Args\+Amount\+Func}} (const std\+::vector$<$ \mbox{\hyperlink{classCotton_1_1Object}{Object}} $\ast$ $>$ \&args, int64\+\_\+t amount)
+\item 
+void \mbox{\hyperlink{classCotton_1_1Runtime_a9f2e13c7127dd166e900d2505c334f27}{verify\+Min\+Args\+Amount\+Func}} (const std\+::vector$<$ \mbox{\hyperlink{classCotton_1_1Object}{Object}} $\ast$ $>$ \&args, int64\+\_\+t amount, const \mbox{\hyperlink{classCotton_1_1TextArea}{Text\+Area}} \&ta)
+\item 
+void \mbox{\hyperlink{classCotton_1_1Runtime_a628ede56be5420c59dc5b83bee764b26}{verify\+Exact\+Args\+Amount\+Func}} (const std\+::vector$<$ \mbox{\hyperlink{classCotton_1_1Object}{Object}} $\ast$ $>$ \&args, int64\+\_\+t amount)
+\item 
+void \mbox{\hyperlink{classCotton_1_1Runtime_a6c44e18bee762a05532d0cc8728d9666}{verify\+Exact\+Args\+Amount\+Func}} (const std\+::vector$<$ \mbox{\hyperlink{classCotton_1_1Object}{Object}} $\ast$ $>$ \&args, int64\+\_\+t amount, const \mbox{\hyperlink{classCotton_1_1TextArea}{Text\+Area}} \&ta)
+\item 
+void \mbox{\hyperlink{classCotton_1_1Runtime_a9d9e06d86b5906ba1d11c2db21d8483a}{verify\+Min\+Args\+Amount\+Method}} (const std\+::vector$<$ \mbox{\hyperlink{classCotton_1_1Object}{Object}} $\ast$ $>$ \&args, int64\+\_\+t amount)
+\item 
+void \mbox{\hyperlink{classCotton_1_1Runtime_abeec34e80da39e45bbc85d59c213070a}{verify\+Min\+Args\+Amount\+Method}} (const std\+::vector$<$ \mbox{\hyperlink{classCotton_1_1Object}{Object}} $\ast$ $>$ \&args, int64\+\_\+t amount, const \mbox{\hyperlink{classCotton_1_1TextArea}{Text\+Area}} \&ta)
+\item 
+void \mbox{\hyperlink{classCotton_1_1Runtime_ad0c19843334ad0f5d9691ce1f4c24433}{verify\+Exact\+Args\+Amount\+Method}} (const std\+::vector$<$ \mbox{\hyperlink{classCotton_1_1Object}{Object}} $\ast$ $>$ \&args, int64\+\_\+t amount)
+\item 
+void \mbox{\hyperlink{classCotton_1_1Runtime_a4ea8724b92bbe715aa25d91675ccd98d}{verify\+Exact\+Args\+Amount\+Method}} (const std\+::vector$<$ \mbox{\hyperlink{classCotton_1_1Object}{Object}} $\ast$ $>$ \&args, int64\+\_\+t amount, const \mbox{\hyperlink{classCotton_1_1TextArea}{Text\+Area}} \&ta)
+\item 
+void \mbox{\hyperlink{classCotton_1_1Runtime_a328ab18e718a77b5c2a3964b92ea0de9}{verify\+Has\+Method}} (\mbox{\hyperlink{classCotton_1_1Object}{Object}} $\ast$obj, int64\+\_\+t id)
+\item 
+void \mbox{\hyperlink{classCotton_1_1Runtime_ab9f53dabffebba584d21df119ff2c6a7}{verify\+Has\+Method}} (\mbox{\hyperlink{classCotton_1_1Object}{Object}} $\ast$obj, int64\+\_\+t id, const \mbox{\hyperlink{classCotton_1_1TextArea}{Text\+Area}} \&ta)
+\end{DoxyCompactItemize}
+\doxysubsection*{Public Attributes}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{classCotton_1_1Builtin_1_1FunctionType}{Builtin\+::\+Function\+Type}} $\ast$ \mbox{\hyperlink{classCotton_1_1Runtime_ae6edf063b2271e5f6d2e11c725064f9b}{function\+\_\+type}}
+\item 
+\mbox{\hyperlink{classCotton_1_1Builtin_1_1NothingType}{Builtin\+::\+Nothing\+Type}} $\ast$ \mbox{\hyperlink{classCotton_1_1Runtime_a38fe0ef62978e9c0182cd9c48e5a1804}{nothing\+\_\+type}}
+\item 
+\mbox{\hyperlink{classCotton_1_1Builtin_1_1BooleanType}{Builtin\+::\+Boolean\+Type}} $\ast$ \mbox{\hyperlink{classCotton_1_1Runtime_a12ebe7a2c29ff1cea08aca9876863b06}{boolean\+\_\+type}}
+\item 
+\mbox{\hyperlink{classCotton_1_1Builtin_1_1IntegerType}{Builtin\+::\+Integer\+Type}} $\ast$ \mbox{\hyperlink{classCotton_1_1Runtime_adb4bde78db95d4414542afe194e936f8}{integer\+\_\+type}}
+\item 
+\mbox{\hyperlink{classCotton_1_1Builtin_1_1RealType}{Builtin\+::\+Real\+Type}} $\ast$ \mbox{\hyperlink{classCotton_1_1Runtime_a63fafc47494f9d27b037a05a0c0322e5}{real\+\_\+type}}
+\item 
+\mbox{\hyperlink{classCotton_1_1Builtin_1_1CharacterType}{Builtin\+::\+Character\+Type}} $\ast$ \mbox{\hyperlink{classCotton_1_1Runtime_a994ce232cf2da1abeb015d7c6b1257be}{character\+\_\+type}}
+\item 
+\mbox{\hyperlink{classCotton_1_1Builtin_1_1StringType}{Builtin\+::\+String\+Type}} $\ast$ \mbox{\hyperlink{classCotton_1_1Runtime_a5fc2890b43549b008e8efe4344cb2749}{string\+\_\+type}}
+\item 
+\mbox{\hyperlink{classCotton_1_1Builtin_1_1ArrayType}{Builtin\+::\+Array\+Type}} $\ast$ \mbox{\hyperlink{classCotton_1_1Runtime_ad472161e2ea848fdc1a6c9561f13e8ae}{array\+\_\+type}}
+\item 
+\+\_\+\+\_\+gnu\+\_\+pbds\+::cc\+\_\+hash\+\_\+table$<$ int64\+\_\+t, \mbox{\hyperlink{classCotton_1_1Object}{Object}} $\ast$ $>$ \mbox{\hyperlink{classCotton_1_1Runtime_afdb95ba919fc3cdd2825eab5abc224a2}{globals}}
+\item 
+\+\_\+\+\_\+gnu\+\_\+pbds\+::cc\+\_\+hash\+\_\+table$<$ \mbox{\hyperlink{classCotton_1_1Type}{Type}} $\ast$, \mbox{\hyperlink{classCotton_1_1Object}{Object}} $\ast$ $>$ \mbox{\hyperlink{classCotton_1_1Runtime_a7b0c253da1db14a45c095091b4d02a35}{type\+\_\+objects}}
+\item 
+\mbox{\hyperlink{classCotton_1_1NameIds}{Name\+Ids}} $\ast$ \mbox{\hyperlink{classCotton_1_1Runtime_a301efc8ae7c0a184437e3a11c2aaed0a}{nds}}
+\item 
+\mbox{\hyperlink{classCotton_1_1Object}{Object}} $\ast$ \mbox{\hyperlink{classCotton_1_1Runtime_a1bd7661af184ebe3297b6ed8ae11824e}{exec\+\_\+res\+\_\+default}}
+\item 
+\+\_\+\+\_\+gnu\+\_\+pbds\+::cc\+\_\+hash\+\_\+table$<$ int64\+\_\+t, \mbox{\hyperlink{classCotton_1_1Object}{Object}} $\ast$ $>$ \mbox{\hyperlink{classCotton_1_1Runtime_a6beff7938977355034018bf0816df37a}{readonly\+\_\+literals}}
+\item 
+\mbox{\hyperlink{classCotton_1_1Object}{Object}} $\ast$ \mbox{\hyperlink{classCotton_1_1Runtime_a38ea6f4ea727428f4238dee1814acd26}{protected\+\_\+nothing}}
+\item 
+\mbox{\hyperlink{classCotton_1_1Object}{Object}} $\ast$ \mbox{\hyperlink{classCotton_1_1Runtime_ad22d9a32c87096d77c47da3f523503d0}{protected\+\_\+true}}
+\item 
+\mbox{\hyperlink{classCotton_1_1Object}{Object}} $\ast$ \mbox{\hyperlink{classCotton_1_1Runtime_a9dd97645786853935c00ca486db31181}{protected\+\_\+false}}
+\item 
+\mbox{\hyperlink{classCotton_1_1Scope}{Scope}} $\ast$ \mbox{\hyperlink{classCotton_1_1Runtime_ae2405d661067da5e76d0289857d216b6}{scope}}
+\item 
+\mbox{\hyperlink{classCotton_1_1GC}{GC}} $\ast$ \mbox{\hyperlink{classCotton_1_1Runtime_aaf9fc5de9d69bbbb4078f4b6a960bc18}{gc}}
+\item 
+\mbox{\hyperlink{classCotton_1_1ErrorManager}{Error\+Manager}} $\ast$ \mbox{\hyperlink{classCotton_1_1Runtime_a0260f2a1a469f79b753c2a8fea606609}{error\+\_\+manager}}
+\item 
+std\+::vector$<$ \mbox{\hyperlink{classCotton_1_1Runtime_1_1ErrorContext}{Error\+Context}} $>$ \mbox{\hyperlink{classCotton_1_1Runtime_a51b5863c2a600f1e1b917990c4d8fc06}{error\+\_\+contexts}}
+\item 
+uint8\+\_\+t \mbox{\hyperlink{classCotton_1_1Runtime_ae8b23d0ed1eb4200c9d70cc039d2b3a6}{execution\+\_\+flags}}
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Member Enumeration Documentation}
+\mbox{\Hypertarget{classCotton_1_1Runtime_a6c45beea9184c9a5c8e55d2cf6acc6d6}\label{classCotton_1_1Runtime_a6c45beea9184c9a5c8e55d2cf6acc6d6}} 
+\index{Cotton::Runtime@{Cotton::Runtime}!BuiltinTypes@{BuiltinTypes}}
+\index{BuiltinTypes@{BuiltinTypes}!Cotton::Runtime@{Cotton::Runtime}}
+\doxysubsubsection{\texorpdfstring{BuiltinTypes}{BuiltinTypes}}
+{\footnotesize\ttfamily enum \mbox{\hyperlink{classCotton_1_1Runtime_a6c45beea9184c9a5c8e55d2cf6acc6d6}{Cotton\+::\+Runtime\+::\+Builtin\+Types}}}
+
+\begin{DoxyEnumFields}{Enumerator}
+\raisebox{\heightof{T}}[0pt][0pt]{\index{FUNCTION\_TYPE\_ID@{FUNCTION\_TYPE\_ID}!Cotton::Runtime@{Cotton::Runtime}}\index{Cotton::Runtime@{Cotton::Runtime}!FUNCTION\_TYPE\_ID@{FUNCTION\_TYPE\_ID}}}\mbox{\Hypertarget{classCotton_1_1Runtime_a6c45beea9184c9a5c8e55d2cf6acc6d6ad19d163c73ae96278b2a61cff9a1ad96}\label{classCotton_1_1Runtime_a6c45beea9184c9a5c8e55d2cf6acc6d6ad19d163c73ae96278b2a61cff9a1ad96}} 
+FUNCTION\+\_\+\+TYPE\+\_\+\+ID&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{NOTHING\_TYPE\_ID@{NOTHING\_TYPE\_ID}!Cotton::Runtime@{Cotton::Runtime}}\index{Cotton::Runtime@{Cotton::Runtime}!NOTHING\_TYPE\_ID@{NOTHING\_TYPE\_ID}}}\mbox{\Hypertarget{classCotton_1_1Runtime_a6c45beea9184c9a5c8e55d2cf6acc6d6a21f63044049e69566b87d09ec4da41b9}\label{classCotton_1_1Runtime_a6c45beea9184c9a5c8e55d2cf6acc6d6a21f63044049e69566b87d09ec4da41b9}} 
+NOTHING\+\_\+\+TYPE\+\_\+\+ID&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{BOOLEAN\_TYPE\_ID@{BOOLEAN\_TYPE\_ID}!Cotton::Runtime@{Cotton::Runtime}}\index{Cotton::Runtime@{Cotton::Runtime}!BOOLEAN\_TYPE\_ID@{BOOLEAN\_TYPE\_ID}}}\mbox{\Hypertarget{classCotton_1_1Runtime_a6c45beea9184c9a5c8e55d2cf6acc6d6a288a7abca40797511ce4f7df714cb0df}\label{classCotton_1_1Runtime_a6c45beea9184c9a5c8e55d2cf6acc6d6a288a7abca40797511ce4f7df714cb0df}} 
+BOOLEAN\+\_\+\+TYPE\+\_\+\+ID&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{INTEGER\_TYPE\_ID@{INTEGER\_TYPE\_ID}!Cotton::Runtime@{Cotton::Runtime}}\index{Cotton::Runtime@{Cotton::Runtime}!INTEGER\_TYPE\_ID@{INTEGER\_TYPE\_ID}}}\mbox{\Hypertarget{classCotton_1_1Runtime_a6c45beea9184c9a5c8e55d2cf6acc6d6ab9408ed42523a8a32c04d325415abe91}\label{classCotton_1_1Runtime_a6c45beea9184c9a5c8e55d2cf6acc6d6ab9408ed42523a8a32c04d325415abe91}} 
+INTEGER\+\_\+\+TYPE\+\_\+\+ID&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{REAL\_TYPE\_ID@{REAL\_TYPE\_ID}!Cotton::Runtime@{Cotton::Runtime}}\index{Cotton::Runtime@{Cotton::Runtime}!REAL\_TYPE\_ID@{REAL\_TYPE\_ID}}}\mbox{\Hypertarget{classCotton_1_1Runtime_a6c45beea9184c9a5c8e55d2cf6acc6d6ad1e171e50106ce943978bffa2208d676}\label{classCotton_1_1Runtime_a6c45beea9184c9a5c8e55d2cf6acc6d6ad1e171e50106ce943978bffa2208d676}} 
+REAL\+\_\+\+TYPE\+\_\+\+ID&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{CHARACTER\_TYPE\_ID@{CHARACTER\_TYPE\_ID}!Cotton::Runtime@{Cotton::Runtime}}\index{Cotton::Runtime@{Cotton::Runtime}!CHARACTER\_TYPE\_ID@{CHARACTER\_TYPE\_ID}}}\mbox{\Hypertarget{classCotton_1_1Runtime_a6c45beea9184c9a5c8e55d2cf6acc6d6a5f88e61b21ee7cd903f037069e162d63}\label{classCotton_1_1Runtime_a6c45beea9184c9a5c8e55d2cf6acc6d6a5f88e61b21ee7cd903f037069e162d63}} 
+CHARACTER\+\_\+\+TYPE\+\_\+\+ID&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{STRING\_TYPE\_ID@{STRING\_TYPE\_ID}!Cotton::Runtime@{Cotton::Runtime}}\index{Cotton::Runtime@{Cotton::Runtime}!STRING\_TYPE\_ID@{STRING\_TYPE\_ID}}}\mbox{\Hypertarget{classCotton_1_1Runtime_a6c45beea9184c9a5c8e55d2cf6acc6d6ac94507235f11b14925ea2e5b499175e4}\label{classCotton_1_1Runtime_a6c45beea9184c9a5c8e55d2cf6acc6d6ac94507235f11b14925ea2e5b499175e4}} 
+STRING\+\_\+\+TYPE\+\_\+\+ID&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{ARRAY\_TYPE\_ID@{ARRAY\_TYPE\_ID}!Cotton::Runtime@{Cotton::Runtime}}\index{Cotton::Runtime@{Cotton::Runtime}!ARRAY\_TYPE\_ID@{ARRAY\_TYPE\_ID}}}\mbox{\Hypertarget{classCotton_1_1Runtime_a6c45beea9184c9a5c8e55d2cf6acc6d6acf75fa01ca2ef117f5399b874fbb07d4}\label{classCotton_1_1Runtime_a6c45beea9184c9a5c8e55d2cf6acc6d6acf75fa01ca2ef117f5399b874fbb07d4}} 
+ARRAY\+\_\+\+TYPE\+\_\+\+ID&\\
+\hline
+
+\end{DoxyEnumFields}
+\mbox{\Hypertarget{classCotton_1_1Runtime_a1ec7c7d1e8f863a6c222d9df84afa8c0}\label{classCotton_1_1Runtime_a1ec7c7d1e8f863a6c222d9df84afa8c0}} 
+\index{Cotton::Runtime@{Cotton::Runtime}!ObjectOptions@{ObjectOptions}}
+\index{ObjectOptions@{ObjectOptions}!Cotton::Runtime@{Cotton::Runtime}}
+\doxysubsubsection{\texorpdfstring{ObjectOptions}{ObjectOptions}}
+{\footnotesize\ttfamily enum \mbox{\hyperlink{classCotton_1_1Runtime_a1ec7c7d1e8f863a6c222d9df84afa8c0}{Cotton\+::\+Runtime\+::\+Object\+Options}}}
+
+\begin{DoxyEnumFields}{Enumerator}
+\raisebox{\heightof{T}}[0pt][0pt]{\index{INSTANCE\_OBJECT@{INSTANCE\_OBJECT}!Cotton::Runtime@{Cotton::Runtime}}\index{Cotton::Runtime@{Cotton::Runtime}!INSTANCE\_OBJECT@{INSTANCE\_OBJECT}}}\mbox{\Hypertarget{classCotton_1_1Runtime_a1ec7c7d1e8f863a6c222d9df84afa8c0aa6785edb34ada6aa263f64707daa385c}\label{classCotton_1_1Runtime_a1ec7c7d1e8f863a6c222d9df84afa8c0aa6785edb34ada6aa263f64707daa385c}} 
+INSTANCE\+\_\+\+OBJECT&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{TYPE\_OBJECT@{TYPE\_OBJECT}!Cotton::Runtime@{Cotton::Runtime}}\index{Cotton::Runtime@{Cotton::Runtime}!TYPE\_OBJECT@{TYPE\_OBJECT}}}\mbox{\Hypertarget{classCotton_1_1Runtime_a1ec7c7d1e8f863a6c222d9df84afa8c0a83ef6d6c1341bd2aaefea22e853ef114}\label{classCotton_1_1Runtime_a1ec7c7d1e8f863a6c222d9df84afa8c0a83ef6d6c1341bd2aaefea22e853ef114}} 
+TYPE\+\_\+\+OBJECT&\\
+\hline
+
+\end{DoxyEnumFields}
+
+
+\doxysubsection{Constructor \& Destructor Documentation}
+\mbox{\Hypertarget{classCotton_1_1Runtime_af7882f57df09c65bf463a2bdf7ffd63c}\label{classCotton_1_1Runtime_af7882f57df09c65bf463a2bdf7ffd63c}} 
+\index{Cotton::Runtime@{Cotton::Runtime}!Runtime@{Runtime}}
+\index{Runtime@{Runtime}!Cotton::Runtime@{Cotton::Runtime}}
+\doxysubsubsection{\texorpdfstring{Runtime()}{Runtime()}}
+{\footnotesize\ttfamily Cotton\+::\+Runtime\+::\+Runtime (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{classCotton_1_1GCStrategy}{GCStrategy}} $\ast$}]{gc\+\_\+strategy,  }\item[{\mbox{\hyperlink{classCotton_1_1ErrorManager}{Error\+Manager}} $\ast$}]{error\+\_\+manager,  }\item[{\mbox{\hyperlink{classCotton_1_1NameIds}{Name\+Ids}} $\ast$}]{nds }\end{DoxyParamCaption})}
+
+
+
+References Cotton\+::\+Scope\+::add\+Variable(), array\+\_\+type, ARRAY\+\_\+\+TYPE\+\_\+\+ID, boolean\+\_\+type, BOOLEAN\+\_\+\+TYPE\+\_\+\+ID, Cotton\+::\+Object\+::can\+\_\+modify, character\+\_\+type, CHARACTER\+\_\+\+TYPE\+\_\+\+ID, error\+\_\+manager, function\+\_\+type, FUNCTION\+\_\+\+TYPE\+\_\+\+ID, gc, Cotton\+::\+Name\+Ids\+::get(), Cotton\+::\+Builtin\+::get\+Boolean\+Value(), Cotton\+::\+GC\+::hold(), Cotton\+::\+Name\+Id\+::id, Cotton\+::\+Type\+::id, Cotton\+::\+Builtin\+::install\+Array\+Methods(), Cotton\+::\+Builtin\+::install\+Boolean\+Methods(), Cotton\+::\+Builtin\+::install\+Builtin\+Functions(), Cotton\+::\+Builtin\+::install\+Character\+Methods(), Cotton\+::\+Builtin\+::install\+Function\+Methods(), Cotton\+::\+Builtin\+::install\+Integer\+Methods(), Cotton\+::\+Builtin\+::install\+Nothing\+Methods(), Cotton\+::\+Builtin\+::install\+Real\+Methods(), Cotton\+::\+Builtin\+::install\+String\+Methods(), INSTANCE\+\_\+\+OBJECT, integer\+\_\+type, INTEGER\+\_\+\+TYPE\+\_\+\+ID, make(), Cotton\+::\+Scope\+::master, nds, new\+Context(), nothing\+\_\+type, NOTHING\+\_\+\+TYPE\+\_\+\+ID, Profiler\+CAPTURE, protected\+\_\+false, protected\+\_\+nothing, protected\+\_\+true, real\+\_\+type, REAL\+\_\+\+TYPE\+\_\+\+ID, register\+Type\+Object(), Cotton\+::\+GC\+::rt, scope, string\+\_\+type, STRING\+\_\+\+TYPE\+\_\+\+ID, and TYPE\+\_\+\+OBJECT.
+
+\mbox{\Hypertarget{classCotton_1_1Runtime_ac6e9b4001b73e4182acf8bdd061b6670}\label{classCotton_1_1Runtime_ac6e9b4001b73e4182acf8bdd061b6670}} 
+\index{Cotton::Runtime@{Cotton::Runtime}!````~Runtime@{$\sim$Runtime}}
+\index{````~Runtime@{$\sim$Runtime}!Cotton::Runtime@{Cotton::Runtime}}
+\doxysubsubsection{\texorpdfstring{$\sim$Runtime()}{~Runtime()}}
+{\footnotesize\ttfamily Cotton\+::\+Runtime\+::$\sim$\+Runtime (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [default]}}
+
+
+
+\doxysubsection{Member Function Documentation}
+\mbox{\Hypertarget{classCotton_1_1Runtime_a6c560437ba224d127909ee336cc8e158}\label{classCotton_1_1Runtime_a6c560437ba224d127909ee336cc8e158}} 
+\index{Cotton::Runtime@{Cotton::Runtime}!alloc@{alloc}}
+\index{alloc@{alloc}!Cotton::Runtime@{Cotton::Runtime}}
+\doxysubsubsection{\texorpdfstring{alloc()}{alloc()}}
+{\footnotesize\ttfamily void$\ast$ Cotton\+::\+Runtime\+::alloc (\begin{DoxyParamCaption}\item[{size\+\_\+t}]{size }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{classCotton_1_1Runtime_a9f9bbcdf679e751b499fe7f4b5c475e5}\label{classCotton_1_1Runtime_a9f9bbcdf679e751b499fe7f4b5c475e5}} 
+\index{Cotton::Runtime@{Cotton::Runtime}!checkGlobal@{checkGlobal}}
+\index{checkGlobal@{checkGlobal}!Cotton::Runtime@{Cotton::Runtime}}
+\doxysubsubsection{\texorpdfstring{checkGlobal()}{checkGlobal()}}
+{\footnotesize\ttfamily bool Cotton\+::\+Runtime\+::check\+Global (\begin{DoxyParamCaption}\item[{int64\+\_\+t}]{id }\end{DoxyParamCaption})}
+
+
+
+References globals.
+
+
+
+Referenced by Cotton\+::\+Builtin\+::\+CF\+\_\+checkglobal(), Cotton\+::\+Builtin\+::\+CF\+\_\+loadlibrary(), and Cotton\+::\+Builtin\+::\+CF\+\_\+smartrun().
+
+\mbox{\Hypertarget{classCotton_1_1Runtime_a3cbb87f39ece78bbf8b845291d184d26}\label{classCotton_1_1Runtime_a3cbb87f39ece78bbf8b845291d184d26}} 
+\index{Cotton::Runtime@{Cotton::Runtime}!copy@{copy}}
+\index{copy@{copy}!Cotton::Runtime@{Cotton::Runtime}}
+\doxysubsubsection{\texorpdfstring{copy()}{copy()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{classCotton_1_1Object}{Object}} $\ast$ Cotton\+::\+Runtime\+::copy (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{classCotton_1_1Object}{Object}} $\ast$}]{obj }\end{DoxyParamCaption})}
+
+
+
+References Cotton\+::\+Type\+::copy(), is\+Valid\+Object(), Profiler\+CAPTURE, signal\+Error(), Cotton\+::\+Object\+::single\+\_\+use, Cotton\+::\+Object\+::type, and Cotton\+::\+Object\+::user\+Repr().
+
+
+
+Referenced by Cotton\+::\+Object\+::assign\+To\+Copy\+Of(), Cotton\+::\+Builtin\+::\+CF\+\_\+copy(), Cotton\+::\+Builtin\+::\+Array\+Instance\+::copy(), execute(), Cotton\+::get\+List(), and Cotton\+::\+Builtin\+::\+String\+Add\+Adapter().
+
+\mbox{\Hypertarget{classCotton_1_1Runtime_a3b8f6c2599cb11b55fd12da117dc9cb1}\label{classCotton_1_1Runtime_a3b8f6c2599cb11b55fd12da117dc9cb1}} 
+\index{Cotton::Runtime@{Cotton::Runtime}!dealloc@{dealloc}}
+\index{dealloc@{dealloc}!Cotton::Runtime@{Cotton::Runtime}}
+\doxysubsubsection{\texorpdfstring{dealloc()}{dealloc()}}
+{\footnotesize\ttfamily void Cotton\+::\+Runtime\+::dealloc (\begin{DoxyParamCaption}\item[{void $\ast$}]{ptr,  }\item[{size\+\_\+t}]{size }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{classCotton_1_1Runtime_ac844364696c6d80377624d7a155bd62f}\label{classCotton_1_1Runtime_ac844364696c6d80377624d7a155bd62f}} 
+\index{Cotton::Runtime@{Cotton::Runtime}!execute@{execute}}
+\index{execute@{execute}!Cotton::Runtime@{Cotton::Runtime}}
+\doxysubsubsection{\texorpdfstring{execute()}{execute()}\hspace{0.1cm}{\footnotesize\ttfamily [1/12]}}
+{\footnotesize\ttfamily \mbox{\hyperlink{classCotton_1_1Object}{Object}} $\ast$ Cotton\+::\+Runtime\+::execute (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{classCotton_1_1AtomNode}{Atom\+Node}} $\ast$}]{node,  }\item[{bool}]{execution\+\_\+result\+\_\+matters }\end{DoxyParamCaption})}
+
+
+
+References Cotton\+::\+Runtime\+::\+Error\+Context\+::area, Cotton\+::\+Atom\+Node\+::bool\+\_\+value, Cotton\+::\+Atom\+Node\+::\+BOOLEAN, Cotton\+::\+Atom\+Node\+::char\+\_\+value, Cotton\+::\+Atom\+Node\+::\+CHARACTER, gc, get\+Context(), Cotton\+::\+Scope\+::get\+Variable(), Cotton\+::\+GC\+::hold(), Cotton\+::\+Atom\+Node\+::id, Cotton\+::\+Atom\+Node\+::\+IDENTIFIER, Cotton\+::\+Atom\+Node\+::int\+\_\+value, Cotton\+::\+Atom\+Node\+::\+INTEGER, Cotton\+::\+Atom\+Node\+::lit\+\_\+obj, Cotton\+::\+Builtin\+::make\+Boolean\+Instance\+Object(), Cotton\+::\+Builtin\+::make\+Character\+Instance\+Object(), Cotton\+::\+Builtin\+::make\+Integer\+Instance\+Object(), Cotton\+::\+Builtin\+::make\+Nothing\+Instance\+Object(), Cotton\+::\+Builtin\+::make\+Real\+Instance\+Object(), Cotton\+::\+Builtin\+::make\+String\+Instance\+Object(), Cotton\+::\+Token\+::nameid, new\+Context(), Cotton\+::\+Atom\+Node\+::\+NOTHING, pop\+Context(), Profiler\+CAPTURE, readonly\+\_\+literals, Cotton\+::\+Atom\+Node\+::\+REAL, Cotton\+::\+Atom\+Node\+::real\+\_\+value, scope, set\+Exec\+Flag\+NONE, signal\+Error(), Cotton\+::\+Atom\+Node\+::\+STRING, Cotton\+::\+Atom\+Node\+::string\+\_\+value, Cotton\+::\+Atom\+Node\+::text\+\_\+area, and Cotton\+::\+Atom\+Node\+::token.
+
+\mbox{\Hypertarget{classCotton_1_1Runtime_aee7bae4c9da64418fdf0812b38f29158}\label{classCotton_1_1Runtime_aee7bae4c9da64418fdf0812b38f29158}} 
+\index{Cotton::Runtime@{Cotton::Runtime}!execute@{execute}}
+\index{execute@{execute}!Cotton::Runtime@{Cotton::Runtime}}
+\doxysubsubsection{\texorpdfstring{execute()}{execute()}\hspace{0.1cm}{\footnotesize\ttfamily [2/12]}}
+{\footnotesize\ttfamily \mbox{\hyperlink{classCotton_1_1Object}{Object}} $\ast$ Cotton\+::\+Runtime\+::execute (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{classCotton_1_1BlockStmtNode}{Block\+Stmt\+Node}} $\ast$}]{node,  }\item[{bool}]{execution\+\_\+result\+\_\+matters }\end{DoxyParamCaption})}
+
+
+
+References Cotton\+::\+Runtime\+::\+Error\+Context\+::area, execute(), get\+Context(), Cotton\+::\+Block\+Stmt\+Node\+::is\+\_\+unscoped, is\+Exec\+Flag\+NONE, Cotton\+::\+Block\+Stmt\+Node\+::list, new\+Context(), new\+Frame(), pop\+Context(), pop\+Frame(), Profiler\+CAPTURE, protected\+\_\+nothing, set\+Exec\+Flag\+NONE, signal\+Error(), and Cotton\+::\+Block\+Stmt\+Node\+::text\+\_\+area.
+
+\mbox{\Hypertarget{classCotton_1_1Runtime_aea23f3d9844036d34f99ef10794b0cd1}\label{classCotton_1_1Runtime_aea23f3d9844036d34f99ef10794b0cd1}} 
+\index{Cotton::Runtime@{Cotton::Runtime}!execute@{execute}}
+\index{execute@{execute}!Cotton::Runtime@{Cotton::Runtime}}
+\doxysubsubsection{\texorpdfstring{execute()}{execute()}\hspace{0.1cm}{\footnotesize\ttfamily [3/12]}}
+{\footnotesize\ttfamily \mbox{\hyperlink{classCotton_1_1Object}{Object}} $\ast$ Cotton\+::\+Runtime\+::execute (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{classCotton_1_1ExprNode}{Expr\+Node}} $\ast$}]{node,  }\item[{bool}]{execution\+\_\+result\+\_\+matters }\end{DoxyParamCaption})}
+
+
+
+References Cotton\+::\+Expr\+Node\+::\+ATOM, Cotton\+::\+Expr\+Node\+::atom, Cotton\+::\+Expr\+Node\+::func\+\_\+def, Cotton\+::\+Expr\+Node\+::\+FUNCTION\+\_\+\+DEFINITION, get\+Context(), Cotton\+::\+Expr\+Node\+::id, Cotton\+::\+Expr\+Node\+::op, Cotton\+::\+Expr\+Node\+::\+OPERATOR, Cotton\+::\+Expr\+Node\+::par\+\_\+expr, Cotton\+::\+Expr\+Node\+::\+PARENTHESES\+\_\+\+EXPRESSION, Profiler\+CAPTURE, signal\+Error(), Cotton\+::\+Expr\+Node\+::type\+\_\+def, and Cotton\+::\+Expr\+Node\+::\+TYPE\+\_\+\+DEFINITION.
+
+
+
+Referenced by Cotton\+::\+Builtin\+::\+CF\+\_\+cotton(), Cotton\+::\+Builtin\+::\+CF\+\_\+dumbrun(), Cotton\+::\+Builtin\+::\+CF\+\_\+smartrun(), execute(), Cotton\+::\+Builtin\+::\+Function\+Call\+Adapter(), Cotton\+::get\+List(), and main().
+
+\mbox{\Hypertarget{classCotton_1_1Runtime_a72a81ebc11abbdf56cff86b0e714dead}\label{classCotton_1_1Runtime_a72a81ebc11abbdf56cff86b0e714dead}} 
+\index{Cotton::Runtime@{Cotton::Runtime}!execute@{execute}}
+\index{execute@{execute}!Cotton::Runtime@{Cotton::Runtime}}
+\doxysubsubsection{\texorpdfstring{execute()}{execute()}\hspace{0.1cm}{\footnotesize\ttfamily [4/12]}}
+{\footnotesize\ttfamily \mbox{\hyperlink{classCotton_1_1Object}{Object}} $\ast$ Cotton\+::\+Runtime\+::execute (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{classCotton_1_1ForStmtNode}{For\+Stmt\+Node}} $\ast$}]{node,  }\item[{bool}]{execution\+\_\+result\+\_\+matters }\end{DoxyParamCaption})}
+
+
+
+References Cotton\+::\+Runtime\+::\+Error\+Context\+::area, Cotton\+::\+For\+Stmt\+Node\+::body, Cotton\+::\+For\+Stmt\+Node\+::cond, copy(), execute(), Cotton\+::\+Builtin\+::get\+Boolean\+Value(), get\+Context(), Cotton\+::\+For\+Stmt\+Node\+::init, is\+Exec\+Flag\+BREAK, is\+Exec\+Flag\+CONTINUE, is\+Exec\+Flag\+DIRECT\+\_\+\+PASS, is\+Exec\+Flag\+RETURN, new\+Context(), new\+Frame(), pop\+Context(), pop\+Frame(), Profiler\+CAPTURE, protected\+\_\+nothing, set\+Exec\+Flag\+NONE, set\+Exec\+Flag\+RETURN, signal\+Error(), Cotton\+::\+For\+Stmt\+Node\+::step, Cotton\+::\+Expr\+Node\+::text\+\_\+area, Cotton\+::\+Stmt\+Node\+::text\+\_\+area, and Cotton\+::\+For\+Stmt\+Node\+::text\+\_\+area.
+
+\mbox{\Hypertarget{classCotton_1_1Runtime_a71c52f2638e2a77972ada64abac93a2d}\label{classCotton_1_1Runtime_a71c52f2638e2a77972ada64abac93a2d}} 
+\index{Cotton::Runtime@{Cotton::Runtime}!execute@{execute}}
+\index{execute@{execute}!Cotton::Runtime@{Cotton::Runtime}}
+\doxysubsubsection{\texorpdfstring{execute()}{execute()}\hspace{0.1cm}{\footnotesize\ttfamily [5/12]}}
+{\footnotesize\ttfamily \mbox{\hyperlink{classCotton_1_1Object}{Object}} $\ast$ Cotton\+::\+Runtime\+::execute (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{classCotton_1_1FuncDefNode}{Func\+Def\+Node}} $\ast$}]{node,  }\item[{bool}]{execution\+\_\+result\+\_\+matters }\end{DoxyParamCaption})}
+
+
+
+References Cotton\+::\+Scope\+::add\+Variable(), Cotton\+::\+Runtime\+::\+Error\+Context\+::area, get\+Context(), Cotton\+::\+Builtin\+::make\+Function\+Instance\+Object(), Cotton\+::\+Func\+Def\+Node\+::name, Cotton\+::\+Token\+::nameid, new\+Context(), pop\+Context(), Profiler\+CAPTURE, scope, set\+Exec\+Flag\+NONE, signal\+Error(), and Cotton\+::\+Func\+Def\+Node\+::text\+\_\+area.
+
+\mbox{\Hypertarget{classCotton_1_1Runtime_aefa536dd1e0d7dd1e0c6a0bb34acad50}\label{classCotton_1_1Runtime_aefa536dd1e0d7dd1e0c6a0bb34acad50}} 
+\index{Cotton::Runtime@{Cotton::Runtime}!execute@{execute}}
+\index{execute@{execute}!Cotton::Runtime@{Cotton::Runtime}}
+\doxysubsubsection{\texorpdfstring{execute()}{execute()}\hspace{0.1cm}{\footnotesize\ttfamily [6/12]}}
+{\footnotesize\ttfamily \mbox{\hyperlink{classCotton_1_1Object}{Object}} $\ast$ Cotton\+::\+Runtime\+::execute (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{classCotton_1_1IfStmtNode}{If\+Stmt\+Node}} $\ast$}]{node,  }\item[{bool}]{execution\+\_\+result\+\_\+matters }\end{DoxyParamCaption})}
+
+
+
+References Cotton\+::\+Runtime\+::\+Error\+Context\+::area, Cotton\+::\+If\+Stmt\+Node\+::body, Cotton\+::\+If\+Stmt\+Node\+::cond, Cotton\+::\+If\+Stmt\+Node\+::else\+\_\+body, execute(), Cotton\+::\+Builtin\+::get\+Boolean\+Value(), get\+Context(), new\+Context(), pop\+Context(), Profiler\+CAPTURE, protected\+\_\+nothing, set\+Exec\+Flag\+NONE, signal\+Error(), and Cotton\+::\+Expr\+Node\+::text\+\_\+area.
+
+\mbox{\Hypertarget{classCotton_1_1Runtime_a312b4179e08668062bd4f89ba93197d4}\label{classCotton_1_1Runtime_a312b4179e08668062bd4f89ba93197d4}} 
+\index{Cotton::Runtime@{Cotton::Runtime}!execute@{execute}}
+\index{execute@{execute}!Cotton::Runtime@{Cotton::Runtime}}
+\doxysubsubsection{\texorpdfstring{execute()}{execute()}\hspace{0.1cm}{\footnotesize\ttfamily [7/12]}}
+{\footnotesize\ttfamily \mbox{\hyperlink{classCotton_1_1Object}{Object}} $\ast$ Cotton\+::\+Runtime\+::execute (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{classCotton_1_1OperatorNode}{Operator\+Node}} $\ast$}]{node,  }\item[{bool}]{execution\+\_\+result\+\_\+matters }\end{DoxyParamCaption})}
+
+
+
+References Cotton\+::\+Scope\+::add\+Variable(), Cotton\+::\+Runtime\+::\+Error\+Context\+::area, Cotton\+::\+Operator\+Node\+::\+ASSIGN, Cotton\+::\+Operator\+Node\+::\+AT, Cotton\+::\+Expr\+Node\+::\+ATOM, Cotton\+::\+Expr\+Node\+::atom, Cotton\+::\+Operator\+Node\+::\+CALL, Cotton\+::\+Operator\+Node\+::\+COMMA, Cotton\+::\+Operator\+Node\+::\+DIV, Cotton\+::\+Operator\+Node\+::\+DIV\+\_\+\+ASSIGN, Cotton\+::\+Operator\+Node\+::\+DOT, execute(), Cotton\+::\+Operator\+Node\+::first, gc, get\+Context(), Cotton\+::get\+List(), Cotton\+::get\+List\+\_\+add\+To\+Context(), Cotton\+::\+Type\+::get\+Method(), Cotton\+::\+GC\+::hold(), Cotton\+::\+Expr\+Node\+::id, Cotton\+::\+Operator\+Node\+::id, Cotton\+::\+Atom\+Node\+::id, Cotton\+::\+Atom\+Node\+::ident, Cotton\+::\+Atom\+Node\+::\+IDENTIFIER, Cotton\+::\+Operator\+Node\+::\+INDEX, Cotton\+::\+Object\+::instance, Cotton\+::\+Operator\+Node\+::\+INVERSE, is\+Exec\+Flag\+DIRECT\+\_\+\+PASS, is\+Instance\+Object(), Cotton\+::\+Builtin\+::make\+Nothing\+Instance\+Object(), Cotton\+::\+Operator\+Node\+::\+MINUS, Cotton\+::\+Operator\+Node\+::\+MINUS\+\_\+\+ASSIGN, Cotton\+::\+Operator\+Node\+::\+MULT, Cotton\+::\+Operator\+Node\+::\+MULT\+\_\+\+ASSIGN, Cotton\+::\+Token\+::nameid, new\+Context(), Cotton\+::\+Operator\+Node\+::\+NOT, Cotton\+::\+Expr\+Node\+::op, Cotton\+::\+Expr\+Node\+::\+OPERATOR, Cotton\+::\+Operator\+Node\+::\+PLUS, Cotton\+::\+Operator\+Node\+::\+PLUS\+\_\+\+ASSIGN, pop\+Context(), Cotton\+::\+Operator\+Node\+::\+POST\+\_\+\+MINUS\+\_\+\+MINUS, Cotton\+::\+Operator\+Node\+::\+POST\+\_\+\+PLUS\+\_\+\+PLUS, Cotton\+::\+Operator\+Node\+::\+PRE\+\_\+\+MINUS, Cotton\+::\+Operator\+Node\+::\+PRE\+\_\+\+MINUS\+\_\+\+MINUS, Cotton\+::\+Operator\+Node\+::\+PRE\+\_\+\+PLUS, Cotton\+::\+Operator\+Node\+::\+PRE\+\_\+\+PLUS\+\_\+\+PLUS, Profiler\+CAPTURE, Cotton\+::\+Scope\+::query\+Variable(), Cotton\+::\+GC\+::release(), Cotton\+::\+Operator\+Node\+::\+REM, Cotton\+::\+Operator\+Node\+::\+REM\+\_\+\+ASSIGN, run\+Operator(), scope, Cotton\+::\+Operator\+Node\+::second, Cotton\+::\+Instance\+::select\+Field(), set\+Exec\+Flag\+DIRECT\+\_\+\+PASS, set\+Exec\+Flag\+NONE, signal\+Error(), Cotton\+::\+Runtime\+::\+Error\+Context\+::sub\+\_\+areas, Cotton\+::\+Expr\+Node\+::text\+\_\+area, Cotton\+::\+Operator\+Node\+::text\+\_\+area, and Cotton\+::\+Object\+::type.
+
+\mbox{\Hypertarget{classCotton_1_1Runtime_a13f4fe34bff25813cbc096c332c20ea4}\label{classCotton_1_1Runtime_a13f4fe34bff25813cbc096c332c20ea4}} 
+\index{Cotton::Runtime@{Cotton::Runtime}!execute@{execute}}
+\index{execute@{execute}!Cotton::Runtime@{Cotton::Runtime}}
+\doxysubsubsection{\texorpdfstring{execute()}{execute()}\hspace{0.1cm}{\footnotesize\ttfamily [8/12]}}
+{\footnotesize\ttfamily \mbox{\hyperlink{classCotton_1_1Object}{Object}} $\ast$ Cotton\+::\+Runtime\+::execute (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{classCotton_1_1ParExprNode}{Par\+Expr\+Node}} $\ast$}]{node,  }\item[{bool}]{execution\+\_\+result\+\_\+matters }\end{DoxyParamCaption})}
+
+
+
+References execute(), Cotton\+::\+Par\+Expr\+Node\+::expr, get\+Context(), Profiler\+CAPTURE, and signal\+Error().
+
+\mbox{\Hypertarget{classCotton_1_1Runtime_a06229192b0e8a86064de6088277bee23}\label{classCotton_1_1Runtime_a06229192b0e8a86064de6088277bee23}} 
+\index{Cotton::Runtime@{Cotton::Runtime}!execute@{execute}}
+\index{execute@{execute}!Cotton::Runtime@{Cotton::Runtime}}
+\doxysubsubsection{\texorpdfstring{execute()}{execute()}\hspace{0.1cm}{\footnotesize\ttfamily [9/12]}}
+{\footnotesize\ttfamily \mbox{\hyperlink{classCotton_1_1Object}{Object}} $\ast$ Cotton\+::\+Runtime\+::execute (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{classCotton_1_1ReturnStmtNode}{Return\+Stmt\+Node}} $\ast$}]{node,  }\item[{bool}]{execution\+\_\+result\+\_\+matters }\end{DoxyParamCaption})}
+
+
+
+References Cotton\+::\+Runtime\+::\+Error\+Context\+::area, copy(), execute(), get\+Context(), is\+Exec\+Flag\+DIRECT\+\_\+\+PASS, new\+Context(), pop\+Context(), Profiler\+CAPTURE, set\+Exec\+Flag\+RETURN, signal\+Error(), Cotton\+::\+Return\+Stmt\+Node\+::text\+\_\+area, and Cotton\+::\+Return\+Stmt\+Node\+::value.
+
+\mbox{\Hypertarget{classCotton_1_1Runtime_aa3a9de823d0a2ee1b71aa1c317d2e0e0}\label{classCotton_1_1Runtime_aa3a9de823d0a2ee1b71aa1c317d2e0e0}} 
+\index{Cotton::Runtime@{Cotton::Runtime}!execute@{execute}}
+\index{execute@{execute}!Cotton::Runtime@{Cotton::Runtime}}
+\doxysubsubsection{\texorpdfstring{execute()}{execute()}\hspace{0.1cm}{\footnotesize\ttfamily [10/12]}}
+{\footnotesize\ttfamily \mbox{\hyperlink{classCotton_1_1Object}{Object}} $\ast$ Cotton\+::\+Runtime\+::execute (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{classCotton_1_1StmtNode}{Stmt\+Node}} $\ast$}]{node,  }\item[{bool}]{execution\+\_\+result\+\_\+matters }\end{DoxyParamCaption})}
+
+
+
+References Cotton\+::\+Stmt\+Node\+::\+BLOCK, Cotton\+::\+Stmt\+Node\+::block\+\_\+stmt, Cotton\+::\+Stmt\+Node\+::\+BREAK, Cotton\+::\+Stmt\+Node\+::\+CONTINUE, execute(), Cotton\+::\+Stmt\+Node\+::\+EXPR, Cotton\+::\+Stmt\+Node\+::expr, Cotton\+::\+Stmt\+Node\+::\+FOR, Cotton\+::\+Stmt\+Node\+::for\+\_\+stmt, gc, get\+Context(), Cotton\+::\+Stmt\+Node\+::id, Cotton\+::\+Stmt\+Node\+::\+IF, Cotton\+::\+Stmt\+Node\+::if\+\_\+stmt, Cotton\+::\+GC\+::ping(), Profiler\+CAPTURE, protected\+\_\+nothing, Cotton\+::\+Stmt\+Node\+::\+RETURN, Cotton\+::\+Stmt\+Node\+::return\+\_\+stmt, set\+Exec\+Flag\+BREAK, set\+Exec\+Flag\+CONTINUE, signal\+Error(), Cotton\+::\+Stmt\+Node\+::text\+\_\+area, Cotton\+::\+Stmt\+Node\+::\+WHILE, and Cotton\+::\+Stmt\+Node\+::while\+\_\+stmt.
+
+\mbox{\Hypertarget{classCotton_1_1Runtime_ac5062816b6bd3d1c5ce3609de74e1587}\label{classCotton_1_1Runtime_ac5062816b6bd3d1c5ce3609de74e1587}} 
+\index{Cotton::Runtime@{Cotton::Runtime}!execute@{execute}}
+\index{execute@{execute}!Cotton::Runtime@{Cotton::Runtime}}
+\doxysubsubsection{\texorpdfstring{execute()}{execute()}\hspace{0.1cm}{\footnotesize\ttfamily [11/12]}}
+{\footnotesize\ttfamily \mbox{\hyperlink{classCotton_1_1Object}{Object}} $\ast$ Cotton\+::\+Runtime\+::execute (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{classCotton_1_1TypeDefNode}{Type\+Def\+Node}} $\ast$}]{node,  }\item[{bool}]{execution\+\_\+result\+\_\+matters }\end{DoxyParamCaption})}
+
+
+
+References Cotton\+::\+Scope\+::add\+Variable(), Cotton\+::\+Runtime\+::\+Error\+Context\+::area, Cotton\+::\+Type\+Def\+Node\+::fields, Cotton\+::\+Name\+Ids\+::get(), get\+Context(), Cotton\+::\+Name\+Id\+::id, make(), Cotton\+::\+Builtin\+::make\+Function\+Instance\+Object(), Cotton\+::\+Type\+Def\+Node\+::methods, Cotton\+::\+Type\+Def\+Node\+::name, Cotton\+::\+Token\+::nameid, nds, new\+Context(), pop\+Context(), Profiler\+CAPTURE, scope, set\+Exec\+Flag\+NONE, signal\+Error(), Cotton\+::\+Type\+Def\+Node\+::text\+\_\+area, and TYPE\+\_\+\+OBJECT.
+
+\mbox{\Hypertarget{classCotton_1_1Runtime_ae2d1ce416a6585d000a9b5ea8f371223}\label{classCotton_1_1Runtime_ae2d1ce416a6585d000a9b5ea8f371223}} 
+\index{Cotton::Runtime@{Cotton::Runtime}!execute@{execute}}
+\index{execute@{execute}!Cotton::Runtime@{Cotton::Runtime}}
+\doxysubsubsection{\texorpdfstring{execute()}{execute()}\hspace{0.1cm}{\footnotesize\ttfamily [12/12]}}
+{\footnotesize\ttfamily \mbox{\hyperlink{classCotton_1_1Object}{Object}} $\ast$ Cotton\+::\+Runtime\+::execute (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{classCotton_1_1WhileStmtNode}{While\+Stmt\+Node}} $\ast$}]{node,  }\item[{bool}]{execution\+\_\+result\+\_\+matters }\end{DoxyParamCaption})}
+
+
+
+References Cotton\+::\+Runtime\+::\+Error\+Context\+::area, Cotton\+::\+While\+Stmt\+Node\+::body, Cotton\+::\+While\+Stmt\+Node\+::cond, copy(), execute(), Cotton\+::\+Builtin\+::get\+Boolean\+Value(), get\+Context(), is\+Exec\+Flag\+BREAK, is\+Exec\+Flag\+CONTINUE, is\+Exec\+Flag\+DIRECT\+\_\+\+PASS, is\+Exec\+Flag\+RETURN, new\+Context(), new\+Frame(), pop\+Context(), pop\+Frame(), Profiler\+CAPTURE, protected\+\_\+nothing, set\+Exec\+Flag\+NONE, set\+Exec\+Flag\+RETURN, signal\+Error(), Cotton\+::\+Expr\+Node\+::text\+\_\+area, Cotton\+::\+Stmt\+Node\+::text\+\_\+area, and Cotton\+::\+While\+Stmt\+Node\+::text\+\_\+area.
+
+\mbox{\Hypertarget{classCotton_1_1Runtime_a890333525bab6b9e3811f7ecff1238d6}\label{classCotton_1_1Runtime_a890333525bab6b9e3811f7ecff1238d6}} 
+\index{Cotton::Runtime@{Cotton::Runtime}!getContext@{getContext}}
+\index{getContext@{getContext}!Cotton::Runtime@{Cotton::Runtime}}
+\doxysubsubsection{\texorpdfstring{getContext()}{getContext()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{classCotton_1_1Runtime_1_1ErrorContext}{Runtime\+::\+Error\+Context}} \& Cotton\+::\+Runtime\+::get\+Context (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+
+
+References error\+\_\+contexts, and Profiler\+CAPTURE.
+
+
+
+Referenced by Cotton\+::\+Builtin\+::\+Array\+Eq\+Adapter(), Cotton\+::\+Builtin\+::\+Array\+Index\+Adapter(), Cotton\+::\+Builtin\+::array\+Resize\+Method(), Cotton\+::\+Builtin\+::array\+Size\+Method(), Cotton\+::\+Object\+::assign\+To(), Cotton\+::\+Object\+::assign\+To\+Copy\+Of(), Cotton\+::\+Builtin\+::\+Boolean\+And\+Adapter(), Cotton\+::\+Builtin\+::\+Boolean\+Eq\+Adapter(), Cotton\+::\+Builtin\+::\+Boolean\+Not\+Adapter(), Cotton\+::\+Builtin\+::\+Boolean\+Or\+Adapter(), Cotton\+::\+Builtin\+::\+CF\+\_\+argg(), Cotton\+::\+Builtin\+::\+CF\+\_\+assert(), Cotton\+::\+Builtin\+::\+CF\+\_\+bool(), Cotton\+::\+Builtin\+::\+CF\+\_\+char(), Cotton\+::\+Builtin\+::\+CF\+\_\+checkglobal(), Cotton\+::\+Builtin\+::\+CF\+\_\+copy(), Cotton\+::\+Builtin\+::\+CF\+\_\+cotton(), Cotton\+::\+Builtin\+::\+CF\+\_\+dumbrun(), Cotton\+::\+Builtin\+::\+CF\+\_\+error(), Cotton\+::\+Builtin\+::\+CF\+\_\+exit(), Cotton\+::\+Builtin\+::\+CF\+\_\+getglobal(), Cotton\+::\+Builtin\+::\+CF\+\_\+hasfield(), Cotton\+::\+Builtin\+::\+CF\+\_\+hasmethod(), Cotton\+::\+Builtin\+::\+CF\+\_\+int(), Cotton\+::\+Builtin\+::\+CF\+\_\+isinsobj(), Cotton\+::\+Builtin\+::\+CF\+\_\+istypeobj(), Cotton\+::\+Builtin\+::\+CF\+\_\+loadlibrary(), Cotton\+::\+Builtin\+::\+CF\+\_\+make(), Cotton\+::\+Builtin\+::\+CF\+\_\+print(), Cotton\+::\+Builtin\+::\+CF\+\_\+printraw(), Cotton\+::\+Builtin\+::\+CF\+\_\+read(), Cotton\+::\+Builtin\+::\+CF\+\_\+real(), Cotton\+::\+Builtin\+::\+CF\+\_\+removeglobal(), Cotton\+::\+Builtin\+::\+CF\+\_\+repr(), Cotton\+::\+Builtin\+::\+CF\+\_\+setglobal(), Cotton\+::\+Builtin\+::\+CF\+\_\+sleep(), Cotton\+::\+Builtin\+::\+CF\+\_\+smartrun(), Cotton\+::\+Builtin\+::\+CF\+\_\+string(), Cotton\+::\+Builtin\+::\+CF\+\_\+system(), Cotton\+::\+Builtin\+::\+CF\+\_\+typeof(), Cotton\+::\+Builtin\+::\+Character\+Add\+Adapter(), Cotton\+::\+Builtin\+::\+Character\+Eq\+Adapter(), Cotton\+::\+Builtin\+::\+Character\+Geq\+Adapter(), Cotton\+::\+Builtin\+::\+Character\+Gt\+Adapter(), Cotton\+::\+Builtin\+::\+Character\+Leq\+Adapter(), Cotton\+::\+Builtin\+::\+Character\+Lt\+Adapter(), Cotton\+::\+Builtin\+::\+Character\+Negative\+Adapter(), Cotton\+::\+Builtin\+::\+Character\+Positive\+Adapter(), Cotton\+::\+Builtin\+::\+Character\+Postdec\+Adapter(), Cotton\+::\+Builtin\+::\+Character\+Postinc\+Adapter(), Cotton\+::\+Builtin\+::\+Character\+Predec\+Adapter(), Cotton\+::\+Builtin\+::\+Character\+Preinc\+Adapter(), Cotton\+::\+Builtin\+::\+Character\+Sub\+Adapter(), Cotton\+::\+Builtin\+::\+Array\+Instance\+::copy(), Cotton\+::\+Builtin\+::\+Boolean\+Instance\+::copy(), Cotton\+::\+Builtin\+::\+Character\+Instance\+::copy(), Cotton\+::\+Builtin\+::\+Function\+Instance\+::copy(), Cotton\+::\+Builtin\+::\+Integer\+Instance\+::copy(), Cotton\+::\+Builtin\+::\+Nothing\+Instance\+::copy(), Cotton\+::\+Builtin\+::\+Real\+Instance\+::copy(), Cotton\+::\+Builtin\+::\+String\+Instance\+::copy(), execute(), Cotton\+::\+Builtin\+::\+Function\+Call\+Adapter(), Cotton\+::\+Builtin\+::\+Function\+Eq\+Adapter(), Cotton\+::\+Builtin\+::get\+Character\+Value(), Cotton\+::get\+List(), Cotton\+::get\+List\+\_\+add\+To\+Context(), Cotton\+::\+Type\+::get\+Method(), Cotton\+::\+Builtin\+::get\+Real\+Value(), Cotton\+::\+Scope\+::get\+Variable(), Cotton\+::\+Builtin\+::\+Integer\+Add\+Adapter(), Cotton\+::\+Builtin\+::\+Integer\+Bitand\+Adapter(), Cotton\+::\+Builtin\+::\+Integer\+Bitor\+Adapter(), Cotton\+::\+Builtin\+::\+Integer\+Bitxor\+Adapter(), Cotton\+::\+Builtin\+::\+Integer\+Div\+Adapter(), Cotton\+::\+Builtin\+::\+Integer\+Eq\+Adapter(), Cotton\+::\+Builtin\+::\+Integer\+Geq\+Adapter(), Cotton\+::\+Builtin\+::\+Integer\+Gt\+Adapter(), Cotton\+::\+Builtin\+::\+Integer\+Inverse\+Adapter(), Cotton\+::\+Builtin\+::\+Integer\+Leq\+Adapter(), Cotton\+::\+Builtin\+::\+Integer\+Lshift\+Adapter(), Cotton\+::\+Builtin\+::\+Integer\+Lt\+Adapter(), Cotton\+::\+Builtin\+::\+Integer\+Mult\+Adapter(), Cotton\+::\+Builtin\+::\+Integer\+Negative\+Adapter(), Cotton\+::\+Builtin\+::\+Integer\+Positive\+Adapter(), Cotton\+::\+Builtin\+::\+Integer\+Postdec\+Adapter(), Cotton\+::\+Builtin\+::\+Integer\+Postinc\+Adapter(), Cotton\+::\+Builtin\+::\+Integer\+Predec\+Adapter(), Cotton\+::\+Builtin\+::\+Integer\+Preinc\+Adapter(), Cotton\+::\+Builtin\+::\+Integer\+Rem\+Adapter(), Cotton\+::\+Builtin\+::\+Integer\+Rshift\+Adapter(), Cotton\+::\+Builtin\+::\+Integer\+Sub\+Adapter(), make(), Cotton\+::\+Builtin\+::mm\+\_\+\+\_\+bool\+\_\+\+\_\+(), Cotton\+::\+Builtin\+::mm\+\_\+\+\_\+char\+\_\+\+\_\+(), Cotton\+::\+Builtin\+::mm\+\_\+\+\_\+int\+\_\+\+\_\+(), Cotton\+::\+Builtin\+::mm\+\_\+\+\_\+read\+\_\+\+\_\+(), Cotton\+::\+Builtin\+::mm\+\_\+\+\_\+real\+\_\+\+\_\+(), Cotton\+::\+Builtin\+::mm\+\_\+\+\_\+repr\+\_\+\+\_\+(), Cotton\+::\+Builtin\+::mm\+\_\+\+\_\+string\+\_\+\+\_\+(), Cotton\+::\+Builtin\+::\+Nothing\+Eq\+Adapter(), Cotton\+::\+Builtin\+::\+Real\+Add\+Adapter(), Cotton\+::\+Builtin\+::\+Real\+Div\+Adapter(), Cotton\+::\+Builtin\+::\+Real\+Eq\+Adapter(), Cotton\+::\+Builtin\+::\+Real\+Geq\+Adapter(), Cotton\+::\+Builtin\+::\+Real\+Gt\+Adapter(), Cotton\+::\+Builtin\+::\+Real\+Leq\+Adapter(), Cotton\+::\+Builtin\+::\+Real\+Lt\+Adapter(), Cotton\+::\+Builtin\+::\+Real\+Mult\+Adapter(), Cotton\+::\+Builtin\+::\+Real\+Negative\+Adapter(), Cotton\+::\+Builtin\+::\+Real\+Positive\+Adapter(), Cotton\+::\+Builtin\+::\+Real\+Sub\+Adapter(), run\+Operator(), Cotton\+::\+Instance\+::select\+Field(), Cotton\+::\+Builtin\+::\+Record\+Instance\+::select\+Field(), Cotton\+::\+Builtin\+::\+String\+Add\+Adapter(), Cotton\+::\+Builtin\+::\+String\+Eq\+Adapter(), Cotton\+::\+Builtin\+::\+String\+Index\+Adapter(), Cotton\+::\+Builtin\+::string\+Set\+Method(), Cotton\+::\+Builtin\+::string\+Size\+Method(), and verify\+Min\+Args\+Amount\+Method().
+
+\mbox{\Hypertarget{classCotton_1_1Runtime_a9b81c470065f0254f5551bce533cfd1d}\label{classCotton_1_1Runtime_a9b81c470065f0254f5551bce533cfd1d}} 
+\index{Cotton::Runtime@{Cotton::Runtime}!getGlobal@{getGlobal}}
+\index{getGlobal@{getGlobal}!Cotton::Runtime@{Cotton::Runtime}}
+\doxysubsubsection{\texorpdfstring{getGlobal()}{getGlobal()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{classCotton_1_1Object}{Object}} $\ast$ Cotton\+::\+Runtime\+::get\+Global (\begin{DoxyParamCaption}\item[{int64\+\_\+t}]{id }\end{DoxyParamCaption})}
+
+
+
+References Cotton\+::\+Name\+Ids\+::from\+Id(), globals, nds, Profiler\+CAPTURE, and signal\+Error().
+
+
+
+Referenced by Cotton\+::\+Builtin\+::\+CF\+\_\+getglobal(), Cotton\+::\+Builtin\+::\+CF\+\_\+loadlibrary(), and Cotton\+::\+Builtin\+::\+CF\+\_\+smartrun().
+
+\mbox{\Hypertarget{classCotton_1_1Runtime_a8f82772bae59dad801abeeb6324c2fa2}\label{classCotton_1_1Runtime_a8f82772bae59dad801abeeb6324c2fa2}} 
+\index{Cotton::Runtime@{Cotton::Runtime}!getTypeObject@{getTypeObject}}
+\index{getTypeObject@{getTypeObject}!Cotton::Runtime@{Cotton::Runtime}}
+\doxysubsubsection{\texorpdfstring{getTypeObject()}{getTypeObject()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{classCotton_1_1Object}{Object}} $\ast$ Cotton\+::\+Runtime\+::get\+Type\+Object (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{classCotton_1_1Type}{Type}} $\ast$}]{type }\end{DoxyParamCaption})}
+
+
+
+References Profiler\+CAPTURE, protected\+\_\+nothing, and type\+\_\+objects.
+
+
+
+Referenced by Cotton\+::\+Builtin\+::\+CF\+\_\+typeof().
+
+\mbox{\Hypertarget{classCotton_1_1Runtime_a3f5510c81d802d79d92adfc67190a97d}\label{classCotton_1_1Runtime_a3f5510c81d802d79d92adfc67190a97d}} 
+\index{Cotton::Runtime@{Cotton::Runtime}!isInstanceObject@{isInstanceObject}}
+\index{isInstanceObject@{isInstanceObject}!Cotton::Runtime@{Cotton::Runtime}}
+\doxysubsubsection{\texorpdfstring{isInstanceObject()}{isInstanceObject()}}
+{\footnotesize\ttfamily bool Cotton\+::\+Runtime\+::is\+Instance\+Object (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{classCotton_1_1Object}{Object}} $\ast$}]{obj,  }\item[{\mbox{\hyperlink{classCotton_1_1Type}{Type}} $\ast$}]{type = {\ttfamily NULL} }\end{DoxyParamCaption})}
+
+
+
+References Cotton\+::\+Object\+::instance, Profiler\+CAPTURE, and Cotton\+::\+Object\+::type.
+
+
+
+Referenced by Cotton\+::\+Builtin\+::\+Array\+Eq\+Adapter(), Cotton\+::\+Builtin\+::\+Boolean\+Eq\+Adapter(), Cotton\+::\+Builtin\+::\+CF\+\_\+isinsobj(), Cotton\+::\+Builtin\+::\+CF\+\_\+istypeobj(), Cotton\+::\+Builtin\+::\+CF\+\_\+printraw(), Cotton\+::\+Builtin\+::\+Character\+Eq\+Adapter(), execute(), Cotton\+::\+Builtin\+::\+Function\+Eq\+Adapter(), Cotton\+::\+Builtin\+::\+Integer\+Eq\+Adapter(), Cotton\+::\+Builtin\+::\+Real\+Eq\+Adapter(), Cotton\+::\+Builtin\+::\+String\+Eq\+Adapter(), and verify\+Is\+Instance\+Object().
+
+\mbox{\Hypertarget{classCotton_1_1Runtime_abd1d55c59d4c804347699035ee7fa73c}\label{classCotton_1_1Runtime_abd1d55c59d4c804347699035ee7fa73c}} 
+\index{Cotton::Runtime@{Cotton::Runtime}!isOfType@{isOfType}}
+\index{isOfType@{isOfType}!Cotton::Runtime@{Cotton::Runtime}}
+\doxysubsubsection{\texorpdfstring{isOfType()}{isOfType()}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
+{\footnotesize\ttfamily bool Cotton\+::\+Runtime\+::is\+Of\+Type (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{classCotton_1_1Object}{Object}} $\ast$}]{obj,  }\item[{\mbox{\hyperlink{classCotton_1_1Runtime_a6c45beea9184c9a5c8e55d2cf6acc6d6}{Builtin\+Types}}}]{type }\end{DoxyParamCaption})}
+
+
+
+References array\+\_\+type, ARRAY\+\_\+\+TYPE\+\_\+\+ID, boolean\+\_\+type, BOOLEAN\+\_\+\+TYPE\+\_\+\+ID, character\+\_\+type, CHARACTER\+\_\+\+TYPE\+\_\+\+ID, function\+\_\+type, FUNCTION\+\_\+\+TYPE\+\_\+\+ID, integer\+\_\+type, INTEGER\+\_\+\+TYPE\+\_\+\+ID, nothing\+\_\+type, NOTHING\+\_\+\+TYPE\+\_\+\+ID, Profiler\+CAPTURE, real\+\_\+type, REAL\+\_\+\+TYPE\+\_\+\+ID, string\+\_\+type, STRING\+\_\+\+TYPE\+\_\+\+ID, and Cotton\+::\+Object\+::type.
+
+
+
+Referenced by Cotton\+::\+Builtin\+::\+Array\+Eq\+Adapter(), Cotton\+::\+Builtin\+::\+Boolean\+Eq\+Adapter(), Cotton\+::\+Builtin\+::\+Character\+Eq\+Adapter(), Cotton\+::\+Builtin\+::\+Function\+Eq\+Adapter(), Cotton\+::\+Builtin\+::\+Integer\+Eq\+Adapter(), Cotton\+::\+Builtin\+::\+Nothing\+Eq\+Adapter(), Cotton\+::\+Builtin\+::\+Real\+Eq\+Adapter(), Cotton\+::\+Builtin\+::\+String\+Eq\+Adapter(), and verify\+Is\+Of\+Type().
+
+\mbox{\Hypertarget{classCotton_1_1Runtime_a5a4cc359b6dea6fe878befd0c6adab03}\label{classCotton_1_1Runtime_a5a4cc359b6dea6fe878befd0c6adab03}} 
+\index{Cotton::Runtime@{Cotton::Runtime}!isOfType@{isOfType}}
+\index{isOfType@{isOfType}!Cotton::Runtime@{Cotton::Runtime}}
+\doxysubsubsection{\texorpdfstring{isOfType()}{isOfType()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
+{\footnotesize\ttfamily bool Cotton\+::\+Runtime\+::is\+Of\+Type (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{classCotton_1_1Object}{Object}} $\ast$}]{obj,  }\item[{\mbox{\hyperlink{classCotton_1_1Type}{Type}} $\ast$}]{type }\end{DoxyParamCaption})}
+
+
+
+References Profiler\+CAPTURE, and Cotton\+::\+Object\+::type.
+
+\mbox{\Hypertarget{classCotton_1_1Runtime_a8f1098a10b57074d4c3812ced3c5d3d5}\label{classCotton_1_1Runtime_a8f1098a10b57074d4c3812ced3c5d3d5}} 
+\index{Cotton::Runtime@{Cotton::Runtime}!isTypeObject@{isTypeObject}}
+\index{isTypeObject@{isTypeObject}!Cotton::Runtime@{Cotton::Runtime}}
+\doxysubsubsection{\texorpdfstring{isTypeObject()}{isTypeObject()}}
+{\footnotesize\ttfamily bool Cotton\+::\+Runtime\+::is\+Type\+Object (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{classCotton_1_1Object}{Object}} $\ast$}]{obj,  }\item[{\mbox{\hyperlink{classCotton_1_1Type}{Type}} $\ast$}]{type = {\ttfamily NULL} }\end{DoxyParamCaption})}
+
+
+
+References Cotton\+::\+Object\+::instance, Profiler\+CAPTURE, and Cotton\+::\+Object\+::type.
+
+
+
+Referenced by Cotton\+::\+Builtin\+::\+Array\+Eq\+Adapter(), Cotton\+::\+Builtin\+::\+Boolean\+Eq\+Adapter(), Cotton\+::\+Builtin\+::\+Character\+Eq\+Adapter(), Cotton\+::\+Builtin\+::\+Function\+Eq\+Adapter(), Cotton\+::\+Builtin\+::\+Integer\+Eq\+Adapter(), Cotton\+::\+Builtin\+::mm\+\_\+\+\_\+bool\+\_\+\+\_\+(), Cotton\+::\+Builtin\+::mm\+\_\+\+\_\+repr\+\_\+\+\_\+(), Cotton\+::\+Builtin\+::mm\+\_\+\+\_\+string\+\_\+\+\_\+(), Cotton\+::\+Builtin\+::\+Real\+Eq\+Adapter(), Cotton\+::\+Builtin\+::\+String\+Eq\+Adapter(), and verify\+Is\+Type\+Object().
+
+\mbox{\Hypertarget{classCotton_1_1Runtime_a49d61d5040d4ad2e8751f4a19cdca48b}\label{classCotton_1_1Runtime_a49d61d5040d4ad2e8751f4a19cdca48b}} 
+\index{Cotton::Runtime@{Cotton::Runtime}!isValidObject@{isValidObject}}
+\index{isValidObject@{isValidObject}!Cotton::Runtime@{Cotton::Runtime}}
+\doxysubsubsection{\texorpdfstring{isValidObject()}{isValidObject()}}
+{\footnotesize\ttfamily bool Cotton\+::\+Runtime\+::is\+Valid\+Object (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{classCotton_1_1Object}{Object}} $\ast$}]{obj }\end{DoxyParamCaption})}
+
+
+
+References Profiler\+CAPTURE, and Cotton\+::\+Object\+::type.
+
+
+
+Referenced by Cotton\+::\+Builtin\+::\+CF\+\_\+make(), copy(), main(), and verify\+Is\+Valid\+Object().
+
+\mbox{\Hypertarget{classCotton_1_1Runtime_a15277c00df3ffec1418099dad1a366d9}\label{classCotton_1_1Runtime_a15277c00df3ffec1418099dad1a366d9}} 
+\index{Cotton::Runtime@{Cotton::Runtime}!make@{make}}
+\index{make@{make}!Cotton::Runtime@{Cotton::Runtime}}
+\doxysubsubsection{\texorpdfstring{make()}{make()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{classCotton_1_1Object}{Object}} $\ast$ Cotton\+::\+Runtime\+::make (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{classCotton_1_1Type}{Type}} $\ast$}]{type,  }\item[{\mbox{\hyperlink{classCotton_1_1Runtime_a1ec7c7d1e8f863a6c222d9df84afa8c0}{Object\+Options}}}]{object\+\_\+opt }\end{DoxyParamCaption})}
+
+
+
+References Cotton\+::\+Type\+::create(), get\+Context(), INSTANCE\+\_\+\+OBJECT, new\+Object, Profiler\+CAPTURE, signal\+Error(), Cotton\+::\+Object\+::spread\+Single\+Use(), and Cotton\+::\+Type\+::user\+Repr().
+
+
+
+Referenced by Cotton\+::\+Builtin\+::\+CF\+\_\+make(), execute(), library\+\_\+load\+\_\+point(), Cotton\+::\+Builtin\+::make\+Array\+Instance\+Object(), Cotton\+::\+Builtin\+::make\+Boolean\+Instance\+Object(), Cotton\+::\+Builtin\+::make\+Character\+Instance\+Object(), Cotton\+::\+Builtin\+::make\+Function\+Instance\+Object(), Cotton\+::\+Builtin\+::make\+Integer\+Instance\+Object(), Cotton\+::\+Builtin\+::make\+Nothing\+Instance\+Object(), Cotton\+::\+Builtin\+::make\+Real\+Instance\+Object(), Cotton\+::\+Builtin\+::make\+Record\+Instance\+Object(), Cotton\+::\+Builtin\+::make\+String\+Instance\+Object(), and Runtime().
+
+\mbox{\Hypertarget{classCotton_1_1Runtime_ae7b02d2eeabd8200973305c633e9cc44}\label{classCotton_1_1Runtime_ae7b02d2eeabd8200973305c633e9cc44}} 
+\index{Cotton::Runtime@{Cotton::Runtime}!newContext@{newContext}}
+\index{newContext@{newContext}!Cotton::Runtime@{Cotton::Runtime}}
+\doxysubsubsection{\texorpdfstring{newContext()}{newContext()}}
+{\footnotesize\ttfamily void Cotton\+::\+Runtime\+::new\+Context (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+
+
+References error\+\_\+contexts, and Profiler\+CAPTURE.
+
+
+
+Referenced by Cotton\+::\+Builtin\+::\+Array\+Eq\+Adapter(), Cotton\+::\+Builtin\+::\+CF\+\_\+print(), Cotton\+::\+Builtin\+::\+CF\+\_\+printraw(), execute(), Cotton\+::get\+List(), and Runtime().
+
+\mbox{\Hypertarget{classCotton_1_1Runtime_a44c9e8dee999dfef685002eb721d58c9}\label{classCotton_1_1Runtime_a44c9e8dee999dfef685002eb721d58c9}} 
+\index{Cotton::Runtime@{Cotton::Runtime}!newFrame@{newFrame}}
+\index{newFrame@{newFrame}!Cotton::Runtime@{Cotton::Runtime}}
+\doxysubsubsection{\texorpdfstring{newFrame()}{newFrame()}}
+{\footnotesize\ttfamily void Cotton\+::\+Runtime\+::new\+Frame (\begin{DoxyParamCaption}\item[{bool}]{can\+\_\+access\+\_\+prev\+\_\+scope = {\ttfamily true} }\end{DoxyParamCaption})}
+
+
+
+References Cotton\+::\+Scope\+::master, Profiler\+CAPTURE, and scope.
+
+
+
+Referenced by Cotton\+::\+Builtin\+::\+CF\+\_\+dumbrun(), Cotton\+::\+Builtin\+::\+CF\+\_\+smartrun(), execute(), and Cotton\+::\+Builtin\+::\+Function\+Call\+Adapter().
+
+\mbox{\Hypertarget{classCotton_1_1Runtime_ab8d4a9ae7bd1b1e8b9a77f7e1b4d8601}\label{classCotton_1_1Runtime_ab8d4a9ae7bd1b1e8b9a77f7e1b4d8601}} 
+\index{Cotton::Runtime@{Cotton::Runtime}!popContext@{popContext}}
+\index{popContext@{popContext}!Cotton::Runtime@{Cotton::Runtime}}
+\doxysubsubsection{\texorpdfstring{popContext()}{popContext()}}
+{\footnotesize\ttfamily void Cotton\+::\+Runtime\+::pop\+Context (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+
+
+References error\+\_\+contexts, and Profiler\+CAPTURE.
+
+
+
+Referenced by Cotton\+::\+Builtin\+::\+Array\+Eq\+Adapter(), Cotton\+::\+Builtin\+::\+CF\+\_\+print(), Cotton\+::\+Builtin\+::\+CF\+\_\+printraw(), execute(), and Cotton\+::get\+List().
+
+\mbox{\Hypertarget{classCotton_1_1Runtime_a0b97f4e7063aa189bccb0c7c61b63200}\label{classCotton_1_1Runtime_a0b97f4e7063aa189bccb0c7c61b63200}} 
+\index{Cotton::Runtime@{Cotton::Runtime}!popFrame@{popFrame}}
+\index{popFrame@{popFrame}!Cotton::Runtime@{Cotton::Runtime}}
+\doxysubsubsection{\texorpdfstring{popFrame()}{popFrame()}}
+{\footnotesize\ttfamily void Cotton\+::\+Runtime\+::pop\+Frame (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+
+
+References Cotton\+::\+Scope\+::prev, Profiler\+CAPTURE, and scope.
+
+
+
+Referenced by Cotton\+::\+Builtin\+::\+CF\+\_\+dumbrun(), Cotton\+::\+Builtin\+::\+CF\+\_\+smartrun(), execute(), and Cotton\+::\+Builtin\+::\+Function\+Call\+Adapter().
+
+\mbox{\Hypertarget{classCotton_1_1Runtime_a2024ccb0ac390a0a5a3c0eae6a3b6998}\label{classCotton_1_1Runtime_a2024ccb0ac390a0a5a3c0eae6a3b6998}} 
+\index{Cotton::Runtime@{Cotton::Runtime}!protectedBoolean@{protectedBoolean}}
+\index{protectedBoolean@{protectedBoolean}!Cotton::Runtime@{Cotton::Runtime}}
+\doxysubsubsection{\texorpdfstring{protectedBoolean()}{protectedBoolean()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{classCotton_1_1Object}{Object}} $\ast$ Cotton\+::\+Runtime\+::protected\+Boolean (\begin{DoxyParamCaption}\item[{bool}]{val }\end{DoxyParamCaption})}
+
+
+
+References Profiler\+CAPTURE, protected\+\_\+false, and protected\+\_\+true.
+
+
+
+Referenced by Cotton\+::\+Builtin\+::\+Boolean\+And\+Adapter(), Cotton\+::\+Builtin\+::\+Boolean\+Eq\+Adapter(), Cotton\+::\+Builtin\+::\+Boolean\+Or\+Adapter(), Cotton\+::\+Builtin\+::\+CF\+\_\+checkglobal(), Cotton\+::\+Builtin\+::\+CF\+\_\+hasfield(), Cotton\+::\+Builtin\+::\+CF\+\_\+hasmethod(), Cotton\+::\+Builtin\+::\+CF\+\_\+isinsobj(), Cotton\+::\+Builtin\+::\+CF\+\_\+istypeobj(), Cotton\+::\+Builtin\+::\+Character\+Eq\+Adapter(), Cotton\+::\+Builtin\+::\+Character\+Geq\+Adapter(), Cotton\+::\+Builtin\+::\+Character\+Gt\+Adapter(), Cotton\+::\+Builtin\+::\+Character\+Leq\+Adapter(), Cotton\+::\+Builtin\+::\+Character\+Lt\+Adapter(), Cotton\+::\+Builtin\+::\+Function\+Eq\+Adapter(), Cotton\+::\+Builtin\+::\+Integer\+Eq\+Adapter(), Cotton\+::\+Builtin\+::\+Integer\+Geq\+Adapter(), Cotton\+::\+Builtin\+::\+Integer\+Gt\+Adapter(), Cotton\+::\+Builtin\+::\+Integer\+Leq\+Adapter(), Cotton\+::\+Builtin\+::\+Integer\+Lt\+Adapter(), Cotton\+::\+Builtin\+::mm\+\_\+\+\_\+bool\+\_\+\+\_\+(), Cotton\+::\+Builtin\+::\+Real\+Eq\+Adapter(), Cotton\+::\+Builtin\+::\+Real\+Geq\+Adapter(), Cotton\+::\+Builtin\+::\+Real\+Gt\+Adapter(), Cotton\+::\+Builtin\+::\+Real\+Leq\+Adapter(), Cotton\+::\+Builtin\+::\+Real\+Lt\+Adapter(), status(), and Cotton\+::\+Builtin\+::\+String\+Eq\+Adapter().
+
+\mbox{\Hypertarget{classCotton_1_1Runtime_a8f100d067e2337b5f442ee603683cb10}\label{classCotton_1_1Runtime_a8f100d067e2337b5f442ee603683cb10}} 
+\index{Cotton::Runtime@{Cotton::Runtime}!registerTypeObject@{registerTypeObject}}
+\index{registerTypeObject@{registerTypeObject}!Cotton::Runtime@{Cotton::Runtime}}
+\doxysubsubsection{\texorpdfstring{registerTypeObject()}{registerTypeObject()}}
+{\footnotesize\ttfamily void Cotton\+::\+Runtime\+::register\+Type\+Object (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{classCotton_1_1Type}{Type}} $\ast$}]{type,  }\item[{\mbox{\hyperlink{classCotton_1_1Object}{Object}} $\ast$}]{obj }\end{DoxyParamCaption})}
+
+
+
+References Profiler\+CAPTURE, and type\+\_\+objects.
+
+
+
+Referenced by Runtime().
+
+\mbox{\Hypertarget{classCotton_1_1Runtime_a4cb16a3556137634f1b2be4517fd31bd}\label{classCotton_1_1Runtime_a4cb16a3556137634f1b2be4517fd31bd}} 
+\index{Cotton::Runtime@{Cotton::Runtime}!removeGlobal@{removeGlobal}}
+\index{removeGlobal@{removeGlobal}!Cotton::Runtime@{Cotton::Runtime}}
+\doxysubsubsection{\texorpdfstring{removeGlobal()}{removeGlobal()}}
+{\footnotesize\ttfamily void Cotton\+::\+Runtime\+::remove\+Global (\begin{DoxyParamCaption}\item[{int64\+\_\+t}]{id }\end{DoxyParamCaption})}
+
+
+
+References globals, and Profiler\+CAPTURE.
+
+
+
+Referenced by Cotton\+::\+Builtin\+::\+CF\+\_\+removeglobal().
+
+\mbox{\Hypertarget{classCotton_1_1Runtime_a383c2ad075510f0ff3f99e1d257caca7}\label{classCotton_1_1Runtime_a383c2ad075510f0ff3f99e1d257caca7}} 
+\index{Cotton::Runtime@{Cotton::Runtime}!runMethod@{runMethod}}
+\index{runMethod@{runMethod}!Cotton::Runtime@{Cotton::Runtime}}
+\doxysubsubsection{\texorpdfstring{runMethod()}{runMethod()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{classCotton_1_1Object}{Object}} $\ast$ Cotton\+::\+Runtime\+::run\+Method (\begin{DoxyParamCaption}\item[{int64\+\_\+t}]{id,  }\item[{\mbox{\hyperlink{classCotton_1_1Object}{Object}} $\ast$}]{obj,  }\item[{const std\+::vector$<$ \mbox{\hyperlink{classCotton_1_1Object}{Object}} $\ast$ $>$ \&}]{args,  }\item[{bool}]{execution\+\_\+result\+\_\+matters }\end{DoxyParamCaption})}
+
+
+
+References Cotton\+::\+Operator\+Node\+::\+CALL, Cotton\+::\+Type\+::get\+Method(), Profiler\+CAPTURE, run\+Operator(), and Cotton\+::\+Object\+::type.
+
+
+
+Referenced by Cotton\+::\+Builtin\+::\+CF\+\_\+bool(), Cotton\+::\+Builtin\+::\+CF\+\_\+char(), Cotton\+::\+Builtin\+::\+CF\+\_\+copy(), Cotton\+::\+Builtin\+::\+CF\+\_\+int(), Cotton\+::\+Builtin\+::\+CF\+\_\+make(), Cotton\+::\+Builtin\+::\+CF\+\_\+printraw(), Cotton\+::\+Builtin\+::\+CF\+\_\+read(), Cotton\+::\+Builtin\+::\+CF\+\_\+real(), Cotton\+::\+Builtin\+::\+CF\+\_\+repr(), Cotton\+::\+Builtin\+::\+CF\+\_\+string(), and Cotton\+::\+Builtin\+::mm\+\_\+\+\_\+repr\+\_\+\+\_\+().
+
+\mbox{\Hypertarget{classCotton_1_1Runtime_a869d6bf384cc6f64c625462e2fceda88}\label{classCotton_1_1Runtime_a869d6bf384cc6f64c625462e2fceda88}} 
+\index{Cotton::Runtime@{Cotton::Runtime}!runOperator@{runOperator}}
+\index{runOperator@{runOperator}!Cotton::Runtime@{Cotton::Runtime}}
+\doxysubsubsection{\texorpdfstring{runOperator()}{runOperator()}\hspace{0.1cm}{\footnotesize\ttfamily [1/3]}}
+{\footnotesize\ttfamily \mbox{\hyperlink{classCotton_1_1Object}{Object}} $\ast$ Cotton\+::\+Runtime\+::run\+Operator (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{classCotton_1_1OperatorNode_a7d2988f050c68843e9f59b389d32a241}{Operator\+Node\+::\+Operator\+Id}}}]{id,  }\item[{\mbox{\hyperlink{classCotton_1_1Object}{Object}} $\ast$}]{obj,  }\item[{bool}]{execution\+\_\+result\+\_\+matters }\end{DoxyParamCaption})}
+
+
+
+References get\+Context(), Cotton\+::\+Operator\+Node\+::\+INVERSE, Cotton\+::\+Type\+::inverse\+\_\+op, Cotton\+::\+Type\+::negative\+\_\+op, Cotton\+::\+Operator\+Node\+::\+NOT, Cotton\+::\+Type\+::not\+\_\+op, Cotton\+::\+Type\+::positive\+\_\+op, Cotton\+::\+Operator\+Node\+::\+POST\+\_\+\+MINUS\+\_\+\+MINUS, Cotton\+::\+Operator\+Node\+::\+POST\+\_\+\+PLUS\+\_\+\+PLUS, Cotton\+::\+Type\+::postdec\+\_\+op, Cotton\+::\+Type\+::postinc\+\_\+op, Cotton\+::\+Operator\+Node\+::\+PRE\+\_\+\+MINUS, Cotton\+::\+Operator\+Node\+::\+PRE\+\_\+\+MINUS\+\_\+\+MINUS, Cotton\+::\+Operator\+Node\+::\+PRE\+\_\+\+PLUS, Cotton\+::\+Operator\+Node\+::\+PRE\+\_\+\+PLUS\+\_\+\+PLUS, Cotton\+::\+Type\+::predec\+\_\+op, Cotton\+::\+Type\+::preinc\+\_\+op, Profiler\+CAPTURE, signal\+Error(), Cotton\+::\+Object\+::type, Cotton\+::\+Object\+::user\+Repr(), and verify\+Is\+Valid\+Object().
+
+
+
+Referenced by Cotton\+::\+Builtin\+::\+Array\+Eq\+Adapter(), execute(), and run\+Method().
+
+\mbox{\Hypertarget{classCotton_1_1Runtime_aa38f95de68985e953cb812988cf1e672}\label{classCotton_1_1Runtime_aa38f95de68985e953cb812988cf1e672}} 
+\index{Cotton::Runtime@{Cotton::Runtime}!runOperator@{runOperator}}
+\index{runOperator@{runOperator}!Cotton::Runtime@{Cotton::Runtime}}
+\doxysubsubsection{\texorpdfstring{runOperator()}{runOperator()}\hspace{0.1cm}{\footnotesize\ttfamily [2/3]}}
+{\footnotesize\ttfamily \mbox{\hyperlink{classCotton_1_1Object}{Object}} $\ast$ Cotton\+::\+Runtime\+::run\+Operator (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{classCotton_1_1OperatorNode_a7d2988f050c68843e9f59b389d32a241}{Operator\+Node\+::\+Operator\+Id}}}]{id,  }\item[{\mbox{\hyperlink{classCotton_1_1Object}{Object}} $\ast$}]{obj,  }\item[{const std\+::vector$<$ \mbox{\hyperlink{classCotton_1_1Object}{Object}} $\ast$ $>$ \&}]{args,  }\item[{bool}]{execution\+\_\+result\+\_\+matters }\end{DoxyParamCaption})}
+
+
+
+References Cotton\+::\+Operator\+Node\+::\+CALL, Cotton\+::\+Type\+::call\+\_\+op, get\+Context(), Cotton\+::\+Operator\+Node\+::\+INDEX, Cotton\+::\+Type\+::index\+\_\+op, Profiler\+CAPTURE, signal\+Error(), Cotton\+::\+Object\+::type, Cotton\+::\+Object\+::user\+Repr(), and verify\+Is\+Valid\+Object().
+
+\mbox{\Hypertarget{classCotton_1_1Runtime_a9e5362ae40fd50fb400e1e17d6083454}\label{classCotton_1_1Runtime_a9e5362ae40fd50fb400e1e17d6083454}} 
+\index{Cotton::Runtime@{Cotton::Runtime}!runOperator@{runOperator}}
+\index{runOperator@{runOperator}!Cotton::Runtime@{Cotton::Runtime}}
+\doxysubsubsection{\texorpdfstring{runOperator()}{runOperator()}\hspace{0.1cm}{\footnotesize\ttfamily [3/3]}}
+{\footnotesize\ttfamily \mbox{\hyperlink{classCotton_1_1Object}{Object}} $\ast$ Cotton\+::\+Runtime\+::run\+Operator (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{classCotton_1_1OperatorNode_a7d2988f050c68843e9f59b389d32a241}{Operator\+Node\+::\+Operator\+Id}}}]{id,  }\item[{\mbox{\hyperlink{classCotton_1_1Object}{Object}} $\ast$}]{obj,  }\item[{\mbox{\hyperlink{classCotton_1_1Object}{Object}} $\ast$}]{arg,  }\item[{bool}]{execution\+\_\+result\+\_\+matters }\end{DoxyParamCaption})}
+
+
+
+References Cotton\+::\+Type\+::add\+\_\+op, Cotton\+::\+Operator\+Node\+::\+AND, Cotton\+::\+Type\+::and\+\_\+op, Cotton\+::\+Operator\+Node\+::\+BITAND, Cotton\+::\+Type\+::bitand\+\_\+op, Cotton\+::\+Operator\+Node\+::\+BITOR, Cotton\+::\+Type\+::bitor\+\_\+op, Cotton\+::\+Operator\+Node\+::\+BITXOR, Cotton\+::\+Type\+::bitxor\+\_\+op, Cotton\+::\+Operator\+Node\+::\+DIV, Cotton\+::\+Type\+::div\+\_\+op, Cotton\+::\+Type\+::eq\+\_\+op, Cotton\+::\+Operator\+Node\+::\+EQUAL, Cotton\+::\+Type\+::geq\+\_\+op, get\+Context(), Cotton\+::\+Operator\+Node\+::\+GREATER, Cotton\+::\+Operator\+Node\+::\+GREATER\+\_\+\+EQUAL, Cotton\+::\+Type\+::gt\+\_\+op, Cotton\+::\+Operator\+Node\+::\+LEFT\+\_\+\+SHIFT, Cotton\+::\+Type\+::leq\+\_\+op, Cotton\+::\+Operator\+Node\+::\+LESS, Cotton\+::\+Operator\+Node\+::\+LESS\+\_\+\+EQUAL, Cotton\+::\+Type\+::lshift\+\_\+op, Cotton\+::\+Type\+::lt\+\_\+op, Cotton\+::\+Operator\+Node\+::\+MINUS, Cotton\+::\+Operator\+Node\+::\+MULT, Cotton\+::\+Type\+::mult\+\_\+op, Cotton\+::\+Type\+::neq\+\_\+op, Cotton\+::\+Operator\+Node\+::\+NOT\+\_\+\+EQUAL, Cotton\+::\+Operator\+Node\+::\+OR, Cotton\+::\+Type\+::or\+\_\+op, Cotton\+::\+Operator\+Node\+::\+PLUS, Profiler\+CAPTURE, Cotton\+::\+Operator\+Node\+::\+REM, Cotton\+::\+Type\+::rem\+\_\+op, Cotton\+::\+Operator\+Node\+::\+RIGHT\+\_\+\+SHIFT, Cotton\+::\+Type\+::rshift\+\_\+op, signal\+Error(), Cotton\+::\+Type\+::sub\+\_\+op, Cotton\+::\+Object\+::type, Cotton\+::\+Object\+::user\+Repr(), and verify\+Is\+Valid\+Object().
+
+\mbox{\Hypertarget{classCotton_1_1Runtime_aec2ead491ab0d1dd66a6070025db8707}\label{classCotton_1_1Runtime_aec2ead491ab0d1dd66a6070025db8707}} 
+\index{Cotton::Runtime@{Cotton::Runtime}!setGlobal@{setGlobal}}
+\index{setGlobal@{setGlobal}!Cotton::Runtime@{Cotton::Runtime}}
+\doxysubsubsection{\texorpdfstring{setGlobal()}{setGlobal()}}
+{\footnotesize\ttfamily void Cotton\+::\+Runtime\+::set\+Global (\begin{DoxyParamCaption}\item[{int64\+\_\+t}]{id,  }\item[{\mbox{\hyperlink{classCotton_1_1Object}{Object}} $\ast$}]{obj }\end{DoxyParamCaption})}
+
+
+
+References globals, and Profiler\+CAPTURE.
+
+
+
+Referenced by Cotton\+::\+Builtin\+::\+CF\+\_\+loadlibrary(), Cotton\+::\+Builtin\+::\+CF\+\_\+setglobal(), and Cotton\+::\+Builtin\+::\+CF\+\_\+smartrun().
+
+\mbox{\Hypertarget{classCotton_1_1Runtime_af58dfac27bc82e7bedcd4192a41a2582}\label{classCotton_1_1Runtime_af58dfac27bc82e7bedcd4192a41a2582}} 
+\index{Cotton::Runtime@{Cotton::Runtime}!signalError@{signalError}}
+\index{signalError@{signalError}!Cotton::Runtime@{Cotton::Runtime}}
+\doxysubsubsection{\texorpdfstring{signalError()}{signalError()}}
+{\footnotesize\ttfamily void Cotton\+::\+Runtime\+::signal\+Error (\begin{DoxyParamCaption}\item[{const std\+::string \&}]{message,  }\item[{const \mbox{\hyperlink{classCotton_1_1TextArea}{Text\+Area}} \&}]{ta }\end{DoxyParamCaption})}
+
+
+
+References error\+\_\+contexts, error\+\_\+manager, Cotton\+::\+Text\+Area\+::first\+\_\+char, Cotton\+::\+Text\+Area\+::last\+\_\+char, Profiler\+CAPTURE, and Cotton\+::\+Error\+Manager\+::signal\+Error().
+
+
+
+Referenced by Cotton\+::\+Builtin\+::\+Array\+Index\+Adapter(), Cotton\+::\+Builtin\+::array\+Resize\+Method(), Cotton\+::\+Object\+::assign\+To(), Cotton\+::\+Object\+::assign\+To\+Copy\+Of(), Cotton\+::\+Builtin\+::\+CF\+\_\+argg(), Cotton\+::\+Builtin\+::\+CF\+\_\+assert(), Cotton\+::\+Builtin\+::\+CF\+\_\+dumbrun(), Cotton\+::\+Builtin\+::\+CF\+\_\+error(), Cotton\+::\+Builtin\+::\+CF\+\_\+loadlibrary(), Cotton\+::\+Builtin\+::\+CF\+\_\+smartrun(), copy(), Cotton\+::\+Builtin\+::\+Array\+Instance\+::copy(), Cotton\+::\+Builtin\+::\+Boolean\+Instance\+::copy(), Cotton\+::\+Builtin\+::\+Character\+Instance\+::copy(), Cotton\+::\+Builtin\+::\+Function\+Instance\+::copy(), Cotton\+::\+Builtin\+::\+Integer\+Instance\+::copy(), Cotton\+::\+Builtin\+::\+Nothing\+Instance\+::copy(), Cotton\+::\+Builtin\+::\+Real\+Instance\+::copy(), Cotton\+::\+Builtin\+::\+String\+Instance\+::copy(), execute(), Cotton\+::\+Builtin\+::\+Function\+Call\+Adapter(), get\+Global(), Cotton\+::\+Type\+::get\+Method(), Cotton\+::\+Scope\+::get\+Variable(), make(), Cotton\+::\+Builtin\+::mm\+\_\+\+\_\+bool\+\_\+\+\_\+(), Cotton\+::\+Builtin\+::mm\+\_\+\+\_\+read\+\_\+\+\_\+(), run\+Operator(), Cotton\+::\+Instance\+::select\+Field(), Cotton\+::\+Builtin\+::\+Record\+Instance\+::select\+Field(), Cotton\+::\+Builtin\+::\+String\+Index\+Adapter(), Cotton\+::\+Builtin\+::string\+Set\+Method(), verify\+Exact\+Args\+Amount\+Func(), verify\+Exact\+Args\+Amount\+Method(), verify\+Has\+Method(), verify\+Is\+Instance\+Object(), verify\+Is\+Of\+Type(), verify\+Is\+Type\+Object(), verify\+Is\+Valid\+Object(), verify\+Min\+Args\+Amount\+Func(), and verify\+Min\+Args\+Amount\+Method().
+
+\mbox{\Hypertarget{classCotton_1_1Runtime_a628ede56be5420c59dc5b83bee764b26}\label{classCotton_1_1Runtime_a628ede56be5420c59dc5b83bee764b26}} 
+\index{Cotton::Runtime@{Cotton::Runtime}!verifyExactArgsAmountFunc@{verifyExactArgsAmountFunc}}
+\index{verifyExactArgsAmountFunc@{verifyExactArgsAmountFunc}!Cotton::Runtime@{Cotton::Runtime}}
+\doxysubsubsection{\texorpdfstring{verifyExactArgsAmountFunc()}{verifyExactArgsAmountFunc()}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
+{\footnotesize\ttfamily void Cotton\+::\+Runtime\+::verify\+Exact\+Args\+Amount\+Func (\begin{DoxyParamCaption}\item[{const std\+::vector$<$ \mbox{\hyperlink{classCotton_1_1Object}{Object}} $\ast$ $>$ \&}]{args,  }\item[{int64\+\_\+t}]{amount }\end{DoxyParamCaption})}
+
+
+
+References Profiler\+CAPTURE, and signal\+Error().
+
+
+
+Referenced by Cotton\+::\+Builtin\+::\+Array\+Index\+Adapter(), Cotton\+::\+Builtin\+::\+CF\+\_\+argc(), Cotton\+::\+Builtin\+::\+CF\+\_\+argg(), Cotton\+::\+Builtin\+::\+CF\+\_\+argv(), Cotton\+::\+Builtin\+::\+CF\+\_\+bool(), Cotton\+::\+Builtin\+::\+CF\+\_\+char(), Cotton\+::\+Builtin\+::\+CF\+\_\+checkglobal(), Cotton\+::\+Builtin\+::\+CF\+\_\+copy(), Cotton\+::\+Builtin\+::\+CF\+\_\+cotton(), Cotton\+::\+Builtin\+::\+CF\+\_\+dumbrun(), Cotton\+::\+Builtin\+::\+CF\+\_\+error(), Cotton\+::\+Builtin\+::\+CF\+\_\+exit(), Cotton\+::\+Builtin\+::\+CF\+\_\+fork(), Cotton\+::\+Builtin\+::\+CF\+\_\+getglobal(), Cotton\+::\+Builtin\+::\+CF\+\_\+hasfield(), Cotton\+::\+Builtin\+::\+CF\+\_\+hasmethod(), Cotton\+::\+Builtin\+::\+CF\+\_\+int(), Cotton\+::\+Builtin\+::\+CF\+\_\+loadlibrary(), Cotton\+::\+Builtin\+::\+CF\+\_\+make(), Cotton\+::\+Builtin\+::\+CF\+\_\+read(), Cotton\+::\+Builtin\+::\+CF\+\_\+readln(), Cotton\+::\+Builtin\+::\+CF\+\_\+readraw(), Cotton\+::\+Builtin\+::\+CF\+\_\+real(), Cotton\+::\+Builtin\+::\+CF\+\_\+removeglobal(), Cotton\+::\+Builtin\+::\+CF\+\_\+repr(), Cotton\+::\+Builtin\+::\+CF\+\_\+setglobal(), Cotton\+::\+Builtin\+::\+CF\+\_\+sleep(), Cotton\+::\+Builtin\+::\+CF\+\_\+smartrun(), Cotton\+::\+Builtin\+::\+CF\+\_\+string(), Cotton\+::\+Builtin\+::\+CF\+\_\+system(), Cotton\+::\+Builtin\+::\+CF\+\_\+typeof(), and Cotton\+::\+Builtin\+::\+String\+Index\+Adapter().
+
+\mbox{\Hypertarget{classCotton_1_1Runtime_a6c44e18bee762a05532d0cc8728d9666}\label{classCotton_1_1Runtime_a6c44e18bee762a05532d0cc8728d9666}} 
+\index{Cotton::Runtime@{Cotton::Runtime}!verifyExactArgsAmountFunc@{verifyExactArgsAmountFunc}}
+\index{verifyExactArgsAmountFunc@{verifyExactArgsAmountFunc}!Cotton::Runtime@{Cotton::Runtime}}
+\doxysubsubsection{\texorpdfstring{verifyExactArgsAmountFunc()}{verifyExactArgsAmountFunc()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
+{\footnotesize\ttfamily void Cotton\+::\+Runtime\+::verify\+Exact\+Args\+Amount\+Func (\begin{DoxyParamCaption}\item[{const std\+::vector$<$ \mbox{\hyperlink{classCotton_1_1Object}{Object}} $\ast$ $>$ \&}]{args,  }\item[{int64\+\_\+t}]{amount,  }\item[{const \mbox{\hyperlink{classCotton_1_1TextArea}{Text\+Area}} \&}]{ta }\end{DoxyParamCaption})}
+
+
+
+References Profiler\+CAPTURE, and signal\+Error().
+
+\mbox{\Hypertarget{classCotton_1_1Runtime_ad0c19843334ad0f5d9691ce1f4c24433}\label{classCotton_1_1Runtime_ad0c19843334ad0f5d9691ce1f4c24433}} 
+\index{Cotton::Runtime@{Cotton::Runtime}!verifyExactArgsAmountMethod@{verifyExactArgsAmountMethod}}
+\index{verifyExactArgsAmountMethod@{verifyExactArgsAmountMethod}!Cotton::Runtime@{Cotton::Runtime}}
+\doxysubsubsection{\texorpdfstring{verifyExactArgsAmountMethod()}{verifyExactArgsAmountMethod()}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
+{\footnotesize\ttfamily void Cotton\+::\+Runtime\+::verify\+Exact\+Args\+Amount\+Method (\begin{DoxyParamCaption}\item[{const std\+::vector$<$ \mbox{\hyperlink{classCotton_1_1Object}{Object}} $\ast$ $>$ \&}]{args,  }\item[{int64\+\_\+t}]{amount }\end{DoxyParamCaption})}
+
+
+
+References Profiler\+CAPTURE, and signal\+Error().
+
+
+
+Referenced by Cotton\+::\+Builtin\+::array\+Resize\+Method(), Cotton\+::\+Builtin\+::array\+Size\+Method(), disable(), enable(), forceping(), Cotton\+::\+Builtin\+::mm\+\_\+\+\_\+bool\+\_\+\+\_\+(), Cotton\+::\+Builtin\+::mm\+\_\+\+\_\+char\+\_\+\+\_\+(), Cotton\+::\+Builtin\+::mm\+\_\+\+\_\+int\+\_\+\+\_\+(), Cotton\+::\+Builtin\+::mm\+\_\+\+\_\+read\+\_\+\+\_\+(), Cotton\+::\+Builtin\+::mm\+\_\+\+\_\+real\+\_\+\+\_\+(), Cotton\+::\+Builtin\+::mm\+\_\+\+\_\+repr\+\_\+\+\_\+(), Cotton\+::\+Builtin\+::mm\+\_\+\+\_\+string\+\_\+\+\_\+(), ping(), status(), Cotton\+::\+Builtin\+::string\+Set\+Method(), and Cotton\+::\+Builtin\+::string\+Size\+Method().
+
+\mbox{\Hypertarget{classCotton_1_1Runtime_a4ea8724b92bbe715aa25d91675ccd98d}\label{classCotton_1_1Runtime_a4ea8724b92bbe715aa25d91675ccd98d}} 
+\index{Cotton::Runtime@{Cotton::Runtime}!verifyExactArgsAmountMethod@{verifyExactArgsAmountMethod}}
+\index{verifyExactArgsAmountMethod@{verifyExactArgsAmountMethod}!Cotton::Runtime@{Cotton::Runtime}}
+\doxysubsubsection{\texorpdfstring{verifyExactArgsAmountMethod()}{verifyExactArgsAmountMethod()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
+{\footnotesize\ttfamily void Cotton\+::\+Runtime\+::verify\+Exact\+Args\+Amount\+Method (\begin{DoxyParamCaption}\item[{const std\+::vector$<$ \mbox{\hyperlink{classCotton_1_1Object}{Object}} $\ast$ $>$ \&}]{args,  }\item[{int64\+\_\+t}]{amount,  }\item[{const \mbox{\hyperlink{classCotton_1_1TextArea}{Text\+Area}} \&}]{ta }\end{DoxyParamCaption})}
+
+
+
+References Profiler\+CAPTURE, and signal\+Error().
+
+\mbox{\Hypertarget{classCotton_1_1Runtime_a328ab18e718a77b5c2a3964b92ea0de9}\label{classCotton_1_1Runtime_a328ab18e718a77b5c2a3964b92ea0de9}} 
+\index{Cotton::Runtime@{Cotton::Runtime}!verifyHasMethod@{verifyHasMethod}}
+\index{verifyHasMethod@{verifyHasMethod}!Cotton::Runtime@{Cotton::Runtime}}
+\doxysubsubsection{\texorpdfstring{verifyHasMethod()}{verifyHasMethod()}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
+{\footnotesize\ttfamily void Cotton\+::\+Runtime\+::verify\+Has\+Method (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{classCotton_1_1Object}{Object}} $\ast$}]{obj,  }\item[{int64\+\_\+t}]{id }\end{DoxyParamCaption})}
+
+
+
+References Cotton\+::\+Type\+::has\+Method(), Profiler\+CAPTURE, signal\+Error(), Cotton\+::\+Object\+::type, Cotton\+::\+Object\+::user\+Repr(), and verify\+Is\+Instance\+Object().
+
+
+
+Referenced by Cotton\+::\+Builtin\+::\+CF\+\_\+bool(), Cotton\+::\+Builtin\+::\+CF\+\_\+char(), Cotton\+::\+Builtin\+::\+CF\+\_\+int(), Cotton\+::\+Builtin\+::\+CF\+\_\+printraw(), Cotton\+::\+Builtin\+::\+CF\+\_\+read(), Cotton\+::\+Builtin\+::\+CF\+\_\+real(), Cotton\+::\+Builtin\+::\+CF\+\_\+repr(), and Cotton\+::\+Builtin\+::\+CF\+\_\+string().
+
+\mbox{\Hypertarget{classCotton_1_1Runtime_ab9f53dabffebba584d21df119ff2c6a7}\label{classCotton_1_1Runtime_ab9f53dabffebba584d21df119ff2c6a7}} 
+\index{Cotton::Runtime@{Cotton::Runtime}!verifyHasMethod@{verifyHasMethod}}
+\index{verifyHasMethod@{verifyHasMethod}!Cotton::Runtime@{Cotton::Runtime}}
+\doxysubsubsection{\texorpdfstring{verifyHasMethod()}{verifyHasMethod()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
+{\footnotesize\ttfamily void Cotton\+::\+Runtime\+::verify\+Has\+Method (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{classCotton_1_1Object}{Object}} $\ast$}]{obj,  }\item[{int64\+\_\+t}]{id,  }\item[{const \mbox{\hyperlink{classCotton_1_1TextArea}{Text\+Area}} \&}]{ta }\end{DoxyParamCaption})}
+
+
+
+References Cotton\+::\+Type\+::has\+Method(), Profiler\+CAPTURE, signal\+Error(), Cotton\+::\+Object\+::type, Cotton\+::\+Object\+::user\+Repr(), and verify\+Is\+Valid\+Object().
+
+\mbox{\Hypertarget{classCotton_1_1Runtime_ade4191c66ab9079cc2ccda2a9282865a}\label{classCotton_1_1Runtime_ade4191c66ab9079cc2ccda2a9282865a}} 
+\index{Cotton::Runtime@{Cotton::Runtime}!verifyIsInstanceObject@{verifyIsInstanceObject}}
+\index{verifyIsInstanceObject@{verifyIsInstanceObject}!Cotton::Runtime@{Cotton::Runtime}}
+\doxysubsubsection{\texorpdfstring{verifyIsInstanceObject()}{verifyIsInstanceObject()}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
+{\footnotesize\ttfamily void Cotton\+::\+Runtime\+::verify\+Is\+Instance\+Object (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{classCotton_1_1Object}{Object}} $\ast$}]{obj,  }\item[{\mbox{\hyperlink{classCotton_1_1Type}{Type}} $\ast$}]{type }\end{DoxyParamCaption})}
+
+
+
+References is\+Instance\+Object(), Profiler\+CAPTURE, signal\+Error(), Cotton\+::\+Object\+::user\+Repr(), and Cotton\+::\+Type\+::user\+Repr().
+
+
+
+Referenced by Cotton\+::\+Builtin\+::\+Array\+Index\+Adapter(), Cotton\+::\+Builtin\+::array\+Resize\+Method(), Cotton\+::\+Builtin\+::array\+Size\+Method(), Cotton\+::\+Builtin\+::\+Boolean\+And\+Adapter(), Cotton\+::\+Builtin\+::\+Boolean\+Not\+Adapter(), Cotton\+::\+Builtin\+::\+Boolean\+Or\+Adapter(), Cotton\+::\+Builtin\+::\+CF\+\_\+argg(), Cotton\+::\+Builtin\+::\+CF\+\_\+assert(), Cotton\+::\+Builtin\+::\+CF\+\_\+checkglobal(), Cotton\+::\+Builtin\+::\+CF\+\_\+cotton(), Cotton\+::\+Builtin\+::\+CF\+\_\+dumbrun(), Cotton\+::\+Builtin\+::\+CF\+\_\+error(), Cotton\+::\+Builtin\+::\+CF\+\_\+exit(), Cotton\+::\+Builtin\+::\+CF\+\_\+getglobal(), Cotton\+::\+Builtin\+::\+CF\+\_\+hasfield(), Cotton\+::\+Builtin\+::\+CF\+\_\+hasmethod(), Cotton\+::\+Builtin\+::\+CF\+\_\+loadlibrary(), Cotton\+::\+Builtin\+::\+CF\+\_\+removeglobal(), Cotton\+::\+Builtin\+::\+CF\+\_\+setglobal(), Cotton\+::\+Builtin\+::\+CF\+\_\+sleep(), Cotton\+::\+Builtin\+::\+CF\+\_\+smartrun(), Cotton\+::\+Builtin\+::\+CF\+\_\+system(), Cotton\+::\+Builtin\+::\+Character\+Add\+Adapter(), Cotton\+::\+Builtin\+::\+Character\+Geq\+Adapter(), Cotton\+::\+Builtin\+::\+Character\+Gt\+Adapter(), Cotton\+::\+Builtin\+::\+Character\+Leq\+Adapter(), Cotton\+::\+Builtin\+::\+Character\+Lt\+Adapter(), Cotton\+::\+Builtin\+::\+Character\+Negative\+Adapter(), Cotton\+::\+Builtin\+::\+Character\+Positive\+Adapter(), Cotton\+::\+Builtin\+::\+Character\+Postdec\+Adapter(), Cotton\+::\+Builtin\+::\+Character\+Postinc\+Adapter(), Cotton\+::\+Builtin\+::\+Character\+Predec\+Adapter(), Cotton\+::\+Builtin\+::\+Character\+Preinc\+Adapter(), Cotton\+::\+Builtin\+::\+Character\+Sub\+Adapter(), Cotton\+::\+Builtin\+::\+Function\+Call\+Adapter(), Cotton\+::\+Builtin\+::get\+Array\+Data(), Cotton\+::\+Builtin\+::get\+Boolean\+Value(), Cotton\+::\+Builtin\+::get\+Character\+Value(), Cotton\+::\+Builtin\+::get\+Integer\+Value(), Cotton\+::\+Builtin\+::get\+Real\+Value(), Cotton\+::\+Builtin\+::get\+String\+Data(), Cotton\+::\+Builtin\+::\+Integer\+Add\+Adapter(), Cotton\+::\+Builtin\+::\+Integer\+Bitand\+Adapter(), Cotton\+::\+Builtin\+::\+Integer\+Bitor\+Adapter(), Cotton\+::\+Builtin\+::\+Integer\+Bitxor\+Adapter(), Cotton\+::\+Builtin\+::\+Integer\+Div\+Adapter(), Cotton\+::\+Builtin\+::\+Integer\+Geq\+Adapter(), Cotton\+::\+Builtin\+::\+Integer\+Gt\+Adapter(), Cotton\+::\+Builtin\+::\+Integer\+Inverse\+Adapter(), Cotton\+::\+Builtin\+::\+Integer\+Leq\+Adapter(), Cotton\+::\+Builtin\+::\+Integer\+Lshift\+Adapter(), Cotton\+::\+Builtin\+::\+Integer\+Lt\+Adapter(), Cotton\+::\+Builtin\+::\+Integer\+Mult\+Adapter(), Cotton\+::\+Builtin\+::\+Integer\+Negative\+Adapter(), Cotton\+::\+Builtin\+::\+Integer\+Positive\+Adapter(), Cotton\+::\+Builtin\+::\+Integer\+Postdec\+Adapter(), Cotton\+::\+Builtin\+::\+Integer\+Postinc\+Adapter(), Cotton\+::\+Builtin\+::\+Integer\+Predec\+Adapter(), Cotton\+::\+Builtin\+::\+Integer\+Preinc\+Adapter(), Cotton\+::\+Builtin\+::\+Integer\+Rem\+Adapter(), Cotton\+::\+Builtin\+::\+Integer\+Rshift\+Adapter(), Cotton\+::\+Builtin\+::\+Integer\+Sub\+Adapter(), Cotton\+::\+Builtin\+::mm\+\_\+\+\_\+bool\+\_\+\+\_\+(), Cotton\+::\+Builtin\+::mm\+\_\+\+\_\+char\+\_\+\+\_\+(), Cotton\+::\+Builtin\+::mm\+\_\+\+\_\+int\+\_\+\+\_\+(), Cotton\+::\+Builtin\+::mm\+\_\+\+\_\+real\+\_\+\+\_\+(), Cotton\+::\+Builtin\+::mm\+\_\+\+\_\+repr\+\_\+\+\_\+(), Cotton\+::\+Builtin\+::mm\+\_\+\+\_\+string\+\_\+\+\_\+(), Cotton\+::\+Builtin\+::\+Real\+Add\+Adapter(), Cotton\+::\+Builtin\+::\+Real\+Div\+Adapter(), Cotton\+::\+Builtin\+::\+Real\+Geq\+Adapter(), Cotton\+::\+Builtin\+::\+Real\+Gt\+Adapter(), Cotton\+::\+Builtin\+::\+Real\+Leq\+Adapter(), Cotton\+::\+Builtin\+::\+Real\+Lt\+Adapter(), Cotton\+::\+Builtin\+::\+Real\+Mult\+Adapter(), Cotton\+::\+Builtin\+::\+Real\+Negative\+Adapter(), Cotton\+::\+Builtin\+::\+Real\+Positive\+Adapter(), Cotton\+::\+Builtin\+::\+Real\+Sub\+Adapter(), Cotton\+::\+Builtin\+::\+String\+Add\+Adapter(), Cotton\+::\+Builtin\+::\+String\+Index\+Adapter(), Cotton\+::\+Builtin\+::string\+Set\+Method(), Cotton\+::\+Builtin\+::string\+Size\+Method(), and verify\+Has\+Method().
+
+\mbox{\Hypertarget{classCotton_1_1Runtime_a7508b3b7c01a25ddb1f4b44b4fc5abf2}\label{classCotton_1_1Runtime_a7508b3b7c01a25ddb1f4b44b4fc5abf2}} 
+\index{Cotton::Runtime@{Cotton::Runtime}!verifyIsInstanceObject@{verifyIsInstanceObject}}
+\index{verifyIsInstanceObject@{verifyIsInstanceObject}!Cotton::Runtime@{Cotton::Runtime}}
+\doxysubsubsection{\texorpdfstring{verifyIsInstanceObject()}{verifyIsInstanceObject()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
+{\footnotesize\ttfamily void Cotton\+::\+Runtime\+::verify\+Is\+Instance\+Object (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{classCotton_1_1Object}{Object}} $\ast$}]{obj,  }\item[{\mbox{\hyperlink{classCotton_1_1Type}{Type}} $\ast$}]{type,  }\item[{const \mbox{\hyperlink{classCotton_1_1TextArea}{Text\+Area}} \&}]{ta }\end{DoxyParamCaption})}
+
+
+
+References is\+Instance\+Object(), Profiler\+CAPTURE, signal\+Error(), Cotton\+::\+Object\+::user\+Repr(), and Cotton\+::\+Type\+::user\+Repr().
+
+\mbox{\Hypertarget{classCotton_1_1Runtime_ab6f1da74bfbbd4fefb9e3648b251b7b7}\label{classCotton_1_1Runtime_ab6f1da74bfbbd4fefb9e3648b251b7b7}} 
+\index{Cotton::Runtime@{Cotton::Runtime}!verifyIsOfType@{verifyIsOfType}}
+\index{verifyIsOfType@{verifyIsOfType}!Cotton::Runtime@{Cotton::Runtime}}
+\doxysubsubsection{\texorpdfstring{verifyIsOfType()}{verifyIsOfType()}\hspace{0.1cm}{\footnotesize\ttfamily [1/4]}}
+{\footnotesize\ttfamily void Cotton\+::\+Runtime\+::verify\+Is\+Of\+Type (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{classCotton_1_1Object}{Object}} $\ast$}]{obj,  }\item[{\mbox{\hyperlink{classCotton_1_1Runtime_a6c45beea9184c9a5c8e55d2cf6acc6d6}{Runtime\+::\+Builtin\+Types}}}]{type }\end{DoxyParamCaption})}
+
+
+
+References ARRAY\+\_\+\+TYPE\+\_\+\+ID, BOOLEAN\+\_\+\+TYPE\+\_\+\+ID, CHARACTER\+\_\+\+TYPE\+\_\+\+ID, FUNCTION\+\_\+\+TYPE\+\_\+\+ID, INTEGER\+\_\+\+TYPE\+\_\+\+ID, NOTHING\+\_\+\+TYPE\+\_\+\+ID, Profiler\+CAPTURE, REAL\+\_\+\+TYPE\+\_\+\+ID, signal\+Error(), STRING\+\_\+\+TYPE\+\_\+\+ID, Cotton\+::\+Object\+::type, Cotton\+::\+Object\+::user\+Repr(), and verify\+Is\+Valid\+Object().
+
+
+
+Referenced by Cotton\+::\+Builtin\+::\+Array\+Eq\+Adapter(), Cotton\+::\+Builtin\+::\+Boolean\+Eq\+Adapter(), Cotton\+::\+Builtin\+::\+Character\+Eq\+Adapter(), Cotton\+::\+Builtin\+::\+Array\+Type\+::copy(), Cotton\+::\+Builtin\+::\+Boolean\+Type\+::copy(), Cotton\+::\+Builtin\+::\+Character\+Type\+::copy(), Cotton\+::\+Builtin\+::\+Function\+Type\+::copy(), Cotton\+::\+Builtin\+::\+Integer\+Type\+::copy(), Cotton\+::\+Builtin\+::\+Nothing\+Type\+::copy(), Cotton\+::\+Builtin\+::\+Real\+Type\+::copy(), Cotton\+::\+Builtin\+::\+String\+Type\+::copy(), Cotton\+::\+Builtin\+::\+Function\+Eq\+Adapter(), Cotton\+::\+Builtin\+::\+Integer\+Eq\+Adapter(), Cotton\+::\+Builtin\+::mm\+\_\+\+\_\+read\+\_\+\+\_\+(), Cotton\+::\+Builtin\+::mm\+\_\+\+\_\+repr\+\_\+\+\_\+(), Cotton\+::\+Builtin\+::mm\+\_\+\+\_\+string\+\_\+\+\_\+(), Cotton\+::\+Builtin\+::\+Nothing\+Eq\+Adapter(), Cotton\+::\+Builtin\+::\+Real\+Eq\+Adapter(), and Cotton\+::\+Builtin\+::\+String\+Eq\+Adapter().
+
+\mbox{\Hypertarget{classCotton_1_1Runtime_a64e3c52e39495a7cf3ce0ae0141249a5}\label{classCotton_1_1Runtime_a64e3c52e39495a7cf3ce0ae0141249a5}} 
+\index{Cotton::Runtime@{Cotton::Runtime}!verifyIsOfType@{verifyIsOfType}}
+\index{verifyIsOfType@{verifyIsOfType}!Cotton::Runtime@{Cotton::Runtime}}
+\doxysubsubsection{\texorpdfstring{verifyIsOfType()}{verifyIsOfType()}\hspace{0.1cm}{\footnotesize\ttfamily [2/4]}}
+{\footnotesize\ttfamily void Cotton\+::\+Runtime\+::verify\+Is\+Of\+Type (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{classCotton_1_1Object}{Object}} $\ast$}]{obj,  }\item[{\mbox{\hyperlink{classCotton_1_1Runtime_a6c45beea9184c9a5c8e55d2cf6acc6d6}{Runtime\+::\+Builtin\+Types}}}]{type,  }\item[{const \mbox{\hyperlink{classCotton_1_1TextArea}{Text\+Area}} \&}]{ta }\end{DoxyParamCaption})}
+
+
+
+References ARRAY\+\_\+\+TYPE\+\_\+\+ID, BOOLEAN\+\_\+\+TYPE\+\_\+\+ID, CHARACTER\+\_\+\+TYPE\+\_\+\+ID, FUNCTION\+\_\+\+TYPE\+\_\+\+ID, INTEGER\+\_\+\+TYPE\+\_\+\+ID, NOTHING\+\_\+\+TYPE\+\_\+\+ID, Profiler\+CAPTURE, REAL\+\_\+\+TYPE\+\_\+\+ID, signal\+Error(), STRING\+\_\+\+TYPE\+\_\+\+ID, Cotton\+::\+Object\+::type, Cotton\+::\+Object\+::user\+Repr(), and verify\+Is\+Valid\+Object().
+
+\mbox{\Hypertarget{classCotton_1_1Runtime_aca45cc5c395e1844a79bbe46c11dc82e}\label{classCotton_1_1Runtime_aca45cc5c395e1844a79bbe46c11dc82e}} 
+\index{Cotton::Runtime@{Cotton::Runtime}!verifyIsOfType@{verifyIsOfType}}
+\index{verifyIsOfType@{verifyIsOfType}!Cotton::Runtime@{Cotton::Runtime}}
+\doxysubsubsection{\texorpdfstring{verifyIsOfType()}{verifyIsOfType()}\hspace{0.1cm}{\footnotesize\ttfamily [3/4]}}
+{\footnotesize\ttfamily void Cotton\+::\+Runtime\+::verify\+Is\+Of\+Type (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{classCotton_1_1Object}{Object}} $\ast$}]{obj,  }\item[{\mbox{\hyperlink{classCotton_1_1Type}{Type}} $\ast$}]{type }\end{DoxyParamCaption})}
+
+
+
+References is\+Of\+Type(), Profiler\+CAPTURE, signal\+Error(), Cotton\+::\+Object\+::user\+Repr(), and Cotton\+::\+Type\+::user\+Repr().
+
+\mbox{\Hypertarget{classCotton_1_1Runtime_a9927c7bd2cf1c3272c028648ad81a289}\label{classCotton_1_1Runtime_a9927c7bd2cf1c3272c028648ad81a289}} 
+\index{Cotton::Runtime@{Cotton::Runtime}!verifyIsOfType@{verifyIsOfType}}
+\index{verifyIsOfType@{verifyIsOfType}!Cotton::Runtime@{Cotton::Runtime}}
+\doxysubsubsection{\texorpdfstring{verifyIsOfType()}{verifyIsOfType()}\hspace{0.1cm}{\footnotesize\ttfamily [4/4]}}
+{\footnotesize\ttfamily void Cotton\+::\+Runtime\+::verify\+Is\+Of\+Type (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{classCotton_1_1Object}{Object}} $\ast$}]{obj,  }\item[{\mbox{\hyperlink{classCotton_1_1Type}{Type}} $\ast$}]{type,  }\item[{const \mbox{\hyperlink{classCotton_1_1TextArea}{Text\+Area}} \&}]{ta }\end{DoxyParamCaption})}
+
+
+
+References is\+Of\+Type(), Profiler\+CAPTURE, signal\+Error(), Cotton\+::\+Object\+::user\+Repr(), and Cotton\+::\+Type\+::user\+Repr().
+
+\mbox{\Hypertarget{classCotton_1_1Runtime_a6e26a136ecdd503b33b32c2fff89a9dc}\label{classCotton_1_1Runtime_a6e26a136ecdd503b33b32c2fff89a9dc}} 
+\index{Cotton::Runtime@{Cotton::Runtime}!verifyIsTypeObject@{verifyIsTypeObject}}
+\index{verifyIsTypeObject@{verifyIsTypeObject}!Cotton::Runtime@{Cotton::Runtime}}
+\doxysubsubsection{\texorpdfstring{verifyIsTypeObject()}{verifyIsTypeObject()}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
+{\footnotesize\ttfamily void Cotton\+::\+Runtime\+::verify\+Is\+Type\+Object (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{classCotton_1_1Object}{Object}} $\ast$}]{obj,  }\item[{\mbox{\hyperlink{classCotton_1_1Type}{Type}} $\ast$}]{type }\end{DoxyParamCaption})}
+
+
+
+References is\+Type\+Object(), Profiler\+CAPTURE, signal\+Error(), Cotton\+::\+Object\+::user\+Repr(), and Cotton\+::\+Type\+::user\+Repr().
+
+
+
+Referenced by Cotton\+::\+Builtin\+::\+CF\+\_\+isinsobj(), Cotton\+::\+Builtin\+::\+CF\+\_\+istypeobj(), Cotton\+::\+Builtin\+::\+CF\+\_\+make(), and Cotton\+::\+Builtin\+::\+CF\+\_\+read().
+
+\mbox{\Hypertarget{classCotton_1_1Runtime_ac344a8be20c4ebdd9034216d61d24122}\label{classCotton_1_1Runtime_ac344a8be20c4ebdd9034216d61d24122}} 
+\index{Cotton::Runtime@{Cotton::Runtime}!verifyIsTypeObject@{verifyIsTypeObject}}
+\index{verifyIsTypeObject@{verifyIsTypeObject}!Cotton::Runtime@{Cotton::Runtime}}
+\doxysubsubsection{\texorpdfstring{verifyIsTypeObject()}{verifyIsTypeObject()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
+{\footnotesize\ttfamily void Cotton\+::\+Runtime\+::verify\+Is\+Type\+Object (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{classCotton_1_1Object}{Object}} $\ast$}]{obj,  }\item[{\mbox{\hyperlink{classCotton_1_1Type}{Type}} $\ast$}]{type,  }\item[{const \mbox{\hyperlink{classCotton_1_1TextArea}{Text\+Area}} \&}]{ta }\end{DoxyParamCaption})}
+
+
+
+References is\+Type\+Object(), Profiler\+CAPTURE, signal\+Error(), Cotton\+::\+Object\+::user\+Repr(), and Cotton\+::\+Type\+::user\+Repr().
+
+\mbox{\Hypertarget{classCotton_1_1Runtime_a09e6eb493c46ca21c3334542f71c1088}\label{classCotton_1_1Runtime_a09e6eb493c46ca21c3334542f71c1088}} 
+\index{Cotton::Runtime@{Cotton::Runtime}!verifyIsValidObject@{verifyIsValidObject}}
+\index{verifyIsValidObject@{verifyIsValidObject}!Cotton::Runtime@{Cotton::Runtime}}
+\doxysubsubsection{\texorpdfstring{verifyIsValidObject()}{verifyIsValidObject()}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
+{\footnotesize\ttfamily void Cotton\+::\+Runtime\+::verify\+Is\+Valid\+Object (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{classCotton_1_1Object}{Object}} $\ast$}]{obj }\end{DoxyParamCaption})}
+
+
+
+References is\+Valid\+Object(), Profiler\+CAPTURE, signal\+Error(), and Cotton\+::\+Object\+::user\+Repr().
+
+
+
+Referenced by Cotton\+::\+Builtin\+::\+Array\+Eq\+Adapter(), Cotton\+::\+Builtin\+::\+Boolean\+Eq\+Adapter(), Cotton\+::\+Builtin\+::\+CF\+\_\+bool(), Cotton\+::\+Builtin\+::\+CF\+\_\+char(), Cotton\+::\+Builtin\+::\+CF\+\_\+copy(), Cotton\+::\+Builtin\+::\+CF\+\_\+dumbrun(), Cotton\+::\+Builtin\+::\+CF\+\_\+hasmethod(), Cotton\+::\+Builtin\+::\+CF\+\_\+int(), Cotton\+::\+Builtin\+::\+CF\+\_\+isinsobj(), Cotton\+::\+Builtin\+::\+CF\+\_\+istypeobj(), Cotton\+::\+Builtin\+::\+CF\+\_\+loadlibrary(), Cotton\+::\+Builtin\+::\+CF\+\_\+printraw(), Cotton\+::\+Builtin\+::\+CF\+\_\+real(), Cotton\+::\+Builtin\+::\+CF\+\_\+repr(), Cotton\+::\+Builtin\+::\+CF\+\_\+setglobal(), Cotton\+::\+Builtin\+::\+CF\+\_\+smartrun(), Cotton\+::\+Builtin\+::\+CF\+\_\+string(), Cotton\+::\+Builtin\+::\+CF\+\_\+typeof(), Cotton\+::\+Builtin\+::\+Character\+Eq\+Adapter(), Cotton\+::\+Builtin\+::\+Record\+Type\+::copy(), Cotton\+::\+Builtin\+::\+Function\+Eq\+Adapter(), Cotton\+::\+Type\+::get\+Method(), Cotton\+::\+Builtin\+::\+Integer\+Eq\+Adapter(), Cotton\+::\+Builtin\+::\+Nothing\+Eq\+Adapter(), Cotton\+::\+Builtin\+::\+Real\+Eq\+Adapter(), run\+Operator(), Cotton\+::\+Builtin\+::\+String\+Eq\+Adapter(), verify\+Has\+Method(), and verify\+Is\+Of\+Type().
+
+\mbox{\Hypertarget{classCotton_1_1Runtime_a76041801b9d63825ced839db8714c6c1}\label{classCotton_1_1Runtime_a76041801b9d63825ced839db8714c6c1}} 
+\index{Cotton::Runtime@{Cotton::Runtime}!verifyIsValidObject@{verifyIsValidObject}}
+\index{verifyIsValidObject@{verifyIsValidObject}!Cotton::Runtime@{Cotton::Runtime}}
+\doxysubsubsection{\texorpdfstring{verifyIsValidObject()}{verifyIsValidObject()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
+{\footnotesize\ttfamily void Cotton\+::\+Runtime\+::verify\+Is\+Valid\+Object (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{classCotton_1_1Object}{Object}} $\ast$}]{obj,  }\item[{const \mbox{\hyperlink{classCotton_1_1TextArea}{Text\+Area}} \&}]{ta }\end{DoxyParamCaption})}
+
+
+
+References is\+Valid\+Object(), Profiler\+CAPTURE, signal\+Error(), and Cotton\+::\+Object\+::user\+Repr().
+
+\mbox{\Hypertarget{classCotton_1_1Runtime_a4fd275e26598059573a41f76a153c363}\label{classCotton_1_1Runtime_a4fd275e26598059573a41f76a153c363}} 
+\index{Cotton::Runtime@{Cotton::Runtime}!verifyMinArgsAmountFunc@{verifyMinArgsAmountFunc}}
+\index{verifyMinArgsAmountFunc@{verifyMinArgsAmountFunc}!Cotton::Runtime@{Cotton::Runtime}}
+\doxysubsubsection{\texorpdfstring{verifyMinArgsAmountFunc()}{verifyMinArgsAmountFunc()}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
+{\footnotesize\ttfamily void Cotton\+::\+Runtime\+::verify\+Min\+Args\+Amount\+Func (\begin{DoxyParamCaption}\item[{const std\+::vector$<$ \mbox{\hyperlink{classCotton_1_1Object}{Object}} $\ast$ $>$ \&}]{args,  }\item[{int64\+\_\+t}]{amount }\end{DoxyParamCaption})}
+
+
+
+References Profiler\+CAPTURE, and signal\+Error().
+
+
+
+Referenced by Cotton\+::\+Builtin\+::\+CF\+\_\+assert(), Cotton\+::\+Builtin\+::\+CF\+\_\+isinsobj(), and Cotton\+::\+Builtin\+::\+CF\+\_\+istypeobj().
+
+\mbox{\Hypertarget{classCotton_1_1Runtime_a9f2e13c7127dd166e900d2505c334f27}\label{classCotton_1_1Runtime_a9f2e13c7127dd166e900d2505c334f27}} 
+\index{Cotton::Runtime@{Cotton::Runtime}!verifyMinArgsAmountFunc@{verifyMinArgsAmountFunc}}
+\index{verifyMinArgsAmountFunc@{verifyMinArgsAmountFunc}!Cotton::Runtime@{Cotton::Runtime}}
+\doxysubsubsection{\texorpdfstring{verifyMinArgsAmountFunc()}{verifyMinArgsAmountFunc()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
+{\footnotesize\ttfamily void Cotton\+::\+Runtime\+::verify\+Min\+Args\+Amount\+Func (\begin{DoxyParamCaption}\item[{const std\+::vector$<$ \mbox{\hyperlink{classCotton_1_1Object}{Object}} $\ast$ $>$ \&}]{args,  }\item[{int64\+\_\+t}]{amount,  }\item[{const \mbox{\hyperlink{classCotton_1_1TextArea}{Text\+Area}} \&}]{ta }\end{DoxyParamCaption})}
+
+
+
+References Profiler\+CAPTURE, and signal\+Error().
+
+\mbox{\Hypertarget{classCotton_1_1Runtime_a9d9e06d86b5906ba1d11c2db21d8483a}\label{classCotton_1_1Runtime_a9d9e06d86b5906ba1d11c2db21d8483a}} 
+\index{Cotton::Runtime@{Cotton::Runtime}!verifyMinArgsAmountMethod@{verifyMinArgsAmountMethod}}
+\index{verifyMinArgsAmountMethod@{verifyMinArgsAmountMethod}!Cotton::Runtime@{Cotton::Runtime}}
+\doxysubsubsection{\texorpdfstring{verifyMinArgsAmountMethod()}{verifyMinArgsAmountMethod()}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
+{\footnotesize\ttfamily void Cotton\+::\+Runtime\+::verify\+Min\+Args\+Amount\+Method (\begin{DoxyParamCaption}\item[{const std\+::vector$<$ \mbox{\hyperlink{classCotton_1_1Object}{Object}} $\ast$ $>$ \&}]{args,  }\item[{int64\+\_\+t}]{amount }\end{DoxyParamCaption})}
+
+
+
+References get\+Context(), Profiler\+CAPTURE, signal\+Error(), and Cotton\+::\+Runtime\+::\+Error\+Context\+::sub\+\_\+areas.
+
+\mbox{\Hypertarget{classCotton_1_1Runtime_abeec34e80da39e45bbc85d59c213070a}\label{classCotton_1_1Runtime_abeec34e80da39e45bbc85d59c213070a}} 
+\index{Cotton::Runtime@{Cotton::Runtime}!verifyMinArgsAmountMethod@{verifyMinArgsAmountMethod}}
+\index{verifyMinArgsAmountMethod@{verifyMinArgsAmountMethod}!Cotton::Runtime@{Cotton::Runtime}}
+\doxysubsubsection{\texorpdfstring{verifyMinArgsAmountMethod()}{verifyMinArgsAmountMethod()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
+{\footnotesize\ttfamily void Cotton\+::\+Runtime\+::verify\+Min\+Args\+Amount\+Method (\begin{DoxyParamCaption}\item[{const std\+::vector$<$ \mbox{\hyperlink{classCotton_1_1Object}{Object}} $\ast$ $>$ \&}]{args,  }\item[{int64\+\_\+t}]{amount,  }\item[{const \mbox{\hyperlink{classCotton_1_1TextArea}{Text\+Area}} \&}]{ta }\end{DoxyParamCaption})}
+
+
+
+References Profiler\+CAPTURE, and signal\+Error().
+
+
+
+\doxysubsection{Member Data Documentation}
+\mbox{\Hypertarget{classCotton_1_1Runtime_ad472161e2ea848fdc1a6c9561f13e8ae}\label{classCotton_1_1Runtime_ad472161e2ea848fdc1a6c9561f13e8ae}} 
+\index{Cotton::Runtime@{Cotton::Runtime}!array\_type@{array\_type}}
+\index{array\_type@{array\_type}!Cotton::Runtime@{Cotton::Runtime}}
+\doxysubsubsection{\texorpdfstring{array\_type}{array\_type}}
+{\footnotesize\ttfamily \mbox{\hyperlink{classCotton_1_1Builtin_1_1ArrayType}{Builtin\+::\+Array\+Type}}$\ast$ Cotton\+::\+Runtime\+::array\+\_\+type}
+
+
+
+Referenced by Cotton\+::\+Builtin\+::\+Array\+Eq\+Adapter(), Cotton\+::\+Builtin\+::\+Array\+Index\+Adapter(), Cotton\+::\+Builtin\+::array\+Resize\+Method(), Cotton\+::\+Builtin\+::array\+Size\+Method(), Cotton\+::\+Builtin\+::\+Array\+Type\+::copy(), Cotton\+::\+Builtin\+::get\+Array\+Data(), is\+Of\+Type(), Cotton\+::\+Builtin\+::make\+Array\+Instance\+Object(), Cotton\+::\+Builtin\+::mm\+\_\+\+\_\+repr\+\_\+\+\_\+(), and Runtime().
+
+\mbox{\Hypertarget{classCotton_1_1Runtime_a12ebe7a2c29ff1cea08aca9876863b06}\label{classCotton_1_1Runtime_a12ebe7a2c29ff1cea08aca9876863b06}} 
+\index{Cotton::Runtime@{Cotton::Runtime}!boolean\_type@{boolean\_type}}
+\index{boolean\_type@{boolean\_type}!Cotton::Runtime@{Cotton::Runtime}}
+\doxysubsubsection{\texorpdfstring{boolean\_type}{boolean\_type}}
+{\footnotesize\ttfamily \mbox{\hyperlink{classCotton_1_1Builtin_1_1BooleanType}{Builtin\+::\+Boolean\+Type}}$\ast$ Cotton\+::\+Runtime\+::boolean\+\_\+type}
+
+
+
+Referenced by Cotton\+::\+Builtin\+::\+Boolean\+And\+Adapter(), Cotton\+::\+Builtin\+::\+Boolean\+Eq\+Adapter(), Cotton\+::\+Builtin\+::\+Boolean\+Not\+Adapter(), Cotton\+::\+Builtin\+::\+Boolean\+Or\+Adapter(), Cotton\+::\+Builtin\+::\+CF\+\_\+assert(), Cotton\+::\+Builtin\+::\+Boolean\+Type\+::copy(), Cotton\+::\+Builtin\+::get\+Boolean\+Value(), is\+Of\+Type(), Cotton\+::\+Builtin\+::make\+Boolean\+Instance\+Object(), Cotton\+::\+Builtin\+::mm\+\_\+\+\_\+bool\+\_\+\+\_\+(), Cotton\+::\+Builtin\+::mm\+\_\+\+\_\+char\+\_\+\+\_\+(), Cotton\+::\+Builtin\+::mm\+\_\+\+\_\+int\+\_\+\+\_\+(), Cotton\+::\+Builtin\+::mm\+\_\+\+\_\+read\+\_\+\+\_\+(), Cotton\+::\+Builtin\+::mm\+\_\+\+\_\+real\+\_\+\+\_\+(), Cotton\+::\+Builtin\+::mm\+\_\+\+\_\+repr\+\_\+\+\_\+(), Cotton\+::\+Builtin\+::mm\+\_\+\+\_\+string\+\_\+\+\_\+(), and Runtime().
+
+\mbox{\Hypertarget{classCotton_1_1Runtime_a994ce232cf2da1abeb015d7c6b1257be}\label{classCotton_1_1Runtime_a994ce232cf2da1abeb015d7c6b1257be}} 
+\index{Cotton::Runtime@{Cotton::Runtime}!character\_type@{character\_type}}
+\index{character\_type@{character\_type}!Cotton::Runtime@{Cotton::Runtime}}
+\doxysubsubsection{\texorpdfstring{character\_type}{character\_type}}
+{\footnotesize\ttfamily \mbox{\hyperlink{classCotton_1_1Builtin_1_1CharacterType}{Builtin\+::\+Character\+Type}}$\ast$ Cotton\+::\+Runtime\+::character\+\_\+type}
+
+
+
+Referenced by Cotton\+::\+Builtin\+::\+Character\+Add\+Adapter(), Cotton\+::\+Builtin\+::\+Character\+Eq\+Adapter(), Cotton\+::\+Builtin\+::\+Character\+Geq\+Adapter(), Cotton\+::\+Builtin\+::\+Character\+Gt\+Adapter(), Cotton\+::\+Builtin\+::\+Character\+Leq\+Adapter(), Cotton\+::\+Builtin\+::\+Character\+Lt\+Adapter(), Cotton\+::\+Builtin\+::\+Character\+Negative\+Adapter(), Cotton\+::\+Builtin\+::\+Character\+Positive\+Adapter(), Cotton\+::\+Builtin\+::\+Character\+Postdec\+Adapter(), Cotton\+::\+Builtin\+::\+Character\+Postinc\+Adapter(), Cotton\+::\+Builtin\+::\+Character\+Predec\+Adapter(), Cotton\+::\+Builtin\+::\+Character\+Preinc\+Adapter(), Cotton\+::\+Builtin\+::\+Character\+Sub\+Adapter(), Cotton\+::\+Builtin\+::\+Character\+Type\+::copy(), Cotton\+::\+Builtin\+::get\+Character\+Value(), is\+Of\+Type(), Cotton\+::\+Builtin\+::make\+Character\+Instance\+Object(), Cotton\+::\+Builtin\+::mm\+\_\+\+\_\+bool\+\_\+\+\_\+(), Cotton\+::\+Builtin\+::mm\+\_\+\+\_\+char\+\_\+\+\_\+(), Cotton\+::\+Builtin\+::mm\+\_\+\+\_\+int\+\_\+\+\_\+(), Cotton\+::\+Builtin\+::mm\+\_\+\+\_\+read\+\_\+\+\_\+(), Cotton\+::\+Builtin\+::mm\+\_\+\+\_\+real\+\_\+\+\_\+(), Cotton\+::\+Builtin\+::mm\+\_\+\+\_\+repr\+\_\+\+\_\+(), Cotton\+::\+Builtin\+::mm\+\_\+\+\_\+string\+\_\+\+\_\+(), Runtime(), and Cotton\+::\+Builtin\+::string\+Set\+Method().
+
+\mbox{\Hypertarget{classCotton_1_1Runtime_a51b5863c2a600f1e1b917990c4d8fc06}\label{classCotton_1_1Runtime_a51b5863c2a600f1e1b917990c4d8fc06}} 
+\index{Cotton::Runtime@{Cotton::Runtime}!error\_contexts@{error\_contexts}}
+\index{error\_contexts@{error\_contexts}!Cotton::Runtime@{Cotton::Runtime}}
+\doxysubsubsection{\texorpdfstring{error\_contexts}{error\_contexts}}
+{\footnotesize\ttfamily std\+::vector$<$\mbox{\hyperlink{classCotton_1_1Runtime_1_1ErrorContext}{Error\+Context}}$>$ Cotton\+::\+Runtime\+::error\+\_\+contexts}
+
+
+
+Referenced by get\+Context(), new\+Context(), pop\+Context(), and signal\+Error().
+
+\mbox{\Hypertarget{classCotton_1_1Runtime_a0260f2a1a469f79b753c2a8fea606609}\label{classCotton_1_1Runtime_a0260f2a1a469f79b753c2a8fea606609}} 
+\index{Cotton::Runtime@{Cotton::Runtime}!error\_manager@{error\_manager}}
+\index{error\_manager@{error\_manager}!Cotton::Runtime@{Cotton::Runtime}}
+\doxysubsubsection{\texorpdfstring{error\_manager}{error\_manager}}
+{\footnotesize\ttfamily \mbox{\hyperlink{classCotton_1_1ErrorManager}{Error\+Manager}}$\ast$ Cotton\+::\+Runtime\+::error\+\_\+manager}
+
+
+
+Referenced by Cotton\+::\+Builtin\+::\+CF\+\_\+cotton(), Cotton\+::\+Builtin\+::\+CF\+\_\+dumbrun(), Cotton\+::\+Builtin\+::\+CF\+\_\+smartrun(), Runtime(), and signal\+Error().
+
+\mbox{\Hypertarget{classCotton_1_1Runtime_a1bd7661af184ebe3297b6ed8ae11824e}\label{classCotton_1_1Runtime_a1bd7661af184ebe3297b6ed8ae11824e}} 
+\index{Cotton::Runtime@{Cotton::Runtime}!exec\_res\_default@{exec\_res\_default}}
+\index{exec\_res\_default@{exec\_res\_default}!Cotton::Runtime@{Cotton::Runtime}}
+\doxysubsubsection{\texorpdfstring{exec\_res\_default}{exec\_res\_default}}
+{\footnotesize\ttfamily \mbox{\hyperlink{classCotton_1_1Object}{Object}}$\ast$ Cotton\+::\+Runtime\+::exec\+\_\+res\+\_\+default}
+
+\mbox{\Hypertarget{classCotton_1_1Runtime_ae8b23d0ed1eb4200c9d70cc039d2b3a6}\label{classCotton_1_1Runtime_ae8b23d0ed1eb4200c9d70cc039d2b3a6}} 
+\index{Cotton::Runtime@{Cotton::Runtime}!execution\_flags@{execution\_flags}}
+\index{execution\_flags@{execution\_flags}!Cotton::Runtime@{Cotton::Runtime}}
+\doxysubsubsection{\texorpdfstring{execution\_flags}{execution\_flags}}
+{\footnotesize\ttfamily uint8\+\_\+t Cotton\+::\+Runtime\+::execution\+\_\+flags}
+
+\mbox{\Hypertarget{classCotton_1_1Runtime_ae6edf063b2271e5f6d2e11c725064f9b}\label{classCotton_1_1Runtime_ae6edf063b2271e5f6d2e11c725064f9b}} 
+\index{Cotton::Runtime@{Cotton::Runtime}!function\_type@{function\_type}}
+\index{function\_type@{function\_type}!Cotton::Runtime@{Cotton::Runtime}}
+\doxysubsubsection{\texorpdfstring{function\_type}{function\_type}}
+{\footnotesize\ttfamily \mbox{\hyperlink{classCotton_1_1Builtin_1_1FunctionType}{Builtin\+::\+Function\+Type}}$\ast$ Cotton\+::\+Runtime\+::function\+\_\+type}
+
+
+
+Referenced by Cotton\+::\+Builtin\+::\+Function\+Type\+::copy(), Cotton\+::\+Builtin\+::\+Function\+Call\+Adapter(), Cotton\+::\+Builtin\+::\+Function\+Eq\+Adapter(), is\+Of\+Type(), Cotton\+::\+Builtin\+::make\+Function\+Instance\+Object(), Cotton\+::\+Builtin\+::mm\+\_\+\+\_\+repr\+\_\+\+\_\+(), and Runtime().
+
+\mbox{\Hypertarget{classCotton_1_1Runtime_aaf9fc5de9d69bbbb4078f4b6a960bc18}\label{classCotton_1_1Runtime_aaf9fc5de9d69bbbb4078f4b6a960bc18}} 
+\index{Cotton::Runtime@{Cotton::Runtime}!gc@{gc}}
+\index{gc@{gc}!Cotton::Runtime@{Cotton::Runtime}}
+\doxysubsubsection{\texorpdfstring{gc}{gc}}
+{\footnotesize\ttfamily \mbox{\hyperlink{classCotton_1_1GC}{GC}}$\ast$ Cotton\+::\+Runtime\+::gc}
+
+
+
+Referenced by Cotton\+::\+GCDefault\+Strategy\+::acknowledge\+End\+Of\+Cycle(), Cotton\+::\+GCDefault\+Strategy\+::check\+Conditions(), disable(), enable(), execute(), forceping(), Cotton\+::get\+List(), Cotton\+::\+Instance\+::\+Instance(), main(), Cotton\+::mark(), Cotton\+::\+Object\+::\+Object(), ping(), Runtime(), status(), and Cotton\+::\+Type\+::\+Type().
+
+\mbox{\Hypertarget{classCotton_1_1Runtime_afdb95ba919fc3cdd2825eab5abc224a2}\label{classCotton_1_1Runtime_afdb95ba919fc3cdd2825eab5abc224a2}} 
+\index{Cotton::Runtime@{Cotton::Runtime}!globals@{globals}}
+\index{globals@{globals}!Cotton::Runtime@{Cotton::Runtime}}
+\doxysubsubsection{\texorpdfstring{globals}{globals}}
+{\footnotesize\ttfamily \+\_\+\+\_\+gnu\+\_\+pbds\+::cc\+\_\+hash\+\_\+table$<$int64\+\_\+t, \mbox{\hyperlink{classCotton_1_1Object}{Object}} $\ast$$>$ Cotton\+::\+Runtime\+::globals}
+
+
+
+Referenced by check\+Global(), get\+Global(), remove\+Global(), Cotton\+::\+GC\+::run\+Cycle(), and set\+Global().
+
+\mbox{\Hypertarget{classCotton_1_1Runtime_adb4bde78db95d4414542afe194e936f8}\label{classCotton_1_1Runtime_adb4bde78db95d4414542afe194e936f8}} 
+\index{Cotton::Runtime@{Cotton::Runtime}!integer\_type@{integer\_type}}
+\index{integer\_type@{integer\_type}!Cotton::Runtime@{Cotton::Runtime}}
+\doxysubsubsection{\texorpdfstring{integer\_type}{integer\_type}}
+{\footnotesize\ttfamily \mbox{\hyperlink{classCotton_1_1Builtin_1_1IntegerType}{Builtin\+::\+Integer\+Type}}$\ast$ Cotton\+::\+Runtime\+::integer\+\_\+type}
+
+
+
+Referenced by Cotton\+::\+Builtin\+::\+Array\+Eq\+Adapter(), Cotton\+::\+Builtin\+::\+Array\+Index\+Adapter(), Cotton\+::\+Builtin\+::array\+Resize\+Method(), Cotton\+::\+Builtin\+::\+CF\+\_\+argg(), Cotton\+::\+Builtin\+::\+CF\+\_\+exit(), Cotton\+::\+Builtin\+::\+Integer\+Type\+::copy(), Cotton\+::\+Builtin\+::get\+Integer\+Value(), Cotton\+::\+Builtin\+::\+Integer\+Add\+Adapter(), Cotton\+::\+Builtin\+::\+Integer\+Bitand\+Adapter(), Cotton\+::\+Builtin\+::\+Integer\+Bitor\+Adapter(), Cotton\+::\+Builtin\+::\+Integer\+Bitxor\+Adapter(), Cotton\+::\+Builtin\+::\+Integer\+Div\+Adapter(), Cotton\+::\+Builtin\+::\+Integer\+Eq\+Adapter(), Cotton\+::\+Builtin\+::\+Integer\+Geq\+Adapter(), Cotton\+::\+Builtin\+::\+Integer\+Gt\+Adapter(), Cotton\+::\+Builtin\+::\+Integer\+Inverse\+Adapter(), Cotton\+::\+Builtin\+::\+Integer\+Leq\+Adapter(), Cotton\+::\+Builtin\+::\+Integer\+Lshift\+Adapter(), Cotton\+::\+Builtin\+::\+Integer\+Lt\+Adapter(), Cotton\+::\+Builtin\+::\+Integer\+Mult\+Adapter(), Cotton\+::\+Builtin\+::\+Integer\+Negative\+Adapter(), Cotton\+::\+Builtin\+::\+Integer\+Positive\+Adapter(), Cotton\+::\+Builtin\+::\+Integer\+Postdec\+Adapter(), Cotton\+::\+Builtin\+::\+Integer\+Postinc\+Adapter(), Cotton\+::\+Builtin\+::\+Integer\+Predec\+Adapter(), Cotton\+::\+Builtin\+::\+Integer\+Preinc\+Adapter(), Cotton\+::\+Builtin\+::\+Integer\+Rem\+Adapter(), Cotton\+::\+Builtin\+::\+Integer\+Rshift\+Adapter(), Cotton\+::\+Builtin\+::\+Integer\+Sub\+Adapter(), is\+Of\+Type(), Cotton\+::\+Builtin\+::make\+Integer\+Instance\+Object(), Cotton\+::\+Builtin\+::mm\+\_\+\+\_\+bool\+\_\+\+\_\+(), Cotton\+::\+Builtin\+::mm\+\_\+\+\_\+char\+\_\+\+\_\+(), Cotton\+::\+Builtin\+::mm\+\_\+\+\_\+int\+\_\+\+\_\+(), Cotton\+::\+Builtin\+::mm\+\_\+\+\_\+read\+\_\+\+\_\+(), Cotton\+::\+Builtin\+::mm\+\_\+\+\_\+real\+\_\+\+\_\+(), Cotton\+::\+Builtin\+::mm\+\_\+\+\_\+repr\+\_\+\+\_\+(), Cotton\+::\+Builtin\+::mm\+\_\+\+\_\+string\+\_\+\+\_\+(), Runtime(), Cotton\+::\+Builtin\+::\+String\+Eq\+Adapter(), Cotton\+::\+Builtin\+::\+String\+Index\+Adapter(), and Cotton\+::\+Builtin\+::string\+Set\+Method().
+
+\mbox{\Hypertarget{classCotton_1_1Runtime_a301efc8ae7c0a184437e3a11c2aaed0a}\label{classCotton_1_1Runtime_a301efc8ae7c0a184437e3a11c2aaed0a}} 
+\index{Cotton::Runtime@{Cotton::Runtime}!nds@{nds}}
+\index{nds@{nds}!Cotton::Runtime@{Cotton::Runtime}}
+\doxysubsubsection{\texorpdfstring{nds}{nds}}
+{\footnotesize\ttfamily \mbox{\hyperlink{classCotton_1_1NameIds}{Name\+Ids}}$\ast$ Cotton\+::\+Runtime\+::nds}
+
+
+
+Referenced by Cotton\+::\+Builtin\+::\+CF\+\_\+checkglobal(), Cotton\+::\+Builtin\+::\+CF\+\_\+cotton(), Cotton\+::\+Builtin\+::\+CF\+\_\+dumbrun(), Cotton\+::\+Builtin\+::\+CF\+\_\+getglobal(), Cotton\+::\+Builtin\+::\+CF\+\_\+hasfield(), Cotton\+::\+Builtin\+::\+CF\+\_\+hasmethod(), Cotton\+::\+Builtin\+::\+CF\+\_\+loadlibrary(), Cotton\+::\+Builtin\+::\+CF\+\_\+removeglobal(), Cotton\+::\+Builtin\+::\+CF\+\_\+setglobal(), Cotton\+::\+Builtin\+::\+CF\+\_\+smartrun(), execute(), get\+Global(), Cotton\+::\+Type\+::get\+Method(), Cotton\+::\+Scope\+::get\+Variable(), Cotton\+::\+Builtin\+::install\+Array\+Methods(), Cotton\+::\+Builtin\+::install\+Builtin\+Functions(), Cotton\+::\+Builtin\+::install\+String\+Methods(), library\+\_\+load\+\_\+point(), Cotton\+::\+Magic\+Methods\+::mm\+\_\+\+\_\+bool\+\_\+\+\_\+(), Cotton\+::\+Magic\+Methods\+::mm\+\_\+\+\_\+char\+\_\+\+\_\+(), Cotton\+::\+Magic\+Methods\+::mm\+\_\+\+\_\+copy\+\_\+\+\_\+(), Cotton\+::\+Magic\+Methods\+::mm\+\_\+\+\_\+int\+\_\+\+\_\+(), Cotton\+::\+Magic\+Methods\+::mm\+\_\+\+\_\+make\+\_\+\+\_\+(), Cotton\+::\+Magic\+Methods\+::mm\+\_\+\+\_\+read\+\_\+\+\_\+(), Cotton\+::\+Magic\+Methods\+::mm\+\_\+\+\_\+real\+\_\+\+\_\+(), Cotton\+::\+Magic\+Methods\+::mm\+\_\+\+\_\+repr\+\_\+\+\_\+(), Cotton\+::\+Magic\+Methods\+::mm\+\_\+\+\_\+string\+\_\+\+\_\+(), Runtime(), Cotton\+::\+Instance\+::select\+Field(), Cotton\+::\+Builtin\+::\+Record\+Instance\+::select\+Field(), Cotton\+::\+Builtin\+::\+Record\+Instance\+::user\+Repr(), and Cotton\+::\+Builtin\+::\+Record\+Type\+::user\+Repr().
+
+\mbox{\Hypertarget{classCotton_1_1Runtime_a38fe0ef62978e9c0182cd9c48e5a1804}\label{classCotton_1_1Runtime_a38fe0ef62978e9c0182cd9c48e5a1804}} 
+\index{Cotton::Runtime@{Cotton::Runtime}!nothing\_type@{nothing\_type}}
+\index{nothing\_type@{nothing\_type}!Cotton::Runtime@{Cotton::Runtime}}
+\doxysubsubsection{\texorpdfstring{nothing\_type}{nothing\_type}}
+{\footnotesize\ttfamily \mbox{\hyperlink{classCotton_1_1Builtin_1_1NothingType}{Builtin\+::\+Nothing\+Type}}$\ast$ Cotton\+::\+Runtime\+::nothing\+\_\+type}
+
+
+
+Referenced by Cotton\+::\+Builtin\+::\+Nothing\+Type\+::copy(), is\+Of\+Type(), Cotton\+::\+Builtin\+::make\+Nothing\+Instance\+Object(), Cotton\+::\+Builtin\+::make\+Record\+Instance\+Object(), Cotton\+::\+Builtin\+::mm\+\_\+\+\_\+repr\+\_\+\+\_\+(), Cotton\+::\+Builtin\+::\+Nothing\+Eq\+Adapter(), and Runtime().
+
+\mbox{\Hypertarget{classCotton_1_1Runtime_a9dd97645786853935c00ca486db31181}\label{classCotton_1_1Runtime_a9dd97645786853935c00ca486db31181}} 
+\index{Cotton::Runtime@{Cotton::Runtime}!protected\_false@{protected\_false}}
+\index{protected\_false@{protected\_false}!Cotton::Runtime@{Cotton::Runtime}}
+\doxysubsubsection{\texorpdfstring{protected\_false}{protected\_false}}
+{\footnotesize\ttfamily \mbox{\hyperlink{classCotton_1_1Object}{Object}}$\ast$ Cotton\+::\+Runtime\+::protected\+\_\+false}
+
+
+
+Referenced by Cotton\+::\+Builtin\+::\+Array\+Eq\+Adapter(), Cotton\+::\+Builtin\+::\+Array\+Neq\+Adapter(), Cotton\+::\+Builtin\+::\+Boolean\+Eq\+Adapter(), Cotton\+::\+Builtin\+::\+Boolean\+Neq\+Adapter(), Cotton\+::\+Builtin\+::\+Boolean\+Not\+Adapter(), Cotton\+::\+Builtin\+::\+Character\+Eq\+Adapter(), Cotton\+::\+Builtin\+::\+Character\+Neq\+Adapter(), Cotton\+::\+Builtin\+::\+Function\+Eq\+Adapter(), Cotton\+::\+Builtin\+::\+Function\+Neq\+Adapter(), Cotton\+::\+Builtin\+::\+Integer\+Eq\+Adapter(), Cotton\+::\+Builtin\+::\+Integer\+Neq\+Adapter(), Cotton\+::\+Builtin\+::mm\+\_\+\+\_\+bool\+\_\+\+\_\+(), Cotton\+::\+Builtin\+::mm\+\_\+\+\_\+read\+\_\+\+\_\+(), Cotton\+::\+Builtin\+::\+Nothing\+Eq\+Adapter(), Cotton\+::\+Builtin\+::\+Nothing\+Neq\+Adapter(), protected\+Boolean(), Cotton\+::\+Builtin\+::\+Real\+Eq\+Adapter(), Cotton\+::\+Builtin\+::\+Real\+Neq\+Adapter(), Runtime(), Cotton\+::\+Builtin\+::\+String\+Eq\+Adapter(), and Cotton\+::\+Builtin\+::\+String\+Neq\+Adapter().
+
+\mbox{\Hypertarget{classCotton_1_1Runtime_a38ea6f4ea727428f4238dee1814acd26}\label{classCotton_1_1Runtime_a38ea6f4ea727428f4238dee1814acd26}} 
+\index{Cotton::Runtime@{Cotton::Runtime}!protected\_nothing@{protected\_nothing}}
+\index{protected\_nothing@{protected\_nothing}!Cotton::Runtime@{Cotton::Runtime}}
+\doxysubsubsection{\texorpdfstring{protected\_nothing}{protected\_nothing}}
+{\footnotesize\ttfamily \mbox{\hyperlink{classCotton_1_1Object}{Object}}$\ast$ Cotton\+::\+Runtime\+::protected\+\_\+nothing}
+
+
+
+Referenced by Cotton\+::\+Builtin\+::\+CF\+\_\+argg(), Cotton\+::\+Builtin\+::\+CF\+\_\+assert(), Cotton\+::\+Builtin\+::\+CF\+\_\+fork(), Cotton\+::\+Builtin\+::\+CF\+\_\+hasfield(), Cotton\+::\+Builtin\+::\+CF\+\_\+hasmethod(), Cotton\+::\+Builtin\+::\+CF\+\_\+isinsobj(), Cotton\+::\+Builtin\+::\+CF\+\_\+istypeobj(), Cotton\+::\+Builtin\+::\+CF\+\_\+loadlibrary(), Cotton\+::\+Builtin\+::\+CF\+\_\+print(), Cotton\+::\+Builtin\+::\+CF\+\_\+println(), Cotton\+::\+Builtin\+::\+CF\+\_\+printraw(), Cotton\+::\+Builtin\+::\+CF\+\_\+readln(), Cotton\+::\+Builtin\+::\+CF\+\_\+readraw(), Cotton\+::\+Builtin\+::\+CF\+\_\+removeglobal(), Cotton\+::\+Builtin\+::\+CF\+\_\+sleep(), Cotton\+::\+Builtin\+::\+CF\+\_\+smartrun(), Cotton\+::\+Builtin\+::\+CF\+\_\+system(), disable(), enable(), execute(), forceping(), get\+Type\+Object(), ping(), Runtime(), and Cotton\+::\+Builtin\+::string\+Set\+Method().
+
+\mbox{\Hypertarget{classCotton_1_1Runtime_ad22d9a32c87096d77c47da3f523503d0}\label{classCotton_1_1Runtime_ad22d9a32c87096d77c47da3f523503d0}} 
+\index{Cotton::Runtime@{Cotton::Runtime}!protected\_true@{protected\_true}}
+\index{protected\_true@{protected\_true}!Cotton::Runtime@{Cotton::Runtime}}
+\doxysubsubsection{\texorpdfstring{protected\_true}{protected\_true}}
+{\footnotesize\ttfamily \mbox{\hyperlink{classCotton_1_1Object}{Object}}$\ast$ Cotton\+::\+Runtime\+::protected\+\_\+true}
+
+
+
+Referenced by Cotton\+::\+Builtin\+::\+Array\+Eq\+Adapter(), Cotton\+::\+Builtin\+::\+Array\+Neq\+Adapter(), Cotton\+::\+Builtin\+::\+Boolean\+Eq\+Adapter(), Cotton\+::\+Builtin\+::\+Boolean\+Neq\+Adapter(), Cotton\+::\+Builtin\+::\+Boolean\+Not\+Adapter(), Cotton\+::\+Builtin\+::\+Character\+Eq\+Adapter(), Cotton\+::\+Builtin\+::\+Character\+Neq\+Adapter(), Cotton\+::\+Builtin\+::\+Function\+Eq\+Adapter(), Cotton\+::\+Builtin\+::\+Function\+Neq\+Adapter(), Cotton\+::\+Builtin\+::\+Integer\+Eq\+Adapter(), Cotton\+::\+Builtin\+::\+Integer\+Neq\+Adapter(), Cotton\+::\+Builtin\+::mm\+\_\+\+\_\+bool\+\_\+\+\_\+(), Cotton\+::\+Builtin\+::mm\+\_\+\+\_\+read\+\_\+\+\_\+(), Cotton\+::\+Builtin\+::\+Nothing\+Eq\+Adapter(), Cotton\+::\+Builtin\+::\+Nothing\+Neq\+Adapter(), protected\+Boolean(), Cotton\+::\+Builtin\+::\+Real\+Eq\+Adapter(), Cotton\+::\+Builtin\+::\+Real\+Neq\+Adapter(), Runtime(), Cotton\+::\+Builtin\+::\+String\+Eq\+Adapter(), and Cotton\+::\+Builtin\+::\+String\+Neq\+Adapter().
+
+\mbox{\Hypertarget{classCotton_1_1Runtime_a6beff7938977355034018bf0816df37a}\label{classCotton_1_1Runtime_a6beff7938977355034018bf0816df37a}} 
+\index{Cotton::Runtime@{Cotton::Runtime}!readonly\_literals@{readonly\_literals}}
+\index{readonly\_literals@{readonly\_literals}!Cotton::Runtime@{Cotton::Runtime}}
+\doxysubsubsection{\texorpdfstring{readonly\_literals}{readonly\_literals}}
+{\footnotesize\ttfamily \+\_\+\+\_\+gnu\+\_\+pbds\+::cc\+\_\+hash\+\_\+table$<$int64\+\_\+t, \mbox{\hyperlink{classCotton_1_1Object}{Object}} $\ast$$>$ Cotton\+::\+Runtime\+::readonly\+\_\+literals}
+
+
+
+Referenced by execute().
+
+\mbox{\Hypertarget{classCotton_1_1Runtime_a63fafc47494f9d27b037a05a0c0322e5}\label{classCotton_1_1Runtime_a63fafc47494f9d27b037a05a0c0322e5}} 
+\index{Cotton::Runtime@{Cotton::Runtime}!real\_type@{real\_type}}
+\index{real\_type@{real\_type}!Cotton::Runtime@{Cotton::Runtime}}
+\doxysubsubsection{\texorpdfstring{real\_type}{real\_type}}
+{\footnotesize\ttfamily \mbox{\hyperlink{classCotton_1_1Builtin_1_1RealType}{Builtin\+::\+Real\+Type}}$\ast$ Cotton\+::\+Runtime\+::real\+\_\+type}
+
+
+
+Referenced by Cotton\+::\+Builtin\+::\+CF\+\_\+sleep(), Cotton\+::\+Builtin\+::\+Real\+Type\+::copy(), Cotton\+::\+Builtin\+::get\+Real\+Value(), is\+Of\+Type(), Cotton\+::\+Builtin\+::make\+Real\+Instance\+Object(), Cotton\+::\+Builtin\+::mm\+\_\+\+\_\+bool\+\_\+\+\_\+(), Cotton\+::\+Builtin\+::mm\+\_\+\+\_\+char\+\_\+\+\_\+(), Cotton\+::\+Builtin\+::mm\+\_\+\+\_\+int\+\_\+\+\_\+(), Cotton\+::\+Builtin\+::mm\+\_\+\+\_\+read\+\_\+\+\_\+(), Cotton\+::\+Builtin\+::mm\+\_\+\+\_\+real\+\_\+\+\_\+(), Cotton\+::\+Builtin\+::mm\+\_\+\+\_\+repr\+\_\+\+\_\+(), Cotton\+::\+Builtin\+::mm\+\_\+\+\_\+string\+\_\+\+\_\+(), Cotton\+::\+Builtin\+::\+Real\+Add\+Adapter(), Cotton\+::\+Builtin\+::\+Real\+Div\+Adapter(), Cotton\+::\+Builtin\+::\+Real\+Eq\+Adapter(), Cotton\+::\+Builtin\+::\+Real\+Geq\+Adapter(), Cotton\+::\+Builtin\+::\+Real\+Gt\+Adapter(), Cotton\+::\+Builtin\+::\+Real\+Leq\+Adapter(), Cotton\+::\+Builtin\+::\+Real\+Lt\+Adapter(), Cotton\+::\+Builtin\+::\+Real\+Mult\+Adapter(), Cotton\+::\+Builtin\+::\+Real\+Negative\+Adapter(), Cotton\+::\+Builtin\+::\+Real\+Positive\+Adapter(), Cotton\+::\+Builtin\+::\+Real\+Sub\+Adapter(), and Runtime().
+
+\mbox{\Hypertarget{classCotton_1_1Runtime_ae2405d661067da5e76d0289857d216b6}\label{classCotton_1_1Runtime_ae2405d661067da5e76d0289857d216b6}} 
+\index{Cotton::Runtime@{Cotton::Runtime}!scope@{scope}}
+\index{scope@{scope}!Cotton::Runtime@{Cotton::Runtime}}
+\doxysubsubsection{\texorpdfstring{scope}{scope}}
+{\footnotesize\ttfamily \mbox{\hyperlink{classCotton_1_1Scope}{Scope}}$\ast$ Cotton\+::\+Runtime\+::scope}
+
+
+
+Referenced by Cotton\+::\+Builtin\+::\+CF\+\_\+argc(), Cotton\+::\+Builtin\+::\+CF\+\_\+argg(), Cotton\+::\+Builtin\+::\+CF\+\_\+argv(), execute(), Cotton\+::\+Builtin\+::\+Function\+Call\+Adapter(), Cotton\+::\+Builtin\+::install\+Builtin\+Functions(), new\+Frame(), pop\+Frame(), Cotton\+::\+GC\+::run\+Cycle(), and Runtime().
+
+\mbox{\Hypertarget{classCotton_1_1Runtime_a5fc2890b43549b008e8efe4344cb2749}\label{classCotton_1_1Runtime_a5fc2890b43549b008e8efe4344cb2749}} 
+\index{Cotton::Runtime@{Cotton::Runtime}!string\_type@{string\_type}}
+\index{string\_type@{string\_type}!Cotton::Runtime@{Cotton::Runtime}}
+\doxysubsubsection{\texorpdfstring{string\_type}{string\_type}}
+{\footnotesize\ttfamily \mbox{\hyperlink{classCotton_1_1Builtin_1_1StringType}{Builtin\+::\+String\+Type}}$\ast$ Cotton\+::\+Runtime\+::string\+\_\+type}
+
+
+
+Referenced by Cotton\+::\+Builtin\+::\+Array\+Eq\+Adapter(), Cotton\+::\+Builtin\+::\+CF\+\_\+assert(), Cotton\+::\+Builtin\+::\+CF\+\_\+checkglobal(), Cotton\+::\+Builtin\+::\+CF\+\_\+cotton(), Cotton\+::\+Builtin\+::\+CF\+\_\+dumbrun(), Cotton\+::\+Builtin\+::\+CF\+\_\+error(), Cotton\+::\+Builtin\+::\+CF\+\_\+getglobal(), Cotton\+::\+Builtin\+::\+CF\+\_\+hasfield(), Cotton\+::\+Builtin\+::\+CF\+\_\+hasmethod(), Cotton\+::\+Builtin\+::\+CF\+\_\+loadlibrary(), Cotton\+::\+Builtin\+::\+CF\+\_\+printraw(), Cotton\+::\+Builtin\+::\+CF\+\_\+removeglobal(), Cotton\+::\+Builtin\+::\+CF\+\_\+setglobal(), Cotton\+::\+Builtin\+::\+CF\+\_\+smartrun(), Cotton\+::\+Builtin\+::\+CF\+\_\+system(), Cotton\+::\+Builtin\+::\+String\+Type\+::copy(), Cotton\+::\+Builtin\+::get\+String\+Data(), is\+Of\+Type(), Cotton\+::\+Builtin\+::make\+String\+Instance\+Object(), Cotton\+::\+Builtin\+::mm\+\_\+\+\_\+bool\+\_\+\+\_\+(), Cotton\+::\+Builtin\+::mm\+\_\+\+\_\+int\+\_\+\+\_\+(), Cotton\+::\+Builtin\+::mm\+\_\+\+\_\+read\+\_\+\+\_\+(), Cotton\+::\+Builtin\+::mm\+\_\+\+\_\+real\+\_\+\+\_\+(), Cotton\+::\+Builtin\+::mm\+\_\+\+\_\+repr\+\_\+\+\_\+(), Cotton\+::\+Builtin\+::mm\+\_\+\+\_\+string\+\_\+\+\_\+(), Runtime(), Cotton\+::\+Builtin\+::\+String\+Add\+Adapter(), Cotton\+::\+Builtin\+::\+String\+Eq\+Adapter(), Cotton\+::\+Builtin\+::\+String\+Index\+Adapter(), Cotton\+::\+Builtin\+::string\+Set\+Method(), and Cotton\+::\+Builtin\+::string\+Size\+Method().
+
+\mbox{\Hypertarget{classCotton_1_1Runtime_a7b0c253da1db14a45c095091b4d02a35}\label{classCotton_1_1Runtime_a7b0c253da1db14a45c095091b4d02a35}} 
+\index{Cotton::Runtime@{Cotton::Runtime}!type\_objects@{type\_objects}}
+\index{type\_objects@{type\_objects}!Cotton::Runtime@{Cotton::Runtime}}
+\doxysubsubsection{\texorpdfstring{type\_objects}{type\_objects}}
+{\footnotesize\ttfamily \+\_\+\+\_\+gnu\+\_\+pbds\+::cc\+\_\+hash\+\_\+table$<$\mbox{\hyperlink{classCotton_1_1Type}{Type}} $\ast$, \mbox{\hyperlink{classCotton_1_1Object}{Object}} $\ast$$>$ Cotton\+::\+Runtime\+::type\+\_\+objects}
+
+
+
+Referenced by get\+Type\+Object(), and register\+Type\+Object().
+
+
+
+The documentation for this class was generated from the following files\+:\begin{DoxyCompactItemize}
+\item 
+cotton\+\_\+lib/src/cotton\+\_\+lib/back/\mbox{\hyperlink{runtime_8h}{runtime.\+h}}\item 
+cotton\+\_\+lib/src/cotton\+\_\+lib/back/\mbox{\hyperlink{runtime_8cpp}{runtime.\+cpp}}\end{DoxyCompactItemize}

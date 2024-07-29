@@ -73,7 +73,7 @@ size_t FunctionType::getInstanceSize() {
 static Object *
 FunctionCallAdapter(Object *self, const std::vector<Object *> &args, Runtime *rt, bool execution_result_matters) {
     ProfilerCAPTURE();
-    rt->verifyIsInstanceObject(self, rt->function_type, rt->getContext().sub_areas[0]);
+    rt->verifyIsInstanceObject(self, rt->function_type, Runtime::SUB0_CTX);
     auto f = icast(self->instance, FunctionInstance);
     if (f->is_internal) {
         if (f->internal_ptr == NULL) {
@@ -119,8 +119,8 @@ FunctionCallAdapter(Object *self, const std::vector<Object *> &args, Runtime *rt
 
 static Object *FunctionEqAdapter(Object *self, Object *arg, Runtime *rt, bool execution_result_matters) {
     ProfilerCAPTURE();
-    rt->verifyIsOfType(self, rt->function_type, rt->getContext().sub_areas[0]);
-    rt->verifyIsValidObject(arg, rt->getContext().sub_areas[1]);
+    rt->verifyIsOfType(self, rt->function_type, Runtime::SUB0_CTX);
+    rt->verifyIsValidObject(arg, Runtime::SUB1_CTX);
 
     if (!rt->isOfType(arg, rt->function_type)) {
         return rt->protected_false;
@@ -160,7 +160,7 @@ static Object *mm__repr__(const std::vector<Object *> &args, Runtime *rt, bool e
     ProfilerCAPTURE();
     rt->verifyExactArgsAmountMethod(args, 0);
     auto self = args[0];
-    rt->verifyIsOfType(self, rt->function_type, rt->getContext().sub_areas[1]);
+    rt->verifyIsOfType(self, rt->function_type, Runtime::SUB1_CTX);
 
     if (!execution_result_matters) {
         return self;

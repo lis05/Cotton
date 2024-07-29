@@ -111,7 +111,8 @@ bool Runtime::checkGlobal(int64_t id) {
     return it != this->globals.end();
 }
 
-Object* Runtime::getGlobal(int64_t id) {
+Object *Runtime::getGlobal(int64_t id) {
+    ProfilerCAPTURE();
     auto it = this->globals.find(id);
     if (it == this->globals.end()) {
         this->signalError("Global not found: " + this->nds->fromId(id), this->getContext().area);
@@ -120,18 +121,22 @@ Object* Runtime::getGlobal(int64_t id) {
 }
 
 void Runtime::setGlobal(int64_t id, Object *obj) {
+    ProfilerCAPTURE();
     this->globals[id] = obj;
 }
 
 void Runtime::removeGlobal(int64_t id) {
+    ProfilerCAPTURE();
     this->globals.erase(id);
 }
 
 void Runtime::registerTypeObject(Type *type, Object *obj) {
+    ProfilerCAPTURE();
     this->type_objects[type] = obj;
 }
 
 Object *Runtime::getTypeObject(Type *type) {
+    ProfilerCAPTURE();
     auto it = this->type_objects.find(type);
     if (it != this->type_objects.end()) {
         return it->second;
@@ -140,6 +145,7 @@ Object *Runtime::getTypeObject(Type *type) {
 }
 
 Object *Runtime::protectedBoolean(bool val) {
+    ProfilerCAPTURE();
     return val ? this->protected_true : this->protected_false;
 }
 
@@ -190,7 +196,8 @@ Object *Runtime::copy(Object *obj) {
 
 Object *Runtime::runOperator(OperatorNode::OperatorId id, Object *obj, bool execution_result_matters) {
     ProfilerCAPTURE();
-    this->verifyIsValidObject(obj, this->getContext().sub_areas[0]);
+
+    this->verifyIsValidObject(obj, Runtime::SUB0_CTX);
 
     UnaryOperatorAdapter op;
 
@@ -250,8 +257,8 @@ Object *Runtime::runOperator(OperatorNode::OperatorId id, Object *obj, bool exec
 Object *
 Runtime::runOperator(OperatorNode::OperatorId id, Object *obj, Object *arg, bool execution_result_matters) {
     ProfilerCAPTURE();
-    this->verifyIsValidObject(obj, this->getContext().sub_areas[0]);
-    this->verifyIsValidObject(arg, this->getContext().sub_areas[1]);
+    this->verifyIsValidObject(obj, Runtime::SUB0_CTX);
+    this->verifyIsValidObject(arg, Runtime::SUB1_CTX);
 
     BinaryOperatorAdapter op;
 
@@ -410,7 +417,7 @@ Object *Runtime::runOperator(OperatorNode::OperatorId     id,
                              const std::vector<Object *> &args,
                              bool                         execution_result_matters) {
     ProfilerCAPTURE();
-    this->verifyIsValidObject(obj, this->getContext().sub_areas[1]);
+    this->verifyIsValidObject(obj, Runtime::SUB1_CTX);
 
     if (id == OperatorNode::CALL) {
         auto op = obj->type->call_op;
@@ -438,19 +445,23 @@ Object *Runtime::runOperator(OperatorNode::OperatorId     id,
 
 Object *
 Runtime::runMethod(int64_t id, Object *obj, const std::vector<Object *> &args, bool execution_result_matters) {
+    ProfilerCAPTURE();
     auto method = obj->type->getMethod(id, this);
     return this->runOperator(OperatorNode::CALL, method, args, execution_result_matters);
 }
 
 void Runtime::newContext() {
+    ProfilerCAPTURE();
     this->error_contexts.push_back({});
 }
 
 void Runtime::popContext() {
+    ProfilerCAPTURE();
     this->error_contexts.pop_back();
 }
 
 Runtime::ErrorContext &Runtime::getContext() {
+    ProfilerCAPTURE();
     return this->error_contexts.back();
 }
 
@@ -1266,10 +1277,12 @@ Object *Runtime::execute(BlockStmtNode *node, bool execution_result_matters) {
 }
 
 bool Runtime::isValidObject(Object *obj) {
+    ProfilerCAPTURE();
     return obj != NULL && obj->type != NULL;
 }
 
 bool Runtime::isTypeObject(Object *obj, Type *type) {
+    ProfilerCAPTURE();
     if (type == NULL) {
         return obj != NULL && obj->type != NULL && obj->instance == NULL;
     }
@@ -1277,6 +1290,7 @@ bool Runtime::isTypeObject(Object *obj, Type *type) {
 }
 
 bool Runtime::isInstanceObject(Object *obj, Type *type) {
+    ProfilerCAPTURE();
     if (type == NULL) {
         return obj != NULL && obj->type != NULL && obj->instance != NULL;
     }
@@ -1284,6 +1298,7 @@ bool Runtime::isInstanceObject(Object *obj, Type *type) {
 }
 
 bool Runtime::isOfType(Object *obj, BuiltinTypes type) {
+    ProfilerCAPTURE();
     if (obj == NULL) {
         return false;
     }
@@ -1301,307 +1316,224 @@ bool Runtime::isOfType(Object *obj, BuiltinTypes type) {
 }
 
 bool Runtime::isOfType(Object *obj, Type *type) {
+    ProfilerCAPTURE();
     return obj != NULL && obj->type == type;
 }
 
-void Runtime::verifyIsValidObject(Object *obj) {
+TextArea &Runtime::getTextArea(ContextId ctx_id) {
+    if (ctx_id == Runtime::AREA_CTX) {
+        return this->getContext().area;
+    }
+    return this->getContext().sub_areas[(int)ctx_id];
+}
+
+void Runtime::verifyIsValidObject(Object *obj, Runtime::ContextId ctx_id) {
+    ProfilerCAPTURE();
+
     if (!this->isValidObject(obj)) {
-        this->signalError("Not a valid object: " + obj->userRepr(this), this->getContext().area);
+        this->signalError("Not a valid object: " + obj->userRepr(this), this->getTextArea(ctx_id));
     }
 }
 
-void Runtime::verifyIsValidObject(Object *obj, const TextArea &ta) {
-    if (!this->isValidObject(obj)) {
-        this->signalError("Not a valid object: " + obj->userRepr(this), ta);
-    }
-}
+void Runtime::verifyIsTypeObject(Object *obj, Type *type, Runtime::ContextId ctx_id) {
+    ProfilerCAPTURE();
 
-void Runtime::verifyIsTypeObject(Object *obj, Type *type) {
     if (!this->isTypeObject(obj, type)) {
         if (type == NULL) {
-            this->signalError("Not a type object: " + obj->userRepr(this), this->getContext().area);
+            this->signalError("Not a type object: " + obj->userRepr(this), this->getTextArea(ctx_id));
         }
         else {
             this->signalError("Not a type object of type " + type->userRepr(this) + ": " + obj->userRepr(this),
-                              this->getContext().area);
+                              this->getTextArea(ctx_id));
         }
     }
 }
 
-void Runtime::verifyIsTypeObject(Object *obj, Type *type, const TextArea &ta) {
-    if (!this->isTypeObject(obj, type)) {
-        if (type == NULL) {
-            this->signalError("Not a type object: " + obj->userRepr(this), ta);
-        }
-        else {
-            this->signalError("Not a type object of type " + type->userRepr(this) + ": " + obj->userRepr(this),
-                              ta);
-        }
-    }
-}
+void Runtime::verifyIsInstanceObject(Object *obj, Type *type, Runtime::ContextId ctx_id) {
+    ProfilerCAPTURE();
 
-void Runtime::verifyIsInstanceObject(Object *obj, Type *type) {
     if (!this->isInstanceObject(obj, type)) {
         if (type == NULL) {
-            this->signalError("Not an instance object: " + obj->userRepr(this), this->getContext().area);
+            this->signalError("Not an instance object: " + obj->userRepr(this), this->getTextArea(ctx_id));
         }
         else {
             this->signalError("Not an instance object of type " + type->userRepr(this) + ": "
                               + obj->userRepr(this),
-                              this->getContext().area);
+                              this->getTextArea(ctx_id));
         }
     }
 }
 
-void Runtime::verifyIsInstanceObject(Object *obj, Type *type, const TextArea &ta) {
-    if (!this->isInstanceObject(obj, type)) {
-        if (type == NULL) {
-            this->signalError("Not an instance object: " + obj->userRepr(this), ta);
-        }
-        else {
-            this->signalError("Not an instance object of type " + type->userRepr(this) + ": "
-                              + obj->userRepr(this),
-                              ta);
-        }
-    }
-}
+void Runtime::verifyIsOfType(Object *obj, Runtime::BuiltinTypes type, Runtime::ContextId ctx_id) {
+    ProfilerCAPTURE();
 
-void Runtime::verifyIsOfType(Object *obj, Runtime::BuiltinTypes type) {
-    this->verifyIsValidObject(obj);
+    this->verifyIsValidObject(obj, ctx_id);
     switch (type) {
     case NOTHING_TYPE_ID :
         if (obj->type != this->nothing_type) {
             this->signalError(obj->userRepr(this) + " is not of type " + this->nothing_type->userRepr(this),
-                              this->getContext().area);
+                              this->getTextArea(ctx_id));
         }
         break;
     case BOOLEAN_TYPE_ID :
         if (obj->type != this->boolean_type) {
             this->signalError(obj->userRepr(this) + " is not of type " + this->nothing_type->userRepr(this),
-                              this->getContext().area);
+                              this->getTextArea(ctx_id));
         }
         break;
     case FUNCTION_TYPE_ID :
         if (obj->type != this->function_type) {
             this->signalError(obj->userRepr(this) + " is not of type " + this->nothing_type->userRepr(this),
-                              this->getContext().area);
+                              this->getTextArea(ctx_id));
         }
         break;
     case INTEGER_TYPE_ID :
         if (obj->type != this->integer_type) {
             this->signalError(obj->userRepr(this) + " is not of type " + this->nothing_type->userRepr(this),
-                              this->getContext().area);
+                              this->getTextArea(ctx_id));
         }
         break;
     case REAL_TYPE_ID :
         if (obj->type != this->real_type) {
             this->signalError(obj->userRepr(this) + " is not of type " + this->nothing_type->userRepr(this),
-                              this->getContext().area);
+                              this->getTextArea(ctx_id));
         }
         break;
     case CHARACTER_TYPE_ID :
         if (obj->type != this->character_type) {
             this->signalError(obj->userRepr(this) + " is not of type " + this->nothing_type->userRepr(this),
-                              this->getContext().area);
+                              this->getTextArea(ctx_id));
         }
         break;
     case STRING_TYPE_ID :
         if (obj->type != this->string_type) {
             this->signalError(obj->userRepr(this) + " is not of type " + this->nothing_type->userRepr(this),
-                              this->getContext().area);
+                              this->getTextArea(ctx_id));
         }
         break;
     case ARRAY_TYPE_ID :
         if (obj->type != this->array_type) {
             this->signalError(obj->userRepr(this) + " is not of type " + this->nothing_type->userRepr(this),
-                              this->getContext().area);
+                              this->getTextArea(ctx_id));
         }
         break;
     default :
-        this->signalError(obj->userRepr(this) + " is not of type ?UNKNOWN_TYPE?", this->getContext().area);
+        this->signalError(obj->userRepr(this) + " is not of type ?UNKNOWN_TYPE?", this->getTextArea(ctx_id));
         break;
         ;
     }
 }
 
-void Runtime::verifyIsOfType(Object *obj, Runtime::BuiltinTypes type, const TextArea &ta) {
-    this->verifyIsValidObject(obj, ta);
-    switch (type) {
-    case NOTHING_TYPE_ID :
-        if (obj->type != this->nothing_type) {
-            this->signalError(obj->userRepr(this) + " is not of type " + this->nothing_type->userRepr(this), ta);
-        }
-        break;
-    case BOOLEAN_TYPE_ID :
-        if (obj->type != this->boolean_type) {
-            this->signalError(obj->userRepr(this) + " is not of type " + this->nothing_type->userRepr(this), ta);
-        }
-        break;
-    case FUNCTION_TYPE_ID :
-        if (obj->type != this->function_type) {
-            this->signalError(obj->userRepr(this) + " is not of type " + this->nothing_type->userRepr(this), ta);
-        }
-        break;
-    case INTEGER_TYPE_ID :
-        if (obj->type != this->integer_type) {
-            this->signalError(obj->userRepr(this) + " is not of type " + this->nothing_type->userRepr(this), ta);
-        }
-        break;
-    case REAL_TYPE_ID :
-        if (obj->type != this->real_type) {
-            this->signalError(obj->userRepr(this) + " is not of type " + this->nothing_type->userRepr(this), ta);
-        }
-        break;
-    case CHARACTER_TYPE_ID :
-        if (obj->type != this->character_type) {
-            this->signalError(obj->userRepr(this) + " is not of type " + this->nothing_type->userRepr(this), ta);
-        }
-        break;
-    case STRING_TYPE_ID :
-        if (obj->type != this->string_type) {
-            this->signalError(obj->userRepr(this) + " is not of type " + this->nothing_type->userRepr(this), ta);
-        }
-        break;
-    case ARRAY_TYPE_ID :
-        if (obj->type != this->array_type) {
-            this->signalError(obj->userRepr(this) + " is not of type " + this->nothing_type->userRepr(this), ta);
-        }
-        break;
-    default :
-        this->signalError(obj->userRepr(this) + " is not of type ?UNKNOWN_TYPE?", ta);
-        break;
-        ;
-    }
-}
+void Runtime::verifyIsOfType(Object *obj, Type *type, Runtime::ContextId ctx_id) {
+    ProfilerCAPTURE();
 
-void Runtime::verifyIsOfType(Object *obj, Type *type) {
     if (!this->isOfType(obj, type)) {
         this->signalError(obj->userRepr(this) + " is not of type " + type->userRepr(this),
-                          this->getContext().area);
+                          this->getTextArea(ctx_id));
     }
 }
 
-void Runtime::verifyIsOfType(Object *obj, Type *type, const TextArea &ta) {
-    if (!this->isOfType(obj, type)) {
-        this->signalError(obj->userRepr(this) + " is not of type " + type->userRepr(this), ta);
-    }
-}
+void Runtime::verifyMinArgsAmountFunc(const std::vector<Object *> &args,
+                                      int64_t                      amount,
+                                      Runtime::ContextId           ctx_id) {
+    ProfilerCAPTURE();
 
-void Runtime::verifyMinArgsAmountFunc(const std::vector<Object *> &args, int64_t amount) {
     if (args.size() < amount) {
         this->signalError("Expected at least " + std::to_string(amount) + " arguments, got "
                           + std::to_string(args.size()),
-                          this->getContext().area);
+                          this->getTextArea(ctx_id));
     }
 }
 
-void Runtime::verifyMinArgsAmountFunc(const std::vector<Object *> &args, int64_t amount, const TextArea &ta) {
-    if (args.size() < amount) {
-        this->signalError("Expected at least " + std::to_string(amount) + " arguments, got "
-                          + std::to_string(args.size()),
-                          ta);
-    }
-}
+void Runtime::verifyExactArgsAmountFunc(const std::vector<Object *> &args,
+                                        int64_t                      amount,
+                                        Runtime::ContextId           ctx_id) {
+    ProfilerCAPTURE();
 
-void Runtime::verifyExactArgsAmountFunc(const std::vector<Object *> &args, int64_t amount) {
     if (args.size() != amount) {
         this->signalError("Expected exactly " + std::to_string(amount) + " arguments, got "
                           + std::to_string(args.size()),
-                          this->getContext().area);
+                          this->getTextArea(ctx_id));
     }
 }
 
-void Runtime::verifyExactArgsAmountFunc(const std::vector<Object *> &args, int64_t amount, const TextArea &ta) {
-    if (args.size() != amount) {
-        this->signalError("Expected exactly " + std::to_string(amount) + " arguments, got "
-                          + std::to_string(args.size()),
-                          ta);
-    }
-}
+void Runtime::verifyMinArgsAmountMethod(const std::vector<Object *> &args,
+                                        int64_t                      amount,
+                                        Runtime::ContextId           ctx_id) {
+    ProfilerCAPTURE();
 
-void Runtime::verifyMinArgsAmountMethod(const std::vector<Object *> &args, int64_t amount) {
     if (args.size() < amount + 1) {
         this->signalError("Expected at least " + std::to_string(amount) + " arguments, got "
                           + std::to_string((int64_t)args.size() - 1),
-                          (args.empty())
-                          ? this->getContext().area
-                          : TextArea(this->getContext().sub_areas.front(), this->getContext().sub_areas.back()));
+                          this->getTextArea(ctx_id));
     }
 }
 
-void Runtime::verifyMinArgsAmountMethod(const std::vector<Object *> &args, int64_t amount, const TextArea &ta) {
-    if (args.size() < amount + 1) {
-        this->signalError("Expected at least " + std::to_string(amount) + " arguments, got "
-                          + std::to_string((int64_t)args.size() - 1),
-                          ta);
-    }
-}
+void Runtime::verifyExactArgsAmountMethod(const std::vector<Object *> &args,
+                                          int64_t                      amount,
+                                          Runtime::ContextId           ctx_id) {
+    ProfilerCAPTURE();
 
-void Runtime::verifyExactArgsAmountMethod(const std::vector<Object *> &args, int64_t amount) {
     if (args.size() != amount + 1) {
         this->signalError("Expected exactly " + std::to_string(amount) + " arguments, got "
                           + std::to_string((int64_t)args.size() - 1),
-                          this->getContext().area);
+                          this->getTextArea(ctx_id));
     }
 }
 
-void Runtime::verifyExactArgsAmountMethod(const std::vector<Object *> &args, int64_t amount, const TextArea &ta) {
-    if (args.size() != amount + 1) {
-        this->signalError("Expected exactly " + std::to_string(amount) + " arguments, got "
-                          + std::to_string((int64_t)args.size() - 1),
-                          ta);
-    }
-}
+void Runtime::verifyHasMethod(Object *obj, int64_t id, Runtime::ContextId ctx_id) {
+    ProfilerCAPTURE();
 
-void Runtime::verifyHasMethod(Object *obj, int64_t id) {
-    this->verifyIsInstanceObject(obj, NULL);
+    this->verifyIsValidObject(obj, ctx_id);
     if (!obj->type->hasMethod(id)) {
         this->signalError(obj->userRepr(this) + " doesn't have method " + this->nds->userRepr(id),
-                          this->getContext().area);
-    }
-}
-
-void Runtime::verifyHasMethod(Object *obj, int64_t id, const TextArea &ta) {
-    this->verifyIsValidObject(obj, ta);
-    if (!obj->type->hasMethod(id)) {
-        this->signalError(obj->userRepr(this) + " doesn't have method " + this->nds->userRepr(id), ta);
+                          this->getTextArea(ctx_id));
     }
 }
 
 namespace MagicMethods {
     int64_t mm__make__(Runtime *rt) {
+        ProfilerCAPTURE();
         return rt->nds->get("__make__").id;
     }
 
     int64_t mm__copy__(Runtime *rt) {
+        ProfilerCAPTURE();
         return rt->nds->get("__copy__").id;
     }
 
     int64_t mm__bool__(Runtime *rt) {
+        ProfilerCAPTURE();
         return rt->nds->get("__bool__").id;
     }
 
     int64_t mm__char__(Runtime *rt) {
+        ProfilerCAPTURE();
         return rt->nds->get("__char__").id;
     }
 
     int64_t mm__int__(Runtime *rt) {
+        ProfilerCAPTURE();
         return rt->nds->get("__int__").id;
     }
 
     int64_t mm__real__(Runtime *rt) {
+        ProfilerCAPTURE();
         return rt->nds->get("__real__").id;
     }
 
     int64_t mm__string__(Runtime *rt) {
+        ProfilerCAPTURE();
         return rt->nds->get("__string__").id;
     }
 
     int64_t mm__repr__(Runtime *rt) {
+        ProfilerCAPTURE();
         return rt->nds->get("__repr__").id;
     }
 
     int64_t mm__read__(Runtime *rt) {
+        ProfilerCAPTURE();
         return rt->nds->get("__read__").id;
     }
 }    // namespace MagicMethods

@@ -52,6 +52,6 @@ void installIntegerMethods(Type *type, Runtime *rt);
 Object *makeIntegerInstanceObject(int64_t value, Runtime *rt);
 
 int64_t &getIntegerValue(Object *obj, Runtime *rt);
-int64_t &getIntegerValue(Object *obj, Runtime *rt, const TextArea &ta);
+int64_t &getIntegerValue(Object *obj, Runtime *rt, Runtime::ContextId ctx_id);
 #define getIntegerValueFast(obj) (icast(obj->instance, IntegerInstance)->value)
 }    // namespace Cotton::Builtin

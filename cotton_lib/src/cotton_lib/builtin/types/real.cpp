@@ -65,7 +65,7 @@ size_t RealType::getInstanceSize() {
 static Object *RealPositiveAdapter(Object *self, Runtime *rt, bool execution_result_matters) {
     ProfilerCAPTURE();
 
-    rt->verifyIsInstanceObject(self, rt->real_type, rt->getContext().sub_areas[0]);
+    rt->verifyIsInstanceObject(self, rt->real_type, Runtime::SUB0_CTX);
 
     if (!execution_result_matters) {
         return NULL;
@@ -78,7 +78,7 @@ static Object *RealPositiveAdapter(Object *self, Runtime *rt, bool execution_res
 static Object *RealNegativeAdapter(Object *self, Runtime *rt, bool execution_result_matters) {
     ProfilerCAPTURE();
 
-    rt->verifyIsInstanceObject(self, rt->real_type, rt->getContext().sub_areas[0]);
+    rt->verifyIsInstanceObject(self, rt->real_type, Runtime::SUB0_CTX);
 
     if (!execution_result_matters) {
         return NULL;
@@ -92,8 +92,8 @@ static Object *RealNegativeAdapter(Object *self, Runtime *rt, bool execution_res
 static Object *RealMultAdapter(Object *self, Object *arg, Runtime *rt, bool execution_result_matters) {
     ProfilerCAPTURE();
 
-    rt->verifyIsInstanceObject(self, rt->real_type, rt->getContext().sub_areas[0]);
-    rt->verifyIsInstanceObject(arg, rt->real_type, rt->getContext().sub_areas[1]);
+    rt->verifyIsInstanceObject(self, rt->real_type, Runtime::SUB0_CTX);
+    rt->verifyIsInstanceObject(arg, rt->real_type, Runtime::SUB1_CTX);
 
     if (!execution_result_matters) {
         return NULL;
@@ -106,8 +106,8 @@ static Object *RealMultAdapter(Object *self, Object *arg, Runtime *rt, bool exec
 static Object *RealDivAdapter(Object *self, Object *arg, Runtime *rt, bool execution_result_matters) {
     ProfilerCAPTURE();
 
-    rt->verifyIsInstanceObject(self, rt->real_type, rt->getContext().sub_areas[0]);
-    rt->verifyIsInstanceObject(arg, rt->real_type, rt->getContext().sub_areas[1]);
+    rt->verifyIsInstanceObject(self, rt->real_type, Runtime::SUB0_CTX);
+    rt->verifyIsInstanceObject(arg, rt->real_type, Runtime::SUB1_CTX);
 
     if (!execution_result_matters) {
         return NULL;
@@ -120,8 +120,8 @@ static Object *RealDivAdapter(Object *self, Object *arg, Runtime *rt, bool execu
 static Object *RealAddAdapter(Object *self, Object *arg, Runtime *rt, bool execution_result_matters) {
     ProfilerCAPTURE();
 
-    rt->verifyIsInstanceObject(self, rt->real_type, rt->getContext().sub_areas[0]);
-    rt->verifyIsInstanceObject(arg, rt->real_type, rt->getContext().sub_areas[1]);
+    rt->verifyIsInstanceObject(self, rt->real_type, Runtime::SUB0_CTX);
+    rt->verifyIsInstanceObject(arg, rt->real_type, Runtime::SUB1_CTX);
 
     if (!execution_result_matters) {
         return NULL;
@@ -134,8 +134,8 @@ static Object *RealAddAdapter(Object *self, Object *arg, Runtime *rt, bool execu
 static Object *RealSubAdapter(Object *self, Object *arg, Runtime *rt, bool execution_result_matters) {
     ProfilerCAPTURE();
 
-    rt->verifyIsInstanceObject(self, rt->real_type, rt->getContext().sub_areas[0]);
-    rt->verifyIsInstanceObject(arg, rt->real_type, rt->getContext().sub_areas[1]);
+    rt->verifyIsInstanceObject(self, rt->real_type, Runtime::SUB0_CTX);
+    rt->verifyIsInstanceObject(arg, rt->real_type, Runtime::SUB1_CTX);
 
     if (!execution_result_matters) {
         return NULL;
@@ -148,8 +148,8 @@ static Object *RealSubAdapter(Object *self, Object *arg, Runtime *rt, bool execu
 static Object *RealLtAdapter(Object *self, Object *arg, Runtime *rt, bool execution_result_matters) {
     ProfilerCAPTURE();
 
-    rt->verifyIsInstanceObject(self, rt->real_type, rt->getContext().sub_areas[0]);
-    rt->verifyIsInstanceObject(arg, rt->real_type, rt->getContext().sub_areas[1]);
+    rt->verifyIsInstanceObject(self, rt->real_type, Runtime::SUB0_CTX);
+    rt->verifyIsInstanceObject(arg, rt->real_type, Runtime::SUB1_CTX);
 
     return rt->protectedBoolean(getRealValueFast(self) < getRealValueFast(arg));
 }
@@ -157,8 +157,8 @@ static Object *RealLtAdapter(Object *self, Object *arg, Runtime *rt, bool execut
 static Object *RealLeqAdapter(Object *self, Object *arg, Runtime *rt, bool execution_result_matters) {
     ProfilerCAPTURE();
 
-    rt->verifyIsInstanceObject(self, rt->real_type, rt->getContext().sub_areas[0]);
-    rt->verifyIsInstanceObject(arg, rt->real_type, rt->getContext().sub_areas[1]);
+    rt->verifyIsInstanceObject(self, rt->real_type, Runtime::SUB0_CTX);
+    rt->verifyIsInstanceObject(arg, rt->real_type, Runtime::SUB1_CTX);
 
     return rt->protectedBoolean(getRealValueFast(self) <= getRealValueFast(arg));
 }
@@ -166,8 +166,8 @@ static Object *RealLeqAdapter(Object *self, Object *arg, Runtime *rt, bool execu
 static Object *RealGtAdapter(Object *self, Object *arg, Runtime *rt, bool execution_result_matters) {
     ProfilerCAPTURE();
 
-    rt->verifyIsInstanceObject(self, rt->real_type, rt->getContext().sub_areas[0]);
-    rt->verifyIsInstanceObject(arg, rt->real_type, rt->getContext().sub_areas[1]);
+    rt->verifyIsInstanceObject(self, rt->real_type, Runtime::SUB0_CTX);
+    rt->verifyIsInstanceObject(arg, rt->real_type, Runtime::SUB1_CTX);
 
     return rt->protectedBoolean(getRealValueFast(self) > getRealValueFast(arg));
 }
@@ -175,16 +175,16 @@ static Object *RealGtAdapter(Object *self, Object *arg, Runtime *rt, bool execut
 static Object *RealGeqAdapter(Object *self, Object *arg, Runtime *rt, bool execution_result_matters) {
     ProfilerCAPTURE();
 
-    rt->verifyIsInstanceObject(self, rt->real_type, rt->getContext().sub_areas[0]);
-    rt->verifyIsInstanceObject(arg, rt->real_type, rt->getContext().sub_areas[1]);
+    rt->verifyIsInstanceObject(self, rt->real_type, Runtime::SUB0_CTX);
+    rt->verifyIsInstanceObject(arg, rt->real_type, Runtime::SUB1_CTX);
 
     return rt->protectedBoolean(getRealValueFast(self) >= getRealValueFast(arg));
 }
 
 static Object *RealEqAdapter(Object *self, Object *arg, Runtime *rt, bool execution_result_matters) {
     ProfilerCAPTURE();
-    rt->verifyIsOfType(self, rt->real_type, rt->getContext().sub_areas[0]);
-    rt->verifyIsValidObject(arg, rt->getContext().sub_areas[1]);
+    rt->verifyIsOfType(self, rt->real_type, Runtime::SUB0_CTX);
+    rt->verifyIsValidObject(arg, Runtime::SUB1_CTX);
 
     if (!rt->isOfType(arg, rt->real_type)) {
         return rt->protected_false;
@@ -216,7 +216,7 @@ static Object *mm__bool__(const std::vector<Object *> &args, Runtime *rt, bool e
     ProfilerCAPTURE();
     rt->verifyExactArgsAmountMethod(args, 0);
     auto self = args[0];
-    rt->verifyIsInstanceObject(self, rt->real_type, rt->getContext().sub_areas[1]);
+    rt->verifyIsInstanceObject(self, rt->real_type, Runtime::SUB1_CTX);
 
     if (!execution_result_matters) {
         return self;
@@ -229,7 +229,7 @@ static Object *mm__char__(const std::vector<Object *> &args, Runtime *rt, bool e
     ProfilerCAPTURE();
     rt->verifyExactArgsAmountMethod(args, 0);
     auto self = args[0];
-    rt->verifyIsInstanceObject(self, rt->real_type, rt->getContext().sub_areas[1]);
+    rt->verifyIsInstanceObject(self, rt->real_type, Runtime::SUB1_CTX);
 
     if (!execution_result_matters) {
         return self;
@@ -242,7 +242,7 @@ static Object *mm__int__(const std::vector<Object *> &args, Runtime *rt, bool ex
     ProfilerCAPTURE();
     rt->verifyExactArgsAmountMethod(args, 0);
     auto self = args[0];
-    rt->verifyIsInstanceObject(self, rt->real_type, rt->getContext().sub_areas[1]);
+    rt->verifyIsInstanceObject(self, rt->real_type, Runtime::SUB1_CTX);
 
     if (!execution_result_matters) {
         return self;
@@ -255,7 +255,7 @@ static Object *mm__real__(const std::vector<Object *> &args, Runtime *rt, bool e
     ProfilerCAPTURE();
     rt->verifyExactArgsAmountMethod(args, 0);
     auto self = args[0];
-    rt->verifyIsInstanceObject(self, rt->real_type, rt->getContext().sub_areas[1]);
+    rt->verifyIsInstanceObject(self, rt->real_type, Runtime::SUB1_CTX);
 
     if (!execution_result_matters) {
         return self;
@@ -268,7 +268,7 @@ static Object *mm__string__(const std::vector<Object *> &args, Runtime *rt, bool
     ProfilerCAPTURE();
     rt->verifyExactArgsAmountMethod(args, 0);
     auto self = args[0];
-    rt->verifyIsInstanceObject(self, rt->real_type, rt->getContext().sub_areas[1]);
+    rt->verifyIsInstanceObject(self, rt->real_type, Runtime::SUB1_CTX);
 
     if (!execution_result_matters) {
         return self;
@@ -281,7 +281,7 @@ static Object *mm__repr__(const std::vector<Object *> &args, Runtime *rt, bool e
     ProfilerCAPTURE();
     rt->verifyExactArgsAmountMethod(args, 0);
     auto self = args[0];
-    rt->verifyIsOfType(self, rt->real_type, rt->getContext().sub_areas[1]);
+    rt->verifyIsOfType(self, rt->real_type, Runtime::SUB1_CTX);
 
     if (!execution_result_matters) {
         return self;
@@ -298,7 +298,7 @@ static Object *mm__read__(const std::vector<Object *> &args, Runtime *rt, bool e
     ProfilerCAPTURE();
     rt->verifyExactArgsAmountMethod(args, 0);
     auto self = args[0];
-    rt->verifyIsOfType(self, rt->real_type, rt->getContext().sub_areas[1]);
+    rt->verifyIsOfType(self, rt->real_type, Runtime::SUB1_CTX);
 
     double v;
     std::cin >> v;
@@ -311,6 +311,7 @@ static Object *mm__read__(const std::vector<Object *> &args, Runtime *rt, bool e
 }
 
 void installRealMethods(Type *type, Runtime *rt) {
+    ProfilerCAPTURE();
     type->addMethod(MagicMethods::mm__bool__(rt), Builtin::makeFunctionInstanceObject(true, mm__bool__, NULL, rt));
     type->addMethod(MagicMethods::mm__char__(rt), Builtin::makeFunctionInstanceObject(true, mm__char__, NULL, rt));
     type->addMethod(MagicMethods::mm__int__(rt), Builtin::makeFunctionInstanceObject(true, mm__int__, NULL, rt));
@@ -366,13 +367,13 @@ std::string RealType::userRepr(Runtime *rt) {
 
 double &getRealValue(Object *obj, Runtime *rt) {
     ProfilerCAPTURE();
-    rt->verifyIsInstanceObject(obj, rt->real_type, rt->getContext().area);
+    rt->verifyIsInstanceObject(obj, rt->real_type);
     return icast(obj->instance, RealInstance)->value;
 }
 
-double &getRealValue(Object *obj, Runtime *rt, const TextArea &ta) {
+double &getRealValue(Object *obj, Runtime *rt, Runtime::ContextId ctx_id) {
     ProfilerCAPTURE();
-    rt->verifyIsInstanceObject(obj, rt->real_type, ta);
+    rt->verifyIsInstanceObject(obj, rt->real_type, Runtime::SUB0_CTX);
     return icast(obj->instance, RealInstance)->value;
 }
 

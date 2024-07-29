@@ -1,0 +1,57 @@
+\hypertarget{real_8h}{}\doxysection{cotton\+\_\+lib/src/cotton\+\_\+lib/builtin/types/real.h File Reference}
+\label{real_8h}\index{cotton\_lib/src/cotton\_lib/builtin/types/real.h@{cotton\_lib/src/cotton\_lib/builtin/types/real.h}}
+{\ttfamily \#include \char`\"{}../../back/api.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}../../front/api.\+h\char`\"{}}\newline
+Include dependency graph for real.\+h\+:\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{real_8h__incl}
+\end{center}
+\end{figure}
+This graph shows which files directly or indirectly include this file\+:\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{real_8h__dep__incl}
+\end{center}
+\end{figure}
+\doxysubsection*{Classes}
+\begin{DoxyCompactItemize}
+\item 
+class \mbox{\hyperlink{classCotton_1_1Builtin_1_1RealInstance}{Cotton\+::\+Builtin\+::\+Real\+Instance}}
+\item 
+class \mbox{\hyperlink{classCotton_1_1Builtin_1_1RealType}{Cotton\+::\+Builtin\+::\+Real\+Type}}
+\end{DoxyCompactItemize}
+\doxysubsection*{Namespaces}
+\begin{DoxyCompactItemize}
+\item 
+ \mbox{\hyperlink{namespaceCotton}{Cotton}}
+\item 
+ \mbox{\hyperlink{namespaceCotton_1_1Builtin}{Cotton\+::\+Builtin}}
+\end{DoxyCompactItemize}
+\doxysubsection*{Macros}
+\begin{DoxyCompactItemize}
+\item 
+\#define \mbox{\hyperlink{real_8h_a5dabdd541b68ae37f3f8635167ffec63}{get\+Real\+Value\+Fast}}(obj)~(\mbox{\hyperlink{runtime_8h_a66dae358d269173c947b4a054b604fb1}{icast}}(obj-\/$>$instance, Real\+Instance)-\/$>$value)
+\end{DoxyCompactItemize}
+\doxysubsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+void \mbox{\hyperlink{namespaceCotton_1_1Builtin_a2b1d82b3d14aeaa7f682673103f7563d}{Cotton\+::\+Builtin\+::install\+Real\+Methods}} (Type $\ast$type, Runtime $\ast$rt)
+\item 
+Object $\ast$ \mbox{\hyperlink{namespaceCotton_1_1Builtin_acfc17f294f0d91d061665056255dce2a}{Cotton\+::\+Builtin\+::make\+Real\+Instance\+Object}} (double value, Runtime $\ast$rt)
+\item 
+double \& \mbox{\hyperlink{namespaceCotton_1_1Builtin_a543c21c7762bf7098b810c39c05ed85c}{Cotton\+::\+Builtin\+::get\+Real\+Value}} (Object $\ast$obj, Runtime $\ast$rt)
+\item 
+double \& \mbox{\hyperlink{namespaceCotton_1_1Builtin_a4d603280c84caa2d86dd3c75da20810e}{Cotton\+::\+Builtin\+::get\+Real\+Value}} (Object $\ast$obj, Runtime $\ast$rt, const Text\+Area \&ta)
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Macro Definition Documentation}
+\mbox{\Hypertarget{real_8h_a5dabdd541b68ae37f3f8635167ffec63}\label{real_8h_a5dabdd541b68ae37f3f8635167ffec63}} 
+\index{real.h@{real.h}!getRealValueFast@{getRealValueFast}}
+\index{getRealValueFast@{getRealValueFast}!real.h@{real.h}}
+\doxysubsubsection{\texorpdfstring{getRealValueFast}{getRealValueFast}}
+{\footnotesize\ttfamily \#define get\+Real\+Value\+Fast(\begin{DoxyParamCaption}\item[{}]{obj }\end{DoxyParamCaption})~(\mbox{\hyperlink{runtime_8h_a66dae358d269173c947b4a054b604fb1}{icast}}(obj-\/$>$instance, Real\+Instance)-\/$>$value)}
+

@@ -1,0 +1,129 @@
+\hypertarget{classCotton_1_1Builtin_1_1StringInstance}{}\doxysection{Cotton\+::Builtin\+::String\+Instance Class Reference}
+\label{classCotton_1_1Builtin_1_1StringInstance}\index{Cotton::Builtin::StringInstance@{Cotton::Builtin::StringInstance}}
+
+
+{\ttfamily \#include $<$string.\+h$>$}
+
+
+
+Inheritance diagram for Cotton\+::Builtin\+::String\+Instance\+:\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=242pt]{classCotton_1_1Builtin_1_1StringInstance__inherit__graph}
+\end{center}
+\end{figure}
+\doxysubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{classCotton_1_1Builtin_1_1StringInstance_ab89792cd8b2233d99b1abe3c2c3b4215}{String\+Instance}} (\mbox{\hyperlink{classCotton_1_1Runtime}{Runtime}} $\ast$rt)
+\item 
+\mbox{\hyperlink{classCotton_1_1Builtin_1_1StringInstance_a1a58b023ce5ad1a6f6edac25818ac103}{$\sim$\+String\+Instance}} ()
+\item 
+\mbox{\hyperlink{classCotton_1_1Instance}{Instance}} $\ast$ \mbox{\hyperlink{classCotton_1_1Builtin_1_1StringInstance_a69d11e5837ebb38c4bb675882e838831}{copy}} (\mbox{\hyperlink{classCotton_1_1Runtime}{Runtime}} $\ast$rt)
+\item 
+size\+\_\+t \mbox{\hyperlink{classCotton_1_1Builtin_1_1StringInstance_aea76bab1752005173dd3ace4fcf03c60}{get\+Size}} ()
+\item 
+std\+::string \mbox{\hyperlink{classCotton_1_1Builtin_1_1StringInstance_a8858f2608dba07d99c27280fb89d4201}{user\+Repr}} (\mbox{\hyperlink{classCotton_1_1Runtime}{Runtime}} $\ast$rt)
+\end{DoxyCompactItemize}
+\doxysubsection*{Public Attributes}
+\begin{DoxyCompactItemize}
+\item 
+std\+::string \mbox{\hyperlink{classCotton_1_1Builtin_1_1StringInstance_a883177416104db39988b5ade7df31b4a}{data}}
+\end{DoxyCompactItemize}
+\doxysubsection*{Additional Inherited Members}
+
+
+\doxysubsection{Constructor \& Destructor Documentation}
+\mbox{\Hypertarget{classCotton_1_1Builtin_1_1StringInstance_ab89792cd8b2233d99b1abe3c2c3b4215}\label{classCotton_1_1Builtin_1_1StringInstance_ab89792cd8b2233d99b1abe3c2c3b4215}} 
+\index{Cotton::Builtin::StringInstance@{Cotton::Builtin::StringInstance}!StringInstance@{StringInstance}}
+\index{StringInstance@{StringInstance}!Cotton::Builtin::StringInstance@{Cotton::Builtin::StringInstance}}
+\doxysubsubsection{\texorpdfstring{StringInstance()}{StringInstance()}}
+{\footnotesize\ttfamily Cotton\+::\+Builtin\+::\+String\+Instance\+::\+String\+Instance (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{classCotton_1_1Runtime}{Runtime}} $\ast$}]{rt }\end{DoxyParamCaption})}
+
+
+
+References data, and Profiler\+CAPTURE.
+
+
+
+Referenced by copy(), and get\+Size().
+
+\mbox{\Hypertarget{classCotton_1_1Builtin_1_1StringInstance_a1a58b023ce5ad1a6f6edac25818ac103}\label{classCotton_1_1Builtin_1_1StringInstance_a1a58b023ce5ad1a6f6edac25818ac103}} 
+\index{Cotton::Builtin::StringInstance@{Cotton::Builtin::StringInstance}!````~StringInstance@{$\sim$StringInstance}}
+\index{````~StringInstance@{$\sim$StringInstance}!Cotton::Builtin::StringInstance@{Cotton::Builtin::StringInstance}}
+\doxysubsubsection{\texorpdfstring{$\sim$StringInstance()}{~StringInstance()}}
+{\footnotesize\ttfamily Cotton\+::\+Builtin\+::\+String\+Instance\+::$\sim$\+String\+Instance (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+
+
+References Profiler\+CAPTURE.
+
+
+
+\doxysubsection{Member Function Documentation}
+\mbox{\Hypertarget{classCotton_1_1Builtin_1_1StringInstance_a69d11e5837ebb38c4bb675882e838831}\label{classCotton_1_1Builtin_1_1StringInstance_a69d11e5837ebb38c4bb675882e838831}} 
+\index{Cotton::Builtin::StringInstance@{Cotton::Builtin::StringInstance}!copy@{copy}}
+\index{copy@{copy}!Cotton::Builtin::StringInstance@{Cotton::Builtin::StringInstance}}
+\doxysubsubsection{\texorpdfstring{copy()}{copy()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{classCotton_1_1Instance}{Instance}} $\ast$ Cotton\+::\+Builtin\+::\+String\+Instance\+::copy (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{classCotton_1_1Runtime}{Runtime}} $\ast$}]{rt }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [virtual]}}
+
+
+
+Implements \mbox{\hyperlink{classCotton_1_1Instance_a2c82715c2e0853547dd2f516e35a103a}{Cotton\+::\+Instance}}.
+
+
+
+References Cotton\+::\+Runtime\+::\+Error\+Context\+::area, data, Cotton\+::\+Runtime\+::get\+Context(), Profiler\+CAPTURE, Cotton\+::\+Runtime\+::signal\+Error(), String\+Instance(), and user\+Repr().
+
+\mbox{\Hypertarget{classCotton_1_1Builtin_1_1StringInstance_aea76bab1752005173dd3ace4fcf03c60}\label{classCotton_1_1Builtin_1_1StringInstance_aea76bab1752005173dd3ace4fcf03c60}} 
+\index{Cotton::Builtin::StringInstance@{Cotton::Builtin::StringInstance}!getSize@{getSize}}
+\index{getSize@{getSize}!Cotton::Builtin::StringInstance@{Cotton::Builtin::StringInstance}}
+\doxysubsubsection{\texorpdfstring{getSize()}{getSize()}}
+{\footnotesize\ttfamily size\+\_\+t Cotton\+::\+Builtin\+::\+String\+Instance\+::get\+Size (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [virtual]}}
+
+
+
+Implements \mbox{\hyperlink{classCotton_1_1Instance_ad96f1111cc09cce5faeae8facb81287c}{Cotton\+::\+Instance}}.
+
+
+
+References Profiler\+CAPTURE, and String\+Instance().
+
+\mbox{\Hypertarget{classCotton_1_1Builtin_1_1StringInstance_a8858f2608dba07d99c27280fb89d4201}\label{classCotton_1_1Builtin_1_1StringInstance_a8858f2608dba07d99c27280fb89d4201}} 
+\index{Cotton::Builtin::StringInstance@{Cotton::Builtin::StringInstance}!userRepr@{userRepr}}
+\index{userRepr@{userRepr}!Cotton::Builtin::StringInstance@{Cotton::Builtin::StringInstance}}
+\doxysubsubsection{\texorpdfstring{userRepr()}{userRepr()}}
+{\footnotesize\ttfamily std\+::string Cotton\+::\+Builtin\+::\+String\+Instance\+::user\+Repr (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{classCotton_1_1Runtime}{Runtime}} $\ast$}]{rt }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [virtual]}}
+
+
+
+Implements \mbox{\hyperlink{classCotton_1_1Instance_a0d1a87723788bca45510540c0f3d6ce3}{Cotton\+::\+Instance}}.
+
+
+
+References data, and Profiler\+CAPTURE.
+
+
+
+Referenced by copy().
+
+
+
+\doxysubsection{Member Data Documentation}
+\mbox{\Hypertarget{classCotton_1_1Builtin_1_1StringInstance_a883177416104db39988b5ade7df31b4a}\label{classCotton_1_1Builtin_1_1StringInstance_a883177416104db39988b5ade7df31b4a}} 
+\index{Cotton::Builtin::StringInstance@{Cotton::Builtin::StringInstance}!data@{data}}
+\index{data@{data}!Cotton::Builtin::StringInstance@{Cotton::Builtin::StringInstance}}
+\doxysubsubsection{\texorpdfstring{data}{data}}
+{\footnotesize\ttfamily std\+::string Cotton\+::\+Builtin\+::\+String\+Instance\+::data}
+
+
+
+Referenced by copy(), String\+Instance(), and user\+Repr().
+
+
+
+The documentation for this class was generated from the following files\+:\begin{DoxyCompactItemize}
+\item 
+cotton\+\_\+lib/src/cotton\+\_\+lib/builtin/types/\mbox{\hyperlink{string_8h}{string.\+h}}\item 
+cotton\+\_\+lib/src/cotton\+\_\+lib/builtin/types/\mbox{\hyperlink{string_8cpp}{string.\+cpp}}\end{DoxyCompactItemize}

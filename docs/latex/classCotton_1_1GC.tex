@@ -1,0 +1,440 @@
+\hypertarget{classCotton_1_1GC}{}\doxysection{Cotton\+::GC Class Reference}
+\label{classCotton_1_1GC}\index{Cotton::GC@{Cotton::GC}}
+
+
+Garbage collector class.  
+
+
+
+
+{\ttfamily \#include $<$gc.\+h$>$}
+
+\doxysubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{classCotton_1_1GC_a14381ac1719f41bccdded44fcc56962d}{GC}} (\mbox{\hyperlink{classCotton_1_1GCStrategy}{GCStrategy}} $\ast$\mbox{\hyperlink{classCotton_1_1GC_a185939692a992b815e6e6e153865cfbb}{gc\+\_\+strategy}})
+\begin{DoxyCompactList}\small\item\em Construct a new \mbox{\hyperlink{classCotton_1_1GC}{GC}} object. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{classCotton_1_1GC_a3a17f7cac75113b28d8eadbb68643fc1}{$\sim$\+GC}} ()
+\begin{DoxyCompactList}\small\item\em Destroy the \mbox{\hyperlink{classCotton_1_1GC}{GC}} object. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{classCotton_1_1GC_a409b4b05d777b2c01d6bd42493c9a791}{track}} (\mbox{\hyperlink{classCotton_1_1Object}{Object}} $\ast$object)
+\begin{DoxyCompactList}\small\item\em Tracks the object;. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{classCotton_1_1GC_aba7b39efddf929dc8c454c6911e114f2}{track}} (\mbox{\hyperlink{classCotton_1_1Instance}{Instance}} $\ast$instance, size\+\_\+t bytes)
+\begin{DoxyCompactList}\small\item\em Tracks the instance;. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{classCotton_1_1GC_a03d80478aedbd73b0a3e1525644bf6ed}{track}} (\mbox{\hyperlink{classCotton_1_1Type}{Type}} $\ast$type)
+\begin{DoxyCompactList}\small\item\em Tracks the type;. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{classCotton_1_1GC_a95047d6c69523dca7c5d5aa4d2a02005}{untrack}} (\mbox{\hyperlink{classCotton_1_1Object}{Object}} $\ast$object)
+\begin{DoxyCompactList}\small\item\em Untracks the object;. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{classCotton_1_1GC_a48b2995d39b26e53493cdc6f5efc1ffb}{untrack}} (\mbox{\hyperlink{classCotton_1_1Instance}{Instance}} $\ast$instance)
+\begin{DoxyCompactList}\small\item\em Untracks the instance;. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{classCotton_1_1GC_ac34b00360032453eb020438f82620858}{untrack}} (\mbox{\hyperlink{classCotton_1_1Type}{Type}} $\ast$type)
+\begin{DoxyCompactList}\small\item\em Unracks the type;. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{classCotton_1_1GC_af615f6b031d7eac1f9f0f5c1930febcd}{hold}} (\mbox{\hyperlink{classCotton_1_1Object}{Object}} $\ast$object)
+\begin{DoxyCompactList}\small\item\em Holds the given object. The gc will consider it as reachable even if it is not. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{classCotton_1_1GC_acd0d54539c2a20e13d904fb63d9a9f3d}{release}} (\mbox{\hyperlink{classCotton_1_1Object}{Object}} $\ast$object)
+\begin{DoxyCompactList}\small\item\em Releases the held object. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{classCotton_1_1GC_a880c5c701fb5f82cdd0976ee134b6904}{ping}} (\mbox{\hyperlink{classCotton_1_1Runtime}{Runtime}} $\ast$\mbox{\hyperlink{classCotton_1_1GC_a68487b633a0df4e8bb63a7fe7d6b95df}{rt}})
+\begin{DoxyCompactList}\small\item\em Pings the gc. If the strategy\textquotesingle{}s conditions are met, a gc cycle will be ran. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{classCotton_1_1GC_a69087d0bc5f560caa8a46bd373adab31}{run\+Cycle}} (\mbox{\hyperlink{classCotton_1_1Runtime}{Runtime}} $\ast$\mbox{\hyperlink{classCotton_1_1GC_a68487b633a0df4e8bb63a7fe7d6b95df}{rt}})
+\begin{DoxyCompactList}\small\item\em Runs a gc cycle. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{classCotton_1_1GC_a2d7666fe8fa167be6a23f5a5cf7ea136}{enable}} ()
+\begin{DoxyCompactList}\small\item\em Enables the gc. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{classCotton_1_1GC_a7fd71e9f916f15990446560e0f4ac1f2}{disable}} ()
+\begin{DoxyCompactList}\small\item\em Disables the gc. Future ping calls will not run a gc cycle.\+z. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\doxysubsection*{Public Attributes}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{classCotton_1_1Runtime}{Runtime}} $\ast$ \mbox{\hyperlink{classCotton_1_1GC_a68487b633a0df4e8bb63a7fe7d6b95df}{rt}}
+\item 
+\+\_\+\+\_\+gnu\+\_\+pbds\+::gp\+\_\+hash\+\_\+table$<$ \mbox{\hyperlink{classCotton_1_1Object}{Object}} $\ast$, bool $>$ \mbox{\hyperlink{classCotton_1_1GC_ac3ea7c406f9fa7651686a1619fac193d}{tracked\+\_\+objects}}
+\item 
+\+\_\+\+\_\+gnu\+\_\+pbds\+::gp\+\_\+hash\+\_\+table$<$ \mbox{\hyperlink{classCotton_1_1Object}{Object}} $\ast$, int64\+\_\+t $>$ \mbox{\hyperlink{classCotton_1_1GC_a409e55b1cec9e575026a62e553f9353b}{held\+\_\+objects}}
+\item 
+\+\_\+\+\_\+gnu\+\_\+pbds\+::gp\+\_\+hash\+\_\+table$<$ \mbox{\hyperlink{classCotton_1_1Instance}{Instance}} $\ast$, bool $>$ \mbox{\hyperlink{classCotton_1_1GC_a126f09bdc9341119b7fdae68edb896bb}{tracked\+\_\+instances}}
+\item 
+\+\_\+\+\_\+gnu\+\_\+pbds\+::gp\+\_\+hash\+\_\+table$<$ \mbox{\hyperlink{classCotton_1_1Type}{Type}} $\ast$, bool $>$ \mbox{\hyperlink{classCotton_1_1GC_ae32e08213d6002a5a6d5f7e3e2f61369}{tracked\+\_\+types}}
+\item 
+bool \mbox{\hyperlink{classCotton_1_1GC_a0f1eaa131401bdf39a6148b67c7e0524}{gc\+\_\+mark}}\+: 1
+\item 
+\mbox{\hyperlink{classCotton_1_1GCStrategy}{GCStrategy}} $\ast$ \mbox{\hyperlink{classCotton_1_1GC_a185939692a992b815e6e6e153865cfbb}{gc\+\_\+strategy}}
+\item 
+bool \mbox{\hyperlink{classCotton_1_1GC_ad34b1075bce48e826b5d8d0fad6f8cce}{enabled}}
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Detailed Description}
+Garbage collector class. 
+
+\doxysubsection{Constructor \& Destructor Documentation}
+\mbox{\Hypertarget{classCotton_1_1GC_a14381ac1719f41bccdded44fcc56962d}\label{classCotton_1_1GC_a14381ac1719f41bccdded44fcc56962d}} 
+\index{Cotton::GC@{Cotton::GC}!GC@{GC}}
+\index{GC@{GC}!Cotton::GC@{Cotton::GC}}
+\doxysubsubsection{\texorpdfstring{GC()}{GC()}}
+{\footnotesize\ttfamily Cotton\+::\+GC\+::\+GC (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{classCotton_1_1GCStrategy}{GCStrategy}} $\ast$}]{gc\+\_\+strategy }\end{DoxyParamCaption})}
+
+
+
+Construct a new \mbox{\hyperlink{classCotton_1_1GC}{GC}} object. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em gc\+\_\+strategy} & Garbage collection strategy. Assumed to be valid. \\
+\hline
+\end{DoxyParams}
+
+
+References enabled, gc\+\_\+mark, gc\+\_\+strategy, and Profiler\+CAPTURE.
+
+\mbox{\Hypertarget{classCotton_1_1GC_a3a17f7cac75113b28d8eadbb68643fc1}\label{classCotton_1_1GC_a3a17f7cac75113b28d8eadbb68643fc1}} 
+\index{Cotton::GC@{Cotton::GC}!````~GC@{$\sim$GC}}
+\index{````~GC@{$\sim$GC}!Cotton::GC@{Cotton::GC}}
+\doxysubsubsection{\texorpdfstring{$\sim$GC()}{~GC()}}
+{\footnotesize\ttfamily Cotton\+::\+GC\+::$\sim$\+GC (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+
+
+Destroy the \mbox{\hyperlink{classCotton_1_1GC}{GC}} object. 
+
+
+
+References Profiler\+CAPTURE, tracked\+\_\+instances, tracked\+\_\+objects, and tracked\+\_\+types.
+
+
+
+\doxysubsection{Member Function Documentation}
+\mbox{\Hypertarget{classCotton_1_1GC_a7fd71e9f916f15990446560e0f4ac1f2}\label{classCotton_1_1GC_a7fd71e9f916f15990446560e0f4ac1f2}} 
+\index{Cotton::GC@{Cotton::GC}!disable@{disable}}
+\index{disable@{disable}!Cotton::GC@{Cotton::GC}}
+\doxysubsubsection{\texorpdfstring{disable()}{disable()}}
+{\footnotesize\ttfamily void Cotton\+::\+GC\+::disable (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+
+
+Disables the gc. Future ping calls will not run a gc cycle.\+z. 
+
+
+
+References enabled, and Profiler\+CAPTURE.
+
+
+
+Referenced by disable(), and main().
+
+\mbox{\Hypertarget{classCotton_1_1GC_a2d7666fe8fa167be6a23f5a5cf7ea136}\label{classCotton_1_1GC_a2d7666fe8fa167be6a23f5a5cf7ea136}} 
+\index{Cotton::GC@{Cotton::GC}!enable@{enable}}
+\index{enable@{enable}!Cotton::GC@{Cotton::GC}}
+\doxysubsubsection{\texorpdfstring{enable()}{enable()}}
+{\footnotesize\ttfamily void Cotton\+::\+GC\+::enable (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+
+
+Enables the gc. 
+
+
+
+References enabled, and Profiler\+CAPTURE.
+
+
+
+Referenced by enable(), and forceping().
+
+\mbox{\Hypertarget{classCotton_1_1GC_af615f6b031d7eac1f9f0f5c1930febcd}\label{classCotton_1_1GC_af615f6b031d7eac1f9f0f5c1930febcd}} 
+\index{Cotton::GC@{Cotton::GC}!hold@{hold}}
+\index{hold@{hold}!Cotton::GC@{Cotton::GC}}
+\doxysubsubsection{\texorpdfstring{hold()}{hold()}}
+{\footnotesize\ttfamily void Cotton\+::\+GC\+::hold (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{classCotton_1_1Object}{Object}} $\ast$}]{object }\end{DoxyParamCaption})}
+
+
+
+Holds the given object. The gc will consider it as reachable even if it is not. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em object} & Assumed to be valid. \\
+\hline
+\end{DoxyParams}
+
+
+References held\+\_\+objects, and Profiler\+CAPTURE.
+
+
+
+Referenced by Cotton\+::\+Runtime\+::execute(), Cotton\+::get\+List(), and Cotton\+::\+Runtime\+::\+Runtime().
+
+\mbox{\Hypertarget{classCotton_1_1GC_a880c5c701fb5f82cdd0976ee134b6904}\label{classCotton_1_1GC_a880c5c701fb5f82cdd0976ee134b6904}} 
+\index{Cotton::GC@{Cotton::GC}!ping@{ping}}
+\index{ping@{ping}!Cotton::GC@{Cotton::GC}}
+\doxysubsubsection{\texorpdfstring{ping()}{ping()}}
+{\footnotesize\ttfamily void Cotton\+::\+GC\+::ping (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{classCotton_1_1Runtime}{Runtime}} $\ast$}]{rt }\end{DoxyParamCaption})}
+
+
+
+Pings the gc. If the strategy\textquotesingle{}s conditions are met, a gc cycle will be ran. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em rt} & The \mbox{\hyperlink{classCotton_1_1Runtime}{Runtime}}. Assumed to be valid. \\
+\hline
+\end{DoxyParams}
+
+
+References Cotton\+::\+GCStrategy\+::acknowledge\+Ping(), gc\+\_\+strategy, and Profiler\+CAPTURE.
+
+
+
+Referenced by Cotton\+::\+Runtime\+::execute(), forceping(), and ping().
+
+\mbox{\Hypertarget{classCotton_1_1GC_acd0d54539c2a20e13d904fb63d9a9f3d}\label{classCotton_1_1GC_acd0d54539c2a20e13d904fb63d9a9f3d}} 
+\index{Cotton::GC@{Cotton::GC}!release@{release}}
+\index{release@{release}!Cotton::GC@{Cotton::GC}}
+\doxysubsubsection{\texorpdfstring{release()}{release()}}
+{\footnotesize\ttfamily void Cotton\+::\+GC\+::release (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{classCotton_1_1Object}{Object}} $\ast$}]{object }\end{DoxyParamCaption})}
+
+
+
+Releases the held object. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em object} & Assumed to be valid. \\
+\hline
+\end{DoxyParams}
+
+
+References held\+\_\+objects, and Profiler\+CAPTURE.
+
+
+
+Referenced by Cotton\+::\+Runtime\+::execute().
+
+\mbox{\Hypertarget{classCotton_1_1GC_a69087d0bc5f560caa8a46bd373adab31}\label{classCotton_1_1GC_a69087d0bc5f560caa8a46bd373adab31}} 
+\index{Cotton::GC@{Cotton::GC}!runCycle@{runCycle}}
+\index{runCycle@{runCycle}!Cotton::GC@{Cotton::GC}}
+\doxysubsubsection{\texorpdfstring{runCycle()}{runCycle()}}
+{\footnotesize\ttfamily void Cotton\+::\+GC\+::run\+Cycle (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{classCotton_1_1Runtime}{Runtime}} $\ast$}]{rt }\end{DoxyParamCaption})}
+
+
+
+Runs a gc cycle. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em rt} & The \mbox{\hyperlink{classCotton_1_1Runtime}{Runtime}}. Assumed to be valid. \\
+\hline
+\end{DoxyParams}
+
+
+References Cotton\+::\+GCStrategy\+::acknowledge\+End\+Of\+Cycle(), enabled, gc\+\_\+mark, gc\+\_\+strategy, Cotton\+::\+Runtime\+::globals, held\+\_\+objects, Cotton\+::mark(), Profiler\+CAPTURE, rt, Cotton\+::\+Runtime\+::scope, tracked\+\_\+instances, tracked\+\_\+objects, and tracked\+\_\+types.
+
+
+
+Referenced by Cotton\+::\+GCDefault\+Strategy\+::check\+Conditions().
+
+\mbox{\Hypertarget{classCotton_1_1GC_aba7b39efddf929dc8c454c6911e114f2}\label{classCotton_1_1GC_aba7b39efddf929dc8c454c6911e114f2}} 
+\index{Cotton::GC@{Cotton::GC}!track@{track}}
+\index{track@{track}!Cotton::GC@{Cotton::GC}}
+\doxysubsubsection{\texorpdfstring{track()}{track()}\hspace{0.1cm}{\footnotesize\ttfamily [1/3]}}
+{\footnotesize\ttfamily void Cotton\+::\+GC\+::track (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{classCotton_1_1Instance}{Instance}} $\ast$}]{instance,  }\item[{size\+\_\+t}]{bytes }\end{DoxyParamCaption})}
+
+
+
+Tracks the instance;. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em instance} & Assumed to be valid. \\
+\hline
+{\em bytes} & The size of the instance in bytes. \\
+\hline
+\end{DoxyParams}
+
+
+References Cotton\+::\+GCStrategy\+::acknowledge\+Track(), gc\+\_\+strategy, Profiler\+CAPTURE, and tracked\+\_\+instances.
+
+\mbox{\Hypertarget{classCotton_1_1GC_a409b4b05d777b2c01d6bd42493c9a791}\label{classCotton_1_1GC_a409b4b05d777b2c01d6bd42493c9a791}} 
+\index{Cotton::GC@{Cotton::GC}!track@{track}}
+\index{track@{track}!Cotton::GC@{Cotton::GC}}
+\doxysubsubsection{\texorpdfstring{track()}{track()}\hspace{0.1cm}{\footnotesize\ttfamily [2/3]}}
+{\footnotesize\ttfamily void Cotton\+::\+GC\+::track (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{classCotton_1_1Object}{Object}} $\ast$}]{object }\end{DoxyParamCaption})}
+
+
+
+Tracks the object;. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em object} & Assumed to be valid. \\
+\hline
+\end{DoxyParams}
+
+
+References Cotton\+::\+GCStrategy\+::acknowledge\+Track(), gc\+\_\+strategy, Profiler\+CAPTURE, and tracked\+\_\+objects.
+
+
+
+Referenced by Cotton\+::\+Instance\+::\+Instance(), Cotton\+::\+Object\+::\+Object(), and Cotton\+::\+Type\+::\+Type().
+
+\mbox{\Hypertarget{classCotton_1_1GC_a03d80478aedbd73b0a3e1525644bf6ed}\label{classCotton_1_1GC_a03d80478aedbd73b0a3e1525644bf6ed}} 
+\index{Cotton::GC@{Cotton::GC}!track@{track}}
+\index{track@{track}!Cotton::GC@{Cotton::GC}}
+\doxysubsubsection{\texorpdfstring{track()}{track()}\hspace{0.1cm}{\footnotesize\ttfamily [3/3]}}
+{\footnotesize\ttfamily void Cotton\+::\+GC\+::track (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{classCotton_1_1Type}{Type}} $\ast$}]{type }\end{DoxyParamCaption})}
+
+
+
+Tracks the type;. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em type} & Assumed to be valid. \\
+\hline
+\end{DoxyParams}
+
+
+References Cotton\+::\+GCStrategy\+::acknowledge\+Track(), gc\+\_\+strategy, Profiler\+CAPTURE, and tracked\+\_\+types.
+
+\mbox{\Hypertarget{classCotton_1_1GC_a48b2995d39b26e53493cdc6f5efc1ffb}\label{classCotton_1_1GC_a48b2995d39b26e53493cdc6f5efc1ffb}} 
+\index{Cotton::GC@{Cotton::GC}!untrack@{untrack}}
+\index{untrack@{untrack}!Cotton::GC@{Cotton::GC}}
+\doxysubsubsection{\texorpdfstring{untrack()}{untrack()}\hspace{0.1cm}{\footnotesize\ttfamily [1/3]}}
+{\footnotesize\ttfamily void Cotton\+::\+GC\+::untrack (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{classCotton_1_1Instance}{Instance}} $\ast$}]{instance }\end{DoxyParamCaption})}
+
+
+
+Untracks the instance;. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em instance} & Assumed to be valid. \\
+\hline
+\end{DoxyParams}
+
+
+References Profiler\+CAPTURE, and tracked\+\_\+instances.
+
+\mbox{\Hypertarget{classCotton_1_1GC_a95047d6c69523dca7c5d5aa4d2a02005}\label{classCotton_1_1GC_a95047d6c69523dca7c5d5aa4d2a02005}} 
+\index{Cotton::GC@{Cotton::GC}!untrack@{untrack}}
+\index{untrack@{untrack}!Cotton::GC@{Cotton::GC}}
+\doxysubsubsection{\texorpdfstring{untrack()}{untrack()}\hspace{0.1cm}{\footnotesize\ttfamily [2/3]}}
+{\footnotesize\ttfamily void Cotton\+::\+GC\+::untrack (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{classCotton_1_1Object}{Object}} $\ast$}]{object }\end{DoxyParamCaption})}
+
+
+
+Untracks the object;. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em object} & Assumed to be valid. \\
+\hline
+\end{DoxyParams}
+
+
+References Profiler\+CAPTURE, and tracked\+\_\+objects.
+
+\mbox{\Hypertarget{classCotton_1_1GC_ac34b00360032453eb020438f82620858}\label{classCotton_1_1GC_ac34b00360032453eb020438f82620858}} 
+\index{Cotton::GC@{Cotton::GC}!untrack@{untrack}}
+\index{untrack@{untrack}!Cotton::GC@{Cotton::GC}}
+\doxysubsubsection{\texorpdfstring{untrack()}{untrack()}\hspace{0.1cm}{\footnotesize\ttfamily [3/3]}}
+{\footnotesize\ttfamily void Cotton\+::\+GC\+::untrack (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{classCotton_1_1Type}{Type}} $\ast$}]{type }\end{DoxyParamCaption})}
+
+
+
+Unracks the type;. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em type} & Assumed to be valid. \\
+\hline
+\end{DoxyParams}
+
+
+References Profiler\+CAPTURE, and tracked\+\_\+types.
+
+
+
+\doxysubsection{Member Data Documentation}
+\mbox{\Hypertarget{classCotton_1_1GC_ad34b1075bce48e826b5d8d0fad6f8cce}\label{classCotton_1_1GC_ad34b1075bce48e826b5d8d0fad6f8cce}} 
+\index{Cotton::GC@{Cotton::GC}!enabled@{enabled}}
+\index{enabled@{enabled}!Cotton::GC@{Cotton::GC}}
+\doxysubsubsection{\texorpdfstring{enabled}{enabled}}
+{\footnotesize\ttfamily bool Cotton\+::\+GC\+::enabled}
+
+
+
+Referenced by disable(), enable(), forceping(), GC(), run\+Cycle(), and status().
+
+\mbox{\Hypertarget{classCotton_1_1GC_a0f1eaa131401bdf39a6148b67c7e0524}\label{classCotton_1_1GC_a0f1eaa131401bdf39a6148b67c7e0524}} 
+\index{Cotton::GC@{Cotton::GC}!gc\_mark@{gc\_mark}}
+\index{gc\_mark@{gc\_mark}!Cotton::GC@{Cotton::GC}}
+\doxysubsubsection{\texorpdfstring{gc\_mark}{gc\_mark}}
+{\footnotesize\ttfamily bool Cotton\+::\+GC\+::gc\+\_\+mark}
+
+
+
+Referenced by GC(), Cotton\+::\+Instance\+::\+Instance(), Cotton\+::mark(), Cotton\+::\+Object\+::\+Object(), run\+Cycle(), and Cotton\+::\+Type\+::\+Type().
+
+\mbox{\Hypertarget{classCotton_1_1GC_a185939692a992b815e6e6e153865cfbb}\label{classCotton_1_1GC_a185939692a992b815e6e6e153865cfbb}} 
+\index{Cotton::GC@{Cotton::GC}!gc\_strategy@{gc\_strategy}}
+\index{gc\_strategy@{gc\_strategy}!Cotton::GC@{Cotton::GC}}
+\doxysubsubsection{\texorpdfstring{gc\_strategy}{gc\_strategy}}
+{\footnotesize\ttfamily \mbox{\hyperlink{classCotton_1_1GCStrategy}{GCStrategy}}$\ast$ Cotton\+::\+GC\+::gc\+\_\+strategy}
+
+
+
+Referenced by GC(), ping(), run\+Cycle(), and track().
+
+\mbox{\Hypertarget{classCotton_1_1GC_a409e55b1cec9e575026a62e553f9353b}\label{classCotton_1_1GC_a409e55b1cec9e575026a62e553f9353b}} 
+\index{Cotton::GC@{Cotton::GC}!held\_objects@{held\_objects}}
+\index{held\_objects@{held\_objects}!Cotton::GC@{Cotton::GC}}
+\doxysubsubsection{\texorpdfstring{held\_objects}{held\_objects}}
+{\footnotesize\ttfamily \+\_\+\+\_\+gnu\+\_\+pbds\+::gp\+\_\+hash\+\_\+table$<$\mbox{\hyperlink{classCotton_1_1Object}{Object}} $\ast$, int64\+\_\+t$>$ Cotton\+::\+GC\+::held\+\_\+objects}
+
+
+
+Referenced by hold(), release(), and run\+Cycle().
+
+\mbox{\Hypertarget{classCotton_1_1GC_a68487b633a0df4e8bb63a7fe7d6b95df}\label{classCotton_1_1GC_a68487b633a0df4e8bb63a7fe7d6b95df}} 
+\index{Cotton::GC@{Cotton::GC}!rt@{rt}}
+\index{rt@{rt}!Cotton::GC@{Cotton::GC}}
+\doxysubsubsection{\texorpdfstring{rt}{rt}}
+{\footnotesize\ttfamily \mbox{\hyperlink{classCotton_1_1Runtime}{Runtime}}$\ast$ Cotton\+::\+GC\+::rt}
+
+
+
+Referenced by run\+Cycle(), and Cotton\+::\+Runtime\+::\+Runtime().
+
+\mbox{\Hypertarget{classCotton_1_1GC_a126f09bdc9341119b7fdae68edb896bb}\label{classCotton_1_1GC_a126f09bdc9341119b7fdae68edb896bb}} 
+\index{Cotton::GC@{Cotton::GC}!tracked\_instances@{tracked\_instances}}
+\index{tracked\_instances@{tracked\_instances}!Cotton::GC@{Cotton::GC}}
+\doxysubsubsection{\texorpdfstring{tracked\_instances}{tracked\_instances}}
+{\footnotesize\ttfamily \+\_\+\+\_\+gnu\+\_\+pbds\+::gp\+\_\+hash\+\_\+table$<$\mbox{\hyperlink{classCotton_1_1Instance}{Instance}} $\ast$, bool$>$ Cotton\+::\+GC\+::tracked\+\_\+instances}
+
+
+
+Referenced by Cotton\+::\+GCDefault\+Strategy\+::acknowledge\+End\+Of\+Cycle(), run\+Cycle(), track(), untrack(), and $\sim$\+GC().
+
+\mbox{\Hypertarget{classCotton_1_1GC_ac3ea7c406f9fa7651686a1619fac193d}\label{classCotton_1_1GC_ac3ea7c406f9fa7651686a1619fac193d}} 
+\index{Cotton::GC@{Cotton::GC}!tracked\_objects@{tracked\_objects}}
+\index{tracked\_objects@{tracked\_objects}!Cotton::GC@{Cotton::GC}}
+\doxysubsubsection{\texorpdfstring{tracked\_objects}{tracked\_objects}}
+{\footnotesize\ttfamily \+\_\+\+\_\+gnu\+\_\+pbds\+::gp\+\_\+hash\+\_\+table$<$\mbox{\hyperlink{classCotton_1_1Object}{Object}} $\ast$, bool$>$ Cotton\+::\+GC\+::tracked\+\_\+objects}
+
+
+
+Referenced by Cotton\+::\+GCDefault\+Strategy\+::acknowledge\+End\+Of\+Cycle(), run\+Cycle(), track(), untrack(), and $\sim$\+GC().
+
+\mbox{\Hypertarget{classCotton_1_1GC_ae32e08213d6002a5a6d5f7e3e2f61369}\label{classCotton_1_1GC_ae32e08213d6002a5a6d5f7e3e2f61369}} 
+\index{Cotton::GC@{Cotton::GC}!tracked\_types@{tracked\_types}}
+\index{tracked\_types@{tracked\_types}!Cotton::GC@{Cotton::GC}}
+\doxysubsubsection{\texorpdfstring{tracked\_types}{tracked\_types}}
+{\footnotesize\ttfamily \+\_\+\+\_\+gnu\+\_\+pbds\+::gp\+\_\+hash\+\_\+table$<$\mbox{\hyperlink{classCotton_1_1Type}{Type}} $\ast$, bool$>$ Cotton\+::\+GC\+::tracked\+\_\+types}
+
+
+
+Referenced by Cotton\+::\+GCDefault\+Strategy\+::acknowledge\+End\+Of\+Cycle(), run\+Cycle(), track(), untrack(), and $\sim$\+GC().
+
+
+
+The documentation for this class was generated from the following files\+:\begin{DoxyCompactItemize}
+\item 
+cotton\+\_\+lib/src/cotton\+\_\+lib/back/\mbox{\hyperlink{gc_8h}{gc.\+h}}\item 
+cotton\+\_\+lib/src/cotton\+\_\+lib/back/\mbox{\hyperlink{cotton__lib_2src_2cotton__lib_2back_2gc_8cpp}{gc.\+cpp}}\end{DoxyCompactItemize}

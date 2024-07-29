@@ -39,9 +39,6 @@ GCDefaultStrategy::GCDefaultStrategy() {
 
 void GCDefaultStrategy::acknowledgeTrack(Object *object) {
     ProfilerCAPTURE();
-    if (object == NULL) {
-        return;
-    }
     this->num_tracked++;
     this->sizeof_tracked += sizeof(Object);
     this->ops_cnt++;
@@ -49,9 +46,6 @@ void GCDefaultStrategy::acknowledgeTrack(Object *object) {
 
 void GCDefaultStrategy::acknowledgeTrack(Instance *instance, size_t bytes) {
     ProfilerCAPTURE();
-    if (instance == NULL) {
-        return;
-    }
     this->num_tracked++;
     this->sizeof_tracked += bytes;
     this->ops_cnt++;
@@ -59,9 +53,6 @@ void GCDefaultStrategy::acknowledgeTrack(Instance *instance, size_t bytes) {
 
 void GCDefaultStrategy::acknowledgeTrack(Type *type) {
     ProfilerCAPTURE();
-    if (type == NULL) {
-        return;
-    }
     this->num_tracked++;
     this->sizeof_tracked += sizeof(Type);    // it should also count adapters for operators and method, but not rn
     this->ops_cnt++;
@@ -69,27 +60,18 @@ void GCDefaultStrategy::acknowledgeTrack(Type *type) {
 
 void GCDefaultStrategy::acknowledgeUntrack(Object *object) {
     ProfilerCAPTURE();
-    if (object == NULL) {
-        return;
-    }
     this->num_tracked--;
     this->sizeof_tracked -= sizeof(Object);
 }
 
 void GCDefaultStrategy::acknowledgeUntrack(Instance *instance) {
     ProfilerCAPTURE();
-    if (instance == NULL) {
-        return;
-    }
     this->num_tracked--;
     this->sizeof_tracked -= instance->getSize();
 }
 
 void GCDefaultStrategy::acknowledgeUntrack(Type *type) {
     ProfilerCAPTURE();
-    if (type == NULL) {
-        return;
-    }
     this->num_tracked--;
     this->sizeof_tracked -= sizeof(Type);
 }
