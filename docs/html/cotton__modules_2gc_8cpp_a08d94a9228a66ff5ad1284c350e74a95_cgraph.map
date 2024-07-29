@@ -1,8 +1,0 @@
-<map id="ping" name="ping">
-<area shape="rect" id="node1" title=" " alt="" coords="5,42,56,69"/>
-<area shape="rect" id="node2" href="$classCotton_1_1GC.html#a880c5c701fb5f82cdd0976ee134b6904" title="Pings the gc. If the strategy&#39;s conditions are met, a gc cycle will be ran." alt="" coords="145,13,273,39"/>
-<area shape="rect" id="node4" href="$classCotton_1_1Runtime.html#ad0c19843334ad0f5d9691ce1f4c24433" title=" " alt="" coords="104,64,313,105"/>
-<area shape="rect" id="node3" href="$classCotton_1_1GCStrategy.html#ac2cbf5793795ddf5e5ec9a6729a48523" title="Acknowledges a gc ping event. This function is called by the gc." alt="" coords="391,5,538,47"/>
-<area shape="rect" id="node5" href="$classCotton_1_1Runtime.html#af58dfac27bc82e7bedcd4192a41a2582" title=" " alt="" coords="361,71,568,98"/>
-<area shape="rect" id="node6" href="$classCotton_1_1ErrorManager.html#afb675bde7b9e68e912387eaecd15fb29" title=" " alt="" coords="616,64,777,105"/>
-</map>

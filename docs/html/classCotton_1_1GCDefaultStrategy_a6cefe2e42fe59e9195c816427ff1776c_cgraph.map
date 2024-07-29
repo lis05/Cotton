@@ -1,7 +1,0 @@
-<map id="Cotton::GCDefaultStrategy::checkConditions" name="Cotton::GCDefaultStrategy::checkConditions">
-<area shape="rect" id="node1" title=" " alt="" coords="5,35,200,76"/>
-<area shape="rect" id="node2" href="$classCotton_1_1GC.html#a69087d0bc5f560caa8a46bd373adab31" title="Runs a gc cycle." alt="" coords="248,42,405,69"/>
-<area shape="rect" id="node3" href="$classCotton_1_1GCStrategy.html#acea671df451fe3d6fe9d261aa039f799" title="Acknowledges the end of a gc cycle. This function is called by the gc." alt="" coords="453,5,644,47"/>
-<area shape="rect" id="node4" href="$namespaceCotton.html#a0ae4664c5c588878fe81d999369d01ec" title=" " alt="" coords="495,71,602,98"/>
-<area shape="rect" id="node5" href="$classCotton_1_1Instance.html#a4cac198d36dc6b1f7a3ff956ba3cc316" title=" " alt="" coords="692,71,936,98"/>
-</map>

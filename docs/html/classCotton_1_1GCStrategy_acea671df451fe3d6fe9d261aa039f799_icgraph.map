@@ -1,6 +1,0 @@
-<map id="Cotton::GCStrategy::acknowledgeEndOfCycle" name="Cotton::GCStrategy::acknowledgeEndOfCycle">
-<area shape="rect" id="node1" title="Acknowledges the end of a gc cycle. This function is called by the gc." alt="" coords="696,5,887,47"/>
-<area shape="rect" id="node2" href="$classCotton_1_1GC.html#a69087d0bc5f560caa8a46bd373adab31" title="Runs a gc cycle." alt="" coords="491,13,648,39"/>
-<area shape="rect" id="node3" href="$classCotton_1_1GCDefaultStrategy.html#a6cefe2e42fe59e9195c816427ff1776c" title=" " alt="" coords="248,5,443,47"/>
-<area shape="rect" id="node4" href="$classCotton_1_1GCDefaultStrategy.html#a1e093307e547c3c7e4c01e040ac02ac8" title="Acknowledges a gc ping event. This function is called by the gc." alt="" coords="5,5,200,47"/>
-</map>

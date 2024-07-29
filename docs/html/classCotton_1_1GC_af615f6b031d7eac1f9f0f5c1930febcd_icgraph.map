@@ -1,6 +1,0 @@
-<map id="Cotton::GC::hold" name="Cotton::GC::hold">
-<area shape="rect" id="node1" title="Holds the given object. The gc will consider it as reachable even if it is not." alt="" coords="479,31,607,57"/>
-<area shape="rect" id="node2" href="$classCotton_1_1Runtime.html#a312b4179e08668062bd4f89ba93197d4" title=" " alt="" coords="5,5,192,32"/>
-<area shape="rect" id="node3" href="$namespaceCotton.html#a23e89c555bdb5aaf0c5ee25c5c710946" title=" " alt="" coords="277,31,394,57"/>
-<area shape="rect" id="node4" href="$classCotton_1_1Runtime.html#af7882f57df09c65bf463a2bdf7ffd63c" title=" " alt="" coords="240,81,431,108"/>
-</map>

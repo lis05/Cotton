@@ -1,7 +1,0 @@
-<map id="Cotton::mark" name="Cotton::mark">
-<area shape="rect" id="node1" title=" " alt="" coords="696,31,803,57"/>
-<area shape="rect" id="node2" href="$namespaceCotton.html#a41307a194b9a0edc9dd2ea0130a4a360" title=" " alt="" coords="516,5,623,32"/>
-<area shape="rect" id="node3" href="$classCotton_1_1GC.html#a69087d0bc5f560caa8a46bd373adab31" title="Runs a gc cycle." alt="" coords="491,56,648,83"/>
-<area shape="rect" id="node4" href="$classCotton_1_1GCDefaultStrategy.html#a6cefe2e42fe59e9195c816427ff1776c" title=" " alt="" coords="248,49,443,90"/>
-<area shape="rect" id="node5" href="$classCotton_1_1GCDefaultStrategy.html#a1e093307e547c3c7e4c01e040ac02ac8" title="Acknowledges a gc ping event. This function is called by the gc." alt="" coords="5,49,200,90"/>
-</map>

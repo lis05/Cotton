@@ -1,9 +1,0 @@
-<map id="Cotton::Builtin::RecordInstance::selectField" name="Cotton::Builtin::RecordInstance::selectField">
-<area shape="rect" id="node1" title="Selects the field given by id from the instance. By default, the instance doesn&#39;t have any fields,..." alt="" coords="5,74,228,115"/>
-<area shape="rect" id="node2" href="$classCotton_1_1Runtime.html#a890333525bab6b9e3811f7ecff1238d6" title=" " alt="" coords="283,5,491,32"/>
-<area shape="rect" id="node3" href="$classCotton_1_1Runtime.html#af58dfac27bc82e7bedcd4192a41a2582" title=" " alt="" coords="284,56,491,83"/>
-<area shape="rect" id="node5" href="$classCotton_1_1NameIds.html#ae6fee4dd3d98564983c8a0c648fd844b" title=" " alt="" coords="547,140,744,167"/>
-<area shape="rect" id="node7" href="$classCotton_1_1Builtin_1_1RecordInstance.html#a4eda0aabc2e1e03264a9d78f05b12628" title=" " alt="" coords="276,158,499,199"/>
-<area shape="rect" id="node4" href="$classCotton_1_1ErrorManager.html#afb675bde7b9e68e912387eaecd15fb29" title=" " alt="" coords="565,49,726,90"/>
-<area shape="rect" id="node6" href="$classCotton_1_1NameIds.html#a9172699e1ada9903002381adce153a5c" title=" " alt="" coords="792,140,975,167"/>
-</map>
