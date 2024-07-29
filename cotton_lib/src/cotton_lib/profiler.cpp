@@ -16,7 +16,7 @@ void capture(const char *name) {
 void printResult() {
     std::vector<std::pair<int, const char *>> res;
     for (auto [name, num]: captures) res.push_back({num, name});
-    std::sort(res.begin(), res.end(), std::greater<std::pair<int, const char*>>());
+    std::sort(res.begin(), res.end(), std::less<std::pair<int, const char*>>());
 
     for (auto [num, name]: res) {
         std::cout << num << ": " << name << "\n";
