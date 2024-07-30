@@ -22,31 +22,45 @@
 #pragma once
 
 #include "../front/lexer.h"
+#include "../util.h"
 #include <cstdint>
-#include <ext/pb_ds/assoc_container.hpp>
 
 namespace Cotton {
-class NameId {
+
+/// @brief Name identifier. It is used when working with string names in order to speed things up.
+typedef int64_t NameId;
+
+/// @brief Class for managing string names efficiently using NameIDs
+class NamesManager {
 private:
-    class NameIds;
+    static std::string const       failed;
+    HashTable<std::string, NameId> data;
+    HashTable<NameId, std::string> data_reversed;
 
 public:
-    int64_t      id;
-    Token       *token;
-    std::string *str;
-    std::string  val_str;
+    /**
+     * @brief Returns NameId that corresponds to the provided string. If no such id exists - then it registers the
+     * string under a new id, and returns it.
+     *
+     * @param str Queried string.
+     * @return `NameId` that corresponds to the provided string.
+     */
+    NameId getId(const std::string &str);
+
+    /**
+     * @brief Returns string associated with the provided id.
+     *
+     * @param id Requested `NameId`. Assumed to be correct.
+     * @return String that corresponds to the provided id.
+     */
+    std::string const &getString(NameId id);
+
+    /**
+     * @brief Returns whether the provided id has a string associated with it.
+     *
+     * @param id NameId to be checked.
+     * @return `true` if there is a string associated with the id, `false` otherwise.
+     */
+    bool check(NameId id);
 };
-
-class NameIds {
-public:
-    __gnu_pbds::cc_hash_table<std::string, int64_t> map;
-    __gnu_pbds::cc_hash_table<int64_t, std::string> reverse_map;
-    NameId                                          get(Token *token);
-    NameId                                          get(std::string *str);
-    NameId                                          get(std::string str);
-
-    std::string fromId(int64_t id);
-    std::string userRepr(int64_t id);
-};
-
 }    // namespace Cotton

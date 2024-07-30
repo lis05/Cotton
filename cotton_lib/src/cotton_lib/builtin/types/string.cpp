@@ -262,8 +262,8 @@ void installStringMethods(Type *type, Runtime *rt) {
     type->addMethod(MagicMethods::mm__repr__(rt), Builtin::makeFunctionInstanceObject(true, mm__repr__, NULL, rt));
     type->addMethod(MagicMethods::mm__read__(rt), Builtin::makeFunctionInstanceObject(true, mm__read__, NULL, rt));
 
-    type->addMethod(rt->nds->get("size").id, makeFunctionInstanceObject(true, stringSizeMethod, NULL, rt));
-    type->addMethod(rt->nds->get("set").id, makeFunctionInstanceObject(true, stringSetMethod, NULL, rt));
+    type->addMethod(rt->nmgr->getId("size"), makeFunctionInstanceObject(true, stringSizeMethod, NULL, rt));
+    type->addMethod(rt->nmgr->getId("set"), makeFunctionInstanceObject(true, stringSetMethod, NULL, rt));
 }
 
 StringType::StringType(Runtime *rt)

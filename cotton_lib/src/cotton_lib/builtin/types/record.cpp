@@ -42,7 +42,7 @@ Object *RecordInstance::selectField(int64_t id, Runtime *rt) {
     if (it != this->fields.end()) {
         return it->second;
     }
-    rt->signalError(this->userRepr(rt) + "doesn't have field " + rt->nds->userRepr(id), rt->getContext().area);
+    rt->signalError(this->userRepr(rt) + "doesn't have field " + rt->nmgr->getString(id), rt->getContext().area);
 }
 
 bool RecordInstance::hasField(int64_t id, Runtime *rt) {
@@ -75,7 +75,7 @@ std::string RecordInstance::userRepr(Runtime *rt) {
     if (this == NULL) {
         return "Record(NULL)";
     }
-    return rt->nds->userRepr(this->nameid);
+    return rt->nmgr->getString(this->nameid);
 }
 
 std::vector<Object *> RecordInstance::getGCReachable() {
@@ -108,7 +108,7 @@ std::string RecordType::userRepr(Runtime *rt) {
     if (this == NULL) {
         return "NULL";
     }
-    return rt->nds->userRepr(this->nameid);
+    return rt->nmgr->getString(this->nameid);
 }
 
 // TODO: == and !=

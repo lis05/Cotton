@@ -19,37 +19,14 @@
  CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-#include "nameid.h"
-#include "../profiler.h"
+#pragma once
+
+#include <cstddef>
+#include <cstdint>
+#include <cstdlib>
+#include <ext/pb_ds/assoc_container.hpp>
 
 namespace Cotton {
-
-std::string const NamesManager::failed = "[INVALID NAMEID]";
-
-NameId NamesManager::getId(const std::string &str) {
-    ProfilerCAPTURE();
-    auto it = this->data.find(str);
-    if (it != this->data.end()) {
-        return it->second;
-    }
-    auto new_id                 = (NameId)this->data.size() + 1;
-    this->data[str]             = new_id;
-    this->data_reversed[new_id] = str;
-    return new_id;
-}
-
-std::string const &NamesManager::getString(NameId id) {
-    ProfilerCAPTURE();
-    auto it = this->data_reversed.find(id);
-    if (it == this->data_reversed.end()) {
-        return this->failed;
-    }
-    return it->second;
-}
-
-bool NamesManager::check(NameId id) {
-    ProfilerCAPTURE();
-    auto it = this->data_reversed.find(id);
-    return it != this->data_reversed.end();
-}
-};    // namespace Cotton
+template<class K, class V>
+using HashTable = __gnu_pbds::cc_hash_table<K, V>;
+}    // namespace Cotton

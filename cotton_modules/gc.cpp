@@ -40,11 +40,12 @@ static Object *forceping(const std::vector<Object *> &args, Runtime *rt, bool ex
 }
 
 extern "C" Object *library_load_point(Runtime *rt) {
-    auto record = Builtin::makeRecordType(rt->nds->get("GC").id, rt);
-    record->addMethod(rt->nds->get("enable").id, Builtin::makeFunctionInstanceObject(true, enable, NULL, rt));
-    record->addMethod(rt->nds->get("disable").id, Builtin::makeFunctionInstanceObject(true, disable, NULL, rt));
-    record->addMethod(rt->nds->get("status").id, Builtin::makeFunctionInstanceObject(true, status, NULL, rt));
-    record->addMethod(rt->nds->get("ping").id, Builtin::makeFunctionInstanceObject(true, ping, NULL, rt));
-    record->addMethod(rt->nds->get("forceping").id, Builtin::makeFunctionInstanceObject(true, forceping, NULL, rt));
+    auto record = Builtin::makeRecordType(rt->nmgr->getId("GC"), rt);
+    record->addMethod(rt->nmgr->getId("enable"), Builtin::makeFunctionInstanceObject(true, enable, NULL, rt));
+    record->addMethod(rt->nmgr->getId("disable"), Builtin::makeFunctionInstanceObject(true, disable, NULL, rt));
+    record->addMethod(rt->nmgr->getId("status"), Builtin::makeFunctionInstanceObject(true, status, NULL, rt));
+    record->addMethod(rt->nmgr->getId("ping"), Builtin::makeFunctionInstanceObject(true, ping, NULL, rt));
+    record->addMethod(rt->nmgr->getId("forceping"),
+                      Builtin::makeFunctionInstanceObject(true, forceping, NULL, rt));
     return rt->make(record, Runtime::INSTANCE_OBJECT);
 }

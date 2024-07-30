@@ -160,7 +160,8 @@ static Object *CF_print(const std::vector<Object *> &args, Runtime *rt, bool exe
 }
 
 // printf(fmt, ...) - prints arguments with a given format
-static Object *CF_printf(const std::vector<Object *> &args, Runtime *rt, bool execution_result_matters) {ProfilerCAPTURE();
+static Object *CF_printf(const std::vector<Object *> &args, Runtime *rt, bool execution_result_matters) {
+    ProfilerCAPTURE();
     // TODO
 }
 
@@ -283,7 +284,7 @@ static Object *CF_cotton(const std::vector<Object *> &args, Runtime *rt, bool ex
 
     std::vector<Token> tokens = lexer.process(str);
     for (auto &token : tokens) {
-        token.nameid     = rt->nds->get(&token).id;
+        token.nameid     = rt->nmgr->getId(token.data);
         // yeah this is awful but it works so shut up
         token.begin_pos += rt->getContext().sub_areas[1].first_char + 1;
         token.end_pos   += rt->getContext().sub_areas[1].first_char + 1;
@@ -438,7 +439,7 @@ static Object *CF_hasfield(const std::vector<Object *> &args, Runtime *rt, bool 
     if (!execution_result_matters) {
         return rt->protected_nothing;
     }
-    return rt->protectedBoolean(obj->instance->hasField(rt->nds->get(getStringDataFast(str)).id, rt));
+    return rt->protectedBoolean(obj->instance->hasField(rt->nmgr->getId(getStringDataFast(str)), rt));
 }
 
 // hasmethod(obj, str) - tells whether obj has method given in str
@@ -453,7 +454,7 @@ static Object *CF_hasmethod(const std::vector<Object *> &args, Runtime *rt, bool
     if (!execution_result_matters) {
         return rt->protected_nothing;
     }
-    return rt->protectedBoolean(obj->type->hasMethod(rt->nds->get(getStringDataFast(str)).id));
+    return rt->protectedBoolean(obj->type->hasMethod(rt->nmgr->getId(getStringDataFast(str))));
 }
 
 // assert(val, str) - raises an error given in str(or "assertion error" is str is absent) if value is not true
@@ -488,7 +489,7 @@ static Object *CF_checkglobal(const std::vector<Object *> &args, Runtime *rt, bo
     auto arg = args[0];
     rt->verifyIsInstanceObject(arg, rt->string_type, Runtime::SUB1_CTX);
 
-    return rt->protectedBoolean(rt->checkGlobal(rt->nds->get(getStringDataFast(arg)).id));
+    return rt->protectedBoolean(rt->checkGlobal(rt->nmgr->getId(getStringDataFast(arg))));
 }
 
 // getglobal(str) - returns global variable with name str
@@ -498,7 +499,7 @@ static Object *CF_getglobal(const std::vector<Object *> &args, Runtime *rt, bool
     auto arg = args[0];
     rt->verifyIsInstanceObject(arg, rt->string_type, Runtime::SUB1_CTX);
 
-    return rt->getGlobal(rt->nds->get(getStringDataFast(arg)).id);
+    return rt->getGlobal(rt->nmgr->getId(getStringDataFast(arg)));
 }
 
 // setglobal(str, obj) - sets global variable with name str to obj
@@ -510,7 +511,7 @@ static Object *CF_setglobal(const std::vector<Object *> &args, Runtime *rt, bool
     rt->verifyIsInstanceObject(arg1, rt->string_type, Runtime::SUB1_CTX);
     rt->verifyIsValidObject(arg2, Runtime::SUB2_CTX);
 
-    rt->setGlobal(rt->nds->get(getStringDataFast(arg1)).id, arg2);
+    rt->setGlobal(rt->nmgr->getId(getStringDataFast(arg1)), arg2);
     return arg2;
 }
 
@@ -521,7 +522,7 @@ static Object *CF_removeglobal(const std::vector<Object *> &args, Runtime *rt, b
     auto arg1 = args[0];
     rt->verifyIsInstanceObject(arg1, rt->string_type, Runtime::SUB1_CTX);
 
-    rt->removeGlobal(rt->nds->get(getStringDataFast(arg1)).id);
+    rt->removeGlobal(rt->nmgr->getId(getStringDataFast(arg1)));
     return rt->protected_nothing;
 }
 
@@ -541,7 +542,7 @@ static Object *CF_smartrun(const std::vector<Object *> &args, Runtime *rt, bool 
         rt->signalError("Not a regular file: " + path.string(), rt->getContext().sub_areas[1]);
     }
 
-    auto id = rt->nds->get("cotton smartrun: " + path.string()).id;
+    auto id = rt->nmgr->getId("cotton smartrun: " + path.string());
     if (rt->checkGlobal(id)) {
         return rt->getGlobal(id);
     }
@@ -551,7 +552,7 @@ static Object *CF_smartrun(const std::vector<Object *> &args, Runtime *rt, bool 
 
     auto tokens = lexer.processFile(path.c_str());
     for (auto &token : tokens) {
-        token.nameid = rt->nds->get(&token).id;
+        token.nameid = rt->nmgr->getId(token.data);
     }
     auto program = parser.parse(tokens);
     rt->setGlobal(id, rt->protected_nothing);
@@ -586,7 +587,7 @@ static Object *CF_dumbrun(const std::vector<Object *> &args, Runtime *rt, bool e
 
     auto tokens = lexer.processFile(path.c_str());
     for (auto &token : tokens) {
-        token.nameid = rt->nds->get(&token).id;
+        token.nameid = rt->nmgr->getId(token.data);
     }
     auto program = parser.parse(tokens);
 
@@ -614,7 +615,7 @@ static Object *CF_loadlibrary(const std::vector<Object *> &args, Runtime *rt, bo
         rt->signalError("Not a regular file: " + path.string(), rt->getContext().sub_areas[1]);
     }
 
-    auto id = rt->nds->get("cotton loadlibrary: " + path.string()).id;
+    auto id = rt->nmgr->getId("cotton loadlibrary: " + path.string());
     if (rt->checkGlobal(id)) {
         return rt->getGlobal(id);
     }
@@ -635,63 +636,63 @@ static Object *CF_loadlibrary(const std::vector<Object *> &args, Runtime *rt, bo
 
 void installBuiltinFunctions(Runtime *rt) {
     ProfilerCAPTURE();
-    rt->scope->addVariable(rt->nds->get("make").id, makeFunctionInstanceObject(true, CF_make, NULL, rt), rt);
-    rt->scope->addVariable(rt->nds->get("copy").id, makeFunctionInstanceObject(true, CF_copy, NULL, rt), rt);
-    rt->scope->addVariable(rt->nds->get("bool").id, makeFunctionInstanceObject(true, CF_bool, NULL, rt), rt);
-    rt->scope->addVariable(rt->nds->get("char").id, makeFunctionInstanceObject(true, CF_char, NULL, rt), rt);
-    rt->scope->addVariable(rt->nds->get("int").id, makeFunctionInstanceObject(true, CF_int, NULL, rt), rt);
-    rt->scope->addVariable(rt->nds->get("real").id, makeFunctionInstanceObject(true, CF_real, NULL, rt), rt);
-    rt->scope->addVariable(rt->nds->get("string").id, makeFunctionInstanceObject(true, CF_string, NULL, rt), rt);
-    rt->scope->addVariable(rt->nds->get("printraw").id,
+    rt->scope->addVariable(rt->nmgr->getId("make"), makeFunctionInstanceObject(true, CF_make, NULL, rt), rt);
+    rt->scope->addVariable(rt->nmgr->getId("copy"), makeFunctionInstanceObject(true, CF_copy, NULL, rt), rt);
+    rt->scope->addVariable(rt->nmgr->getId("bool"), makeFunctionInstanceObject(true, CF_bool, NULL, rt), rt);
+    rt->scope->addVariable(rt->nmgr->getId("char"), makeFunctionInstanceObject(true, CF_char, NULL, rt), rt);
+    rt->scope->addVariable(rt->nmgr->getId("int"), makeFunctionInstanceObject(true, CF_int, NULL, rt), rt);
+    rt->scope->addVariable(rt->nmgr->getId("real"), makeFunctionInstanceObject(true, CF_real, NULL, rt), rt);
+    rt->scope->addVariable(rt->nmgr->getId("string"), makeFunctionInstanceObject(true, CF_string, NULL, rt), rt);
+    rt->scope->addVariable(rt->nmgr->getId("printraw"),
                            makeFunctionInstanceObject(true, CF_printraw, NULL, rt),
                            rt);
-    rt->scope->addVariable(rt->nds->get("print").id, makeFunctionInstanceObject(true, CF_print, NULL, rt), rt);
-    rt->scope->addVariable(rt->nds->get("printf").id, makeFunctionInstanceObject(true, CF_printf, NULL, rt), rt);
-    rt->scope->addVariable(rt->nds->get("println").id, makeFunctionInstanceObject(true, CF_println, NULL, rt), rt);
-    rt->scope->addVariable(rt->nds->get("readraw").id, makeFunctionInstanceObject(true, CF_readraw, NULL, rt), rt);
-    rt->scope->addVariable(rt->nds->get("read").id, makeFunctionInstanceObject(true, CF_read, NULL, rt), rt);
-    rt->scope->addVariable(rt->nds->get("readln").id, makeFunctionInstanceObject(true, CF_readln, NULL, rt), rt);
-    rt->scope->addVariable(rt->nds->get("exit").id, makeFunctionInstanceObject(true, CF_exit, NULL, rt), rt);
-    rt->scope->addVariable(rt->nds->get("fork").id, makeFunctionInstanceObject(true, CF_fork, NULL, rt), rt);
-    rt->scope->addVariable(rt->nds->get("system").id, makeFunctionInstanceObject(true, CF_system, NULL, rt), rt);
-    rt->scope->addVariable(rt->nds->get("sleep").id, makeFunctionInstanceObject(true, CF_sleep, NULL, rt), rt);
-    rt->scope->addVariable(rt->nds->get("error").id, makeFunctionInstanceObject(true, CF_error, NULL, rt), rt);
-    rt->scope->addVariable(rt->nds->get("cotton").id, makeFunctionInstanceObject(true, CF_cotton, NULL, rt), rt);
-    rt->scope->addVariable(rt->nds->get("argc").id, makeFunctionInstanceObject(true, CF_argc, NULL, rt), rt);
-    rt->scope->addVariable(rt->nds->get("argv").id, makeFunctionInstanceObject(true, CF_argv, NULL, rt), rt);
-    rt->scope->addVariable(rt->nds->get("argg").id, makeFunctionInstanceObject(true, CF_argg, NULL, rt), rt);
-    rt->scope->addVariable(rt->nds->get("typeof").id, makeFunctionInstanceObject(true, CF_typeof, NULL, rt), rt);
-    rt->scope->addVariable(rt->nds->get("isinsobj").id,
+    rt->scope->addVariable(rt->nmgr->getId("print"), makeFunctionInstanceObject(true, CF_print, NULL, rt), rt);
+    rt->scope->addVariable(rt->nmgr->getId("printf"), makeFunctionInstanceObject(true, CF_printf, NULL, rt), rt);
+    rt->scope->addVariable(rt->nmgr->getId("println"), makeFunctionInstanceObject(true, CF_println, NULL, rt), rt);
+    rt->scope->addVariable(rt->nmgr->getId("readraw"), makeFunctionInstanceObject(true, CF_readraw, NULL, rt), rt);
+    rt->scope->addVariable(rt->nmgr->getId("read"), makeFunctionInstanceObject(true, CF_read, NULL, rt), rt);
+    rt->scope->addVariable(rt->nmgr->getId("readln"), makeFunctionInstanceObject(true, CF_readln, NULL, rt), rt);
+    rt->scope->addVariable(rt->nmgr->getId("exit"), makeFunctionInstanceObject(true, CF_exit, NULL, rt), rt);
+    rt->scope->addVariable(rt->nmgr->getId("fork"), makeFunctionInstanceObject(true, CF_fork, NULL, rt), rt);
+    rt->scope->addVariable(rt->nmgr->getId("system"), makeFunctionInstanceObject(true, CF_system, NULL, rt), rt);
+    rt->scope->addVariable(rt->nmgr->getId("sleep"), makeFunctionInstanceObject(true, CF_sleep, NULL, rt), rt);
+    rt->scope->addVariable(rt->nmgr->getId("error"), makeFunctionInstanceObject(true, CF_error, NULL, rt), rt);
+    rt->scope->addVariable(rt->nmgr->getId("cotton"), makeFunctionInstanceObject(true, CF_cotton, NULL, rt), rt);
+    rt->scope->addVariable(rt->nmgr->getId("argc"), makeFunctionInstanceObject(true, CF_argc, NULL, rt), rt);
+    rt->scope->addVariable(rt->nmgr->getId("argv"), makeFunctionInstanceObject(true, CF_argv, NULL, rt), rt);
+    rt->scope->addVariable(rt->nmgr->getId("argg"), makeFunctionInstanceObject(true, CF_argg, NULL, rt), rt);
+    rt->scope->addVariable(rt->nmgr->getId("typeof"), makeFunctionInstanceObject(true, CF_typeof, NULL, rt), rt);
+    rt->scope->addVariable(rt->nmgr->getId("isinsobj"),
                            makeFunctionInstanceObject(true, CF_isinsobj, NULL, rt),
                            rt);
-    rt->scope->addVariable(rt->nds->get("istypeobj").id,
+    rt->scope->addVariable(rt->nmgr->getId("istypeobj"),
                            makeFunctionInstanceObject(true, CF_istypeobj, NULL, rt),
                            rt);
-    rt->scope->addVariable(rt->nds->get("repr").id, makeFunctionInstanceObject(true, CF_repr, NULL, rt), rt);
-    rt->scope->addVariable(rt->nds->get("hasfield").id,
+    rt->scope->addVariable(rt->nmgr->getId("repr"), makeFunctionInstanceObject(true, CF_repr, NULL, rt), rt);
+    rt->scope->addVariable(rt->nmgr->getId("hasfield"),
                            makeFunctionInstanceObject(true, CF_hasfield, NULL, rt),
                            rt);
-    rt->scope->addVariable(rt->nds->get("hasmethod").id,
+    rt->scope->addVariable(rt->nmgr->getId("hasmethod"),
                            makeFunctionInstanceObject(true, CF_hasmethod, NULL, rt),
                            rt);
-    rt->scope->addVariable(rt->nds->get("assert").id, makeFunctionInstanceObject(true, CF_assert, NULL, rt), rt);
-    rt->scope->addVariable(rt->nds->get("checkglobal").id,
+    rt->scope->addVariable(rt->nmgr->getId("assert"), makeFunctionInstanceObject(true, CF_assert, NULL, rt), rt);
+    rt->scope->addVariable(rt->nmgr->getId("checkglobal"),
                            makeFunctionInstanceObject(true, CF_checkglobal, NULL, rt),
                            rt);
-    rt->scope->addVariable(rt->nds->get("getglobal").id,
+    rt->scope->addVariable(rt->nmgr->getId("getglobal"),
                            makeFunctionInstanceObject(true, CF_getglobal, NULL, rt),
                            rt);
-    rt->scope->addVariable(rt->nds->get("setglobal").id,
+    rt->scope->addVariable(rt->nmgr->getId("setglobal"),
                            makeFunctionInstanceObject(true, CF_setglobal, NULL, rt),
                            rt);
-    rt->scope->addVariable(rt->nds->get("removeglobal").id,
+    rt->scope->addVariable(rt->nmgr->getId("removeglobal"),
                            makeFunctionInstanceObject(true, CF_removeglobal, NULL, rt),
                            rt);
-    rt->scope->addVariable(rt->nds->get("smartrun").id,
+    rt->scope->addVariable(rt->nmgr->getId("smartrun"),
                            makeFunctionInstanceObject(true, CF_smartrun, NULL, rt),
                            rt);
-    rt->scope->addVariable(rt->nds->get("dumbrun").id, makeFunctionInstanceObject(true, CF_dumbrun, NULL, rt), rt);
-    rt->scope->addVariable(rt->nds->get("loadlibrary").id,
+    rt->scope->addVariable(rt->nmgr->getId("dumbrun"), makeFunctionInstanceObject(true, CF_dumbrun, NULL, rt), rt);
+    rt->scope->addVariable(rt->nmgr->getId("loadlibrary"),
                            makeFunctionInstanceObject(true, CF_loadlibrary, NULL, rt),
                            rt);
 }

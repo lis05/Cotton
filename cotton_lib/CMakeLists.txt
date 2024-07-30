@@ -53,6 +53,8 @@ src/cotton_lib/builtin/functions/functions.cpp
 
 src/cotton_lib/profiler.h
 src/cotton_lib/profiler.cpp
+
+src/cotton_lib/util.h
 )
 
 target_include_directories(cotton_lib PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/src")

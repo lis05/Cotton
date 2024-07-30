@@ -79,16 +79,16 @@ int main(int argc, char *argv[]) {
     ErrorManager em(emergency_error_exit);
     Lexer        lx(&em);
     Parser       pr(&em);
-    NameIds      nds;
+    NamesManager nmgr;
 
     auto tokens = lx.processFile(file);
     for (auto &token : tokens) {
-        token.nameid = nds.get(&token).id;
+        token.nameid = nmgr.getId(token.data);
     }
     auto program = pr.parse(tokens);
 
     GCDefaultStrategy gcst;
-    Runtime           rt(&gcst, &em, &nds);
+    Runtime           rt(&gcst, &em, &nmgr);
 
     if (disable_gc) {
         rt.gc->disable();

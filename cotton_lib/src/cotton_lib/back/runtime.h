@@ -53,7 +53,7 @@ namespace Builtin {
 
 class Runtime {
 public:
-    Runtime(GCStrategy *gc_strategy, ErrorManager *error_manager, NameIds *nds);
+    Runtime(GCStrategy *gc_strategy, ErrorManager *error_manager, NamesManager *nmgr);
     ~Runtime() = default;
 
     enum BuiltinTypes {
@@ -88,7 +88,7 @@ public:
     void                                        registerTypeObject(Type *type, Object *obj);
     Object                                     *getTypeObject(Type *type);
 
-    NameIds *nds;
+    NamesManager *nmgr;
 
     void *alloc(size_t size);
     void  dealloc(void *ptr, size_t size);

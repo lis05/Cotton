@@ -228,8 +228,8 @@ void installArrayMethods(Type *type, Runtime *rt) {
     ProfilerCAPTURE();
     type->addMethod(MagicMethods::mm__repr__(rt), Builtin::makeFunctionInstanceObject(true, mm__repr__, NULL, rt));
 
-    type->addMethod(rt->nds->get("size").id, makeFunctionInstanceObject(true, arraySizeMethod, NULL, rt));
-    type->addMethod(rt->nds->get("resize").id, makeFunctionInstanceObject(true, arrayResizeMethod, NULL, rt));
+    type->addMethod(rt->nmgr->getId("size"), makeFunctionInstanceObject(true, arraySizeMethod, NULL, rt));
+    type->addMethod(rt->nmgr->getId("resize"), makeFunctionInstanceObject(true, arrayResizeMethod, NULL, rt));
 }
 
 ArrayType::ArrayType(Runtime *rt)

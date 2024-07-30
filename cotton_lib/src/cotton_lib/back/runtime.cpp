@@ -10,7 +10,7 @@
 #include "type.h"
 
 namespace Cotton {
-Runtime::Runtime(GCStrategy *gc_strategy, ErrorManager *error_manager, NameIds *nds) {
+Runtime::Runtime(GCStrategy *gc_strategy, ErrorManager *error_manager, NamesManager *nmgr) {
     ProfilerCAPTURE();
 
     this->scope         = new Scope(NULL, NULL, false);
@@ -38,46 +38,46 @@ Runtime::Runtime(GCStrategy *gc_strategy, ErrorManager *error_manager, NameIds *
     assert(this->string_type->id == STRING_TYPE_ID);
     assert(this->array_type->id == ARRAY_TYPE_ID);
 
-    this->nds = nds;
+    this->nmgr = nmgr;
 
     auto nothing_obj        = this->make(this->nothing_type, Runtime::TYPE_OBJECT);
     nothing_obj->can_modify = false;
-    this->scope->addVariable(this->nds->get("Nothing").id, nothing_obj, this);
+    this->scope->addVariable(this->nmgr->getId("Nothing"), nothing_obj, this);
     this->registerTypeObject(this->nothing_type, nothing_obj);
 
     auto function_obj        = this->make(this->function_type, Runtime::TYPE_OBJECT);
     function_obj->can_modify = false;
-    this->scope->addVariable(this->nds->get("Function").id, function_obj, this);
+    this->scope->addVariable(this->nmgr->getId("Function"), function_obj, this);
     this->registerTypeObject(this->function_type, function_obj);
 
     auto boolean_obj        = this->make(this->boolean_type, Runtime::TYPE_OBJECT);
     boolean_obj->can_modify = false;
-    this->scope->addVariable(this->nds->get("Boolean").id, boolean_obj, this);
+    this->scope->addVariable(this->nmgr->getId("Boolean"), boolean_obj, this);
     this->registerTypeObject(this->boolean_type, boolean_obj);
 
     auto integer_obj        = this->make(this->integer_type, Runtime::TYPE_OBJECT);
     integer_obj->can_modify = false;
-    this->scope->addVariable(this->nds->get("Integer").id, integer_obj, this);
+    this->scope->addVariable(this->nmgr->getId("Integer"), integer_obj, this);
     this->registerTypeObject(this->integer_type, integer_obj);
 
     auto real_obj        = this->make(this->real_type, Runtime::TYPE_OBJECT);
     real_obj->can_modify = false;
-    this->scope->addVariable(this->nds->get("Real").id, real_obj, this);
+    this->scope->addVariable(this->nmgr->getId("Real"), real_obj, this);
     this->registerTypeObject(this->real_type, real_obj);
 
     auto character_obj        = this->make(this->character_type, Runtime::TYPE_OBJECT);
     character_obj->can_modify = false;
-    this->scope->addVariable(this->nds->get("Character").id, character_obj, this);
+    this->scope->addVariable(this->nmgr->getId("Character"), character_obj, this);
     this->registerTypeObject(this->character_type, character_obj);
 
     auto string_obj        = this->make(this->string_type, Runtime::TYPE_OBJECT);
     string_obj->can_modify = false;
-    this->scope->addVariable(this->nds->get("String").id, string_obj, this);
+    this->scope->addVariable(this->nmgr->getId("String"), string_obj, this);
     this->registerTypeObject(this->string_type, string_obj);
 
     auto array_obj        = this->make(this->array_type, Runtime::TYPE_OBJECT);
     array_obj->can_modify = false;
-    this->scope->addVariable(this->nds->get("Array").id, array_obj, this);
+    this->scope->addVariable(this->nmgr->getId("Array"), array_obj, this);
     this->registerTypeObject(this->array_type, array_obj);
 
     Builtin::installBooleanMethods(this->boolean_type, this);
@@ -115,7 +115,7 @@ Object *Runtime::getGlobal(int64_t id) {
     ProfilerCAPTURE();
     auto it = this->globals.find(id);
     if (it == this->globals.end()) {
-        this->signalError("Global not found: " + this->nds->fromId(id), this->getContext().area);
+        this->signalError("Global not found: " + this->nmgr->getString(id), this->getContext().area);
     }
     return it->second;
 }
@@ -536,7 +536,7 @@ Object *Runtime::execute(TypeDefNode *node, bool execution_result_matters) {
     auto type               = new Builtin::RecordType(this);
     type->nameid            = node->name->nameid;
     for (auto f : node->fields) {
-        type->instance_fields.push_back(this->nds->get(f).id);
+        type->instance_fields.push_back(this->nmgr->getId(f->data));
     }
 
     for (auto method : node->methods) {
@@ -1486,7 +1486,7 @@ void Runtime::verifyHasMethod(Object *obj, int64_t id, Runtime::ContextId ctx_id
 
     this->verifyIsValidObject(obj, ctx_id);
     if (!obj->type->hasMethod(id)) {
-        this->signalError(obj->userRepr(this) + " doesn't have method " + this->nds->userRepr(id),
+        this->signalError(obj->userRepr(this) + " doesn't have method " + this->nmgr->getString(id),
                           this->getTextArea(ctx_id));
     }
 }
@@ -1494,47 +1494,47 @@ void Runtime::verifyHasMethod(Object *obj, int64_t id, Runtime::ContextId ctx_id
 namespace MagicMethods {
     int64_t mm__make__(Runtime *rt) {
         ProfilerCAPTURE();
-        return rt->nds->get("__make__").id;
+        return rt->nmgr->getId("__make__");
     }
 
     int64_t mm__copy__(Runtime *rt) {
         ProfilerCAPTURE();
-        return rt->nds->get("__copy__").id;
+        return rt->nmgr->getId("__copy__");
     }
 
     int64_t mm__bool__(Runtime *rt) {
         ProfilerCAPTURE();
-        return rt->nds->get("__bool__").id;
+        return rt->nmgr->getId("__bool__");
     }
 
     int64_t mm__char__(Runtime *rt) {
         ProfilerCAPTURE();
-        return rt->nds->get("__char__").id;
+        return rt->nmgr->getId("__char__");
     }
 
     int64_t mm__int__(Runtime *rt) {
         ProfilerCAPTURE();
-        return rt->nds->get("__int__").id;
+        return rt->nmgr->getId("__int__");
     }
 
     int64_t mm__real__(Runtime *rt) {
         ProfilerCAPTURE();
-        return rt->nds->get("__real__").id;
+        return rt->nmgr->getId("__real__");
     }
 
     int64_t mm__string__(Runtime *rt) {
         ProfilerCAPTURE();
-        return rt->nds->get("__string__").id;
+        return rt->nmgr->getId("__string__");
     }
 
     int64_t mm__repr__(Runtime *rt) {
         ProfilerCAPTURE();
-        return rt->nds->get("__repr__").id;
+        return rt->nmgr->getId("__repr__");
     }
 
     int64_t mm__read__(Runtime *rt) {
         ProfilerCAPTURE();
-        return rt->nds->get("__read__").id;
+        return rt->nmgr->getId("__read__");
     }
 }    // namespace MagicMethods
 

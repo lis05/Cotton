@@ -30,7 +30,6 @@ namespace Cotton {
 
 class Object;
 class Runtime;
-class NameId;
 class Type;
 
 typedef Object *(*UnaryOperatorAdapter)(Object *self, Runtime *rt, bool execution_result_matters);
