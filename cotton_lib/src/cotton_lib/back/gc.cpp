@@ -188,7 +188,6 @@ void GC::untrack(Type *type) {
 void GC::hold(Object *object) {
     ProfilerCAPTURE();
     ++this->held_objects[object];
-    object->spreadMultiUse();
 }
 
 void GC::release(Object *object) {
@@ -196,7 +195,6 @@ void GC::release(Object *object) {
     if (--this->held_objects[object] <= 0) {
         this->held_objects.erase(object);
     }
-    object->spreadSingleUse();
 }
 
 void GC::ping(Runtime *rt) {

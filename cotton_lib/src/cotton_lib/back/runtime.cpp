@@ -84,16 +84,19 @@ Runtime::Runtime(GCStrategy *gc_strategy, ErrorManager *error_manager, NamesMana
     this->protected_nothing             = this->make(this->builtin_types.nothing, Runtime::INSTANCE_OBJECT);
     this->protected_nothing->can_modify = false;
     this->gc->hold(this->protected_nothing);
+    this->protected_nothing->spreadMultiUse();
 
     this->protected_true = this->make(this->builtin_types.boolean, Runtime::INSTANCE_OBJECT);
     Builtin::getBooleanValue(this->protected_true, this) = true;
     this->protected_true->can_modify                     = false;
     this->gc->hold(this->protected_true);
+    this->protected_true->spreadMultiUse();
 
     this->protected_false = this->make(this->builtin_types.boolean, Runtime::INSTANCE_OBJECT);
     Builtin::getBooleanValue(this->protected_false, this) = false;
     this->protected_false->can_modify                     = false;
     this->gc->hold(this->protected_false);
+    this->protected_true->spreadMultiUse();
 }
 
 bool Runtime::checkGlobal(NameId id) {
@@ -516,7 +519,7 @@ Object *Runtime::execute(FuncDefNode *node, bool execution_result_matters) {
         this->scope->addVariable(node->name->nameid, func, this);
     }
     this->popContext();
-    this->execution_flags = ExecutionFlags::NONE;
+    this->clearExecFlags();
     return func;
 }
 
@@ -545,7 +548,7 @@ Object *Runtime::execute(TypeDefNode *node, bool execution_result_matters) {
     this->scope->addVariable(type->nameid, res, this);
     this->popContext();
 
-    this->execution_flags = ExecutionFlags::NONE;
+    this->clearExecFlags();
     return res;
 }
 
@@ -679,7 +682,7 @@ Object *Runtime::execute(OperatorNode *node, bool execution_result_matters) {
             auto res = this->runOperator(node->id, selected, args, execution_result_matters);
             this->popContext();
 
-            this->execution_flags = ExecutionFlags::NONE;
+            this->clearExecFlags();
             this->popContext();
 
             for (auto &item : list) {
@@ -706,7 +709,7 @@ Object *Runtime::execute(OperatorNode *node, bool execution_result_matters) {
             auto res = this->runOperator(node->id, self, args, execution_result_matters);
             this->popContext();
 
-            this->execution_flags = ExecutionFlags::NONE;
+            this->clearExecFlags();
             this->popContext();
             for (auto &item : list) {
                 this->gc->release(item);
@@ -734,7 +737,7 @@ Object *Runtime::execute(OperatorNode *node, bool execution_result_matters) {
         if (self->instance->hasField(selector, this)) {
             auto res = self->instance->selectField(selector, this);
 
-            this->execution_flags = ExecutionFlags::NONE;
+            this->clearExecFlags();
             this->popContext();
             this->gc->release(self);
             return res;
@@ -742,7 +745,7 @@ Object *Runtime::execute(OperatorNode *node, bool execution_result_matters) {
         else if (self->type->hasMethod(selector)) {
             auto res = self->type->getMethod(selector, this);
 
-            this->execution_flags = ExecutionFlags::NONE;
+            this->clearExecFlags();
             this->popContext();
             this->gc->release(self);
             return res;
@@ -767,7 +770,7 @@ Object *Runtime::execute(OperatorNode *node, bool execution_result_matters) {
             self->assignToCopyOf(other, this);
         }
 
-        this->execution_flags = ExecutionFlags::NONE;
+        this->clearExecFlags();
         this->popContext();
         this->gc->release(self);
         return self;
@@ -778,7 +781,7 @@ Object *Runtime::execute(OperatorNode *node, bool execution_result_matters) {
         this->getContext().sub_areas.push_back(node->second->text_area);
         self->assignToCopyOf(this->runOperator(OperatorNode::PLUS, self, other, true), this);
 
-        this->execution_flags = ExecutionFlags::NONE;
+        this->clearExecFlags();
         this->popContext();
         this->gc->release(self);
         return self;
@@ -789,7 +792,7 @@ Object *Runtime::execute(OperatorNode *node, bool execution_result_matters) {
         this->getContext().sub_areas.push_back(node->second->text_area);
         self->assignToCopyOf(this->runOperator(OperatorNode::MINUS, self, other, true), this);
 
-        this->execution_flags = ExecutionFlags::NONE;
+        this->clearExecFlags();
         this->popContext();
         this->gc->release(self);
         return self;
@@ -800,7 +803,7 @@ Object *Runtime::execute(OperatorNode *node, bool execution_result_matters) {
         this->getContext().sub_areas.push_back(node->second->text_area);
         self->assignToCopyOf(this->runOperator(OperatorNode::MULT, self, other, true), this);
 
-        this->execution_flags = ExecutionFlags::NONE;
+        this->clearExecFlags();
         this->popContext();
         this->gc->release(self);
         return self;
@@ -811,7 +814,7 @@ Object *Runtime::execute(OperatorNode *node, bool execution_result_matters) {
         this->getContext().sub_areas.push_back(node->second->text_area);
         self->assignToCopyOf(this->runOperator(OperatorNode::DIV, self, other, true), this);
 
-        this->execution_flags = ExecutionFlags::NONE;
+        this->clearExecFlags();
         this->popContext();
         this->gc->release(self);
         return self;
@@ -822,7 +825,7 @@ Object *Runtime::execute(OperatorNode *node, bool execution_result_matters) {
         this->getContext().sub_areas.push_back(node->second->text_area);
         self->assignToCopyOf(this->runOperator(OperatorNode::REM, self, other, true), this);
 
-        this->execution_flags = ExecutionFlags::NONE;
+        this->clearExecFlags();
         this->popContext();
         this->gc->release(self);
         return self;
@@ -839,8 +842,8 @@ Object *Runtime::execute(OperatorNode *node, bool execution_result_matters) {
     case OperatorNode::NOT :
     case OperatorNode::INVERSE :
         this->getContext().sub_areas.push_back(node->first->text_area);
-        auto res              = this->runOperator(node->id, self, execution_result_matters);
-        this->execution_flags = ExecutionFlags::NONE;
+        auto res = this->runOperator(node->id, self, execution_result_matters);
+        this->clearExecFlags();
         this->popContext();
         this->gc->release(self);
         return res;
@@ -849,8 +852,8 @@ Object *Runtime::execute(OperatorNode *node, bool execution_result_matters) {
     auto arg = this->execute(node->second, true);
     this->getContext().sub_areas.push_back(node->first->text_area);
     this->getContext().sub_areas.push_back(node->second->text_area);
-    auto res              = this->runOperator(node->id, self, arg, execution_result_matters);
-    this->execution_flags = ExecutionFlags::NONE;
+    auto res = this->runOperator(node->id, self, arg, execution_result_matters);
+    this->clearExecFlags();
     this->popContext();
     this->gc->release(self);
     return res;
@@ -868,18 +871,18 @@ Object *Runtime::execute(AtomNode *node, bool execution_result_matters) {
     switch (node->id) {
     case AtomNode::BOOLEAN : {
         if (!execution_result_matters) {
-            this->execution_flags = ExecutionFlags::NONE;
+            this->clearExecFlags();
             this->popContext();
             return nullptr;
         }
         if (node->lit_obj != nullptr) {
-            this->execution_flags = ExecutionFlags::NONE;
+            this->clearExecFlags();
             this->popContext();
             return node->lit_obj;
         }
         it = this->readonly_literals.find(node->token->nameid);
         if (it != this->readonly_literals.end()) {
-            this->execution_flags = ExecutionFlags::NONE;
+            this->clearExecFlags();
             this->popContext();
             return it->second;
         }
@@ -887,25 +890,26 @@ Object *Runtime::execute(AtomNode *node, bool execution_result_matters) {
         this->gc->hold(lit);
         lit->can_modify                              = false;
         this->readonly_literals[node->token->nameid] = lit;
+        lit->spreadMultiUse();
 
-        this->execution_flags = ExecutionFlags::NONE;
+        this->clearExecFlags();
         this->popContext();
         return node->lit_obj = lit;
     }
     case AtomNode::CHARACTER : {
         if (!execution_result_matters) {
-            this->execution_flags = ExecutionFlags::NONE;
+            this->clearExecFlags();
             this->popContext();
             return nullptr;
         }
         if (node->lit_obj != nullptr) {
-            this->execution_flags = ExecutionFlags::NONE;
+            this->clearExecFlags();
             this->popContext();
             return node->lit_obj;
         }
         it = this->readonly_literals.find(node->token->nameid);
         if (it != this->readonly_literals.end()) {
-            this->execution_flags = ExecutionFlags::NONE;
+            this->clearExecFlags();
             this->popContext();
             return node->lit_obj = it->second;
             ;
@@ -914,25 +918,26 @@ Object *Runtime::execute(AtomNode *node, bool execution_result_matters) {
         this->gc->hold(lit);
         lit->can_modify                              = false;
         this->readonly_literals[node->token->nameid] = lit;
+        lit->spreadMultiUse();
 
-        this->execution_flags = ExecutionFlags::NONE;
+        this->clearExecFlags();
         this->popContext();
         return node->lit_obj = lit;
     }
     case AtomNode::INTEGER : {
         if (!execution_result_matters) {
-            this->execution_flags = ExecutionFlags::NONE;
+            this->clearExecFlags();
             this->popContext();
             return nullptr;
         }
         if (node->lit_obj != nullptr) {
-            this->execution_flags = ExecutionFlags::NONE;
+            this->clearExecFlags();
             this->popContext();
             return node->lit_obj;
         }
         it = this->readonly_literals.find(node->token->nameid);
         if (it != this->readonly_literals.end()) {
-            this->execution_flags = ExecutionFlags::NONE;
+            this->clearExecFlags();
             this->popContext();
             return node->lit_obj = it->second;
             ;
@@ -941,26 +946,27 @@ Object *Runtime::execute(AtomNode *node, bool execution_result_matters) {
         this->gc->hold(lit);
         lit->can_modify                              = false;
         this->readonly_literals[node->token->nameid] = lit;
+        lit->spreadMultiUse();
 
-        this->execution_flags = ExecutionFlags::NONE;
+        this->clearExecFlags();
         this->popContext();
         return node->lit_obj = lit;
     }
     case AtomNode::REAL : {
         if (!execution_result_matters) {
-            this->execution_flags = ExecutionFlags::NONE;
+            this->clearExecFlags();
 
             this->popContext();
             return nullptr;
         }
         if (node->lit_obj != nullptr) {
-            this->execution_flags = ExecutionFlags::NONE;
+            this->clearExecFlags();
             this->popContext();
             return node->lit_obj;
         }
         it = this->readonly_literals.find(node->token->nameid);
         if (it != this->readonly_literals.end()) {
-            this->execution_flags = ExecutionFlags::NONE;
+            this->clearExecFlags();
             this->popContext();
             return node->lit_obj = it->second;
             ;
@@ -969,25 +975,26 @@ Object *Runtime::execute(AtomNode *node, bool execution_result_matters) {
         this->gc->hold(lit);
         lit->can_modify                              = false;
         this->readonly_literals[node->token->nameid] = lit;
+        lit->spreadMultiUse();
 
-        this->execution_flags = ExecutionFlags::NONE;
+        this->clearExecFlags();
         this->popContext();
         return node->lit_obj = lit;
     }
     case AtomNode::STRING : {
         if (!execution_result_matters) {
-            this->execution_flags = ExecutionFlags::NONE;
+            this->clearExecFlags();
             this->popContext();
             return nullptr;
         }
         if (node->lit_obj != nullptr) {
-            this->execution_flags = ExecutionFlags::NONE;
+            this->clearExecFlags();
             this->popContext();
             return node->lit_obj;
         }
         it = this->readonly_literals.find(node->token->nameid);
         if (it != this->readonly_literals.end()) {
-            this->execution_flags = ExecutionFlags::NONE;
+            this->clearExecFlags();
             this->popContext();
             return node->lit_obj = it->second;
             ;
@@ -996,25 +1003,26 @@ Object *Runtime::execute(AtomNode *node, bool execution_result_matters) {
         this->gc->hold(lit);
         lit->can_modify                              = false;
         this->readonly_literals[node->token->nameid] = lit;
+        lit->spreadMultiUse();
 
-        this->execution_flags = ExecutionFlags::NONE;
+        this->clearExecFlags();
         this->popContext();
         return node->lit_obj = lit;
     }
     case AtomNode::NOTHING : {
         if (!execution_result_matters) {
-            this->execution_flags = ExecutionFlags::NONE;
+            this->clearExecFlags();
             this->popContext();
             return nullptr;
         }
         if (node->lit_obj != nullptr) {
-            this->execution_flags = ExecutionFlags::NONE;
+            this->clearExecFlags();
             this->popContext();
             return node->lit_obj;
         }
         it = this->readonly_literals.find(node->token->nameid);
         if (it != this->readonly_literals.end()) {
-            this->execution_flags = ExecutionFlags::NONE;
+            this->clearExecFlags();
             this->popContext();
             return node->lit_obj = it->second;
             ;
@@ -1023,14 +1031,15 @@ Object *Runtime::execute(AtomNode *node, bool execution_result_matters) {
         this->gc->hold(lit);
         lit->can_modify                              = false;
         this->readonly_literals[node->token->nameid] = lit;
+        lit->spreadMultiUse();
 
-        this->execution_flags = ExecutionFlags::NONE;
+        this->clearExecFlags();
         this->popContext();
         return node->lit_obj = lit;
     }
     case AtomNode::IDENTIFIER : {
-        this->execution_flags = ExecutionFlags::NONE;
-        auto res              = this->scope->getVariable(node->token->nameid, this);
+        this->clearExecFlags();
+        auto res = this->scope->getVariable(node->token->nameid, this);
         this->popContext();
         return res;
     }
@@ -1134,7 +1143,7 @@ Object *Runtime::execute(WhileStmtNode *node, bool execution_result_matters) {
         }
         this->popScopeFrame();
     }
-    this->execution_flags = ExecutionFlags::NONE;
+    this->clearExecFlags();
     this->popContext();
     return this->protected_nothing;
 }
@@ -1145,6 +1154,7 @@ Object *Runtime::execute(ForStmtNode *node, bool execution_result_matters) {
         this->signalError("Failed to execute unknown AST node", this->getContext().area);
     }
 
+    this->newScopeFrame();
     if (node->init != nullptr) {
         this->execute(node->init, false);
     }
@@ -1179,11 +1189,13 @@ Object *Runtime::execute(ForStmtNode *node, bool execution_result_matters) {
                     this->clearExecFlags();
                     this->setExecFlagRETURN();
                     this->popScopeFrame();
+                    this->popScopeFrame();
                     this->popContext();
                     return body;
                 }
                 this->clearExecFlags();
                 this->setExecFlagRETURN();
+                this->popScopeFrame();
                 this->popScopeFrame();
                 this->popContext();
                 return (execution_result_matters) ? this->copy(body) : nullptr;
@@ -1196,8 +1208,9 @@ Object *Runtime::execute(ForStmtNode *node, bool execution_result_matters) {
         }
         this->popScopeFrame();
     }
-    this->execution_flags = ExecutionFlags::NONE;
+    this->clearExecFlags();
     this->popContext();
+    this->popScopeFrame();
     return this->protected_nothing;
 }
 
@@ -1220,7 +1233,7 @@ Object *Runtime::execute(IfStmtNode *node, bool execution_result_matters) {
         this->popContext();
         return this->execute(node->else_body, execution_result_matters);
     }
-    this->execution_flags = ExecutionFlags::NONE;
+    this->clearExecFlags();
     this->popContext();
     return this->protected_nothing;
 }
@@ -1274,7 +1287,7 @@ Object *Runtime::execute(BlockStmtNode *node, bool execution_result_matters) {
     if (!node->is_unscoped) {
         this->popScopeFrame();
     }
-    this->execution_flags = ExecutionFlags::NONE;
+    this->clearExecFlags();
     this->popContext();
     return (res != nullptr) ? res : this->protected_nothing;
 }
