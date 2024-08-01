@@ -38,7 +38,7 @@ Instance *ArrayInstance::copy(Runtime *rt) {
     ProfilerCAPTURE();
     Instance *res = new ArrayInstance(rt);
 
-    if (res == NULL) {
+    if (res == nullptr) {
         rt->signalError("Failed to copy " + this->userRepr(rt), rt->getContext().area);
     }
     for (auto obj : this->data) {
@@ -49,8 +49,8 @@ Instance *ArrayInstance::copy(Runtime *rt) {
 
 std::string ArrayInstance::userRepr(Runtime *rt) {
     ProfilerCAPTURE();
-    if (this == NULL) {
-        return "Array(NULL)";
+    if (this == nullptr) {
+        return "Array(nullptr)";
     }
     return "Array(size = " + std::to_string(this->data.size()) + ", data = ...)";
 }
@@ -92,10 +92,10 @@ static Object *
 ArrayIndexAdapter(Object *self, const std::vector<Object *> &args, Runtime *rt, bool execution_result_matters) {
     ProfilerCAPTURE();
 
-    rt->verifyIsInstanceObject(self, rt->array_type, Runtime::SUB0_CTX);
+    rt->verifyIsInstanceObject(self, rt->builtin_types.array, Runtime::SUB0_CTX);
     rt->verifyExactArgsAmountFunc(args, 1);
     auto &arg = args[0];
-    rt->verifyIsInstanceObject(arg, rt->integer_type, Runtime::SUB1_CTX);
+    rt->verifyIsInstanceObject(arg, rt->builtin_types.integer, Runtime::SUB1_CTX);
 
     if (!(0 <= getIntegerValueFast(arg) && getIntegerValueFast(arg) < getArrayDataFast(self).size())) {
         rt->signalError("Index " + arg->userRepr(rt) + " is out of array " + self->userRepr(rt) + " range",
@@ -106,25 +106,25 @@ ArrayIndexAdapter(Object *self, const std::vector<Object *> &args, Runtime *rt, 
 
 static Object *ArrayEqAdapter(Object *self, Object *arg, Runtime *rt, bool execution_result_matters) {
     ProfilerCAPTURE();
-    rt->verifyIsOfType(self, rt->array_type, Runtime::SUB0_CTX);
+    rt->verifyIsOfType(self, rt->builtin_types.array, Runtime::SUB0_CTX);
     rt->verifyIsValidObject(arg, Runtime::SUB1_CTX);
 
     if (!execution_result_matters) {
-        return rt->protected_false;
+        return rt->protectedBoolean(false);
     }
 
-    if (!rt->isOfType(arg, rt->string_type)) {
-        return rt->protected_false;
+    if (!rt->isOfType(arg, rt->builtin_types.string)) {
+        return rt->protectedBoolean(false);
     }
 
-    if (rt->isInstanceObject(self, rt->integer_type)) {
-        if (!rt->isInstanceObject(arg, rt->integer_type)) {
-            return rt->protected_false;
+    if (rt->isInstanceObject(self, rt->builtin_types.integer)) {
+        if (!rt->isInstanceObject(arg, rt->builtin_types.integer)) {
+            return rt->protectedBoolean(false);
         }
         auto a1 = getArrayDataFast(self);
         auto a2 = getArrayDataFast(self);
         if (a1.size() != a2.size()) {
-            return rt->protected_false;
+            return rt->protectedBoolean(false);
         }
         for (int64_t i = 0; i < a1.size(); i++) {
             auto &ta = rt->getContext().area;
@@ -134,35 +134,35 @@ static Object *ArrayEqAdapter(Object *self, Object *arg, Runtime *rt, bool execu
             auto res                   = rt->runOperator(OperatorNode::EQUAL, a1[i], a2[i], true);
             rt->popContext();
             if (!getBooleanValueFast(res)) {
-                return rt->protected_false;
+                return rt->protectedBoolean(false);
             }
         }
-        return rt->protected_true;
+        return rt->protectedBoolean(true);
     }
-    else if (rt->isTypeObject(self, rt->integer_type)) {
-        if (!rt->isTypeObject(arg, rt->integer_type)) {
-            return rt->protected_false;
+    else if (rt->isTypeObject(self, rt->builtin_types.integer)) {
+        if (!rt->isTypeObject(arg, rt->builtin_types.integer)) {
+            return rt->protectedBoolean(false);
         }
-        return rt->protected_true;
+        return rt->protectedBoolean(true);
     }
 
-    return rt->protected_false;
+    return rt->protectedBoolean(false);
 }
 
 static Object *ArrayNeqAdapter(Object *self, Object *arg, Runtime *rt, bool execution_result_matters) {
     ProfilerCAPTURE();
     auto res = ArrayEqAdapter(self, arg, rt, execution_result_matters);
-    return (!getBooleanValueFast(res)) ? rt->protected_true : rt->protected_false;
+    return rt->protectedBoolean(!getBooleanValueFast(res));
 }
 
 static Object *arraySizeMethod(const std::vector<Object *> &args, Runtime *rt, bool execution_result_matters) {
     ProfilerCAPTURE();
     rt->verifyExactArgsAmountMethod(args, 0);
     auto self = args[0];
-    rt->verifyIsInstanceObject(self, rt->array_type, Runtime::SUB0_CTX);
+    rt->verifyIsInstanceObject(self, rt->builtin_types.array, Runtime::SUB0_CTX);
 
     if (!execution_result_matters) {
-        return NULL;
+        return nullptr;
     }
 
     return makeIntegerInstanceObject(getArrayDataFast(self).size(), rt);
@@ -173,8 +173,8 @@ static Object *arrayResizeMethod(const std::vector<Object *> &args, Runtime *rt,
     rt->verifyExactArgsAmountMethod(args, 1);
     auto self     = args[0];
     auto new_size = args[1];
-    rt->verifyIsInstanceObject(self, rt->array_type, Runtime::SUB0_CTX);
-    rt->verifyIsInstanceObject(new_size, rt->integer_type, Runtime::SUB1_CTX);
+    rt->verifyIsInstanceObject(self, rt->builtin_types.array, Runtime::SUB0_CTX);
+    rt->verifyIsInstanceObject(new_size, rt->builtin_types.integer, Runtime::SUB1_CTX);
 
     int64_t oldn = getArrayDataFast(self).size();
     int64_t newn = getIntegerValueFast(new_size);
@@ -195,13 +195,13 @@ static Object *mm__repr__(const std::vector<Object *> &args, Runtime *rt, bool e
     ProfilerCAPTURE();
     rt->verifyExactArgsAmountMethod(args, 0);
     auto self = args[0];
-    rt->verifyIsOfType(self, rt->array_type, Runtime::SUB1_CTX);
+    rt->verifyIsOfType(self, rt->builtin_types.array, Runtime::SUB1_CTX);
 
     if (!execution_result_matters) {
         return self;
     }
 
-    if (rt->isTypeObject(self, NULL)) {
+    if (rt->isTypeObject(self, nullptr)) {
         return makeStringInstanceObject("Array", rt);
     }
 
@@ -209,13 +209,13 @@ static Object *mm__repr__(const std::vector<Object *> &args, Runtime *rt, bool e
     std::string res = "{";
     if (arr.size() != 0) {
         auto o = rt->runMethod(MagicMethods::mm__repr__(rt), arr[0], {arr[0]}, true);
-        rt->verifyIsInstanceObject(o, rt->string_type, Runtime::SUB1_CTX);
+        rt->verifyIsInstanceObject(o, rt->builtin_types.string, Runtime::SUB1_CTX);
         res += getStringDataFast(o);
     }
 
     for (int64_t i = 1; i < arr.size(); i++) {
         auto o = rt->runMethod(MagicMethods::mm__repr__(rt), arr[i], {arr[i]}, true);
-        rt->verifyIsInstanceObject(o, rt->string_type, Runtime::SUB1_CTX);
+        rt->verifyIsInstanceObject(o, rt->builtin_types.string, Runtime::SUB1_CTX);
         res += ", " + getStringDataFast(o);
     }
 
@@ -226,10 +226,11 @@ static Object *mm__repr__(const std::vector<Object *> &args, Runtime *rt, bool e
 
 void installArrayMethods(Type *type, Runtime *rt) {
     ProfilerCAPTURE();
-    type->addMethod(MagicMethods::mm__repr__(rt), Builtin::makeFunctionInstanceObject(true, mm__repr__, NULL, rt));
+    type->addMethod(MagicMethods::mm__repr__(rt),
+                    Builtin::makeFunctionInstanceObject(true, mm__repr__, nullptr, rt));
 
-    type->addMethod(rt->nmgr->getId("size"), makeFunctionInstanceObject(true, arraySizeMethod, NULL, rt));
-    type->addMethod(rt->nmgr->getId("resize"), makeFunctionInstanceObject(true, arrayResizeMethod, NULL, rt));
+    type->addMethod(rt->nmgr->getId("size"), makeFunctionInstanceObject(true, arraySizeMethod, nullptr, rt));
+    type->addMethod(rt->nmgr->getId("resize"), makeFunctionInstanceObject(true, arrayResizeMethod, nullptr, rt));
 }
 
 ArrayType::ArrayType(Runtime *rt)
@@ -243,44 +244,44 @@ ArrayType::ArrayType(Runtime *rt)
 Object *ArrayType::create(Runtime *rt) {
     ProfilerCAPTURE();
     Instance *ins = new ArrayInstance(rt);
-    Object   *obj = newObject(true, ins, this, rt);
+    Object   *obj = new Object(true, ins, this, rt);
     return obj;
 }
 
 Object *ArrayType::copy(Object *obj, Runtime *rt) {
     ProfilerCAPTURE();
-    rt->verifyIsOfType(obj, rt->array_type);
-    if (obj->instance == NULL) {
-        return newObject(false, NULL, this, rt);
+    rt->verifyIsOfType(obj, rt->builtin_types.array);
+    if (obj->instance == nullptr) {
+        return new Object(false, nullptr, this, rt);
     }
     auto ins = obj->instance->copy(rt);
-    auto res = newObject(true, ins, this, rt);
+    auto res = new Object(true, ins, this, rt);
     return res;
 }
 
 std::string ArrayType::userRepr(Runtime *rt) {
     ProfilerCAPTURE();
-    if (this == NULL) {
-        return "ArrayType(NULL)";
+    if (this == nullptr) {
+        return "ArrayType(nullptr)";
     }
     return "ArrayType";
 }
 
 std::vector<Object *> &getArrayData(Object *obj, Runtime *rt) {
     ProfilerCAPTURE();
-    rt->verifyIsInstanceObject(obj, rt->array_type);
+    rt->verifyIsInstanceObject(obj, rt->builtin_types.array);
     return icast(obj->instance, ArrayInstance)->data;
 }
 
 std::vector<Object *> &getArrayData(Object *obj, Runtime *rt, Runtime::ContextId ctx_id) {
     ProfilerCAPTURE();
-    rt->verifyIsInstanceObject(obj, rt->array_type, Runtime::SUB0_CTX);
+    rt->verifyIsInstanceObject(obj, rt->builtin_types.array, Runtime::SUB0_CTX);
     return icast(obj->instance, ArrayInstance)->data;
 }
 
 Object *makeArrayInstanceObject(const std::vector<Object *> &data, Runtime *rt) {
     ProfilerCAPTURE();
-    auto res              = rt->make(rt->array_type, Runtime::INSTANCE_OBJECT);
+    auto res              = rt->make(rt->builtin_types.array, Runtime::INSTANCE_OBJECT);
     getArrayDataFast(res) = data;
     return res;
 }

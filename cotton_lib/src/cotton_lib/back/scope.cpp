@@ -13,23 +13,23 @@ Scope::Scope(Scope *prev, Scope *master, bool can_access_prev) {
 
 Scope::~Scope() {
     ProfilerCAPTURE();
-    this->prev            = NULL;
-    this->master          = NULL;
+    this->prev            = nullptr;
+    this->master          = nullptr;
     this->can_access_prev = false;
     this->variables.clear();
     this->arguments.clear();
 }
 
-void Scope::addVariable(int64_t id, Object *obj, Runtime *rt) {
+void Scope::addVariable(NameId id, Object *obj, Runtime *rt) {
     ProfilerCAPTURE();
     this->variables[id] = obj;
     obj->spreadMultiUse();
 }
 
-Object *Scope::getVariable(int64_t id, Runtime *rt) {
+Object *Scope::getVariable(NameId id, Runtime *rt) {
     ProfilerCAPTURE();
     Scope *s = this;
-    while (s != NULL) {
+    while (s != nullptr) {
         auto it = s->variables.find(id);
         if (it != s->variables.end()) {
             return it->second;
@@ -50,10 +50,10 @@ Object *Scope::getVariable(int64_t id, Runtime *rt) {
     rt->signalError("Failed to find variable " + rt->nmgr->getString(id), rt->getContext().area);
 }
 
-bool Scope::queryVariable(int64_t id, Runtime *rt) {
+bool Scope::queryVariable(NameId id, Runtime *rt) {
     ProfilerCAPTURE();
     Scope *s = this;
-    while (s != NULL) {
+    while (s != nullptr) {
         auto it = s->variables.find(id);
         if (it != s->variables.end()) {
             return true;

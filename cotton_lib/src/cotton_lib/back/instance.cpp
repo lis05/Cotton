@@ -29,25 +29,25 @@
 namespace Cotton {
 int64_t Instance::total_instances = 0;
 
-Object *Cotton::Instance::selectField(int64_t id, Runtime *rt) {
+Object *Cotton::Instance::selectField(NameId id, Runtime *rt) {
     ProfilerCAPTURE();
     rt->signalError(this->userRepr(rt) + "doesn't have field " + rt->nmgr->getString(id), rt->getContext().area);
 }
 
-bool Instance::hasField(int64_t id, Runtime *rt) {
+bool Instance::hasField(NameId id, Runtime *rt) {
     ProfilerCAPTURE();
     return false;
 }
 
-void Instance::addField(int64_t id, Object *obj, Runtime *rt) {
+void Instance::addField(NameId id, Object *obj, Runtime *rt) {
     ProfilerCAPTURE();
 }
 
 Instance::Instance(Runtime *rt, size_t bytes) {
     ProfilerCAPTURE();
-    this->gc_mark = !rt->gc->gc_mark;
+    this->gc_mark = !rt->getGC()->gc_mark;
     this->id      = ++total_instances;
-    rt->gc->track(this, bytes);
+    rt->getGC()->track(this, bytes);
 }
 
 std::vector<Object *> Instance::getGCReachable() {

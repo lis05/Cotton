@@ -78,16 +78,16 @@ void GCDefaultStrategy::acknowledgeUntrack(Type *type) {
 
 void GCDefaultStrategy::acknowledgeEndOfCycle(Runtime *rt) {
     ProfilerCAPTURE();
-    this->prev_num_tracked
-    = rt->gc->tracked_instances.size() + rt->gc->tracked_objects.size() + rt->gc->tracked_types.size();
+    this->prev_num_tracked = rt->getGC()->tracked_instances.size() + rt->getGC()->tracked_objects.size()
+                             + rt->getGC()->tracked_types.size();
     this->prev_sizeof_tracked = 0;
-    for (auto &[obj, _] : rt->gc->tracked_objects) {
+    for (auto &[obj, _] : rt->getGC()->tracked_objects) {
         this->prev_sizeof_tracked += sizeof(obj);
     }
-    for (auto &[ins, _] : rt->gc->tracked_instances) {
+    for (auto &[ins, _] : rt->getGC()->tracked_instances) {
         this->prev_sizeof_tracked += ins->getSize();
     }
-    for (auto &[type, _] : rt->gc->tracked_types) {
+    for (auto &[type, _] : rt->getGC()->tracked_types) {
         this->prev_sizeof_tracked += sizeof(type);
     }
     this->num_tracked    = this->prev_num_tracked;
@@ -107,7 +107,7 @@ void GCDefaultStrategy::checkConditions(Runtime *rt) {
             || (this->ops_cnt >= OPS_MOD)))
     {
         this->ops_cnt %= OPS_MOD;
-        rt->gc->runCycle(rt);
+        rt->getGC()->runCycle(rt);
     }
 }
 
@@ -209,14 +209,14 @@ static void mark(Type *type, Runtime *rt);
 
 static void mark(Object *obj, Runtime *rt) {
     ProfilerCAPTURE();
-    if (obj == NULL) {
+    if (obj == nullptr) {
         return;
     }
-    if (obj->gc_mark == rt->gc->gc_mark) {
+    if (obj->gc_mark == rt->getGC()->gc_mark) {
         return;
     }
 
-    obj->gc_mark = rt->gc->gc_mark;
+    obj->gc_mark = rt->getGC()->gc_mark;
     for (auto &o : obj->getGCReachable()) {
         mark(o, rt);
     }
@@ -226,14 +226,14 @@ static void mark(Object *obj, Runtime *rt) {
 
 static void mark(Instance *ins, Runtime *rt) {
     ProfilerCAPTURE();
-    if (ins == NULL) {
+    if (ins == nullptr) {
         return;
     }
-    if (ins->gc_mark == rt->gc->gc_mark) {
+    if (ins->gc_mark == rt->getGC()->gc_mark) {
         return;
     }
 
-    ins->gc_mark = rt->gc->gc_mark;
+    ins->gc_mark = rt->getGC()->gc_mark;
     for (auto &o : ins->getGCReachable()) {
         mark(o, rt);
     }
@@ -241,14 +241,14 @@ static void mark(Instance *ins, Runtime *rt) {
 
 static void mark(Type *type, Runtime *rt) {
     ProfilerCAPTURE();
-    if (type == NULL) {
+    if (type == nullptr) {
         return;
     }
-    if (type->gc_mark == rt->gc->gc_mark) {
+    if (type->gc_mark == rt->getGC()->gc_mark) {
         return;
     }
 
-    type->gc_mark = rt->gc->gc_mark;
+    type->gc_mark = rt->getGC()->gc_mark;
     for (auto &o : type->getGCReachable()) {
         mark(o, rt);
     }
@@ -260,8 +260,8 @@ void GC::runCycle(Runtime *rt) {
         return;
     }
     // mark
-    auto scope = rt->scope;
-    while (scope != NULL) {
+    auto scope = rt->getScope();
+    while (scope != nullptr) {
         for (auto &[_, obj] : scope->variables) {
             mark(obj, rt);
         }

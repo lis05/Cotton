@@ -22,9 +22,9 @@
 #pragma once
 
 #include "../front/parser.h"
+#include "../util.h"
 #include "nameid.h"
 #include "object.h"
-#include <ext/pb_ds/assoc_container.hpp>
 #include <string>
 #include <vector>
 
@@ -51,84 +51,191 @@ namespace Builtin {
     class ArrayType;
 }    // namespace Builtin
 
+/// @brief Class that is responsible for actual execution of the Cotton language.
 class Runtime {
-public:
-    Runtime(GCStrategy *gc_strategy, ErrorManager *error_manager, NamesManager *nmgr);
-    ~Runtime() = default;
+    friend class GC;
 
-    enum BuiltinTypes {
-        FUNCTION_TYPE_ID  = 1,
-        NOTHING_TYPE_ID   = 2,
-        BOOLEAN_TYPE_ID   = 3,
-        INTEGER_TYPE_ID   = 4,
-        REAL_TYPE_ID      = 5,
-        CHARACTER_TYPE_ID = 6,
-        STRING_TYPE_ID    = 7,
-        ARRAY_TYPE_ID     = 8
-    };
+private:
+    HashTable<NameId, Object *> globals;
 
-    Builtin::FunctionType *function_type;
+    HashTable<Type *, Object *> registered_type_objects;
+    ErrorManager               *error_manager;
+    GC                         *gc;
 
-    Builtin::NothingType   *nothing_type;
-    Builtin::BooleanType   *boolean_type;
-    Builtin::IntegerType   *integer_type;
-    Builtin::RealType      *real_type;
-    Builtin::CharacterType *character_type;
-    Builtin::StringType    *string_type;
-    Builtin::ArrayType     *array_type;
-
-    __gnu_pbds::cc_hash_table<int64_t, Object *> globals;
-
-    bool    checkGlobal(int64_t id);
-    Object *getGlobal(int64_t id);
-    void    setGlobal(int64_t id, Object *obj);
-    void    removeGlobal(int64_t id);
-
-    __gnu_pbds::cc_hash_table<Type *, Object *> type_objects;
-    void                                        registerTypeObject(Type *type, Object *obj);
-    Object                                     *getTypeObject(Type *type);
-
-    NamesManager *nmgr;
-
-    void *alloc(size_t size);
-    void  dealloc(void *ptr, size_t size);
-
-    Object                                      *exec_res_default;
-    __gnu_pbds::cc_hash_table<int64_t, Object *> readonly_literals;
+    HashTable<NameId, Object *> readonly_literals;
 
     Object *protected_nothing;
     Object *protected_true;
     Object *protected_false;
-    Object *protectedBoolean(bool val);
 
     Scope *scope;
-    // creates a new scope
-    void   newFrame(bool can_access_prev_scope = true);
-    // pops the last scope
-    void   popFrame();
-
-    GC *gc;
-
-    ErrorManager *error_manager;
-
-    class ErrorContext {
-    public:
-        TextArea              area;
-        std::vector<TextArea> sub_areas;
-    };
-
-    std::vector<ErrorContext> error_contexts;
-
-    void          newContext();
-    void          popContext();
-    ErrorContext &getContext();
-
-    // signals an error
-    [[noreturn]]
-    void signalError(const std::string &message, const TextArea &ta);
 
     uint8_t execution_flags;
 
+    enum ExecutionFlags { NONE = 0, CONTINUE = 1, BREAK = 2, RETURN = 4, DIRECT_PASS = 8 };
+
+public:
+    /// @brief Class that is used as the context when signalling errors
+    class ErrorContext {
+    public:
+        /// @brief TextArea that covers the entire context. Is expected to be always valid.
+        TextArea area;
+
+        /// @brief Sub areas of the current context. Usually, each sub area represents an argument in the context.
+        /// When function is called, then sub_areas[0] will be the area of the function, and sub_areas[i] will be
+        /// the area of the ith argument
+        std::vector<TextArea> sub_areas;
+    };
+
+    /// @brief These are used to select the context part when signaling errors.
+    enum ContextId { AREA_CTX = -1, SUB0_CTX = 0, SUB1_CTX = 1, SUB2_CTX = 2, SUB3_CTX = 3 };
+
+    /// @brief Options which indicate which object make() should produce: instance object or type object
+    enum ObjectOptions { INSTANCE_OBJECT, TYPE_OBJECT };
+
+    /// @brief NamesManager of the runtime.
+    NamesManager *const nmgr;
+
+    /// @brief Class storing all builtin types.
+    class {
+    public:
+        Builtin::FunctionType  *function;
+        Builtin::NothingType   *nothing;
+        Builtin::BooleanType   *boolean;
+        Builtin::IntegerType   *integer;
+        Builtin::RealType      *real;
+        Builtin::CharacterType *character;
+        Builtin::StringType    *string;
+        Builtin::ArrayType     *array;
+    } builtin_types;
+
+private:
+    std::vector<ErrorContext> error_contexts;
+
+public:
+    /**
+     * @brief Construct a new Runtime object.
+     *
+     * @param gc_strategy Garbage collector stategy. Must be valid.
+     * @param error_manager Error manager. Must be valid.
+     * @param nmgr Names manager. Must be valid.
+     */
+    Runtime(GCStrategy *gc_strategy, ErrorManager *error_manager, NamesManager *nmgr);
+
+    /// @brief Destruct the runtime. // TODO: add proper destruction
+    ~Runtime() = default;
+
+    /**
+     * @brief Returns whether a global variable with the given id exists.
+     *
+     * @param id Id of the global variable.
+     * @return `true` if a global variable with id exists, `false` otherwise.
+     */
+    bool checkGlobal(NameId id);
+
+    /**
+     * @brief Returns the global variable associated with the given id. Signals an error if no such variable
+     * exists.
+     *
+     * @param id The id of the global variable. Must be valid.
+     * @return Global variable associated with the given id.
+     */
+    Object *getGlobal(NameId id);
+
+    /**
+     * @brief Sets the global variable with the given id to obj.
+     *
+     * @param id The id of the global variable.
+     * @param obj Object. Must be valid.
+     */
+    void setGlobal(NameId id, Object *obj);
+
+    /**
+     * @brief Removes the global variable with the given id. If no such variable exists - nothing happens.
+     *
+     * @param id The id of the global variable.
+     */
+    void removeGlobal(NameId id);
+
+    /**
+     * @brief Registers `obj` as a type object of the given `type`.
+     *
+     * @param type Type with which `obj` will be associated. Must be valid.
+     * @param obj Object that will be registered. Must be a type object of the given type.
+     */
+    void registerTypeObject(Type *type, Object *obj);
+
+    /**
+     * @brief Returns the type object registered under the given type. If no such object exists - returns
+     * Runtime::protectedNothing().
+     *
+     * @param type The type of the requested object. Must be valid.
+     * @return Object registered with the given type, or Runtime::protectedNothing() if no such object exists.
+     */
+    Object *getTypeObject(Type *type);
+
+    /**
+     * @brief Returns a protected from assignment instance object of type Nothing.
+     *
+     * @return Protected from assignment instance object of type Nothing.
+     */
+    Object *protectedNothing();
+
+    /**
+     * @brief Returns a protected from assignment instance object of type Boolean depending on the provided value.
+     *
+     * @param val Value of the returned object.
+     * @return if `val` is `true`, then returns a protected from assignment instace object of type Boolean with
+     * value `true`, otherwise with value `false`
+     */
+    Object *protectedBoolean(bool val);
+
+    /**
+     * @brief Creates a new scope frame.
+     *
+     * @param can_access_prev_scope if `true`, the new scope frame will be able to access its parent scope frame.
+     * Otherwise it won't.
+     */
+    void newScopeFrame(bool can_access_prev_scope = true);
+
+    /// @brief Pops the topmost scope frame.
+    void popScopeFrame();
+
+    /// @brief Creates a new empty error context.
+    void newContext();
+
+    /// @brief Pops the topmost error context.
+    void popContext();
+
+    /// @brief Returns the current error context.
+    ErrorContext &getContext();
+
+    /**
+     * @brief Returns the selected text area from the current context.
+     *
+     * @param ctx_id Id of the selected part of the context.
+     * @return TextArea
+     */
+    TextArea &getTextArea(ContextId ctx_id);
+
+    /**
+     * @brief Signals an error.
+     *
+     * @param message Message to be desplayed.
+     * @param ta TextArea of the error place.
+     */
+    [[noreturn]]
+    void signalError(const std::string &message, const TextArea &ta);
+
+    /**
+     * @brief Executes the given node.
+     *
+     * @param node Node to be executed. Must be valid.
+     * @param execution_result_matters If `false`, certain optimizations may happen.
+     * @return The result of the execution. Is not guaranteed to return anything if `execution_result_matters` is
+     * `false`
+     */
+    ///@{
     Object *execute(ExprNode *node, bool execution_result_matters);
     Object *execute(FuncDefNode *node, bool execution_result_matters);
     Object *execute(TypeDefNode *node, bool execution_result_matters);
@@ -142,83 +249,347 @@ public:
     Object *execute(ReturnStmtNode *node, bool execution_result_matters);
     Object *execute(BlockStmtNode *node, bool execution_result_matters);
 
-    enum ObjectOptions { INSTANCE_OBJECT, TYPE_OBJECT };
+    ///@}
 
-    // makes an object of given type based on object_opt; calls __make__ if object_opt is INSTANCE_OBJECT
-    // if fails, signals an error. therefore, returns a valid object (non-null, satisfies object_opt)
+    /**
+     * @brief Makes a new object of the given type. If object opt is INSTANCE_OBJECT, then the created object will
+     * be an instance object. Otherwise, it will be a type object. If creation of the object fails - an error will
+     * be signaled. The returned object will be marked with "single use".
+     *
+     * @param type The type of the object to create. Must be valid.
+     * @param object_opt If INSTANCE_OBJECT, then an instance object will be created. Otherwise, creates a type
+     * object.
+     * @return The created object.
+     */
     Object *make(Type *type, ObjectOptions object_opt);
-    // returns a copy of obj (type is the same; if instance is present, it is copied)
-    // if fails, signals an error. therefore, returns a valid object (non-null, is a copy of obj)
+
+    /**
+     * @brief Returns a copy of the object. The returned object will be marked with "single use".
+     *
+     * @param obj The object to copy. Must be valid.
+     * @return The copy of the given object.
+     */
     Object *copy(Object *obj);
-    // runs operator on the object. returns a valid object(non-null); if fails, signals an error
+
+    /**
+     * @brief Runs unary operator with the given id on the object.
+     *
+     * @param id Id of the unary operator. Must correspond to an unary operator.
+     * @param obj Argument of the unary operator. Must be valid.
+     * @param execution_result_matters if `false`, the returned object is not guaranteed to be valid. However,
+     * certain optimizations will be run.
+     *
+     * @return Result of the operator. May not be valid if `execution_result_matters` is `false`.
+     */
     Object *runOperator(OperatorNode::OperatorId id, Object *obj, bool execution_result_matters);
+
+    /**
+     * @brief Runs binary operator with the given id on the object.
+     *
+     * @param id Id of the binary operator. Must correspond to an binary operator.
+     * @param obj First argument of the binary operator. Must be valid.
+     * @param arg Second argument of the binary operator. Must be valid.
+     * @param execution_result_matters if `false`, the returned object is not guaranteed to be valid. However,
+     * certain optimizations will be run.
+     *
+     * @return Result of the operator. May not be valid if `execution_result_matters` is `false`.
+     */
     Object *runOperator(OperatorNode::OperatorId id, Object *obj, Object *arg, bool execution_result_matters);
+
+    /**
+     * @brief Runs a n-ary operator with the given id on the object.
+     *
+     * @param id Id of the binary operator. Must correspond to a n-ary operator.
+     * @param obj First argument of the operator. Must be valid.
+     * @param args Rest of the arguments of the operator. Each argument must be valid.
+     * @param execution_result_matters if `false`, the returned object is not guaranteed to be valid. However,
+     * certain optimizations will be run.
+     *
+     * @return Result of the operator. May not be valid if `execution_result_matters` is `false`.
+     */
     Object *runOperator(OperatorNode::OperatorId     id,
                         Object                      *obj,
                         const std::vector<Object *> &args,
                         bool                         execution_result_matters);
-    // runs method on the object. returns a valid object(non-null); if fails, signals an error
-    Object *runMethod(int64_t id, Object *obj, const std::vector<Object *> &args, bool execution_result_matters);
 
+    /**
+     * @brief Runs method with the given id. Signals an error if no such method exists.
+     *
+     * @param id Id of the method. A method with this id must exist.
+     * @param obj Object on which the method will be run. Must be valid.
+     * @param args Arguments of the method. Each of the arguments must be valid.
+     * @param execution_result_matters if `false`, the returned object is not guaranteed to be valid. However,
+     * certain optimizations will be run.
+     *
+     * @return Result of the method. May not be valid if `execution_result_matters` is `false`.
+     */
+    Object *runMethod(NameId id, Object *obj, const std::vector<Object *> &args, bool execution_result_matters);
+
+    /**
+     * @brief Checks whether the provided object is valid.
+     *
+     * @param obj The object to check.
+     * @return `true` if the provided object is valid, `false` otherwise.
+     */
     bool isValidObject(Object *obj);
-    bool isTypeObject(Object *obj, Type *type = NULL);
-    bool isInstanceObject(Object *obj, Type *type = NULL);
-    bool isOfType(Object *obj, BuiltinTypes type);
+
+    /**
+     * @brief Checks whether the provided object is a valid type object of the given type. If `type` = nullptr,
+     * then checks if the provided object is a type object of any type.
+     *
+     *
+     * @param obj The object to check.
+     * @param type Type to check. nullptr means that the check will be done for any type.
+     * @return `true` if the provided object is a type object of the given type, `false` otherwise.
+     */
+    bool isTypeObject(Object *obj, Type *type = nullptr);
+
+    /**
+     * @brief Checks whether the provided object is a valid instance object of the given type. If `type` = nullptr,
+     * then checks if the provided object is an instance object of any type.
+     *
+     *
+     * @param obj The object to check.
+     * @param type Type to check. nullptr means that the check will be done for any type.
+     * @return `true` if the provided object is an onstance object of the given type, `false` otherwise.
+     */
+    bool isInstanceObject(Object *obj, Type *type = nullptr);
+
+    /**
+     * @brief Checks whether the provided object is a valid object of the given type.
+     *
+     * @param obj The object to check.
+     * @param type Type to check. Must be non-nullptr.
+     * @return `true` if the provided object is an object of the given type, `false` otherwise.
+     */
     bool isOfType(Object *obj, Type *type);
 
-    enum ContextId { AREA_CTX = -1, SUB0_CTX = 0, SUB1_CTX = 1, SUB2_CTX = 2, SUB3_CTX = 3 };
-
-    TextArea &getTextArea(ContextId ctx_id);
-
+    /**
+     * @brief Signals an error if `isValidObject(obj, ctx_id)` returns `false`
+     *
+     * @param obj See `isValidObject`
+     * @param ctx_id Id of the context part which will be included in the error message.
+     */
     void verifyIsValidObject(Object *obj, ContextId ctx_id = ContextId::AREA_CTX);
+
+    /**
+     * @brief Signals an error if `isTypeObject(obj, type, ctx_id)` returns `false`
+     *
+     * @param obj See `isTypeObject`
+     * @param type See `isTypeObject`
+     * @param ctx_id Id of the context part which will be included in the error message.
+     */
     void verifyIsTypeObject(Object *obj, Type *type, ContextId ctx_id = ContextId::AREA_CTX);
+
+    /**
+     * @brief Signals an error if `isInstanceObject(obj, type, ctx_id)` returns `false`
+     *
+     * @param obj See `isInstanceObject`
+     * @param type See `isInstanceObject`
+     * @param ctx_id Id of the context part which will be included in the error message.
+     */
     void verifyIsInstanceObject(Object *obj, Type *type, ContextId ctx_id = ContextId::AREA_CTX);
-    void verifyIsOfType(Object *obj, BuiltinTypes type, ContextId ctx_id = ContextId::AREA_CTX);
+
+    /**
+     * @brief Signals an error if `isOfType(obj, type, ctx_id)` returns `false`
+     *
+     * @param obj See `isOfType`
+     * @param type See `isOfType`
+     * @param ctx_id Id of the context part which will be included in the error message.
+     */
     void verifyIsOfType(Object *obj, Type *type, ContextId ctx_id = ContextId::AREA_CTX);
+
+    /**
+     * @brief Signals an error if the provided list of arguments contains less elements than `amount`.
+     * Use this to check the amount of arguments passed to a function. For a method, use
+     * `verifyMinArgsAmountMethod`
+     *
+     * @param args List of arguments to check.
+     * @param amount The minimal amount of arguments.
+     * @param ctx_id Id of the context part which will be included in the error message.
+     */
     void verifyMinArgsAmountFunc(const std::vector<Object *> &args,
                                  int64_t                      amount,
                                  ContextId                    ctx_id = ContextId::AREA_CTX);
+
+    /**
+     * @brief Signals an error if the provided list of arguments contains different amount of elements than
+     * `amount`. Use this to check the amount of arguments passed to a function. For a method, use
+     * `verifyExactArgsAmountMethod`
+     *
+     * @param args List of arguments to check.
+     * @param amount The exact amount of arguments.
+     * @param ctx_id Id of the context part which will be included in the error message.
+     */
     void verifyExactArgsAmountFunc(const std::vector<Object *> &args,
                                    int64_t                      amount,
                                    ContextId                    ctx_id = ContextId::AREA_CTX);
+    /**
+     * @brief Signals an error if the provided list of arguments contains less elements than `amount`. Since the
+     * first argument is always present, it is not counted in the total number of arguments. Therefore, this
+     * function actually checks if the provided list has amount + 1 arguments (at least).
+     * Use this to check the amount of arguments passed to a mathod. For a function, use
+     * `verifyMinArgsAmountFunc`
+     *
+     * @param args List of arguments to check.
+     * @param amount The minimal amount of arguments.
+     * @param ctx_id Id of the context part which will be included in the error message.
+     */
     void verifyMinArgsAmountMethod(const std::vector<Object *> &args,
                                    int64_t                      amount,
                                    ContextId                    ctx_id = ContextId::AREA_CTX);
+    /**
+     * @brief Signals an error if the provided list of arguments contains different number of elements than
+     * `amount`. Since the first argument is always present, it is not counted in the total number of arguments.
+     * Therefore, this function actually checks if the provided list has amount + 1 arguments. Use this to check
+     * the amount of arguments passed to a mathod. For a function, use `verifyExactArgsAmountFunc`
+     *
+     * @param args List of arguments to check.
+     * @param amount The minimal amount of arguments.
+     * @param ctx_id Id of the context part which will be included in the error message.
+     */
     void verifyExactArgsAmountMethod(const std::vector<Object *> &args,
                                      int64_t                      amount,
                                      ContextId                    ctx_id = ContextId::AREA_CTX);
-    void verifyHasMethod(Object *obj, int64_t id, ContextId ctx_id = ContextId::AREA_CTX);
+
+    /**
+     * @brief Signals an error if the provided object doesn't have method with the given id.
+     *
+     * @param obj Object to check.
+     * @param id Id of the method.
+     * @param ctx_id Id of the context part which will be included in the error message.
+     */
+    void verifyHasMethod(Object *obj, NameId id, ContextId ctx_id = ContextId::AREA_CTX);
+
+    /**
+     * @brief Returns the current garbage collector.
+     *
+     * @return GC*
+     */
+    GC *getGC();
+
+    /**
+     * @brief Returns the current error manager.
+     * 
+     * @return ErrorManager* 
+     */
+    ErrorManager *getErrorManager();
+
+    /**
+     * @brief Returns the current scope.
+     * 
+     * @return Scope* 
+     */
+    Scope *getScope();
+
+    /// @brief Sets the runtime's execution flag to NONE. This means that execute() will end normally.
+    /// This is called when execute() is about to end normally()
+    void clearExecFlags();
+
+    /// @brief Sets the runtime's execution flag to CONTINUE. This means that execute() will end with `continue`
+    /// keyword. This is called when execute() has executed a `continue` instruction that needs to be passed
+    /// upwards.
+    void setExecFlagCONTINUE();
+
+    /// @brief Sets the runtime's execution flag to BREAK. This means that execute() will end with `break` flag.
+    /// This is called when execute() has executed a `break` instruction that needs to be passed upwards.
+    void setExecFlagBREAK();
+
+    /// @brief Sets the runtime's execution flag to RETURN. This means that execute() will end with `return` flag.
+    /// This is called when execute() has executed a `return` instruction that needs to be passed upwards.
+    void setExecFlagRETURN();
+
+    /// @brief Sets the runtime's execution flag to DIRECT_PASS. This means that execute() will end with
+    /// `direct_pass` flag. This is called when execute() has executed a `direct pass` instruction that needs to be
+    /// passed upwards.
+    void setExecFlagDIRECT_PASS();
+
+    /// @brief Returns whether the execution flag contains NONE subflag.
+    bool isExecFlagNONE();
+
+    /// @brief Returns whether the execution flag contains CONTINUE subflag.
+    bool isExecFlagCONTINUE();
+
+    /// @brief Returns whether the execution flag contains BREAK subflag.
+    bool isExecFlagBREAK();
+
+    /// @brief Returns whether the execution flag contains RETURN subflag.
+    bool isExecFlagRETURN();
+
+    /// @brief Returns whether the execution flag contains DIRECT_PASS subflag.
+    bool isExecFlagDIRECT_PASS();
 };
 
+/// @brief Commonly used methods' ids
 namespace MagicMethods {
-    int64_t mm__make__(Runtime *rt);
-    int64_t mm__copy__(Runtime *rt);
-    int64_t mm__bool__(Runtime *rt);
-    int64_t mm__char__(Runtime *rt);
-    int64_t mm__int__(Runtime *rt);
-    int64_t mm__real__(Runtime *rt);
-    int64_t mm__string__(Runtime *rt);
-    int64_t mm__repr__(Runtime *rt);
-    int64_t mm__read__(Runtime *rt);
+    /**
+     * @brief Returns the nameid of the method called __make__.
+     *
+     * @param rt The runtime. Must be valid.
+     * @return NameId of the method.
+     */
+    NameId mm__make__(Runtime *rt);
+    /**
+     * @brief Returns the nameid of the method called __copy__.
+     *
+     * @param rt The runtime. Must be valid.
+     * @return NameId of the method.
+     */
+    NameId mm__copy__(Runtime *rt);
+    /**
+     * @brief Returns the nameid of the method called __bool__.
+     *
+     * @param rt The runtime. Must be valid.
+     * @return NameId of the method.
+     */
+    NameId mm__bool__(Runtime *rt);
+    /**
+     * @brief Returns the nameid of the method called __char__.
+     *
+     * @param rt The runtime. Must be valid.
+     * @return NameId of the method.
+     */
+    NameId mm__char__(Runtime *rt);
+    /**
+     * @brief Returns the nameid of the method called __int__.
+     *
+     * @param rt The runtime. Must be valid.
+     * @return NameId of the method.
+     */
+    NameId mm__int__(Runtime *rt);
+    /**
+     * @brief Returns the nameid of the method called __real__.
+     *
+     * @param rt The runtime. Must be valid.
+     * @return NameId of the method.
+     */
+    NameId mm__real__(Runtime *rt);
+    /**
+     * @brief Returns the nameid of the method called __string__.
+     *
+     * @param rt The runtime. Must be valid.
+     * @return NameId of the method.
+     */
+    NameId mm__string__(Runtime *rt);
+    /**
+     * @brief Returns the nameid of the method called __repr__.
+     *
+     * @param rt The runtime. Must be valid.
+     * @return NameId of the method.
+     */
+    NameId mm__repr__(Runtime *rt);
+    /**
+     * @brief Returns the nameid of the method called __read__.
+     *
+     * @param rt The runtime. Must be valid.
+     * @return NameId of the method.
+     */
+    NameId mm__read__(Runtime *rt);
 }    // namespace MagicMethods
 
-// the function must be called "library_load_point"
+/// @brief Every library must implement this. It is run when the library gets loaded.
 typedef Object *(*LibraryLoadPoint)(Runtime *rt);
 
-#define newObject(is_instance, instance, type, rt) new Object(is_instance, instance, type, rt)
-
-#define setExecFlagNONE(rt)        rt->execution_flags = 0;
-#define setExecFlagCONTINUE(rt)    rt->execution_flags = 1;
-#define setExecFlagBREAK(rt)       rt->execution_flags = 2;
-#define setExecFlagRETURN(rt)      rt->execution_flags = 4;
-#define setExecFlagDIRECT_PASS(rt) rt->execution_flags = 8;
-
-#define isExecFlagNONE(rt)        (rt->execution_flags == 0)
-#define isExecFlagCONTINUE(rt)    (rt->execution_flags == 1)
-#define isExecFlagBREAK(rt)       (rt->execution_flags == 2)
-#define isExecFlagRETURN(rt)      (rt->execution_flags == 4)
-#define isExecFlagDIRECT_PASS(rt) (rt->execution_flags == 8)
-
-// casts instance to another instance
+/// @brief casts instance to another instance
 #define icast(ins, type) ((type *)ins)
 }    // namespace Cotton

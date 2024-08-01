@@ -20,10 +20,8 @@
  */
 
 #pragma once
-#include <cstddef>
-#include <cstdint>
-#include <string>
-#include <vector>
+#include "../util.h"
+#include "nameid.h"
 
 namespace Cotton {
 
@@ -46,7 +44,7 @@ public:
     /**
      * @brief Construct a new Instance object.
      *
-     * @param rt The Runtime. Assumed to be valid.
+     * @param rt The runtime. Must be valid.
      * @param bytes Size of instance in bytes.
      */
     Instance(Runtime *rt, size_t bytes);
@@ -57,28 +55,28 @@ public:
     /**
      * @brief Selects the field given by id from the instance.
      *
-     * @param id id of the field. Assumed to be valid.
-     * @param rt The Runtime. Assumed to be valid.
+     * @param id id of the field. Must be valid.
+     * @param rt The runtime. Must be valid.
      * @return The selected field.
      */
-    virtual Object *selectField(int64_t id, Runtime *rt);
+    virtual Object *selectField(NameId id, Runtime *rt);
 
     /**
      * @brief Returns whether the instance has the field given by id. B
      *
      * @param id id of the field.
-     * @param rt The Runtime. Assumed to be valid.
+     * @param rt The runtime. Must be valid.
      * @return `true` if the instance has the field, `false` otherwise.
      */
-    virtual bool hasField(int64_t id, Runtime *rt);
+    virtual bool hasField(NameId id, Runtime *rt);
 
     /**
      * @brief Adds the field to the instance.
      *
      * @param id id of the field.
-     * @param rt The Runtime. Assumed to be valid.
+     * @param rt The runtime. Must be valid.
      */
-    virtual void addField(int64_t id, Object *obj, Runtime *rt);
+    virtual void addField(NameId id, Object *obj, Runtime *rt);
 
     /**
      * @brief Returns a list of all objects that are reachable from the instance.
@@ -90,7 +88,7 @@ public:
     /**
      * @brief Returns a copy of the instance.
      *
-     * @param rt The Runtime. Assumed to be valid.
+     * @param rt The runtime. Must be valid.
      * @return A valid copy of the instance.
      */
     virtual Instance *copy(Runtime *rt) = 0;
@@ -105,7 +103,7 @@ public:
     /**
      * @brief Returns string representation of the instance.
      *
-     * @param rt The Runtime. Assumed to be valid.
+     * @param rt The runtime. Must be valid.
      * @return String representation.
      */
     virtual std::string userRepr(Runtime *rt) = 0;

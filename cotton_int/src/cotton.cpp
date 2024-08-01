@@ -36,7 +36,7 @@ int main(int argc, char *argv[]) {
     bool  print_execution_time = false;
     bool  disable_gc           = false;
     bool  print_result         = false;
-    char *file                 = NULL;
+    char *file                 = nullptr;
 
     for (int i = 1; i < argc; i++) {
         char *arg = argv[i];
@@ -56,7 +56,7 @@ int main(int argc, char *argv[]) {
             continue;
         }
 
-        if (file != NULL) {
+        if (file != nullptr) {
             fprintf(stderr, "Error: unexpected argument: %s\n", arg);
             exit(1);
         }
@@ -64,14 +64,14 @@ int main(int argc, char *argv[]) {
         file = arg;
     }
 #ifndef DEFAULT_SOURCE_FILENAME
-    if (file == NULL) {
+    if (file == nullptr) {
         fprintf(stderr, "Expected a source file\n");
         exit(1);
     }
 #endif
 
 #ifdef DEFAULT_SOURCE_FILENAME
-    if (file == NULL) {
+    if (file == nullptr) {
         file = DEFAULT_SOURCE_FILENAME;
     }
 #endif
@@ -91,7 +91,7 @@ int main(int argc, char *argv[]) {
     Runtime           rt(&gcst, &em, &nmgr);
 
     if (disable_gc) {
-        rt.gc->disable();
+        rt.getGC()->disable();
     }
 
     auto begin_time = duration_cast<milliseconds>(system_clock::now().time_since_epoch()).count();

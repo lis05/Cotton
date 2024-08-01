@@ -22,18 +22,17 @@
 #pragma once
 #include "../../back/api.h"
 #include "../../front/api.h"
-#include <ext/pb_ds/assoc_container.hpp>
 
 namespace Cotton::Builtin {
 class RecordInstance: public Instance {
 public:
-    __gnu_pbds::cc_hash_table<int64_t, Object *> fields;
-    int64_t                                      nameid;
+    HashTable<NameId, Object *> fields;
+    NameId                      nameid;
     RecordInstance(Runtime *rt);
     ~RecordInstance();
-    Object *selectField(int64_t id, Runtime *rt);
-    bool    hasField(int64_t id, Runtime *rt);
-    void    addField(int64_t id, Object *obj, Runtime *rt);
+    Object *selectField(NameId id, Runtime *rt);
+    bool    hasField(NameId id, Runtime *rt);
+    void    addField(NameId id, Object *obj, Runtime *rt);
 
     Instance             *copy(Runtime *rt);
     size_t                getSize();
@@ -43,8 +42,8 @@ public:
 
 class RecordType: public Type {
 public:
-    int64_t              nameid;
-    std::vector<int64_t> instance_fields;
+    NameId              nameid;
+    std::vector<NameId> instance_fields;
 
     size_t getInstanceSize();
     RecordType(Runtime *rt);
@@ -54,6 +53,6 @@ public:
     Object     *copy(Object *obj, Runtime *rt);
 };
 
-RecordType *makeRecordType(int64_t nameid, Runtime *rt);
+RecordType *makeRecordType(NameId nameid, Runtime *rt);
 
 }    // namespace Cotton::Builtin

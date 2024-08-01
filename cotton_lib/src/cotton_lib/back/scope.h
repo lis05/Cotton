@@ -20,7 +20,8 @@
  */
 
 #pragma once
-#include <ext/pb_ds/assoc_container.hpp>
+#include "../util.h"
+#include "nameid.h"
 
 namespace Cotton {
 
@@ -29,17 +30,17 @@ class Runtime;
 
 class Scope {
 public:
-    Scope                                       *prev, *master;
-    __gnu_pbds::cc_hash_table<int64_t, Object *> variables;
-    std::vector<Object *>                        arguments;
-    bool                                         can_access_prev;
+    Scope                      *prev, *master;
+    HashTable<NameId, Object *> variables;
+    std::vector<Object *>       arguments;
+    bool                        can_access_prev;
 
     Scope(Scope *prev, Scope *master, bool can_access_prev);
     ~Scope();
 
-    void    addVariable(int64_t id, Object *obj, Runtime *rt);
-    bool    queryVariable(int64_t id, Runtime *rt);
+    void    addVariable(NameId id, Object *obj, Runtime *rt);
+    bool    queryVariable(NameId id, Runtime *rt);
     // returns a valid (non-null) object
-    Object *getVariable(int64_t id, Runtime *rt);
+    Object *getVariable(NameId id, Runtime *rt);
 };
 }    // namespace Cotton

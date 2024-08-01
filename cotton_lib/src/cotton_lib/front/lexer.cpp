@@ -662,7 +662,7 @@ std::vector<Token> Lexer::processFile(const std::string &filename) {
     this->error_manager->setErrorFilename(filename);
 
     FILE *fd = fopen(filename.c_str(), "r");
-    if (fd == NULL) {
+    if (fd == nullptr) {
         this->error_manager->signalError("Could not open file" + filename, 0, true);
     }
 

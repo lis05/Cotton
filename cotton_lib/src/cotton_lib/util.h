@@ -25,6 +25,8 @@
 #include <cstdint>
 #include <cstdlib>
 #include <ext/pb_ds/assoc_container.hpp>
+#include <string>
+#include <vector>
 
 namespace Cotton {
 template<class K, class V>

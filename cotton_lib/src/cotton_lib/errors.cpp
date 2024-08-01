@@ -106,7 +106,7 @@ void ErrorManager::signalError(const std::string &message, int64_t char_pos, boo
     }
 
     FILE *fd = fopen(this->error_filename.c_str(), "r");
-    if (fd == NULL) {
+    if (fd == nullptr) {
         printColor(stderr, "red");
         perror("Failed to open file where the error has occurred");
         printColor(stderr, "reset");
@@ -210,7 +210,7 @@ void ErrorManager::signalError(const std::string &message, const Token &token, b
     }
 
     FILE *fd = fopen(filename.c_str(), "r");
-    if (fd == NULL) {
+    if (fd == nullptr) {
         printColor(stderr, "red");
         perror("Failed to open file where the error has occurred");
         printColor(stderr, "reset");
@@ -312,7 +312,7 @@ void ErrorManager::signalError(const std::vector<std::pair<Token *, std::string>
             fprintf(stderr, "The mentioned error happened because of the following error:\n");
         }
         cnt++;
-        if (token != NULL) {
+        if (token != nullptr) {
             this->signalError(message, *token, false);
         }
         else {
@@ -341,7 +341,7 @@ void ErrorManager::signalErrorWithContext(const std::vector<std::pair<std::strin
         if (cnt == messages.size()) {
             break;
         }
-        if (token != NULL) {
+        if (token != nullptr) {
             this->signalError(message, *token, false);
         }
         else {
@@ -354,7 +354,7 @@ void ErrorManager::signalErrorWithContext(const std::vector<std::pair<std::strin
         auto &[error, token] = messages.back();
 
         fprintf(stderr, "Here is the error:\n");
-        if (token != NULL) {
+        if (token != nullptr) {
             this->signalError(error, *token, false);
         }
         else {
@@ -376,7 +376,7 @@ static bool intersection(int64_t l, int64_t r, int64_t L, int64_t R) {
 }
 
 void ErrorManager::signalError(const std::string &message, const TextArea &ta, bool eee) {
-    if (ta.filename == NULL || ta.filename->empty()) {
+    if (ta.filename == nullptr || ta.filename->empty()) {
         printColor(stderr, "red");
         fprintf(stderr,
                 "Error has occurred at positions %ld..%ld: %s.\n",
@@ -395,7 +395,7 @@ void ErrorManager::signalError(const std::string &message, const TextArea &ta, b
     auto filename = *ta.filename;
 
     FILE *fd = fopen(filename.c_str(), "r");
-    if (fd == NULL) {
+    if (fd == nullptr) {
         printColor(stderr, "red");
         perror("Failed to open file where the error has occurred");
         printColor(stderr, "reset");

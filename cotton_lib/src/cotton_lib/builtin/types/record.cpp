@@ -36,7 +36,7 @@ RecordInstance::~RecordInstance() {
     ProfilerCAPTURE();
 }
 
-Object *RecordInstance::selectField(int64_t id, Runtime *rt) {
+Object *RecordInstance::selectField(NameId id, Runtime *rt) {
     ProfilerCAPTURE();
     auto it = this->fields.find(id);
     if (it != this->fields.end()) {
@@ -45,12 +45,12 @@ Object *RecordInstance::selectField(int64_t id, Runtime *rt) {
     rt->signalError(this->userRepr(rt) + "doesn't have field " + rt->nmgr->getString(id), rt->getContext().area);
 }
 
-bool RecordInstance::hasField(int64_t id, Runtime *rt) {
+bool RecordInstance::hasField(NameId id, Runtime *rt) {
     ProfilerCAPTURE();
     return this->fields.find(id) != this->fields.end();
 }
 
-void RecordInstance::addField(int64_t id, Object *obj, Runtime *rt) {
+void RecordInstance::addField(NameId id, Object *obj, Runtime *rt) {
     ProfilerCAPTURE();
     this->fields[id] = obj;
 }
@@ -72,8 +72,8 @@ size_t RecordType::getInstanceSize() {
 
 std::string RecordInstance::userRepr(Runtime *rt) {
     ProfilerCAPTURE();
-    if (this == NULL) {
-        return "Record(NULL)";
+    if (this == nullptr) {
+        return "Record(nullptr)";
     }
     return rt->nmgr->getString(this->nameid);
 }
@@ -98,15 +98,15 @@ Object *RecordType::create(Runtime *rt) {
     for (auto f : this->instance_fields) {
         ins->addField(f, makeNothingInstanceObject(rt), rt);
     }
-    Object *obj = newObject(true, ins, this, rt);
+    Object *obj = new Object(true, ins, this, rt);
 
     return obj;
 }
 
 std::string RecordType::userRepr(Runtime *rt) {
     ProfilerCAPTURE();
-    if (this == NULL) {
-        return "NULL";
+    if (this == nullptr) {
+        return "nullptr";
     }
     return rt->nmgr->getString(this->nameid);
 }
@@ -116,21 +116,21 @@ std::string RecordType::userRepr(Runtime *rt) {
 Object *RecordType::copy(Object *obj, Runtime *rt) {
     ProfilerCAPTURE();
     rt->verifyIsValidObject(obj);
-    if (obj->instance == NULL) {
-        return newObject(false, NULL, this, rt);
+    if (obj->instance == nullptr) {
+        return new Object(false, nullptr, this, rt);
     }
     auto ins = obj->instance->copy(rt);
-    auto res = newObject(true, ins, this, rt);
+    auto res = new Object(true, ins, this, rt);
     return res;
 }
 
 Object *makeRecordInstanceObject(Runtime *rt) {
     ProfilerCAPTURE();
-    auto res = rt->make(rt->nothing_type, rt->INSTANCE_OBJECT);
+    auto res = rt->make(rt->builtin_types.nothing, rt->INSTANCE_OBJECT);
     return res;
 }
 
-RecordType *makeRecordType(int64_t nameid, Runtime *rt) {
+RecordType *makeRecordType(NameId nameid, Runtime *rt) {
     ProfilerCAPTURE();
     auto res    = new RecordType(rt);
     res->nameid = nameid;

@@ -32,7 +32,7 @@ static Object *CF_make(const std::vector<Object *> &args, Runtime *rt, bool exec
     ProfilerCAPTURE();
     rt->verifyExactArgsAmountFunc(args, 1);
     auto arg = args[0];
-    rt->verifyIsTypeObject(arg, NULL, Runtime::SUB1_CTX);
+    rt->verifyIsTypeObject(arg, nullptr, Runtime::SUB1_CTX);
 
     auto res = rt->make(arg->type, Runtime::INSTANCE_OBJECT);
 
@@ -118,7 +118,7 @@ static Object *CF_printraw(const std::vector<Object *> &args, Runtime *rt, bool 
     for (auto arg : args) {
         index++;
         rt->verifyIsValidObject(arg, (Runtime::ContextId)index);
-        if (rt->isInstanceObject(arg, rt->string_type)) {
+        if (rt->isInstanceObject(arg, rt->builtin_types.string)) {
             std::cout << getStringDataFast(arg);
             continue;
         }
@@ -133,7 +133,7 @@ static Object *CF_printraw(const std::vector<Object *> &args, Runtime *rt, bool 
         CF_printraw({res}, rt, false);
         rt->popContext();
     }
-    return rt->protected_nothing;
+    return rt->protectedNothing();
 }
 
 // print(...) - prints arguments with adding spaces in between them, but not adding the trailing newline
@@ -156,7 +156,7 @@ static Object *CF_print(const std::vector<Object *> &args, Runtime *rt, bool exe
         CF_printraw({arg}, rt, false);
         rt->popContext();
     }
-    return rt->protected_nothing;
+    return rt->protectedNothing();
 }
 
 // printf(fmt, ...) - prints arguments with a given format
@@ -170,7 +170,7 @@ static Object *CF_println(const std::vector<Object *> &args, Runtime *rt, bool e
     ProfilerCAPTURE();
     CF_print(args, rt, execution_result_matters);
     std::cout << std::endl;
-    return rt->protected_nothing;
+    return rt->protectedNothing();
 }
 
 // readraw() - scans a single character, including spaces and other special characters
@@ -182,7 +182,7 @@ static Object *CF_readraw(const std::vector<Object *> &args, Runtime *rt, bool e
     std::cin >> c;
 
     if (!execution_result_matters) {
-        return rt->protected_nothing;
+        return rt->protectedNothing();
     }
     return Builtin::makeCharacterInstanceObject(c, rt);
 }
@@ -192,7 +192,7 @@ static Object *CF_read(const std::vector<Object *> &args, Runtime *rt, bool exec
     ProfilerCAPTURE();
     rt->verifyExactArgsAmountFunc(args, 1);
     auto arg = args[0];
-    rt->verifyIsTypeObject(arg, NULL, Runtime::SUB1_CTX);
+    rt->verifyIsTypeObject(arg, nullptr, Runtime::SUB1_CTX);
 
     rt->verifyHasMethod(arg, MagicMethods::mm__read__(rt), Runtime::SUB1_CTX);
     return rt->runMethod(MagicMethods::mm__read__(rt), arg, {arg}, execution_result_matters);
@@ -207,7 +207,7 @@ static Object *CF_readln(const std::vector<Object *> &args, Runtime *rt, bool ex
     getline(std::cin, str);
 
     if (!execution_result_matters) {
-        return rt->protected_nothing;
+        return rt->protectedNothing();
     }
     return Builtin::makeStringInstanceObject(str, rt);
 }
@@ -217,7 +217,7 @@ static Object *CF_exit(const std::vector<Object *> &args, Runtime *rt, bool exec
     ProfilerCAPTURE();
     rt->verifyExactArgsAmountFunc(args, 1);
     auto arg = args[0];
-    rt->verifyIsInstanceObject(arg, rt->integer_type, Runtime::SUB1_CTX);
+    rt->verifyIsInstanceObject(arg, rt->builtin_types.integer, Runtime::SUB1_CTX);
 
     exit(getIntegerValueFast(arg));
 }
@@ -229,7 +229,7 @@ static Object *CF_fork(const std::vector<Object *> &args, Runtime *rt, bool exec
 
     int res = fork();
     if (!execution_result_matters) {
-        return rt->protected_nothing;
+        return rt->protectedNothing();
     }
 
     return makeIntegerInstanceObject(res, rt);
@@ -240,11 +240,11 @@ static Object *CF_system(const std::vector<Object *> &args, Runtime *rt, bool ex
     ProfilerCAPTURE();
     rt->verifyExactArgsAmountFunc(args, 1);
     auto arg = args[0];
-    rt->verifyIsInstanceObject(arg, rt->string_type, Runtime::SUB1_CTX);
+    rt->verifyIsInstanceObject(arg, rt->builtin_types.string, Runtime::SUB1_CTX);
 
     auto ret = system(getStringDataFast(arg).c_str());
     if (!execution_result_matters) {
-        return rt->protected_nothing;
+        return rt->protectedNothing();
     }
 
     return Builtin::makeIntegerInstanceObject(ret, rt);
@@ -255,11 +255,11 @@ static Object *CF_sleep(const std::vector<Object *> &args, Runtime *rt, bool exe
     ProfilerCAPTURE();
     rt->verifyExactArgsAmountFunc(args, 1);
     auto arg = args[0];
-    rt->verifyIsInstanceObject(arg, rt->real_type, Runtime::SUB1_CTX);
+    rt->verifyIsInstanceObject(arg, rt->builtin_types.real, Runtime::SUB1_CTX);
 
     ::usleep(getRealValueFast(arg) * 100'000);
 
-    return rt->protected_nothing;
+    return rt->protectedNothing();
 }
 
 // error(msg) - signals an error with the given message
@@ -267,7 +267,7 @@ static Object *CF_error(const std::vector<Object *> &args, Runtime *rt, bool exe
     ProfilerCAPTURE();
     rt->verifyExactArgsAmountFunc(args, 1);
     auto arg = args[0];
-    rt->verifyIsInstanceObject(arg, rt->string_type, Runtime::SUB1_CTX);
+    rt->verifyIsInstanceObject(arg, rt->builtin_types.string, Runtime::SUB1_CTX);
 
     rt->signalError(getStringDataFast(arg), rt->getContext().area);
 }
@@ -277,9 +277,9 @@ static Object *CF_cotton(const std::vector<Object *> &args, Runtime *rt, bool ex
     ProfilerCAPTURE();
     rt->verifyExactArgsAmountFunc(args, 1);
     auto arg = args[0];
-    rt->verifyIsInstanceObject(arg, rt->string_type, Runtime::SUB1_CTX);
+    rt->verifyIsInstanceObject(arg, rt->builtin_types.string, Runtime::SUB1_CTX);
 
-    Lexer        lexer(rt->error_manager);
+    Lexer        lexer(rt->getErrorManager());
     std::string &str = getStringDataFast(arg);
 
     std::vector<Token> tokens = lexer.process(str);
@@ -290,7 +290,7 @@ static Object *CF_cotton(const std::vector<Object *> &args, Runtime *rt, bool ex
         token.end_pos   += rt->getContext().sub_areas[1].first_char + 1;
     }
 
-    Parser    parser(rt->error_manager);
+    Parser    parser(rt->getErrorManager());
     StmtNode *program = parser.parse(tokens);
 
     return rt->execute(program, execution_result_matters);
@@ -302,14 +302,14 @@ static Object *CF_argc(const std::vector<Object *> &args, Runtime *rt, bool exec
     rt->verifyExactArgsAmountFunc(args, 0);
 
     if (!execution_result_matters) {
-        return NULL;
+        return nullptr;
     }
 
-    auto s = rt->scope->prev;
-    while (s != NULL && s->can_access_prev) {
+    auto s = rt->getScope()->prev;
+    while (s != nullptr && s->can_access_prev) {
         s = s->prev;
     }
-    if (s == NULL) {
+    if (s == nullptr) {
         return Builtin::makeIntegerInstanceObject(0, rt);
     }
     return Builtin::makeIntegerInstanceObject(s->arguments.size(), rt);
@@ -321,14 +321,14 @@ static Object *CF_argv(const std::vector<Object *> &args, Runtime *rt, bool exec
     rt->verifyExactArgsAmountFunc(args, 0);
 
     if (!execution_result_matters) {
-        return NULL;
+        return nullptr;
     }
 
-    auto s = rt->scope->prev;
-    while (s != NULL && s->can_access_prev) {
+    auto s = rt->getScope()->prev;
+    while (s != nullptr && s->can_access_prev) {
         s = s->prev;
     }
-    if (s == NULL) {
+    if (s == nullptr) {
         return Builtin::makeArrayInstanceObject({}, rt);
     }
     return Builtin::makeArrayInstanceObject(s->arguments, rt);
@@ -339,20 +339,20 @@ static Object *CF_argg(const std::vector<Object *> &args, Runtime *rt, bool exec
     ProfilerCAPTURE();
     rt->verifyExactArgsAmountFunc(args, 1);
     auto arg = args[0];
-    rt->verifyIsInstanceObject(arg, rt->integer_type, Runtime::SUB1_CTX);
+    rt->verifyIsInstanceObject(arg, rt->builtin_types.integer, Runtime::SUB1_CTX);
 
     if (!execution_result_matters) {
-        return NULL;
+        return nullptr;
     }
 
     int64_t i = getIntegerValue(arg, rt);
 
-    auto s = rt->scope->prev;
-    while (s != NULL && s->can_access_prev) {
+    auto s = rt->getScope()->prev;
+    while (s != nullptr && s->can_access_prev) {
         s = s->prev;
     }
-    if (s == NULL || i >= s->arguments.size()) {
-        return rt->protected_nothing;
+    if (s == nullptr || i >= s->arguments.size()) {
+        return rt->protectedNothing();
     }
     if (i < s->arguments.size()) {
         return s->arguments[i];
@@ -382,16 +382,16 @@ static Object *CF_isinsobj(const std::vector<Object *> &args, Runtime *rt, bool 
 
     if (args.size() == 2) {
         auto type = args[1];
-        rt->verifyIsTypeObject(type, NULL, Runtime::SUB2_CTX);
+        rt->verifyIsTypeObject(type, nullptr, Runtime::SUB2_CTX);
 
         if (!execution_result_matters) {
-            return rt->protected_nothing;
+            return rt->protectedNothing();
         }
 
         return rt->protectedBoolean(rt->isInstanceObject(arg, type->type));
     }
 
-    return rt->protectedBoolean(rt->isInstanceObject(arg, NULL));
+    return rt->protectedBoolean(rt->isInstanceObject(arg, nullptr));
 }
 
 // istypeobj(obj, type) - tells whether obj is a type object of the given type (or any type if nothing is
@@ -404,16 +404,16 @@ static Object *CF_istypeobj(const std::vector<Object *> &args, Runtime *rt, bool
 
     if (args.size() == 2) {
         auto type = args[1];
-        rt->verifyIsTypeObject(type, NULL, Runtime::SUB2_CTX);
+        rt->verifyIsTypeObject(type, nullptr, Runtime::SUB2_CTX);
 
         if (!execution_result_matters) {
-            return rt->protected_nothing;
+            return rt->protectedNothing();
         }
 
         return rt->protectedBoolean(rt->isInstanceObject(arg, type->type));
     }
 
-    return rt->protectedBoolean(rt->isInstanceObject(arg, NULL));
+    return rt->protectedBoolean(rt->isInstanceObject(arg, nullptr));
 }
 
 // repr(obj) - gives a string representation of obj
@@ -433,11 +433,11 @@ static Object *CF_hasfield(const std::vector<Object *> &args, Runtime *rt, bool 
     rt->verifyExactArgsAmountFunc(args, 2);
     auto obj = args[0];
     auto str = args[1];
-    rt->verifyIsInstanceObject(obj, NULL, Runtime::SUB1_CTX);
-    rt->verifyIsInstanceObject(str, rt->string_type, Runtime::SUB2_CTX);
+    rt->verifyIsInstanceObject(obj, nullptr, Runtime::SUB1_CTX);
+    rt->verifyIsInstanceObject(str, rt->builtin_types.string, Runtime::SUB2_CTX);
 
     if (!execution_result_matters) {
-        return rt->protected_nothing;
+        return rt->protectedNothing();
     }
     return rt->protectedBoolean(obj->instance->hasField(rt->nmgr->getId(getStringDataFast(str)), rt));
 }
@@ -449,10 +449,10 @@ static Object *CF_hasmethod(const std::vector<Object *> &args, Runtime *rt, bool
     auto obj = args[0];
     auto str = args[1];
     rt->verifyIsValidObject(obj, Runtime::SUB1_CTX);
-    rt->verifyIsInstanceObject(str, rt->string_type, Runtime::SUB2_CTX);
+    rt->verifyIsInstanceObject(str, rt->builtin_types.string, Runtime::SUB2_CTX);
 
     if (!execution_result_matters) {
-        return rt->protected_nothing;
+        return rt->protectedNothing();
     }
     return rt->protectedBoolean(obj->type->hasMethod(rt->nmgr->getId(getStringDataFast(str))));
 }
@@ -462,13 +462,13 @@ static Object *CF_assert(const std::vector<Object *> &args, Runtime *rt, bool ex
     ProfilerCAPTURE();
     rt->verifyMinArgsAmountFunc(args, 1);
     auto val = args[0];
-    rt->verifyIsInstanceObject(val, rt->boolean_type, Runtime::SUB1_CTX);
+    rt->verifyIsInstanceObject(val, rt->builtin_types.boolean, Runtime::SUB1_CTX);
 
     std::string message = "Assertion error";
 
     if (args.size() == 2) {
         auto str = args[1];
-        rt->verifyIsInstanceObject(str, rt->string_type, Runtime::SUB2_CTX);
+        rt->verifyIsInstanceObject(str, rt->builtin_types.string, Runtime::SUB2_CTX);
 
         message += ": " + getStringDataFast(str);
     }
@@ -478,7 +478,7 @@ static Object *CF_assert(const std::vector<Object *> &args, Runtime *rt, bool ex
     }
 
     if (!execution_result_matters) {
-        return rt->protected_nothing;
+        return rt->protectedNothing();
     }
 }
 
@@ -487,7 +487,7 @@ static Object *CF_checkglobal(const std::vector<Object *> &args, Runtime *rt, bo
     ProfilerCAPTURE();
     rt->verifyExactArgsAmountFunc(args, 1);
     auto arg = args[0];
-    rt->verifyIsInstanceObject(arg, rt->string_type, Runtime::SUB1_CTX);
+    rt->verifyIsInstanceObject(arg, rt->builtin_types.string, Runtime::SUB1_CTX);
 
     return rt->protectedBoolean(rt->checkGlobal(rt->nmgr->getId(getStringDataFast(arg))));
 }
@@ -497,7 +497,7 @@ static Object *CF_getglobal(const std::vector<Object *> &args, Runtime *rt, bool
     ProfilerCAPTURE();
     rt->verifyExactArgsAmountFunc(args, 1);
     auto arg = args[0];
-    rt->verifyIsInstanceObject(arg, rt->string_type, Runtime::SUB1_CTX);
+    rt->verifyIsInstanceObject(arg, rt->builtin_types.string, Runtime::SUB1_CTX);
 
     return rt->getGlobal(rt->nmgr->getId(getStringDataFast(arg)));
 }
@@ -508,7 +508,7 @@ static Object *CF_setglobal(const std::vector<Object *> &args, Runtime *rt, bool
     rt->verifyExactArgsAmountFunc(args, 2);
     auto arg1 = args[0];
     auto arg2 = args[1];
-    rt->verifyIsInstanceObject(arg1, rt->string_type, Runtime::SUB1_CTX);
+    rt->verifyIsInstanceObject(arg1, rt->builtin_types.string, Runtime::SUB1_CTX);
     rt->verifyIsValidObject(arg2, Runtime::SUB2_CTX);
 
     rt->setGlobal(rt->nmgr->getId(getStringDataFast(arg1)), arg2);
@@ -520,10 +520,10 @@ static Object *CF_removeglobal(const std::vector<Object *> &args, Runtime *rt, b
     ProfilerCAPTURE();
     rt->verifyExactArgsAmountFunc(args, 1);
     auto arg1 = args[0];
-    rt->verifyIsInstanceObject(arg1, rt->string_type, Runtime::SUB1_CTX);
+    rt->verifyIsInstanceObject(arg1, rt->builtin_types.string, Runtime::SUB1_CTX);
 
     rt->removeGlobal(rt->nmgr->getId(getStringDataFast(arg1)));
-    return rt->protected_nothing;
+    return rt->protectedNothing();
 }
 
 // smartrun(file) - runs file if it hasn't been run before; returns the result of running it.
@@ -531,7 +531,7 @@ static Object *CF_smartrun(const std::vector<Object *> &args, Runtime *rt, bool 
     ProfilerCAPTURE();
     rt->verifyExactArgsAmountFunc(args, 1);
     auto arg1 = args[0];
-    rt->verifyIsInstanceObject(arg1, rt->string_type, Runtime::SUB1_CTX);
+    rt->verifyIsInstanceObject(arg1, rt->builtin_types.string, Runtime::SUB1_CTX);
 
     std::error_code ec;
     auto            path = std::filesystem::canonical(std::filesystem::path(getStringDataFast(arg1)), ec);
@@ -547,19 +547,19 @@ static Object *CF_smartrun(const std::vector<Object *> &args, Runtime *rt, bool 
         return rt->getGlobal(id);
     }
 
-    Lexer  lexer(rt->error_manager);
-    Parser parser(rt->error_manager);
+    Lexer  lexer(rt->getErrorManager());
+    Parser parser(rt->getErrorManager());
 
     auto tokens = lexer.processFile(path.c_str());
     for (auto &token : tokens) {
         token.nameid = rt->nmgr->getId(token.data);
     }
     auto program = parser.parse(tokens);
-    rt->setGlobal(id, rt->protected_nothing);
+    rt->setGlobal(id, rt->protectedNothing());
 
-    rt->newFrame();
+    rt->newScopeFrame();
     auto res = rt->execute(program, true);
-    rt->popFrame();
+    rt->popScopeFrame();
 
     rt->verifyIsValidObject(res);
     rt->setGlobal(id, res);
@@ -571,7 +571,7 @@ static Object *CF_dumbrun(const std::vector<Object *> &args, Runtime *rt, bool e
     ProfilerCAPTURE();
     rt->verifyExactArgsAmountFunc(args, 1);
     auto arg1 = args[0];
-    rt->verifyIsInstanceObject(arg1, rt->string_type, Runtime::SUB1_CTX);
+    rt->verifyIsInstanceObject(arg1, rt->builtin_types.string, Runtime::SUB1_CTX);
 
     std::error_code ec;
     auto            path = std::filesystem::canonical(std::filesystem::path(getStringDataFast(arg1)), ec);
@@ -582,8 +582,8 @@ static Object *CF_dumbrun(const std::vector<Object *> &args, Runtime *rt, bool e
         rt->signalError("Not a regular file: " + path.string(), rt->getContext().sub_areas[1]);
     }
 
-    Lexer  lexer(rt->error_manager);
-    Parser parser(rt->error_manager);
+    Lexer  lexer(rt->getErrorManager());
+    Parser parser(rt->getErrorManager());
 
     auto tokens = lexer.processFile(path.c_str());
     for (auto &token : tokens) {
@@ -591,9 +591,9 @@ static Object *CF_dumbrun(const std::vector<Object *> &args, Runtime *rt, bool e
     }
     auto program = parser.parse(tokens);
 
-    rt->newFrame();
+    rt->newScopeFrame();
     auto res = rt->execute(program, true);
-    rt->popFrame();
+    rt->popScopeFrame();
 
     rt->verifyIsValidObject(res);
     return res;
@@ -604,7 +604,7 @@ static Object *CF_loadlibrary(const std::vector<Object *> &args, Runtime *rt, bo
     ProfilerCAPTURE();
     rt->verifyExactArgsAmountFunc(args, 1);
     auto arg1 = args[0];
-    rt->verifyIsInstanceObject(arg1, rt->string_type, Runtime::SUB1_CTX);
+    rt->verifyIsInstanceObject(arg1, rt->builtin_types.string, Runtime::SUB1_CTX);
 
     std::error_code ec;
     auto            path = std::filesystem::canonical(std::filesystem::path(getStringDataFast(arg1)), ec);
@@ -619,12 +619,12 @@ static Object *CF_loadlibrary(const std::vector<Object *> &args, Runtime *rt, bo
     if (rt->checkGlobal(id)) {
         return rt->getGlobal(id);
     }
-    rt->setGlobal(id, rt->protected_nothing);
+    rt->setGlobal(id, rt->protectedNothing());
 
     void *lib = dlopen(path.c_str(), RTLD_LAZY | RTLD_DEEPBIND);
 
     auto llp = reinterpret_cast<LibraryLoadPoint>(dlsym(lib, "library_load_point"));
-    if (llp == NULL) {
+    if (llp == nullptr) {
         rt->signalError("Failed to load library " + path.string(), rt->getContext().area);
     }
     auto res = llp(rt);
@@ -636,64 +636,114 @@ static Object *CF_loadlibrary(const std::vector<Object *> &args, Runtime *rt, bo
 
 void installBuiltinFunctions(Runtime *rt) {
     ProfilerCAPTURE();
-    rt->scope->addVariable(rt->nmgr->getId("make"), makeFunctionInstanceObject(true, CF_make, NULL, rt), rt);
-    rt->scope->addVariable(rt->nmgr->getId("copy"), makeFunctionInstanceObject(true, CF_copy, NULL, rt), rt);
-    rt->scope->addVariable(rt->nmgr->getId("bool"), makeFunctionInstanceObject(true, CF_bool, NULL, rt), rt);
-    rt->scope->addVariable(rt->nmgr->getId("char"), makeFunctionInstanceObject(true, CF_char, NULL, rt), rt);
-    rt->scope->addVariable(rt->nmgr->getId("int"), makeFunctionInstanceObject(true, CF_int, NULL, rt), rt);
-    rt->scope->addVariable(rt->nmgr->getId("real"), makeFunctionInstanceObject(true, CF_real, NULL, rt), rt);
-    rt->scope->addVariable(rt->nmgr->getId("string"), makeFunctionInstanceObject(true, CF_string, NULL, rt), rt);
-    rt->scope->addVariable(rt->nmgr->getId("printraw"),
-                           makeFunctionInstanceObject(true, CF_printraw, NULL, rt),
-                           rt);
-    rt->scope->addVariable(rt->nmgr->getId("print"), makeFunctionInstanceObject(true, CF_print, NULL, rt), rt);
-    rt->scope->addVariable(rt->nmgr->getId("printf"), makeFunctionInstanceObject(true, CF_printf, NULL, rt), rt);
-    rt->scope->addVariable(rt->nmgr->getId("println"), makeFunctionInstanceObject(true, CF_println, NULL, rt), rt);
-    rt->scope->addVariable(rt->nmgr->getId("readraw"), makeFunctionInstanceObject(true, CF_readraw, NULL, rt), rt);
-    rt->scope->addVariable(rt->nmgr->getId("read"), makeFunctionInstanceObject(true, CF_read, NULL, rt), rt);
-    rt->scope->addVariable(rt->nmgr->getId("readln"), makeFunctionInstanceObject(true, CF_readln, NULL, rt), rt);
-    rt->scope->addVariable(rt->nmgr->getId("exit"), makeFunctionInstanceObject(true, CF_exit, NULL, rt), rt);
-    rt->scope->addVariable(rt->nmgr->getId("fork"), makeFunctionInstanceObject(true, CF_fork, NULL, rt), rt);
-    rt->scope->addVariable(rt->nmgr->getId("system"), makeFunctionInstanceObject(true, CF_system, NULL, rt), rt);
-    rt->scope->addVariable(rt->nmgr->getId("sleep"), makeFunctionInstanceObject(true, CF_sleep, NULL, rt), rt);
-    rt->scope->addVariable(rt->nmgr->getId("error"), makeFunctionInstanceObject(true, CF_error, NULL, rt), rt);
-    rt->scope->addVariable(rt->nmgr->getId("cotton"), makeFunctionInstanceObject(true, CF_cotton, NULL, rt), rt);
-    rt->scope->addVariable(rt->nmgr->getId("argc"), makeFunctionInstanceObject(true, CF_argc, NULL, rt), rt);
-    rt->scope->addVariable(rt->nmgr->getId("argv"), makeFunctionInstanceObject(true, CF_argv, NULL, rt), rt);
-    rt->scope->addVariable(rt->nmgr->getId("argg"), makeFunctionInstanceObject(true, CF_argg, NULL, rt), rt);
-    rt->scope->addVariable(rt->nmgr->getId("typeof"), makeFunctionInstanceObject(true, CF_typeof, NULL, rt), rt);
-    rt->scope->addVariable(rt->nmgr->getId("isinsobj"),
-                           makeFunctionInstanceObject(true, CF_isinsobj, NULL, rt),
-                           rt);
-    rt->scope->addVariable(rt->nmgr->getId("istypeobj"),
-                           makeFunctionInstanceObject(true, CF_istypeobj, NULL, rt),
-                           rt);
-    rt->scope->addVariable(rt->nmgr->getId("repr"), makeFunctionInstanceObject(true, CF_repr, NULL, rt), rt);
-    rt->scope->addVariable(rt->nmgr->getId("hasfield"),
-                           makeFunctionInstanceObject(true, CF_hasfield, NULL, rt),
-                           rt);
-    rt->scope->addVariable(rt->nmgr->getId("hasmethod"),
-                           makeFunctionInstanceObject(true, CF_hasmethod, NULL, rt),
-                           rt);
-    rt->scope->addVariable(rt->nmgr->getId("assert"), makeFunctionInstanceObject(true, CF_assert, NULL, rt), rt);
-    rt->scope->addVariable(rt->nmgr->getId("checkglobal"),
-                           makeFunctionInstanceObject(true, CF_checkglobal, NULL, rt),
-                           rt);
-    rt->scope->addVariable(rt->nmgr->getId("getglobal"),
-                           makeFunctionInstanceObject(true, CF_getglobal, NULL, rt),
-                           rt);
-    rt->scope->addVariable(rt->nmgr->getId("setglobal"),
-                           makeFunctionInstanceObject(true, CF_setglobal, NULL, rt),
-                           rt);
-    rt->scope->addVariable(rt->nmgr->getId("removeglobal"),
-                           makeFunctionInstanceObject(true, CF_removeglobal, NULL, rt),
-                           rt);
-    rt->scope->addVariable(rt->nmgr->getId("smartrun"),
-                           makeFunctionInstanceObject(true, CF_smartrun, NULL, rt),
-                           rt);
-    rt->scope->addVariable(rt->nmgr->getId("dumbrun"), makeFunctionInstanceObject(true, CF_dumbrun, NULL, rt), rt);
-    rt->scope->addVariable(rt->nmgr->getId("loadlibrary"),
-                           makeFunctionInstanceObject(true, CF_loadlibrary, NULL, rt),
-                           rt);
+    rt->getScope()->addVariable(rt->nmgr->getId("make"),
+                                makeFunctionInstanceObject(true, CF_make, nullptr, rt),
+                                rt);
+    rt->getScope()->addVariable(rt->nmgr->getId("copy"),
+                                makeFunctionInstanceObject(true, CF_copy, nullptr, rt),
+                                rt);
+    rt->getScope()->addVariable(rt->nmgr->getId("bool"),
+                                makeFunctionInstanceObject(true, CF_bool, nullptr, rt),
+                                rt);
+    rt->getScope()->addVariable(rt->nmgr->getId("char"),
+                                makeFunctionInstanceObject(true, CF_char, nullptr, rt),
+                                rt);
+    rt->getScope()->addVariable(rt->nmgr->getId("int"), makeFunctionInstanceObject(true, CF_int, nullptr, rt), rt);
+    rt->getScope()->addVariable(rt->nmgr->getId("real"),
+                                makeFunctionInstanceObject(true, CF_real, nullptr, rt),
+                                rt);
+    rt->getScope()->addVariable(rt->nmgr->getId("string"),
+                                makeFunctionInstanceObject(true, CF_string, nullptr, rt),
+                                rt);
+    rt->getScope()->addVariable(rt->nmgr->getId("printraw"),
+                                makeFunctionInstanceObject(true, CF_printraw, nullptr, rt),
+                                rt);
+    rt->getScope()->addVariable(rt->nmgr->getId("print"),
+                                makeFunctionInstanceObject(true, CF_print, nullptr, rt),
+                                rt);
+    rt->getScope()->addVariable(rt->nmgr->getId("printf"),
+                                makeFunctionInstanceObject(true, CF_printf, nullptr, rt),
+                                rt);
+    rt->getScope()->addVariable(rt->nmgr->getId("println"),
+                                makeFunctionInstanceObject(true, CF_println, nullptr, rt),
+                                rt);
+    rt->getScope()->addVariable(rt->nmgr->getId("readraw"),
+                                makeFunctionInstanceObject(true, CF_readraw, nullptr, rt),
+                                rt);
+    rt->getScope()->addVariable(rt->nmgr->getId("read"),
+                                makeFunctionInstanceObject(true, CF_read, nullptr, rt),
+                                rt);
+    rt->getScope()->addVariable(rt->nmgr->getId("readln"),
+                                makeFunctionInstanceObject(true, CF_readln, nullptr, rt),
+                                rt);
+    rt->getScope()->addVariable(rt->nmgr->getId("exit"),
+                                makeFunctionInstanceObject(true, CF_exit, nullptr, rt),
+                                rt);
+    rt->getScope()->addVariable(rt->nmgr->getId("fork"),
+                                makeFunctionInstanceObject(true, CF_fork, nullptr, rt),
+                                rt);
+    rt->getScope()->addVariable(rt->nmgr->getId("system"),
+                                makeFunctionInstanceObject(true, CF_system, nullptr, rt),
+                                rt);
+    rt->getScope()->addVariable(rt->nmgr->getId("sleep"),
+                                makeFunctionInstanceObject(true, CF_sleep, nullptr, rt),
+                                rt);
+    rt->getScope()->addVariable(rt->nmgr->getId("error"),
+                                makeFunctionInstanceObject(true, CF_error, nullptr, rt),
+                                rt);
+    rt->getScope()->addVariable(rt->nmgr->getId("cotton"),
+                                makeFunctionInstanceObject(true, CF_cotton, nullptr, rt),
+                                rt);
+    rt->getScope()->addVariable(rt->nmgr->getId("argc"),
+                                makeFunctionInstanceObject(true, CF_argc, nullptr, rt),
+                                rt);
+    rt->getScope()->addVariable(rt->nmgr->getId("argv"),
+                                makeFunctionInstanceObject(true, CF_argv, nullptr, rt),
+                                rt);
+    rt->getScope()->addVariable(rt->nmgr->getId("argg"),
+                                makeFunctionInstanceObject(true, CF_argg, nullptr, rt),
+                                rt);
+    rt->getScope()->addVariable(rt->nmgr->getId("typeof"),
+                                makeFunctionInstanceObject(true, CF_typeof, nullptr, rt),
+                                rt);
+    rt->getScope()->addVariable(rt->nmgr->getId("isinsobj"),
+                                makeFunctionInstanceObject(true, CF_isinsobj, nullptr, rt),
+                                rt);
+    rt->getScope()->addVariable(rt->nmgr->getId("istypeobj"),
+                                makeFunctionInstanceObject(true, CF_istypeobj, nullptr, rt),
+                                rt);
+    rt->getScope()->addVariable(rt->nmgr->getId("repr"),
+                                makeFunctionInstanceObject(true, CF_repr, nullptr, rt),
+                                rt);
+    rt->getScope()->addVariable(rt->nmgr->getId("hasfield"),
+                                makeFunctionInstanceObject(true, CF_hasfield, nullptr, rt),
+                                rt);
+    rt->getScope()->addVariable(rt->nmgr->getId("hasmethod"),
+                                makeFunctionInstanceObject(true, CF_hasmethod, nullptr, rt),
+                                rt);
+    rt->getScope()->addVariable(rt->nmgr->getId("assert"),
+                                makeFunctionInstanceObject(true, CF_assert, nullptr, rt),
+                                rt);
+    rt->getScope()->addVariable(rt->nmgr->getId("checkglobal"),
+                                makeFunctionInstanceObject(true, CF_checkglobal, nullptr, rt),
+                                rt);
+    rt->getScope()->addVariable(rt->nmgr->getId("getglobal"),
+                                makeFunctionInstanceObject(true, CF_getglobal, nullptr, rt),
+                                rt);
+    rt->getScope()->addVariable(rt->nmgr->getId("setglobal"),
+                                makeFunctionInstanceObject(true, CF_setglobal, nullptr, rt),
+                                rt);
+    rt->getScope()->addVariable(rt->nmgr->getId("removeglobal"),
+                                makeFunctionInstanceObject(true, CF_removeglobal, nullptr, rt),
+                                rt);
+    rt->getScope()->addVariable(rt->nmgr->getId("smartrun"),
+                                makeFunctionInstanceObject(true, CF_smartrun, nullptr, rt),
+                                rt);
+    rt->getScope()->addVariable(rt->nmgr->getId("dumbrun"),
+                                makeFunctionInstanceObject(true, CF_dumbrun, nullptr, rt),
+                                rt);
+    rt->getScope()->addVariable(rt->nmgr->getId("loadlibrary"),
+                                makeFunctionInstanceObject(true, CF_loadlibrary, nullptr, rt),
+                                rt);
 }
 }    // namespace Cotton::Builtin

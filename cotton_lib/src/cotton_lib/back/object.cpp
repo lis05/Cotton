@@ -15,29 +15,29 @@ Object::Object(bool is_instance, Instance *instance, Type *type, Runtime *rt) {
     this->is_instance = is_instance;
     this->instance    = instance;
     this->type        = type;
-    this->gc_mark     = !rt->gc->gc_mark;
+    this->gc_mark     = !rt->getGC()->gc_mark;
     this->id          = ++total_objects;
     this->can_modify  = true;
     this->single_use  = false;
-    rt->gc->track(this);
+    rt->getGC()->track(this);
 }
 
 Object::~Object() {
     ProfilerCAPTURE();
-    this->instance = NULL;
-    this->type     = NULL;
+    this->instance = nullptr;
+    this->type     = nullptr;
     total_objects--;
 }
 
 std::vector<Object *> Object::getGCReachable() {
     ProfilerCAPTURE();
     std::vector<Object *> res;
-    if (this->instance != NULL) {
+    if (this->instance != nullptr) {
         for (auto &elem : this->instance->getGCReachable()) {
             res.push_back(elem);
         }
     }
-    if (this->type != NULL) {
+    if (this->type != nullptr) {
         for (auto &elem : this->type->getGCReachable()) {
             res.push_back(elem);
         }
@@ -47,10 +47,10 @@ std::vector<Object *> Object::getGCReachable() {
 
 std::string Object::userRepr(Runtime *rt) {
     ProfilerCAPTURE();
-    if (this == NULL) {
-        return std::string("Object(NULL)");
+    if (this == nullptr) {
+        return std::string("Object(nullptr)");
     }
-    if (this->instance == NULL) {
+    if (this->instance == nullptr) {
         return this->type->userRepr(rt);
     }
     return this->instance->userRepr(rt);
@@ -83,7 +83,7 @@ void Object::assignToCopyOf(Object *obj, Runtime *rt) {
 void Object::spreadSingleUse() {
     ProfilerCAPTURE();
     this->single_use = true;
-    if (this->instance != NULL) {
+    if (this->instance != nullptr) {
         this->instance->spreadSingleUse();
     }
 }
@@ -91,15 +91,15 @@ void Object::spreadSingleUse() {
 void Object::spreadMultiUse() {
     ProfilerCAPTURE();
     this->single_use = false;
-    if (this->instance != NULL) {
+    if (this->instance != nullptr) {
         this->instance->spreadMultiUse();
     }
 }
 
 std::ostream &operator<<(std::ostream &stream, Object *obj) {
     ProfilerCAPTURE();
-    if (obj == NULL) {
-        stream << "{NULL}";
+    if (obj == nullptr) {
+        stream << "{nullptr}";
         return stream;
     }
     stream << "{" << (void *)obj << ", ";

@@ -20,7 +20,7 @@
  */
 
 #pragma once
-#include <ext/pb_ds/assoc_container.hpp>
+#include "../util.h"
 
 namespace Cotton {
 class Object;
@@ -36,50 +36,50 @@ class GCStrategy {
 public:
     /**
         @brief Acknowledges track of an Object. This function is called by the gc.
-        \param object The object that got tracked. Assumed to be valid.
+        \param object The object that got tracked. Must be valid.
       */
     virtual void acknowledgeTrack(Object *object) = 0;
 
     /**
         @brief Acknowledges track of an Instance. This function is called by the gc.
-        \param instance The Instance that got tracked. Assumed to be valid.
+        \param instance The Instance that got tracked. Must be valid.
         \param bytes Size of the instance in bytes. It is added to the total size counter.
       */
     virtual void acknowledgeTrack(Instance *instance, size_t bytes) = 0;
 
     /**
         @brief Acknowledges track of a Type. This function is called by the gc.
-        \param type The type that got tracked. Assumed to be valid.
+        \param type The type that got tracked. Must be valid.
       */
     virtual void acknowledgeTrack(Type *type) = 0;
 
     /**
         @brief Acknowledges untrack of an Object. This function is called by the gc.
-        \param object The object that got untracked. Assumed to be valid.
+        \param object The object that got untracked. Must be valid.
       */
     virtual void acknowledgeUntrack(Object *object) = 0;
 
     /**
         @brief Acknowledges untrack of an Instance. This function is called by the gc.
-        \param instance The instance that got untracked. Assumed to be valid.
+        \param instance The instance that got untracked. Must be valid.
       */
     virtual void acknowledgeUntrack(Instance *instance) = 0;
 
     /**
         @brief Acknowledges untrack of a Type. This function is called by the gc.
-        \param type The type that got untracked. Assumed to be valid.
+        \param type The type that got untracked. Must be valid.
       */
     virtual void acknowledgeUntrack(Type *type) = 0;
 
     /**
         @brief Acknowledges the end of a gc cycle. This function is called by the gc.
-        \param rt The Runtime. Assumed to be valid.
+        \param rt The runtime. Must be valid.
       */
     virtual void acknowledgeEndOfCycle(Runtime *rt) = 0;
 
     /**
         @brief Acknowledges a gc ping event. This function is called by the gc.
-        \param rt The Runtime. Assumed to be valid.
+        \param rt The runtime. Must be valid.
       */
     virtual void acknowledgePing(Runtime *rt) = 0;
 };
@@ -116,56 +116,56 @@ public:
 
     /**
         @brief Acknowledges track of an Object. This function is called by the gc.
-        \param object The object that got tracked. Assumed to be valid.
+        \param object The object that got tracked. Must be valid.
       */
     void acknowledgeTrack(Object *object);
 
     /**
         @brief Acknowledges track of an Instance. This function is called by the gc.
-        \param instance The Instance that got tracked. Assumed to be valid.
+        \param instance The Instance that got tracked. Must be valid.
         \param bytes Size of the instance in bytes. It is added to the total size counter.
       */
     void acknowledgeTrack(Instance *instance, size_t bytes);
 
     /**
         @brief Acknowledges track of a Type. This function is called by the gc.
-        \param type The type that got tracked. Assumed to be valid.
+        \param type The type that got tracked. Must be valid.
       */
     void acknowledgeTrack(Type *type);
 
     /**
         @brief Acknowledges untrack of an Object. This function is called by the gc.
-        \param object The object that got untracked. Assumed to be valid.
+        \param object The object that got untracked. Must be valid.
       */
     void acknowledgeUntrack(Object *object);
 
     /**
         @brief Acknowledges untrack of an Instance. This function is called by the gc.
-        \param instance The instance that got untracked. Assumed to be valid.
+        \param instance The instance that got untracked. Must be valid.
       */
     void acknowledgeUntrack(Instance *instance);
 
     /**
         @brief Acknowledges untrack of a Type. This function is called by the gc.
-        \param type The type that got untracked. Assumed to be valid.
+        \param type The type that got untracked. Must be valid.
       */
     void acknowledgeUntrack(Type *type);
 
     /**
         @brief Acknowledges the end of a gc cycle. This function is called by the gc.
-        \param rt The Runtime. Assumed to be valid.
+        \param rt The runtime. Must be valid.
       */
     void acknowledgeEndOfCycle(Runtime *rt);
     /**
         @brief Acknowledges a gc ping event. This function is called by the gc.
-        \param rt The Runtime. Assumed to be valid.
+        \param rt The runtime. Must be valid.
       */
     void acknowledgePing(Runtime *rt);
 
     /***
      * @brief Checks if conditions for pinging the gc have been met. This function is called by the gc.
      *
-     * @param rt The Runtime. Assumed to be valid.
+     * @param rt The runtime. Must be valid.
      * @return * void
      */
     void checkConditions(Runtime *rt);
@@ -191,7 +191,7 @@ public:
     /**
      * @brief Construct a new GC object
      *
-     * @param gc_strategy Garbage collection strategy. Assumed to be valid.
+     * @param gc_strategy Garbage collection strategy. Must be valid.
      */
     GC(GCStrategy *gc_strategy);
 
@@ -204,14 +204,14 @@ public:
     /**
      * @brief Tracks the object;
      *
-     * @param object Assumed to be valid.
+     * @param object Must be valid.
      */
     void track(Object *object);
 
     /**
      * @brief Tracks the instance;
      *
-     * @param instance Assumed to be valid.
+     * @param instance Must be valid.
      * @param bytes The size of the instance in bytes.
      */
     void track(Instance *instance, size_t bytes);
@@ -219,56 +219,56 @@ public:
     /**
      * @brief Tracks the type;
      *
-     * @param type Assumed to be valid.
+     * @param type Must be valid.
      */
     void track(Type *type);
 
     /**
      * @brief Untracks the object;
      *
-     * @param object Assumed to be valid.
+     * @param object Must be valid.
      */
     void untrack(Object *object);
 
     /**
      * @brief Untracks the instance;
      *
-     * @param instance Assumed to be valid.
+     * @param instance Must be valid.
      */
     void untrack(Instance *instance);
 
     /**
      * @brief Unracks the type;
      *
-     * @param type Assumed to be valid.
+     * @param type Must be valid.
      */
     void untrack(Type *type);
 
     /**
      * @brief Holds the given object. The gc will consider it as reachable even if it is not.
      *
-     * @param object Assumed to be valid.
+     * @param object Must be valid.
      */
     void hold(Object *object);
 
     /**
      * @brief Releases the held object.
      *
-     * @param object Assumed to be valid.
+     * @param object Must be valid.
      */
     void release(Object *object);
 
     /**
      * @brief Pings the gc. If the strategy's conditions are met, a gc cycle will be ran.
      *
-     * @param rt The Runtime. Assumed to be valid.
+     * @param rt The runtime. Must be valid.
      */
     void ping(Runtime *rt);
 
     /**
      * @brief Runs a gc cycle.
      *
-     * @param rt The Runtime. Assumed to be valid.
+     * @param rt The runtime. Must be valid.
      */
     void runCycle(Runtime *rt);
 

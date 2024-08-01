@@ -27,8 +27,8 @@ FunctionInstance::FunctionInstance(Runtime *rt)
     : Instance(rt, sizeof(FunctionInstance)) {
     ProfilerCAPTURE();
     this->is_internal  = true;
-    this->internal_ptr = NULL;
-    this->cotton_ptr   = NULL;
+    this->internal_ptr = nullptr;
+    this->cotton_ptr   = nullptr;
 }
 
 FunctionInstance::~FunctionInstance() {
@@ -45,7 +45,7 @@ void FunctionInstance::init(bool is_internal, InternalFunction internal_ptr, Fun
 Instance *FunctionInstance::copy(Runtime *rt) {
     ProfilerCAPTURE();
     auto res = new FunctionInstance(rt);
-    if (res == NULL) {
+    if (res == nullptr) {
         rt->signalError("Failed to copy " + this->userRepr(rt), rt->getContext().area);
     }
     res->init(this->is_internal, this->internal_ptr, this->cotton_ptr);
@@ -54,8 +54,8 @@ Instance *FunctionInstance::copy(Runtime *rt) {
 
 std::string FunctionInstance::userRepr(Runtime *rt) {
     ProfilerCAPTURE();
-    if (this == NULL) {
-        return "Function(NULL)";
+    if (this == nullptr) {
+        return "Function(nullptr)";
     }
     return (this->is_internal) ? "Function(internal)" : "Function";
 }
@@ -73,43 +73,43 @@ size_t FunctionType::getInstanceSize() {
 static Object *
 FunctionCallAdapter(Object *self, const std::vector<Object *> &args, Runtime *rt, bool execution_result_matters) {
     ProfilerCAPTURE();
-    rt->verifyIsInstanceObject(self, rt->function_type, Runtime::SUB0_CTX);
+    rt->verifyIsInstanceObject(self, rt->builtin_types.function, Runtime::SUB0_CTX);
     auto f = icast(self->instance, FunctionInstance);
     if (f->is_internal) {
-        if (f->internal_ptr == NULL) {
-            rt->signalError("Failed to execute NULL internal function: " + self->userRepr(rt),
+        if (f->internal_ptr == nullptr) {
+            rt->signalError("Failed to execute nullptr internal function: " + self->userRepr(rt),
                             rt->getContext().area);
         }
         auto res = f->internal_ptr(args, rt, execution_result_matters);
-        if (execution_result_matters && res == NULL) {
+        if (execution_result_matters && res == nullptr) {
             rt->signalError("Execution of internal function " + self->userRepr(rt) + " has failed",
                             rt->getContext().area);
         }
         return res;
     }
     else {
-        if (f->cotton_ptr == NULL || f->cotton_ptr->body == NULL) {
-            rt->signalError("Failed to execute NULL function " + self->userRepr(rt), rt->getContext().area);
+        if (f->cotton_ptr == nullptr || f->cotton_ptr->body == nullptr) {
+            rt->signalError("Failed to execute nullptr function " + self->userRepr(rt), rt->getContext().area);
         }
-        rt->newFrame(false);
-        // rt->scope->arguments.push_back(self); // is it needed?
+        rt->newScopeFrame(false);
+        // rt->getScope()->arguments.push_back(self); // is it needed?
         for (auto arg : args) {
-            rt->scope->arguments.push_back(arg);
+            rt->getScope()->arguments.push_back(arg);
         }
-        if (f->cotton_ptr->params != NULL) {
+        if (f->cotton_ptr->params != nullptr) {
             int i = 0;
             for (auto token : f->cotton_ptr->params->list) {
                 if (i >= args.size()) {
-                    rt->scope->addVariable(token->nameid, makeNothingInstanceObject(rt), rt);
+                    rt->getScope()->addVariable(token->nameid, makeNothingInstanceObject(rt), rt);
                     continue;
                 }
-                rt->scope->addVariable(token->nameid, args[i], rt);
+                rt->getScope()->addVariable(token->nameid, args[i], rt);
                 i++;
             }
         }
         auto res = rt->execute(f->cotton_ptr->body, execution_result_matters);
-        rt->popFrame();
-        if (execution_result_matters && res == NULL) {
+        rt->popScopeFrame();
+        if (execution_result_matters && res == nullptr) {
             rt->signalError("Execution of function " + self->userRepr(rt) + " has failed",
                             rt->getContext().sub_areas[0]);
         }
@@ -119,16 +119,16 @@ FunctionCallAdapter(Object *self, const std::vector<Object *> &args, Runtime *rt
 
 static Object *FunctionEqAdapter(Object *self, Object *arg, Runtime *rt, bool execution_result_matters) {
     ProfilerCAPTURE();
-    rt->verifyIsOfType(self, rt->function_type, Runtime::SUB0_CTX);
+    rt->verifyIsOfType(self, rt->builtin_types.function, Runtime::SUB0_CTX);
     rt->verifyIsValidObject(arg, Runtime::SUB1_CTX);
 
-    if (!rt->isOfType(arg, rt->function_type)) {
-        return rt->protected_false;
+    if (!rt->isOfType(arg, rt->builtin_types.function)) {
+        return rt->protectedBoolean(false);
     }
 
-    if (rt->isInstanceObject(self, rt->function_type)) {
-        if (!rt->isInstanceObject(arg, rt->function_type)) {
-            return rt->protected_false;
+    if (rt->isInstanceObject(self, rt->builtin_types.function)) {
+        if (!rt->isInstanceObject(arg, rt->builtin_types.function)) {
+            return rt->protectedBoolean(false);
         }
         auto f1 = icast(self, FunctionInstance);
         auto f2 = icast(arg, FunctionInstance);
@@ -138,35 +138,35 @@ static Object *FunctionEqAdapter(Object *self, Object *arg, Runtime *rt, bool ex
         else if (!f1->is_internal && !f2->is_internal) {
             return rt->protectedBoolean(f1->cotton_ptr == f2->cotton_ptr);
         }
-        return rt->protected_false;
+        return rt->protectedBoolean(false);
     }
-    else if (rt->isTypeObject(self, rt->function_type)) {
-        if (!rt->isTypeObject(arg, rt->function_type)) {
-            return rt->protected_false;
+    else if (rt->isTypeObject(self, rt->builtin_types.function)) {
+        if (!rt->isTypeObject(arg, rt->builtin_types.function)) {
+            return rt->protectedBoolean(false);
         }
-        return rt->protected_true;
+        return rt->protectedBoolean(true);
     }
 
-    return rt->protected_false;
+    return rt->protectedBoolean(false);
 }
 
 static Object *FunctionNeqAdapter(Object *self, Object *arg, Runtime *rt, bool execution_result_matters) {
     ProfilerCAPTURE();
     auto res = FunctionEqAdapter(self, arg, rt, execution_result_matters);
-    return (!getBooleanValueFast(res)) ? rt->protected_true : rt->protected_false;
+    return rt->protectedBoolean(!getBooleanValueFast(res));
 }
 
 static Object *mm__repr__(const std::vector<Object *> &args, Runtime *rt, bool execution_result_matters) {
     ProfilerCAPTURE();
     rt->verifyExactArgsAmountMethod(args, 0);
     auto self = args[0];
-    rt->verifyIsOfType(self, rt->function_type, Runtime::SUB1_CTX);
+    rt->verifyIsOfType(self, rt->builtin_types.function, Runtime::SUB1_CTX);
 
     if (!execution_result_matters) {
         return self;
     }
 
-    if (rt->isTypeObject(self, NULL)) {
+    if (rt->isTypeObject(self, nullptr)) {
         return makeStringInstanceObject("Function", rt);
     }
 
@@ -174,7 +174,8 @@ static Object *mm__repr__(const std::vector<Object *> &args, Runtime *rt, bool e
 }
 
 void installFunctionMethods(Type *type, Runtime *rt) {
-    type->addMethod(MagicMethods::mm__repr__(rt), Builtin::makeFunctionInstanceObject(true, mm__repr__, NULL, rt));
+    type->addMethod(MagicMethods::mm__repr__(rt),
+                    Builtin::makeFunctionInstanceObject(true, mm__repr__, nullptr, rt));
 }
 
 FunctionType::FunctionType(Runtime *rt)
@@ -188,26 +189,26 @@ FunctionType::FunctionType(Runtime *rt)
 Object *FunctionType::create(Runtime *rt) {
     ProfilerCAPTURE();
     auto    ins = new FunctionInstance(rt);
-    Object *obj = newObject(true, ins, this, rt);
+    Object *obj = new Object(true, ins, this, rt);
     return obj;
 }
 
 Object *FunctionType::copy(Object *obj, Runtime *rt) {
     ProfilerCAPTURE();
-    rt->verifyIsOfType(obj, rt->function_type);
-    if (obj->instance == NULL) {
-        return newObject(false, NULL, this, rt);
+    rt->verifyIsOfType(obj, rt->builtin_types.function);
+    if (obj->instance == nullptr) {
+        return new Object(false, nullptr, this, rt);
     }
     auto ins = obj->instance->copy(rt);
-    auto res = newObject(true, ins, this, rt);
+    auto res = new Object(true, ins, this, rt);
 
     return res;
 }
 
 std::string FunctionType::userRepr(Runtime *rt) {
     ProfilerCAPTURE();
-    if (this == NULL) {
-        return "FunctionType(NULL)";
+    if (this == nullptr) {
+        return "FunctionType(nullptr)";
     }
     return "FunctionType";
 }
@@ -215,7 +216,7 @@ std::string FunctionType::userRepr(Runtime *rt) {
 Object *
 makeFunctionInstanceObject(bool is_internal, InternalFunction internal_ptr, FuncDefNode *cotton_ptr, Runtime *rt) {
     ProfilerCAPTURE();
-    auto res = rt->make(rt->function_type, rt->INSTANCE_OBJECT);
+    auto res = rt->make(rt->builtin_types.function, rt->INSTANCE_OBJECT);
     icast(res->instance, FunctionInstance)->init(is_internal, internal_ptr, cotton_ptr);
     return res;
 }

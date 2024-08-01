@@ -10,108 +10,98 @@
 #include "type.h"
 
 namespace Cotton {
-Runtime::Runtime(GCStrategy *gc_strategy, ErrorManager *error_manager, NamesManager *nmgr) {
+Runtime::Runtime(GCStrategy *gc_strategy, ErrorManager *error_manager, NamesManager *nmgr)
+    : nmgr(nmgr) {
     ProfilerCAPTURE();
 
-    this->scope         = new Scope(NULL, NULL, false);
+    this->scope         = new Scope(nullptr, nullptr, false);
     this->scope->master = this->scope;
     this->gc            = new GC(gc_strategy);
     this->gc->rt        = this;
     this->error_manager = error_manager;
     this->newContext();
 
-    this->function_type  = new Builtin::FunctionType(this);
-    this->nothing_type   = new Builtin::NothingType(this);
-    this->boolean_type   = new Builtin::BooleanType(this);
-    this->integer_type   = new Builtin::IntegerType(this);
-    this->real_type      = new Builtin::RealType(this);
-    this->character_type = new Builtin::CharacterType(this);
-    this->string_type    = new Builtin::StringType(this);
-    this->array_type     = new Builtin::ArrayType(this);
+    this->builtin_types.function  = new Builtin::FunctionType(this);
+    this->builtin_types.nothing   = new Builtin::NothingType(this);
+    this->builtin_types.boolean   = new Builtin::BooleanType(this);
+    this->builtin_types.integer   = new Builtin::IntegerType(this);
+    this->builtin_types.real      = new Builtin::RealType(this);
+    this->builtin_types.character = new Builtin::CharacterType(this);
+    this->builtin_types.string    = new Builtin::StringType(this);
+    this->builtin_types.array     = new Builtin::ArrayType(this);
 
-    assert(this->function_type->id == FUNCTION_TYPE_ID);
-    assert(this->nothing_type->id == NOTHING_TYPE_ID);
-    assert(this->boolean_type->id == BOOLEAN_TYPE_ID);
-    assert(this->integer_type->id == INTEGER_TYPE_ID);
-    assert(this->real_type->id == REAL_TYPE_ID);
-    assert(this->character_type->id == CHARACTER_TYPE_ID);
-    assert(this->string_type->id == STRING_TYPE_ID);
-    assert(this->array_type->id == ARRAY_TYPE_ID);
-
-    this->nmgr = nmgr;
-
-    auto nothing_obj        = this->make(this->nothing_type, Runtime::TYPE_OBJECT);
+    auto nothing_obj        = this->make(this->builtin_types.nothing, Runtime::TYPE_OBJECT);
     nothing_obj->can_modify = false;
     this->scope->addVariable(this->nmgr->getId("Nothing"), nothing_obj, this);
-    this->registerTypeObject(this->nothing_type, nothing_obj);
+    this->registerTypeObject(this->builtin_types.nothing, nothing_obj);
 
-    auto function_obj        = this->make(this->function_type, Runtime::TYPE_OBJECT);
+    auto function_obj        = this->make(this->builtin_types.function, Runtime::TYPE_OBJECT);
     function_obj->can_modify = false;
     this->scope->addVariable(this->nmgr->getId("Function"), function_obj, this);
-    this->registerTypeObject(this->function_type, function_obj);
+    this->registerTypeObject(this->builtin_types.function, function_obj);
 
-    auto boolean_obj        = this->make(this->boolean_type, Runtime::TYPE_OBJECT);
+    auto boolean_obj        = this->make(this->builtin_types.boolean, Runtime::TYPE_OBJECT);
     boolean_obj->can_modify = false;
     this->scope->addVariable(this->nmgr->getId("Boolean"), boolean_obj, this);
-    this->registerTypeObject(this->boolean_type, boolean_obj);
+    this->registerTypeObject(this->builtin_types.boolean, boolean_obj);
 
-    auto integer_obj        = this->make(this->integer_type, Runtime::TYPE_OBJECT);
+    auto integer_obj        = this->make(this->builtin_types.integer, Runtime::TYPE_OBJECT);
     integer_obj->can_modify = false;
     this->scope->addVariable(this->nmgr->getId("Integer"), integer_obj, this);
-    this->registerTypeObject(this->integer_type, integer_obj);
+    this->registerTypeObject(this->builtin_types.integer, integer_obj);
 
-    auto real_obj        = this->make(this->real_type, Runtime::TYPE_OBJECT);
+    auto real_obj        = this->make(this->builtin_types.real, Runtime::TYPE_OBJECT);
     real_obj->can_modify = false;
     this->scope->addVariable(this->nmgr->getId("Real"), real_obj, this);
-    this->registerTypeObject(this->real_type, real_obj);
+    this->registerTypeObject(this->builtin_types.real, real_obj);
 
-    auto character_obj        = this->make(this->character_type, Runtime::TYPE_OBJECT);
+    auto character_obj        = this->make(this->builtin_types.character, Runtime::TYPE_OBJECT);
     character_obj->can_modify = false;
     this->scope->addVariable(this->nmgr->getId("Character"), character_obj, this);
-    this->registerTypeObject(this->character_type, character_obj);
+    this->registerTypeObject(this->builtin_types.character, character_obj);
 
-    auto string_obj        = this->make(this->string_type, Runtime::TYPE_OBJECT);
+    auto string_obj        = this->make(this->builtin_types.string, Runtime::TYPE_OBJECT);
     string_obj->can_modify = false;
     this->scope->addVariable(this->nmgr->getId("String"), string_obj, this);
-    this->registerTypeObject(this->string_type, string_obj);
+    this->registerTypeObject(this->builtin_types.string, string_obj);
 
-    auto array_obj        = this->make(this->array_type, Runtime::TYPE_OBJECT);
+    auto array_obj        = this->make(this->builtin_types.array, Runtime::TYPE_OBJECT);
     array_obj->can_modify = false;
     this->scope->addVariable(this->nmgr->getId("Array"), array_obj, this);
-    this->registerTypeObject(this->array_type, array_obj);
+    this->registerTypeObject(this->builtin_types.array, array_obj);
 
-    Builtin::installBooleanMethods(this->boolean_type, this);
-    Builtin::installCharacterMethods(this->character_type, this);
-    Builtin::installFunctionMethods(this->function_type, this);
-    Builtin::installIntegerMethods(this->integer_type, this);
-    Builtin::installRealMethods(this->real_type, this);
-    Builtin::installNothingMethods(this->nothing_type, this);
-    Builtin::installStringMethods(this->string_type, this);
-    Builtin::installArrayMethods(this->array_type, this);
+    Builtin::installBooleanMethods(this->builtin_types.boolean, this);
+    Builtin::installCharacterMethods(this->builtin_types.character, this);
+    Builtin::installFunctionMethods(this->builtin_types.function, this);
+    Builtin::installIntegerMethods(this->builtin_types.integer, this);
+    Builtin::installRealMethods(this->builtin_types.real, this);
+    Builtin::installNothingMethods(this->builtin_types.nothing, this);
+    Builtin::installStringMethods(this->builtin_types.string, this);
+    Builtin::installArrayMethods(this->builtin_types.array, this);
 
     Builtin::installBuiltinFunctions(this);
 
-    this->protected_nothing             = this->make(this->nothing_type, Runtime::INSTANCE_OBJECT);
+    this->protected_nothing             = this->make(this->builtin_types.nothing, Runtime::INSTANCE_OBJECT);
     this->protected_nothing->can_modify = false;
     this->gc->hold(this->protected_nothing);
 
-    this->protected_true = this->make(this->boolean_type, Runtime::INSTANCE_OBJECT);
+    this->protected_true = this->make(this->builtin_types.boolean, Runtime::INSTANCE_OBJECT);
     Builtin::getBooleanValue(this->protected_true, this) = true;
     this->protected_true->can_modify                     = false;
     this->gc->hold(this->protected_true);
 
-    this->protected_false = this->make(this->boolean_type, Runtime::INSTANCE_OBJECT);
+    this->protected_false = this->make(this->builtin_types.boolean, Runtime::INSTANCE_OBJECT);
     Builtin::getBooleanValue(this->protected_false, this) = false;
     this->protected_false->can_modify                     = false;
     this->gc->hold(this->protected_false);
 }
 
-bool Runtime::checkGlobal(int64_t id) {
+bool Runtime::checkGlobal(NameId id) {
     auto it = this->globals.find(id);
     return it != this->globals.end();
 }
 
-Object *Runtime::getGlobal(int64_t id) {
+Object *Runtime::getGlobal(NameId id) {
     ProfilerCAPTURE();
     auto it = this->globals.find(id);
     if (it == this->globals.end()) {
@@ -120,27 +110,31 @@ Object *Runtime::getGlobal(int64_t id) {
     return it->second;
 }
 
-void Runtime::setGlobal(int64_t id, Object *obj) {
+void Runtime::setGlobal(NameId id, Object *obj) {
     ProfilerCAPTURE();
     this->globals[id] = obj;
 }
 
-void Runtime::removeGlobal(int64_t id) {
+void Runtime::removeGlobal(NameId id) {
     ProfilerCAPTURE();
     this->globals.erase(id);
 }
 
 void Runtime::registerTypeObject(Type *type, Object *obj) {
     ProfilerCAPTURE();
-    this->type_objects[type] = obj;
+    this->registered_type_objects[type] = obj;
 }
 
 Object *Runtime::getTypeObject(Type *type) {
     ProfilerCAPTURE();
-    auto it = this->type_objects.find(type);
-    if (it != this->type_objects.end()) {
+    auto it = this->registered_type_objects.find(type);
+    if (it != this->registered_type_objects.end()) {
         return it->second;
     }
+    return this->protected_nothing;
+}
+
+Object *Runtime::protectedNothing() {
     return this->protected_nothing;
 }
 
@@ -149,13 +143,13 @@ Object *Runtime::protectedBoolean(bool val) {
     return val ? this->protected_true : this->protected_false;
 }
 
-void Runtime::newFrame(bool can_access_prev_scope) {
+void Runtime::newScopeFrame(bool can_access_prev_scope) {
     ProfilerCAPTURE();
     auto scope  = new Scope(this->scope, this->scope->master, can_access_prev_scope);
     this->scope = scope;
 }
 
-void Runtime::popFrame() {
+void Runtime::popScopeFrame() {
     ProfilerCAPTURE();
     auto scope = this->scope->prev;
     delete this->scope;
@@ -164,18 +158,18 @@ void Runtime::popFrame() {
 
 Object *Runtime::make(Type *type, ObjectOptions object_opt) {
     ProfilerCAPTURE();
-    if (type == NULL) {
-        this->signalError("Failed to make an object of NULL type", this->getContext().area);
+    if (type == nullptr) {
+        this->signalError("Failed to make an object of nullptr type", this->getContext().area);
     }
-    Object *obj = NULL;
+    Object *obj = nullptr;
     if (object_opt == Runtime::INSTANCE_OBJECT) {
         obj = type->create(this);
     }
     else {
-        obj = newObject(false, NULL, type, this);
+        obj = new Object(false, nullptr, type, this);
     }
 
-    if (obj == NULL) {
+    if (obj == nullptr) {
         this->signalError("Failed to make an object of type " + type->userRepr(this), this->getContext().area);
     }
     obj->spreadSingleUse();
@@ -204,49 +198,49 @@ Object *Runtime::runOperator(OperatorNode::OperatorId id, Object *obj, bool exec
     switch (id) {
     case OperatorNode::POST_PLUS_PLUS :
         op = obj->type->postinc_op;
-        if (op == NULL) {
+        if (op == nullptr) {
             this->signalError(obj->userRepr(this) + " doesn't support that operator", this->getContext().area);
         }
         return op(obj, this, execution_result_matters);
     case OperatorNode::POST_MINUS_MINUS :
         op = obj->type->postdec_op;
-        if (op == NULL) {
+        if (op == nullptr) {
             this->signalError(obj->userRepr(this) + " doesn't support that operator", this->getContext().area);
         }
         return op(obj, this, execution_result_matters);
     case OperatorNode::PRE_PLUS_PLUS :
         op = obj->type->preinc_op;
-        if (op == NULL) {
+        if (op == nullptr) {
             this->signalError(obj->userRepr(this) + " doesn't support that operator", this->getContext().area);
         }
         return op(obj, this, execution_result_matters);
     case OperatorNode::PRE_MINUS_MINUS :
         op = obj->type->predec_op;
-        if (op == NULL) {
+        if (op == nullptr) {
             this->signalError(obj->userRepr(this) + " doesn't support that operator", this->getContext().area);
         }
         return op(obj, this, execution_result_matters);
     case OperatorNode::PRE_PLUS :
         op = obj->type->positive_op;
-        if (op == NULL) {
+        if (op == nullptr) {
             this->signalError(obj->userRepr(this) + " doesn't support that operator", this->getContext().area);
         }
         return op(obj, this, execution_result_matters);
     case OperatorNode::PRE_MINUS :
         op = obj->type->negative_op;
-        if (op == NULL) {
+        if (op == nullptr) {
             this->signalError(obj->userRepr(this) + " doesn't support that operator", this->getContext().area);
         }
         return op(obj, this, execution_result_matters);
     case OperatorNode::NOT :
         op = obj->type->not_op;
-        if (op == NULL) {
+        if (op == nullptr) {
             this->signalError(obj->userRepr(this) + " doesn't support that operator", this->getContext().area);
         }
         return op(obj, this, execution_result_matters);
     case OperatorNode::INVERSE :
         op = obj->type->inverse_op;
-        if (op == NULL) {
+        if (op == nullptr) {
             this->signalError(obj->userRepr(this) + " doesn't support that operator", this->getContext().area);
         }
         return op(obj, this, execution_result_matters);
@@ -265,14 +259,14 @@ Runtime::runOperator(OperatorNode::OperatorId id, Object *obj, Object *arg, bool
     switch (id) {
     case OperatorNode::MULT :
         op = obj->type->mult_op;
-        if (op == NULL) {
+        if (op == nullptr) {
             this->signalError("Left argument " + obj->userRepr(this) + " doesn't support that operator",
                               this->getContext().area);
         }
         return op(obj, arg, this, execution_result_matters);
     case OperatorNode::DIV :
         op = obj->type->div_op;
-        if (op == NULL) {
+        if (op == nullptr) {
             this->signalError("Left argument " + obj->userRepr(this) + " doesn't support that operator",
                               this->getContext().area);
         }
@@ -280,7 +274,7 @@ Runtime::runOperator(OperatorNode::OperatorId id, Object *obj, Object *arg, bool
         return op(obj, arg, this, execution_result_matters);
     case OperatorNode::REM :
         op = obj->type->rem_op;
-        if (op == NULL) {
+        if (op == nullptr) {
             this->signalError("Left argument " + obj->userRepr(this) + " doesn't support that operator",
                               this->getContext().area);
         }
@@ -288,7 +282,7 @@ Runtime::runOperator(OperatorNode::OperatorId id, Object *obj, Object *arg, bool
         return op(obj, arg, this, execution_result_matters);
     case OperatorNode::RIGHT_SHIFT :
         op = obj->type->rshift_op;
-        if (op == NULL) {
+        if (op == nullptr) {
             this->signalError("Left argument " + obj->userRepr(this) + " doesn't support that operator",
                               this->getContext().area);
         }
@@ -296,7 +290,7 @@ Runtime::runOperator(OperatorNode::OperatorId id, Object *obj, Object *arg, bool
         return op(obj, arg, this, execution_result_matters);
     case OperatorNode::LEFT_SHIFT :
         op = obj->type->lshift_op;
-        if (op == NULL) {
+        if (op == nullptr) {
             this->signalError("Left argument " + obj->userRepr(this) + " doesn't support that operator",
                               this->getContext().area);
         }
@@ -304,7 +298,7 @@ Runtime::runOperator(OperatorNode::OperatorId id, Object *obj, Object *arg, bool
         return op(obj, arg, this, execution_result_matters);
     case OperatorNode::PLUS :
         op = obj->type->add_op;
-        if (op == NULL) {
+        if (op == nullptr) {
             this->signalError("Left argument " + obj->userRepr(this) + " doesn't support that operator",
                               this->getContext().area);
         }
@@ -312,7 +306,7 @@ Runtime::runOperator(OperatorNode::OperatorId id, Object *obj, Object *arg, bool
         return op(obj, arg, this, execution_result_matters);
     case OperatorNode::MINUS :
         op = obj->type->sub_op;
-        if (op == NULL) {
+        if (op == nullptr) {
             this->signalError("Left argument " + obj->userRepr(this) + " doesn't support that operator",
                               this->getContext().area);
         }
@@ -320,7 +314,7 @@ Runtime::runOperator(OperatorNode::OperatorId id, Object *obj, Object *arg, bool
         return op(obj, arg, this, execution_result_matters);
     case OperatorNode::LESS :
         op = obj->type->lt_op;
-        if (op == NULL) {
+        if (op == nullptr) {
             this->signalError("Left argument " + obj->userRepr(this) + " doesn't support that operator",
                               this->getContext().area);
         }
@@ -328,7 +322,7 @@ Runtime::runOperator(OperatorNode::OperatorId id, Object *obj, Object *arg, bool
         return op(obj, arg, this, execution_result_matters);
     case OperatorNode::LESS_EQUAL :
         op = obj->type->leq_op;
-        if (op == NULL) {
+        if (op == nullptr) {
             this->signalError("Left argument " + obj->userRepr(this) + " doesn't support that operator",
                               this->getContext().area);
         }
@@ -336,7 +330,7 @@ Runtime::runOperator(OperatorNode::OperatorId id, Object *obj, Object *arg, bool
         return op(obj, arg, this, execution_result_matters);
     case OperatorNode::GREATER :
         op = obj->type->gt_op;
-        if (op == NULL) {
+        if (op == nullptr) {
             this->signalError("Left argument " + obj->userRepr(this) + " doesn't support that operator",
                               this->getContext().area);
         }
@@ -344,7 +338,7 @@ Runtime::runOperator(OperatorNode::OperatorId id, Object *obj, Object *arg, bool
         return op(obj, arg, this, execution_result_matters);
     case OperatorNode::GREATER_EQUAL :
         op = obj->type->geq_op;
-        if (op == NULL) {
+        if (op == nullptr) {
             this->signalError("Left argument " + obj->userRepr(this) + " doesn't support that operator",
                               this->getContext().area);
         }
@@ -352,7 +346,7 @@ Runtime::runOperator(OperatorNode::OperatorId id, Object *obj, Object *arg, bool
         return op(obj, arg, this, execution_result_matters);
     case OperatorNode::EQUAL :
         op = obj->type->eq_op;
-        if (op == NULL) {
+        if (op == nullptr) {
             this->signalError("Left argument " + obj->userRepr(this) + " doesn't support that operator",
                               this->getContext().area);
         }
@@ -360,7 +354,7 @@ Runtime::runOperator(OperatorNode::OperatorId id, Object *obj, Object *arg, bool
         return op(obj, arg, this, execution_result_matters);
     case OperatorNode::NOT_EQUAL :
         op = obj->type->neq_op;
-        if (op == NULL) {
+        if (op == nullptr) {
             this->signalError("Left argument " + obj->userRepr(this) + " doesn't support that operator",
                               this->getContext().area);
         }
@@ -368,7 +362,7 @@ Runtime::runOperator(OperatorNode::OperatorId id, Object *obj, Object *arg, bool
         return op(obj, arg, this, execution_result_matters);
     case OperatorNode::BITAND :
         op = obj->type->bitand_op;
-        if (op == NULL) {
+        if (op == nullptr) {
             this->signalError("Left argument " + obj->userRepr(this) + " doesn't support that operator",
                               this->getContext().area);
         }
@@ -376,7 +370,7 @@ Runtime::runOperator(OperatorNode::OperatorId id, Object *obj, Object *arg, bool
         return op(obj, arg, this, execution_result_matters);
     case OperatorNode::BITXOR :
         op = obj->type->bitxor_op;
-        if (op == NULL) {
+        if (op == nullptr) {
             this->signalError("Left argument " + obj->userRepr(this) + " doesn't support that operator",
                               this->getContext().area);
         }
@@ -384,7 +378,7 @@ Runtime::runOperator(OperatorNode::OperatorId id, Object *obj, Object *arg, bool
         return op(obj, arg, this, execution_result_matters);
     case OperatorNode::BITOR :
         op = obj->type->bitor_op;
-        if (op == NULL) {
+        if (op == nullptr) {
             this->signalError("Left argument " + obj->userRepr(this) + " doesn't support that operator",
                               this->getContext().area);
         }
@@ -392,7 +386,7 @@ Runtime::runOperator(OperatorNode::OperatorId id, Object *obj, Object *arg, bool
         return op(obj, arg, this, execution_result_matters);
     case OperatorNode::AND :
         op = obj->type->and_op;
-        if (op == NULL) {
+        if (op == nullptr) {
             this->signalError("Left argument " + obj->userRepr(this) + " doesn't support that operator",
                               this->getContext().area);
         }
@@ -400,7 +394,7 @@ Runtime::runOperator(OperatorNode::OperatorId id, Object *obj, Object *arg, bool
         return op(obj, arg, this, execution_result_matters);
     case OperatorNode::OR :
         op = obj->type->or_op;
-        if (op == NULL) {
+        if (op == nullptr) {
             this->signalError("Left argument " + obj->userRepr(this) + " doesn't support that operator",
                               this->getContext().area);
         }
@@ -421,7 +415,7 @@ Object *Runtime::runOperator(OperatorNode::OperatorId     id,
 
     if (id == OperatorNode::CALL) {
         auto op = obj->type->call_op;
-        if (op == NULL) {
+        if (op == nullptr) {
             this->signalError("Left argument " + obj->userRepr(this) + " doesn't support that operator",
                               this->getContext().area);
         }
@@ -430,7 +424,7 @@ Object *Runtime::runOperator(OperatorNode::OperatorId     id,
     }
     else if (id == OperatorNode::INDEX) {
         auto op = obj->type->index_op;
-        if (op == NULL) {
+        if (op == nullptr) {
             this->signalError("Left argument " + obj->userRepr(this) + " doesn't support that operator",
                               this->getContext().area);
         }
@@ -444,7 +438,7 @@ Object *Runtime::runOperator(OperatorNode::OperatorId     id,
 }
 
 Object *
-Runtime::runMethod(int64_t id, Object *obj, const std::vector<Object *> &args, bool execution_result_matters) {
+Runtime::runMethod(NameId id, Object *obj, const std::vector<Object *> &args, bool execution_result_matters) {
     ProfilerCAPTURE();
     auto method = obj->type->getMethod(id, this);
     return this->runOperator(OperatorNode::CALL, method, args, execution_result_matters);
@@ -485,8 +479,8 @@ void Runtime::signalError(const std::string &message, const TextArea &ta) {
 
 Object *Runtime::execute(ExprNode *node, bool execution_result_matters) {
     ProfilerCAPTURE();
-    if (node == NULL) {
-        this->signalError("Failed to execute NULL AST node", this->getContext().area);
+    if (node == nullptr) {
+        this->signalError("Failed to execute nullptr AST node", this->getContext().area);
     }
 
     switch (node->id) {
@@ -511,24 +505,24 @@ Object *Runtime::execute(ExprNode *node, bool execution_result_matters) {
 
 Object *Runtime::execute(FuncDefNode *node, bool execution_result_matters) {
     ProfilerCAPTURE();
-    if (node == NULL) {
+    if (node == nullptr) {
         this->signalError("Failed to execute unknown AST node", this->getContext().area);
     }
     this->newContext();
     this->getContext().area = node->text_area;
     // highlight(this, node->function_token);
-    auto func               = Builtin::makeFunctionInstanceObject(false, NULL, node, this);
-    if (node->name != NULL) {
+    auto func               = Builtin::makeFunctionInstanceObject(false, nullptr, node, this);
+    if (node->name != nullptr) {
         this->scope->addVariable(node->name->nameid, func, this);
     }
     this->popContext();
-    setExecFlagNONE(this);
+    this->execution_flags = ExecutionFlags::NONE;
     return func;
 }
 
 Object *Runtime::execute(TypeDefNode *node, bool execution_result_matters) {
     ProfilerCAPTURE();
-    if (node == NULL) {
+    if (node == nullptr) {
         this->signalError("Failed to execute unknown AST node", this->getContext().area);
     }
     this->newContext();
@@ -542,7 +536,7 @@ Object *Runtime::execute(TypeDefNode *node, bool execution_result_matters) {
     for (auto method : node->methods) {
         this->newContext();
         this->getContext().area = method->text_area;
-        auto f                  = Builtin::makeFunctionInstanceObject(false, NULL, method, this);
+        auto f                  = Builtin::makeFunctionInstanceObject(false, nullptr, method, this);
         type->addMethod(method->name->nameid, f);
         this->popContext();
     }
@@ -551,17 +545,17 @@ Object *Runtime::execute(TypeDefNode *node, bool execution_result_matters) {
     this->scope->addVariable(type->nameid, res, this);
     this->popContext();
 
-    setExecFlagNONE(this);
+    this->execution_flags = ExecutionFlags::NONE;
     return res;
 }
 
 static std::vector<Object *> getList(ExprNode *expr, Runtime *rt) {
     ProfilerCAPTURE();
     std::vector<Object *> res;
-    while (expr != NULL) {
+    while (expr != nullptr) {
         if (expr->id == ExprNode::OPERATOR && expr->op->id == OperatorNode::COMMA) {
             auto r = rt->execute(expr->op->first, true);
-            if (isExecFlagDIRECT_PASS(rt)) {
+            if (rt->isExecFlagDIRECT_PASS()) {
                 res.push_back(r);
             }
             else {
@@ -570,12 +564,12 @@ static std::vector<Object *> getList(ExprNode *expr, Runtime *rt) {
                 res.push_back(rt->copy(r));
                 rt->popContext();
             }
-            rt->gc->hold(res.back());
+            rt->getGC()->hold(res.back());
             expr = expr->op->second;
         }
         else {
             auto r = rt->execute(expr, true);
-            if (isExecFlagDIRECT_PASS(rt)) {
+            if (rt->isExecFlagDIRECT_PASS()) {
                 res.push_back(r);
             }
             else {
@@ -584,7 +578,7 @@ static std::vector<Object *> getList(ExprNode *expr, Runtime *rt) {
                 res.push_back(rt->copy(r));
                 rt->popContext();
             }
-            rt->gc->hold(res.back());
+            rt->getGC()->hold(res.back());
             break;
         }
     }
@@ -593,7 +587,7 @@ static std::vector<Object *> getList(ExprNode *expr, Runtime *rt) {
 
 static void getList_addToContext(ExprNode *expr, Runtime *rt) {
     ProfilerCAPTURE();
-    while (expr != NULL) {
+    while (expr != nullptr) {
         if (expr->id == ExprNode::OPERATOR && expr->op->id == OperatorNode::COMMA) {
             rt->getContext().sub_areas.push_back(expr->op->first->text_area);
             expr = expr->op->second;
@@ -607,7 +601,7 @@ static void getList_addToContext(ExprNode *expr, Runtime *rt) {
 
 Object *Runtime::execute(OperatorNode *node, bool execution_result_matters) {
     ProfilerCAPTURE();
-    if (node == NULL) {
+    if (node == nullptr) {
         this->signalError("Failed to execute unknown AST node", this->getContext().area);
     }
 
@@ -627,7 +621,7 @@ Object *Runtime::execute(OperatorNode *node, bool execution_result_matters) {
         auto res = this->execute(node->first, execution_result_matters);
         this->gc->hold(res);
         auto expr = node->second;
-        while (expr != NULL) {
+        while (expr != nullptr) {
             if (expr->id == ExprNode::OPERATOR && expr->op->id == OperatorNode::COMMA) {
                 auto r = this->execute(expr->op->first, false);
                 expr   = expr->op->second;
@@ -647,16 +641,16 @@ Object *Runtime::execute(OperatorNode *node, bool execution_result_matters) {
         {
             auto caller = this->execute(node->first->op->first, true);
             this->gc->hold(caller);
-            Object *selected = NULL;
+            Object *selected = nullptr;
 
             auto dot = node->first->op;
-            if (dot->second == NULL || dot->second->id != ExprNode::ATOM
+            if (dot->second == nullptr || dot->second->id != ExprNode::ATOM
                 || dot->second->atom->id != AtomNode::IDENTIFIER)
             {
                 this->signalError("Selector is illegal", dot->second->text_area);
             }
-            int64_t selector = dot->second->atom->ident->nameid;
-            if (!this->isInstanceObject(caller, NULL)) {
+            NameId selector = dot->second->atom->ident->nameid;
+            if (!this->isInstanceObject(caller, nullptr)) {
                 this->signalError(caller->userRepr(this) + " must be an instance object", dot->first->text_area);
             }
             if (caller->instance->hasField(selector, this)) {
@@ -685,7 +679,7 @@ Object *Runtime::execute(OperatorNode *node, bool execution_result_matters) {
             auto res = this->runOperator(node->id, selected, args, execution_result_matters);
             this->popContext();
 
-            setExecFlagNONE(this);
+            this->execution_flags = ExecutionFlags::NONE;
             this->popContext();
 
             for (auto &item : list) {
@@ -712,7 +706,7 @@ Object *Runtime::execute(OperatorNode *node, bool execution_result_matters) {
             auto res = this->runOperator(node->id, self, args, execution_result_matters);
             this->popContext();
 
-            setExecFlagNONE(this);
+            this->execution_flags = ExecutionFlags::NONE;
             this->popContext();
             for (auto &item : list) {
                 this->gc->release(item);
@@ -724,23 +718,23 @@ Object *Runtime::execute(OperatorNode *node, bool execution_result_matters) {
 
     Object *self = this->execute(node->first, true);
     this->gc->hold(self);
-    Object *other = NULL;
+    Object *other = nullptr;
 
     switch (node->id) {
     case OperatorNode::DOT : {
-        if (node->second == NULL || node->second->id != ExprNode::ATOM
+        if (node->second == nullptr || node->second->id != ExprNode::ATOM
             || node->second->atom->id != AtomNode::IDENTIFIER)
         {
             this->signalError("Selector is illegal", node->second->text_area);
         }
-        int64_t selector = node->second->atom->ident->nameid;
+        NameId selector = node->second->atom->ident->nameid;
         if (!isInstanceObject(self)) {
             this->signalError(self->userRepr(this) + " must be an instance object", node->first->text_area);
         }
         if (self->instance->hasField(selector, this)) {
             auto res = self->instance->selectField(selector, this);
 
-            setExecFlagNONE(this);
+            this->execution_flags = ExecutionFlags::NONE;
             this->popContext();
             this->gc->release(self);
             return res;
@@ -748,7 +742,7 @@ Object *Runtime::execute(OperatorNode *node, bool execution_result_matters) {
         else if (self->type->hasMethod(selector)) {
             auto res = self->type->getMethod(selector, this);
 
-            setExecFlagNONE(this);
+            this->execution_flags = ExecutionFlags::NONE;
             this->popContext();
             this->gc->release(self);
             return res;
@@ -758,21 +752,22 @@ Object *Runtime::execute(OperatorNode *node, bool execution_result_matters) {
         }
     }
     case OperatorNode::AT : {
-        setExecFlagDIRECT_PASS(this);
+        this->clearExecFlags();
+        this->setExecFlagDIRECT_PASS();
         this->popContext();
         this->gc->release(self);
         return self;
     }
     case OperatorNode::ASSIGN : {
         other = this->execute(node->second, true);
-        if (isExecFlagDIRECT_PASS(this)) {
+        if (this->isExecFlagDIRECT_PASS()) {
             self->assignTo(other, this);
         }
         else {
             self->assignToCopyOf(other, this);
         }
 
-        setExecFlagNONE(this);
+        this->execution_flags = ExecutionFlags::NONE;
         this->popContext();
         this->gc->release(self);
         return self;
@@ -783,7 +778,7 @@ Object *Runtime::execute(OperatorNode *node, bool execution_result_matters) {
         this->getContext().sub_areas.push_back(node->second->text_area);
         self->assignToCopyOf(this->runOperator(OperatorNode::PLUS, self, other, true), this);
 
-        setExecFlagNONE(this);
+        this->execution_flags = ExecutionFlags::NONE;
         this->popContext();
         this->gc->release(self);
         return self;
@@ -794,7 +789,7 @@ Object *Runtime::execute(OperatorNode *node, bool execution_result_matters) {
         this->getContext().sub_areas.push_back(node->second->text_area);
         self->assignToCopyOf(this->runOperator(OperatorNode::MINUS, self, other, true), this);
 
-        setExecFlagNONE(this);
+        this->execution_flags = ExecutionFlags::NONE;
         this->popContext();
         this->gc->release(self);
         return self;
@@ -805,7 +800,7 @@ Object *Runtime::execute(OperatorNode *node, bool execution_result_matters) {
         this->getContext().sub_areas.push_back(node->second->text_area);
         self->assignToCopyOf(this->runOperator(OperatorNode::MULT, self, other, true), this);
 
-        setExecFlagNONE(this);
+        this->execution_flags = ExecutionFlags::NONE;
         this->popContext();
         this->gc->release(self);
         return self;
@@ -816,7 +811,7 @@ Object *Runtime::execute(OperatorNode *node, bool execution_result_matters) {
         this->getContext().sub_areas.push_back(node->second->text_area);
         self->assignToCopyOf(this->runOperator(OperatorNode::DIV, self, other, true), this);
 
-        setExecFlagNONE(this);
+        this->execution_flags = ExecutionFlags::NONE;
         this->popContext();
         this->gc->release(self);
         return self;
@@ -827,7 +822,7 @@ Object *Runtime::execute(OperatorNode *node, bool execution_result_matters) {
         this->getContext().sub_areas.push_back(node->second->text_area);
         self->assignToCopyOf(this->runOperator(OperatorNode::REM, self, other, true), this);
 
-        setExecFlagNONE(this);
+        this->execution_flags = ExecutionFlags::NONE;
         this->popContext();
         this->gc->release(self);
         return self;
@@ -844,8 +839,8 @@ Object *Runtime::execute(OperatorNode *node, bool execution_result_matters) {
     case OperatorNode::NOT :
     case OperatorNode::INVERSE :
         this->getContext().sub_areas.push_back(node->first->text_area);
-        auto res = this->runOperator(node->id, self, execution_result_matters);
-        setExecFlagNONE(this);
+        auto res              = this->runOperator(node->id, self, execution_result_matters);
+        this->execution_flags = ExecutionFlags::NONE;
         this->popContext();
         this->gc->release(self);
         return res;
@@ -854,8 +849,8 @@ Object *Runtime::execute(OperatorNode *node, bool execution_result_matters) {
     auto arg = this->execute(node->second, true);
     this->getContext().sub_areas.push_back(node->first->text_area);
     this->getContext().sub_areas.push_back(node->second->text_area);
-    auto res = this->runOperator(node->id, self, arg, execution_result_matters);
-    setExecFlagNONE(this);
+    auto res              = this->runOperator(node->id, self, arg, execution_result_matters);
+    this->execution_flags = ExecutionFlags::NONE;
     this->popContext();
     this->gc->release(self);
     return res;
@@ -863,28 +858,28 @@ Object *Runtime::execute(OperatorNode *node, bool execution_result_matters) {
 
 Object *Runtime::execute(AtomNode *node, bool execution_result_matters) {
     ProfilerCAPTURE();
-    if (node == NULL) {
+    if (node == nullptr) {
         this->signalError("Failed to execute unknown AST node", this->getContext().area);
     }
     this->newContext();
     this->getContext().area = node->text_area;
-    __gnu_pbds::cc_hash_table<int64_t, Object *>::point_iterator it;
+    HashTable<NameId, Object *>::point_iterator it;
 
     switch (node->id) {
     case AtomNode::BOOLEAN : {
         if (!execution_result_matters) {
-            setExecFlagNONE(this);
+            this->execution_flags = ExecutionFlags::NONE;
             this->popContext();
-            return NULL;
+            return nullptr;
         }
-        if (node->lit_obj != NULL) {
-            setExecFlagNONE(this);
+        if (node->lit_obj != nullptr) {
+            this->execution_flags = ExecutionFlags::NONE;
             this->popContext();
             return node->lit_obj;
         }
         it = this->readonly_literals.find(node->token->nameid);
         if (it != this->readonly_literals.end()) {
-            setExecFlagNONE(this);
+            this->execution_flags = ExecutionFlags::NONE;
             this->popContext();
             return it->second;
         }
@@ -893,24 +888,24 @@ Object *Runtime::execute(AtomNode *node, bool execution_result_matters) {
         lit->can_modify                              = false;
         this->readonly_literals[node->token->nameid] = lit;
 
-        setExecFlagNONE(this);
+        this->execution_flags = ExecutionFlags::NONE;
         this->popContext();
         return node->lit_obj = lit;
     }
     case AtomNode::CHARACTER : {
         if (!execution_result_matters) {
-            setExecFlagNONE(this);
+            this->execution_flags = ExecutionFlags::NONE;
             this->popContext();
-            return NULL;
+            return nullptr;
         }
-        if (node->lit_obj != NULL) {
-            setExecFlagNONE(this);
+        if (node->lit_obj != nullptr) {
+            this->execution_flags = ExecutionFlags::NONE;
             this->popContext();
             return node->lit_obj;
         }
         it = this->readonly_literals.find(node->token->nameid);
         if (it != this->readonly_literals.end()) {
-            setExecFlagNONE(this);
+            this->execution_flags = ExecutionFlags::NONE;
             this->popContext();
             return node->lit_obj = it->second;
             ;
@@ -920,24 +915,24 @@ Object *Runtime::execute(AtomNode *node, bool execution_result_matters) {
         lit->can_modify                              = false;
         this->readonly_literals[node->token->nameid] = lit;
 
-        setExecFlagNONE(this);
+        this->execution_flags = ExecutionFlags::NONE;
         this->popContext();
         return node->lit_obj = lit;
     }
     case AtomNode::INTEGER : {
         if (!execution_result_matters) {
-            setExecFlagNONE(this);
+            this->execution_flags = ExecutionFlags::NONE;
             this->popContext();
-            return NULL;
+            return nullptr;
         }
-        if (node->lit_obj != NULL) {
-            setExecFlagNONE(this);
+        if (node->lit_obj != nullptr) {
+            this->execution_flags = ExecutionFlags::NONE;
             this->popContext();
             return node->lit_obj;
         }
         it = this->readonly_literals.find(node->token->nameid);
         if (it != this->readonly_literals.end()) {
-            setExecFlagNONE(this);
+            this->execution_flags = ExecutionFlags::NONE;
             this->popContext();
             return node->lit_obj = it->second;
             ;
@@ -947,25 +942,25 @@ Object *Runtime::execute(AtomNode *node, bool execution_result_matters) {
         lit->can_modify                              = false;
         this->readonly_literals[node->token->nameid] = lit;
 
-        setExecFlagNONE(this);
+        this->execution_flags = ExecutionFlags::NONE;
         this->popContext();
         return node->lit_obj = lit;
     }
     case AtomNode::REAL : {
         if (!execution_result_matters) {
-            setExecFlagNONE(this);
+            this->execution_flags = ExecutionFlags::NONE;
 
             this->popContext();
-            return NULL;
+            return nullptr;
         }
-        if (node->lit_obj != NULL) {
-            setExecFlagNONE(this);
+        if (node->lit_obj != nullptr) {
+            this->execution_flags = ExecutionFlags::NONE;
             this->popContext();
             return node->lit_obj;
         }
         it = this->readonly_literals.find(node->token->nameid);
         if (it != this->readonly_literals.end()) {
-            setExecFlagNONE(this);
+            this->execution_flags = ExecutionFlags::NONE;
             this->popContext();
             return node->lit_obj = it->second;
             ;
@@ -975,24 +970,24 @@ Object *Runtime::execute(AtomNode *node, bool execution_result_matters) {
         lit->can_modify                              = false;
         this->readonly_literals[node->token->nameid] = lit;
 
-        setExecFlagNONE(this);
+        this->execution_flags = ExecutionFlags::NONE;
         this->popContext();
         return node->lit_obj = lit;
     }
     case AtomNode::STRING : {
         if (!execution_result_matters) {
-            setExecFlagNONE(this);
+            this->execution_flags = ExecutionFlags::NONE;
             this->popContext();
-            return NULL;
+            return nullptr;
         }
-        if (node->lit_obj != NULL) {
-            setExecFlagNONE(this);
+        if (node->lit_obj != nullptr) {
+            this->execution_flags = ExecutionFlags::NONE;
             this->popContext();
             return node->lit_obj;
         }
         it = this->readonly_literals.find(node->token->nameid);
         if (it != this->readonly_literals.end()) {
-            setExecFlagNONE(this);
+            this->execution_flags = ExecutionFlags::NONE;
             this->popContext();
             return node->lit_obj = it->second;
             ;
@@ -1002,24 +997,24 @@ Object *Runtime::execute(AtomNode *node, bool execution_result_matters) {
         lit->can_modify                              = false;
         this->readonly_literals[node->token->nameid] = lit;
 
-        setExecFlagNONE(this);
+        this->execution_flags = ExecutionFlags::NONE;
         this->popContext();
         return node->lit_obj = lit;
     }
     case AtomNode::NOTHING : {
         if (!execution_result_matters) {
-            setExecFlagNONE(this);
+            this->execution_flags = ExecutionFlags::NONE;
             this->popContext();
-            return NULL;
+            return nullptr;
         }
-        if (node->lit_obj != NULL) {
-            setExecFlagNONE(this);
+        if (node->lit_obj != nullptr) {
+            this->execution_flags = ExecutionFlags::NONE;
             this->popContext();
             return node->lit_obj;
         }
         it = this->readonly_literals.find(node->token->nameid);
         if (it != this->readonly_literals.end()) {
-            setExecFlagNONE(this);
+            this->execution_flags = ExecutionFlags::NONE;
             this->popContext();
             return node->lit_obj = it->second;
             ;
@@ -1029,13 +1024,13 @@ Object *Runtime::execute(AtomNode *node, bool execution_result_matters) {
         lit->can_modify                              = false;
         this->readonly_literals[node->token->nameid] = lit;
 
-        setExecFlagNONE(this);
+        this->execution_flags = ExecutionFlags::NONE;
         this->popContext();
         return node->lit_obj = lit;
     }
     case AtomNode::IDENTIFIER : {
-        setExecFlagNONE(this);
-        auto res = this->scope->getVariable(node->token->nameid, this);
+        this->execution_flags = ExecutionFlags::NONE;
+        auto res              = this->scope->getVariable(node->token->nameid, this);
         this->popContext();
         return res;
     }
@@ -1045,7 +1040,7 @@ Object *Runtime::execute(AtomNode *node, bool execution_result_matters) {
 
 Object *Runtime::execute(ParExprNode *node, bool execution_result_matters) {
     ProfilerCAPTURE();
-    if (node == NULL) {
+    if (node == nullptr) {
         this->signalError("Failed to execute unknown AST node", this->getContext().area);
     }
     return this->execute(node->expr, execution_result_matters);
@@ -1053,7 +1048,7 @@ Object *Runtime::execute(ParExprNode *node, bool execution_result_matters) {
 
 Object *Runtime::execute(StmtNode *node, bool execution_result_matters) {
     ProfilerCAPTURE();
-    if (node == NULL) {
+    if (node == nullptr) {
         this->signalError("Failed to execute unknown AST node", this->getContext().area);
     }
     this->gc->ping(this);
@@ -1068,11 +1063,13 @@ Object *Runtime::execute(StmtNode *node, bool execution_result_matters) {
         return this->execute(node->if_stmt, execution_result_matters);
     }
     case StmtNode::CONTINUE : {
-        setExecFlagCONTINUE(this);
+        this->clearExecFlags();
+        this->setExecFlagCONTINUE();
         return this->protected_nothing;
     }
     case StmtNode::BREAK : {
-        setExecFlagBREAK(this);
+        this->clearExecFlags();
+        this->setExecFlagBREAK();
         return this->protected_nothing;
     }
     case StmtNode::RETURN : {
@@ -1092,117 +1089,121 @@ Object *Runtime::execute(StmtNode *node, bool execution_result_matters) {
 
 Object *Runtime::execute(WhileStmtNode *node, bool execution_result_matters) {
     ProfilerCAPTURE();
-    if (node == NULL) {
+    if (node == nullptr) {
         this->signalError("Failed to execute unknown AST node", this->getContext().area);
     }
     this->newContext();
     while (true) {
         this->getContext().area = node->text_area;
-        this->newFrame();
+        this->newScopeFrame();
 
-        if (node->cond != NULL) {
+        if (node->cond != nullptr) {
             this->getContext().area = node->cond->text_area;
             auto cond               = this->execute(node->cond, true);
 
             if (!Builtin::getBooleanValue(cond, this)) {
-                this->popFrame();
+                this->popScopeFrame();
                 break;
             }
         }
 
-        if (node->body != NULL) {
+        if (node->body != nullptr) {
             this->getContext().area = node->body->text_area;
             auto body               = this->execute(node->body, execution_result_matters);
-            if (isExecFlagBREAK(this)) {
-                this->popFrame();
+            if (this->isExecFlagBREAK()) {
+                this->popScopeFrame();
                 break;
             }
-            else if (isExecFlagCONTINUE(this)) {
+            else if (this->isExecFlagCONTINUE()) {
                 continue;
             }
-            else if (isExecFlagRETURN(this)) {
-                if (isExecFlagDIRECT_PASS(this)) {
-                    setExecFlagRETURN(this);
-                    this->popFrame();
+            else if (this->isExecFlagRETURN()) {
+                if (this->isExecFlagDIRECT_PASS()) {
+                    this->clearExecFlags();
+                    this->setExecFlagRETURN();
+                    this->popScopeFrame();
                     this->popContext();
                     return body;
                 }
-                setExecFlagRETURN(this);
-                this->popFrame();
+                this->clearExecFlags();
+                this->setExecFlagRETURN();
+                this->popScopeFrame();
                 this->popContext();
-                return (execution_result_matters) ? this->copy(body) : NULL;
+                return (execution_result_matters) ? this->copy(body) : nullptr;
             };
         }
-        this->popFrame();
+        this->popScopeFrame();
     }
-    setExecFlagNONE(this);
+    this->execution_flags = ExecutionFlags::NONE;
     this->popContext();
     return this->protected_nothing;
 }
 
 Object *Runtime::execute(ForStmtNode *node, bool execution_result_matters) {
     ProfilerCAPTURE();
-    if (node == NULL) {
+    if (node == nullptr) {
         this->signalError("Failed to execute unknown AST node", this->getContext().area);
     }
 
-    if (node->init != NULL) {
+    if (node->init != nullptr) {
         this->execute(node->init, false);
     }
     this->newContext();
 
     while (true) {
         this->getContext().area = node->text_area;
-        this->newFrame();
+        this->newScopeFrame();
 
-        if (node->cond != NULL) {
+        if (node->cond != nullptr) {
             this->getContext().area = node->cond->text_area;
             auto cond               = this->execute(node->cond, true);
 
             if (!Builtin::getBooleanValue(cond, this)) {
-                this->popFrame();
+                this->popScopeFrame();
                 break;
             }
         }
 
-        if (node->body != NULL) {
+        if (node->body != nullptr) {
             this->getContext().area = node->body->text_area;
             auto body               = this->execute(node->body, execution_result_matters);
-            if (isExecFlagBREAK(this)) {
-                this->popFrame();
+            if (this->isExecFlagBREAK()) {
+                this->popScopeFrame();
                 break;
             }
-            else if (isExecFlagCONTINUE(this)) {
+            else if (this->isExecFlagCONTINUE()) {
                 continue;
             }
-            else if (isExecFlagRETURN(this)) {
-                if (isExecFlagDIRECT_PASS(this)) {
-                    setExecFlagRETURN(this);
-                    this->popFrame();
+            else if (this->isExecFlagRETURN()) {
+                if (this->isExecFlagDIRECT_PASS()) {
+                    this->clearExecFlags();
+                    this->setExecFlagRETURN();
+                    this->popScopeFrame();
                     this->popContext();
                     return body;
                 }
-                setExecFlagRETURN(this);
-                this->popFrame();
+                this->clearExecFlags();
+                this->setExecFlagRETURN();
+                this->popScopeFrame();
                 this->popContext();
-                return (execution_result_matters) ? this->copy(body) : NULL;
+                return (execution_result_matters) ? this->copy(body) : nullptr;
             };
         }
 
-        if (node->step != NULL) {
+        if (node->step != nullptr) {
             this->getContext().area = node->step->text_area;
             this->execute(node->step, false);
         }
-        this->popFrame();
+        this->popScopeFrame();
     }
-    setExecFlagNONE(this);
+    this->execution_flags = ExecutionFlags::NONE;
     this->popContext();
     return this->protected_nothing;
 }
 
 Object *Runtime::execute(IfStmtNode *node, bool execution_result_matters) {
     ProfilerCAPTURE();
-    if (node == NULL) {
+    if (node == nullptr) {
         this->signalError("Failed to execute unknown AST node", this->getContext().area);
     }
 
@@ -1215,18 +1216,18 @@ Object *Runtime::execute(IfStmtNode *node, bool execution_result_matters) {
         this->popContext();
         return this->execute(node->body, execution_result_matters);
     }
-    else if (node->else_body != NULL) {
+    else if (node->else_body != nullptr) {
         this->popContext();
         return this->execute(node->else_body, execution_result_matters);
     }
-    setExecFlagNONE(this);
+    this->execution_flags = ExecutionFlags::NONE;
     this->popContext();
     return this->protected_nothing;
 }
 
 Object *Runtime::execute(ReturnStmtNode *node, bool execution_result_matters) {
     ProfilerCAPTURE();
-    if (node == NULL) {
+    if (node == nullptr) {
         this->signalError("Failed to execute unknown AST node", this->getContext().area);
     }
 
@@ -1234,90 +1235,74 @@ Object *Runtime::execute(ReturnStmtNode *node, bool execution_result_matters) {
     this->getContext().area = node->text_area;
 
     auto res = this->execute(node->value, execution_result_matters);
-    if (isExecFlagDIRECT_PASS(this)) {
-        setExecFlagRETURN(this);
+    if (this->isExecFlagDIRECT_PASS()) {
+        this->clearExecFlags();
+        this->setExecFlagRETURN();
         this->popContext();
         return res;
     }
-    setExecFlagRETURN(this);
+    this->clearExecFlags();
+    this->setExecFlagRETURN();
     this->popContext();
-    return (execution_result_matters) ? this->copy(res) : NULL;
+    return (execution_result_matters) ? this->copy(res) : nullptr;
 }
 
 Object *Runtime::execute(BlockStmtNode *node, bool execution_result_matters) {
     ProfilerCAPTURE();
-    if (node == NULL) {
+    if (node == nullptr) {
         this->signalError("Failed to execute unknown AST node", this->getContext().area);
     }
     this->newContext();
     this->getContext().area = node->text_area;
     if (!node->is_unscoped) {
-        this->newFrame(true);
+        this->newScopeFrame(true);
     }
-    Object *res = NULL;
+    Object *res = nullptr;
     for (auto stmt : node->list) {
-        if (stmt == NULL) {
+        if (stmt == nullptr) {
             continue;
         }
         res = this->execute(stmt, execution_result_matters);
-        if (!isExecFlagNONE(this)) {
+        if (!this->isExecFlagNONE()) {
             if (!node->is_unscoped) {
-                this->popFrame();
+                this->popScopeFrame();
             }
             this->popContext();
             return res;
         }
     }
     if (!node->is_unscoped) {
-        this->popFrame();
+        this->popScopeFrame();
     }
-    setExecFlagNONE(this);
+    this->execution_flags = ExecutionFlags::NONE;
     this->popContext();
-    return (res != NULL) ? res : this->protected_nothing;
+    return (res != nullptr) ? res : this->protected_nothing;
 }
 
 bool Runtime::isValidObject(Object *obj) {
     ProfilerCAPTURE();
-    return obj != NULL && obj->type != NULL;
+    return obj != nullptr && obj->type != nullptr;
 }
 
 bool Runtime::isTypeObject(Object *obj, Type *type) {
     ProfilerCAPTURE();
-    if (type == NULL) {
-        return obj != NULL && obj->type != NULL && obj->instance == NULL;
+    if (type == nullptr) {
+        return obj != nullptr && obj->type != nullptr && obj->instance == nullptr;
     }
-    return obj != NULL && obj->type == type && obj->instance == NULL;
+    return obj != nullptr && obj->type == type && obj->instance == nullptr;
 }
 
 bool Runtime::isInstanceObject(Object *obj, Type *type) {
     ProfilerCAPTURE();
-    if (type == NULL) {
-        return obj != NULL && obj->type != NULL && obj->instance != NULL;
+    if (type == nullptr) {
+        return obj != nullptr && obj->type != nullptr && obj->instance != nullptr;
     }
-    return obj != NULL && obj->type == type && obj->instance != NULL;
-}
-
-bool Runtime::isOfType(Object *obj, BuiltinTypes type) {
-    ProfilerCAPTURE();
-    if (obj == NULL) {
-        return false;
-    }
-    switch (type) {
-    case NOTHING_TYPE_ID   : return obj->type == this->nothing_type;
-    case BOOLEAN_TYPE_ID   : return obj->type == this->boolean_type;
-    case FUNCTION_TYPE_ID  : return obj->type == this->function_type;
-    case INTEGER_TYPE_ID   : return obj->type == this->integer_type;
-    case REAL_TYPE_ID      : return obj->type == this->real_type;
-    case CHARACTER_TYPE_ID : return obj->type == this->character_type;
-    case STRING_TYPE_ID    : return obj->type == this->string_type;
-    case ARRAY_TYPE_ID     : return obj->type == this->array_type;
-    default                : return false;
-    }
+    return obj != nullptr && obj->type == type && obj->instance != nullptr;
 }
 
 bool Runtime::isOfType(Object *obj, Type *type) {
     ProfilerCAPTURE();
-    return obj != NULL && obj->type == type;
+    return obj != nullptr && obj->type == type;
 }
 
 TextArea &Runtime::getTextArea(ContextId ctx_id) {
@@ -1339,7 +1324,7 @@ void Runtime::verifyIsTypeObject(Object *obj, Type *type, Runtime::ContextId ctx
     ProfilerCAPTURE();
 
     if (!this->isTypeObject(obj, type)) {
-        if (type == NULL) {
+        if (type == nullptr) {
             this->signalError("Not a type object: " + obj->userRepr(this), this->getTextArea(ctx_id));
         }
         else {
@@ -1353,7 +1338,7 @@ void Runtime::verifyIsInstanceObject(Object *obj, Type *type, Runtime::ContextId
     ProfilerCAPTURE();
 
     if (!this->isInstanceObject(obj, type)) {
-        if (type == NULL) {
+        if (type == nullptr) {
             this->signalError("Not an instance object: " + obj->userRepr(this), this->getTextArea(ctx_id));
         }
         else {
@@ -1361,66 +1346,6 @@ void Runtime::verifyIsInstanceObject(Object *obj, Type *type, Runtime::ContextId
                               + obj->userRepr(this),
                               this->getTextArea(ctx_id));
         }
-    }
-}
-
-void Runtime::verifyIsOfType(Object *obj, Runtime::BuiltinTypes type, Runtime::ContextId ctx_id) {
-    ProfilerCAPTURE();
-
-    this->verifyIsValidObject(obj, ctx_id);
-    switch (type) {
-    case NOTHING_TYPE_ID :
-        if (obj->type != this->nothing_type) {
-            this->signalError(obj->userRepr(this) + " is not of type " + this->nothing_type->userRepr(this),
-                              this->getTextArea(ctx_id));
-        }
-        break;
-    case BOOLEAN_TYPE_ID :
-        if (obj->type != this->boolean_type) {
-            this->signalError(obj->userRepr(this) + " is not of type " + this->nothing_type->userRepr(this),
-                              this->getTextArea(ctx_id));
-        }
-        break;
-    case FUNCTION_TYPE_ID :
-        if (obj->type != this->function_type) {
-            this->signalError(obj->userRepr(this) + " is not of type " + this->nothing_type->userRepr(this),
-                              this->getTextArea(ctx_id));
-        }
-        break;
-    case INTEGER_TYPE_ID :
-        if (obj->type != this->integer_type) {
-            this->signalError(obj->userRepr(this) + " is not of type " + this->nothing_type->userRepr(this),
-                              this->getTextArea(ctx_id));
-        }
-        break;
-    case REAL_TYPE_ID :
-        if (obj->type != this->real_type) {
-            this->signalError(obj->userRepr(this) + " is not of type " + this->nothing_type->userRepr(this),
-                              this->getTextArea(ctx_id));
-        }
-        break;
-    case CHARACTER_TYPE_ID :
-        if (obj->type != this->character_type) {
-            this->signalError(obj->userRepr(this) + " is not of type " + this->nothing_type->userRepr(this),
-                              this->getTextArea(ctx_id));
-        }
-        break;
-    case STRING_TYPE_ID :
-        if (obj->type != this->string_type) {
-            this->signalError(obj->userRepr(this) + " is not of type " + this->nothing_type->userRepr(this),
-                              this->getTextArea(ctx_id));
-        }
-        break;
-    case ARRAY_TYPE_ID :
-        if (obj->type != this->array_type) {
-            this->signalError(obj->userRepr(this) + " is not of type " + this->nothing_type->userRepr(this),
-                              this->getTextArea(ctx_id));
-        }
-        break;
-    default :
-        this->signalError(obj->userRepr(this) + " is not of type ?UNKNOWN_TYPE?", this->getTextArea(ctx_id));
-        break;
-        ;
     }
 }
 
@@ -1481,7 +1406,7 @@ void Runtime::verifyExactArgsAmountMethod(const std::vector<Object *> &args,
     }
 }
 
-void Runtime::verifyHasMethod(Object *obj, int64_t id, Runtime::ContextId ctx_id) {
+void Runtime::verifyHasMethod(Object *obj, NameId id, Runtime::ContextId ctx_id) {
     ProfilerCAPTURE();
 
     this->verifyIsValidObject(obj, ctx_id);
@@ -1491,48 +1416,100 @@ void Runtime::verifyHasMethod(Object *obj, int64_t id, Runtime::ContextId ctx_id
     }
 }
 
+GC *Runtime::getGC() {
+    return this->gc;
+}
+
+ErrorManager *Runtime::getErrorManager() {
+    return this->error_manager;
+}
+
+Scope *Runtime::getScope() {
+    return this->scope;
+}
+
+void Runtime::clearExecFlags() {
+    this->execution_flags = ExecutionFlags::NONE;
+}
+
+void Runtime::setExecFlagCONTINUE() {
+    this->execution_flags |= ExecutionFlags::CONTINUE;
+}
+
+void Runtime::setExecFlagBREAK() {
+    this->execution_flags |= ExecutionFlags::BREAK;
+}
+
+void Runtime::setExecFlagRETURN() {
+    this->execution_flags |= ExecutionFlags::RETURN;
+}
+
+void Runtime::setExecFlagDIRECT_PASS() {
+    this->execution_flags |= ExecutionFlags::DIRECT_PASS;
+}
+
+bool Runtime::isExecFlagNONE() {
+    return this->execution_flags == ExecutionFlags::NONE;
+}
+
+bool Runtime::isExecFlagCONTINUE() {
+    return this->execution_flags & ExecutionFlags::CONTINUE;
+}
+
+bool Runtime::isExecFlagBREAK() {
+    return this->execution_flags & ExecutionFlags::BREAK;
+}
+
+bool Runtime::isExecFlagRETURN() {
+    return this->execution_flags & ExecutionFlags::RETURN;
+}
+
+bool Runtime::isExecFlagDIRECT_PASS() {
+    return this->execution_flags & ExecutionFlags::DIRECT_PASS;
+}
+
 namespace MagicMethods {
-    int64_t mm__make__(Runtime *rt) {
+    NameId mm__make__(Runtime *rt) {
         ProfilerCAPTURE();
         return rt->nmgr->getId("__make__");
     }
 
-    int64_t mm__copy__(Runtime *rt) {
+    NameId mm__copy__(Runtime *rt) {
         ProfilerCAPTURE();
         return rt->nmgr->getId("__copy__");
     }
 
-    int64_t mm__bool__(Runtime *rt) {
+    NameId mm__bool__(Runtime *rt) {
         ProfilerCAPTURE();
         return rt->nmgr->getId("__bool__");
     }
 
-    int64_t mm__char__(Runtime *rt) {
+    NameId mm__char__(Runtime *rt) {
         ProfilerCAPTURE();
         return rt->nmgr->getId("__char__");
     }
 
-    int64_t mm__int__(Runtime *rt) {
+    NameId mm__int__(Runtime *rt) {
         ProfilerCAPTURE();
         return rt->nmgr->getId("__int__");
     }
 
-    int64_t mm__real__(Runtime *rt) {
+    NameId mm__real__(Runtime *rt) {
         ProfilerCAPTURE();
         return rt->nmgr->getId("__real__");
     }
 
-    int64_t mm__string__(Runtime *rt) {
+    NameId mm__string__(Runtime *rt) {
         ProfilerCAPTURE();
         return rt->nmgr->getId("__string__");
     }
 
-    int64_t mm__repr__(Runtime *rt) {
+    NameId mm__repr__(Runtime *rt) {
         ProfilerCAPTURE();
         return rt->nmgr->getId("__repr__");
     }
 
-    int64_t mm__read__(Runtime *rt) {
+    NameId mm__read__(Runtime *rt) {
         ProfilerCAPTURE();
         return rt->nmgr->getId("__read__");
     }

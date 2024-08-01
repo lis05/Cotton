@@ -34,35 +34,35 @@ int64_t Type::total_types = 0;
 Type::Type(Runtime *rt) {
     ProfilerCAPTURE();
     this->id   = ++Type::total_types;
-    postinc_op = postdec_op = preinc_op = predec_op = positive_op = negative_op = not_op = inverse_op = NULL;
+    postinc_op = postdec_op = preinc_op = predec_op = positive_op = negative_op = not_op = inverse_op = nullptr;
 
     mult_op = div_op = rem_op = rshift_op = lshift_op = add_op = sub_op = lt_op = leq_op = gt_op = geq_op = eq_op
-    = neq_op = bitand_op = bitxor_op = bitor_op = and_op = or_op = NULL;
+    = neq_op = bitand_op = bitxor_op = bitor_op = and_op = or_op = nullptr;
 
-    call_op = index_op = NULL;
-    this->gc_mark      = !rt->gc->gc_mark;
+    call_op = index_op = nullptr;
+    this->gc_mark      = !rt->getGC()->gc_mark;
 
-    rt->gc->track(this);
+    rt->getGC()->track(this);
 }
 
 Type::~Type() {
     ProfilerCAPTURE();
     this->id   = -1;
-    postinc_op = postdec_op = preinc_op = predec_op = positive_op = negative_op = not_op = inverse_op = NULL;
+    postinc_op = postdec_op = preinc_op = predec_op = positive_op = negative_op = not_op = inverse_op = nullptr;
 
     mult_op = div_op = rem_op = rshift_op = lshift_op = add_op = sub_op = lt_op = leq_op = gt_op = geq_op = eq_op
-    = neq_op = bitand_op = bitxor_op = bitor_op = and_op = or_op = NULL;
+    = neq_op = bitand_op = bitxor_op = bitor_op = and_op = or_op = nullptr;
 
-    call_op = index_op = NULL;
+    call_op = index_op = nullptr;
     // we don't do anything else, because the GC will take care of that
 }
 
-void Type::addMethod(int64_t id, Object *method) {
+void Type::addMethod(NameId id, Object *method) {
     ProfilerCAPTURE();
     this->methods[id] = method;
 }
 
-Object *Type::getMethod(int64_t id, Runtime *rt) {
+Object *Type::getMethod(NameId id, Runtime *rt) {
     ProfilerCAPTURE();
     auto it = this->methods.find(id);
     if (it != this->methods.end()) {
@@ -72,7 +72,7 @@ Object *Type::getMethod(int64_t id, Runtime *rt) {
     rt->signalError(this->userRepr(rt) + " doesn't have method " + rt->nmgr->getString(id), rt->getContext().area);
 }
 
-bool Type::hasMethod(int64_t id) {
+bool Type::hasMethod(NameId id) {
     ProfilerCAPTURE();
     auto it = this->methods.find(id);
     return it != this->methods.end();

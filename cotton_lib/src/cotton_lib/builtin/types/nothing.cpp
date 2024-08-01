@@ -39,7 +39,7 @@ Instance *NothingInstance::copy(Runtime *rt) {
     ProfilerCAPTURE();
     Instance *res = new NothingInstance(rt);
 
-    if (res == NULL) {
+    if (res == nullptr) {
         rt->signalError("Failed to copy " + this->userRepr(rt), rt->getContext().area);
     }
     return res;
@@ -57,41 +57,41 @@ size_t NothingType::getInstanceSize() {
 
 std::string NothingInstance::userRepr(Runtime *rt) {
     ProfilerCAPTURE();
-    if (this == NULL) {
-        return "Nothing(NULL)";
+    if (this == nullptr) {
+        return "Nothing(nullptr)";
     }
     return "Nothing";
 }
 
 static Object *NothingEqAdapter(Object *self, Object *arg, Runtime *rt, bool execution_result_matters) {
     ProfilerCAPTURE();
-    rt->verifyIsOfType(self, rt->nothing_type, Runtime::SUB0_CTX);
+    rt->verifyIsOfType(self, rt->builtin_types.nothing, Runtime::SUB0_CTX);
     rt->verifyIsValidObject(arg, Runtime::SUB1_CTX);
 
-    if (!rt->isOfType(arg, rt->nothing_type)) {
-        return rt->protected_false;
+    if (!rt->isOfType(arg, rt->builtin_types.nothing)) {
+        return rt->protectedBoolean(false);
     }
 
-    return rt->protected_true;
+    return rt->protectedBoolean(true);
 }
 
 static Object *NothingNeqAdapter(Object *self, Object *arg, Runtime *rt, bool execution_result_matters) {
     ProfilerCAPTURE();
     auto res = NothingEqAdapter(self, arg, rt, execution_result_matters);
-    return (!getBooleanValueFast(res)) ? rt->protected_true : rt->protected_false;
+    return rt->protectedBoolean(!getBooleanValueFast(res));
 }
 
 static Object *mm__repr__(const std::vector<Object *> &args, Runtime *rt, bool execution_result_matters) {
     ProfilerCAPTURE();
     rt->verifyExactArgsAmountMethod(args, 0);
     auto self = args[0];
-    rt->verifyIsOfType(self, rt->nothing_type, Runtime::SUB1_CTX);
+    rt->verifyIsOfType(self, rt->builtin_types.nothing, Runtime::SUB1_CTX);
 
     if (!execution_result_matters) {
         return self;
     }
 
-    if (rt->isTypeObject(self, NULL)) {
+    if (rt->isTypeObject(self, nullptr)) {
         return makeStringInstanceObject("Nothing", rt);
     }
 
@@ -100,7 +100,8 @@ static Object *mm__repr__(const std::vector<Object *> &args, Runtime *rt, bool e
 
 void installNothingMethods(Type *type, Runtime *rt) {
     ProfilerCAPTURE();
-    type->addMethod(MagicMethods::mm__repr__(rt), Builtin::makeFunctionInstanceObject(true, mm__repr__, NULL, rt));
+    type->addMethod(MagicMethods::mm__repr__(rt),
+                    Builtin::makeFunctionInstanceObject(true, mm__repr__, nullptr, rt));
 }
 
 NothingType::NothingType(Runtime *rt)
@@ -113,32 +114,32 @@ NothingType::NothingType(Runtime *rt)
 Object *NothingType::create(Runtime *rt) {
     ProfilerCAPTURE();
     Instance *ins = new NothingInstance(rt);
-    Object   *obj = newObject(true, ins, this, rt);
+    Object   *obj = new Object(true, ins, this, rt);
     return obj;
 }
 
 std::string NothingType::userRepr(Runtime *rt) {
     ProfilerCAPTURE();
-    if (this == NULL) {
-        return "NothingType(NULL)";
+    if (this == nullptr) {
+        return "NothingType(nullptr)";
     }
     return "NothingType";
 }
 
 Object *NothingType::copy(Object *obj, Runtime *rt) {
     ProfilerCAPTURE();
-    rt->verifyIsOfType(obj, rt->nothing_type);
-    if (obj->instance == NULL) {
-        return newObject(false, NULL, this, rt);
+    rt->verifyIsOfType(obj, rt->builtin_types.nothing);
+    if (obj->instance == nullptr) {
+        return new Object(false, nullptr, this, rt);
     }
     auto ins = obj->instance->copy(rt);
-    auto res = newObject(true, ins, this, rt);
+    auto res = new Object(true, ins, this, rt);
     return res;
 }
 
 Object *makeNothingInstanceObject(Runtime *rt) {
     ProfilerCAPTURE();
-    auto res = rt->make(rt->nothing_type, rt->INSTANCE_OBJECT);
+    auto res = rt->make(rt->builtin_types.nothing, rt->INSTANCE_OBJECT);
     return res;
 }
 }    // namespace Cotton::Builtin

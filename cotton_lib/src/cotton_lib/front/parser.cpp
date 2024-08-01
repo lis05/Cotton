@@ -28,7 +28,7 @@ namespace Cotton {
 TextArea::TextArea() {
     this->first_char = INT64_MAX;
     this->last_char  = INT64_MIN;
-    this->filename   = NULL;
+    this->filename   = nullptr;
 }
 
 TextArea::TextArea(Token &token) {
@@ -40,7 +40,7 @@ TextArea::TextArea(Token &token) {
 TextArea::TextArea(const TextArea &first, const TextArea &last) {
     this->first_char = std::min(first.first_char, last.first_char);
     this->last_char  = std::max(first.last_char, last.last_char);
-    this->filename   = (first.filename == NULL || first.filename->empty()) ? last.filename : first.filename;
+    this->filename   = (first.filename == nullptr || first.filename->empty()) ? last.filename : first.filename;
 }
 
 ExprNode::~ExprNode() {
@@ -52,19 +52,19 @@ ExprNode::~ExprNode() {
     case PARENTHESES_EXPRESSION : delete this->par_expr; break;
     }
 
-    this->func_def = NULL;
-    this->type_def = NULL;
-    this->op       = NULL;
-    this->atom     = NULL;
-    this->par_expr = NULL;
+    this->func_def = nullptr;
+    this->type_def = nullptr;
+    this->op       = nullptr;
+    this->atom     = nullptr;
+    this->par_expr = nullptr;
 }
 
 ExprNode::ExprNode(FuncDefNode *func_def, TextArea text_area) {
     this->text_area = text_area;
-    this->type_def  = NULL;
-    this->op        = NULL;
-    this->atom      = NULL;
-    this->par_expr  = NULL;
+    this->type_def  = nullptr;
+    this->op        = nullptr;
+    this->atom      = nullptr;
+    this->par_expr  = nullptr;
 
     this->id       = FUNCTION_DEFINITION;
     this->func_def = func_def;
@@ -72,10 +72,10 @@ ExprNode::ExprNode(FuncDefNode *func_def, TextArea text_area) {
 
 ExprNode::ExprNode(TypeDefNode *type_def, TextArea text_area) {
     this->text_area = text_area;
-    this->func_def  = NULL;
-    this->op        = NULL;
-    this->atom      = NULL;
-    this->par_expr  = NULL;
+    this->func_def  = nullptr;
+    this->op        = nullptr;
+    this->atom      = nullptr;
+    this->par_expr  = nullptr;
 
     this->id       = TYPE_DEFINITION;
     this->type_def = type_def;
@@ -83,10 +83,10 @@ ExprNode::ExprNode(TypeDefNode *type_def, TextArea text_area) {
 
 ExprNode::ExprNode(OperatorNode *op, TextArea text_area) {
     this->text_area = text_area;
-    this->func_def  = NULL;
-    this->type_def  = NULL;
-    this->atom      = NULL;
-    this->par_expr  = NULL;
+    this->func_def  = nullptr;
+    this->type_def  = nullptr;
+    this->atom      = nullptr;
+    this->par_expr  = nullptr;
 
     this->id = OPERATOR;
     this->op = op;
@@ -94,10 +94,10 @@ ExprNode::ExprNode(OperatorNode *op, TextArea text_area) {
 
 ExprNode::ExprNode(AtomNode *atom, TextArea text_area) {
     this->text_area = text_area;
-    this->func_def  = NULL;
-    this->type_def  = NULL;
-    this->op        = NULL;
-    this->par_expr  = NULL;
+    this->func_def  = nullptr;
+    this->type_def  = nullptr;
+    this->op        = nullptr;
+    this->par_expr  = nullptr;
 
     this->id   = ATOM;
     this->atom = atom;
@@ -105,10 +105,10 @@ ExprNode::ExprNode(AtomNode *atom, TextArea text_area) {
 
 ExprNode::ExprNode(ParExprNode *par_expr, TextArea text_area) {
     this->text_area = text_area;
-    this->func_def  = NULL;
-    this->type_def  = NULL;
-    this->op        = NULL;
-    this->atom      = NULL;
+    this->func_def  = nullptr;
+    this->type_def  = nullptr;
+    this->op        = nullptr;
+    this->atom      = nullptr;
 
     this->id       = PARENTHESES_EXPRESSION;
     this->par_expr = par_expr;
@@ -133,8 +133,8 @@ static void printPrefix(int indent, int step, bool init = true) {
 
 void ExprNode::print(int indent, int step) {
     printPrefix(indent, step, false);
-    if (this == NULL) {
-        printf("NULL\n");
+    if (this == nullptr) {
+        printf("nullptr\n");
         return;
     }
     printf("expression:\n");
@@ -159,9 +159,9 @@ FuncDefNode::~FuncDefNode() {
     delete this->params;
     delete this->body;
 
-    this->name   = NULL;
-    this->params = NULL;
-    this->body   = NULL;
+    this->name   = nullptr;
+    this->params = nullptr;
+    this->body   = nullptr;
 }
 
 FuncDefNode::FuncDefNode(Token *name, IdentListNode *params, StmtNode *body, TextArea text_area) {
@@ -173,15 +173,15 @@ FuncDefNode::FuncDefNode(Token *name, IdentListNode *params, StmtNode *body, Tex
 
 void FuncDefNode::print(int indent, int step) {
     printPrefix(indent, step, false);
-    if (this == NULL) {
-        printf("NULL\n");
+    if (this == nullptr) {
+        printf("nullptr\n");
         return;
     }
     printf("function definition:\n");
 
     printPrefix(indent, step);
-    if (this->name == NULL) {
-        printf("name: NULL token\n");
+    if (this->name == nullptr) {
+        printf("name: nullptr token\n");
     }
     else {
         printf("name: %s\n", this->name->data.c_str());
@@ -201,7 +201,7 @@ TypeDefNode::~TypeDefNode() {
         delete method;
     }
 
-    this->name = NULL;
+    this->name = nullptr;
     this->fields.clear();
     this->methods.clear();
 }
@@ -218,15 +218,15 @@ TypeDefNode::TypeDefNode(Token                            *name,
 
 void TypeDefNode::print(int indent, int step) {
     printPrefix(indent, step, false);
-    if (this == NULL) {
-        printf("NULL\n");
+    if (this == nullptr) {
+        printf("nullptr\n");
         return;
     }
     printf("type definition:\n");
 
     printPrefix(indent, step);
-    if (this->name == NULL) {
-        printf("name: NULL token\n");
+    if (this->name == nullptr) {
+        printf("name: nullptr token\n");
     }
     else {
         printf("name: %s\n", this->name->data.c_str());
@@ -254,9 +254,9 @@ OperatorNode::~OperatorNode() {
     delete first;
     delete second;
 
-    this->first  = NULL;
-    this->second = NULL;
-    this->op     = NULL;
+    this->first  = nullptr;
+    this->second = nullptr;
+    this->op     = nullptr;
 }
 
 OperatorNode::OperatorNode(OperatorId id, ExprNode *first, ExprNode *second, Token *op, TextArea text_area) {
@@ -269,8 +269,8 @@ OperatorNode::OperatorNode(OperatorId id, ExprNode *first, ExprNode *second, Tok
 
 void OperatorNode::print(int indent, int step) {
     printPrefix(indent, step, false);
-    if (this == NULL) {
-        printf("NULL\n");
+    if (this == nullptr) {
+        printf("nullptr\n");
         return;
     }
     printf("operator %s\n", this->op->data.c_str());
@@ -285,13 +285,13 @@ void OperatorNode::print(int indent, int step) {
 }
 
 AtomNode::~AtomNode() {
-    this->ident = NULL;
-    this->token = NULL;
+    this->ident = nullptr;
+    this->token = nullptr;
 }
 
 AtomNode::AtomNode(Token *token, TextArea text_area) {
     this->text_area = text_area;
-    this->lit_obj   = NULL;
+    this->lit_obj   = nullptr;
     this->token     = token;
     switch (token->id) {
     case Token::BOOLEAN_LIT : {
@@ -333,8 +333,8 @@ AtomNode::AtomNode(Token *token, TextArea text_area) {
 
 void AtomNode::print(int indent, int step) {
     printPrefix(indent, step, false);
-    if (this == NULL) {
-        printf("NULL\n");
+    if (this == nullptr) {
+        printf("nullptr\n");
         return;
     }
     printf("atom");
@@ -373,8 +373,8 @@ ParExprNode::ParExprNode(ExprNode *expr, TextArea text_area) {
 
 void ParExprNode::print(int indent, int step) {
     printPrefix(indent, step, false);
-    if (this == NULL) {
-        printf("NULL\n");
+    if (this == nullptr) {
+        printf("nullptr\n");
         return;
     }
     printf("parentheses expression\n");
@@ -393,8 +393,8 @@ IdentListNode::IdentListNode(const std::vector<Token *> &list, TextArea text_are
 
 void IdentListNode::print(int indent, int step) {
     printPrefix(indent, step, false);
-    if (this == NULL) {
-        printf("NULL\n");
+    if (this == nullptr) {
+        printf("nullptr\n");
         return;
     }
     printf("identifier list:\n");
@@ -416,21 +416,21 @@ StmtNode::~StmtNode() {
     case EXPR   : delete this->expr;
     }
 
-    this->while_stmt  = NULL;
-    this->for_stmt    = NULL;
-    this->if_stmt     = NULL;
-    this->return_stmt = NULL;
-    this->block_stmt  = NULL;
-    this->expr        = NULL;
+    this->while_stmt  = nullptr;
+    this->for_stmt    = nullptr;
+    this->if_stmt     = nullptr;
+    this->return_stmt = nullptr;
+    this->block_stmt  = nullptr;
+    this->expr        = nullptr;
 }
 
 StmtNode::StmtNode(WhileStmtNode *while_stmt, TextArea text_area) {
     this->text_area   = text_area;
-    this->for_stmt    = NULL;
-    this->if_stmt     = NULL;
-    this->return_stmt = NULL;
-    this->block_stmt  = NULL;
-    this->expr        = NULL;
+    this->for_stmt    = nullptr;
+    this->if_stmt     = nullptr;
+    this->return_stmt = nullptr;
+    this->block_stmt  = nullptr;
+    this->expr        = nullptr;
 
     this->id         = WHILE;
     this->while_stmt = while_stmt;
@@ -438,11 +438,11 @@ StmtNode::StmtNode(WhileStmtNode *while_stmt, TextArea text_area) {
 
 StmtNode::StmtNode(ForStmtNode *for_stmt, TextArea text_area) {
     this->text_area   = text_area;
-    this->while_stmt  = NULL;
-    this->if_stmt     = NULL;
-    this->return_stmt = NULL;
-    this->block_stmt  = NULL;
-    this->expr        = NULL;
+    this->while_stmt  = nullptr;
+    this->if_stmt     = nullptr;
+    this->return_stmt = nullptr;
+    this->block_stmt  = nullptr;
+    this->expr        = nullptr;
 
     this->id       = FOR;
     this->for_stmt = for_stmt;
@@ -450,11 +450,11 @@ StmtNode::StmtNode(ForStmtNode *for_stmt, TextArea text_area) {
 
 StmtNode::StmtNode(IfStmtNode *if_stmt, TextArea text_area) {
     this->text_area   = text_area;
-    this->while_stmt  = NULL;
-    this->for_stmt    = NULL;
-    this->return_stmt = NULL;
-    this->block_stmt  = NULL;
-    this->expr        = NULL;
+    this->while_stmt  = nullptr;
+    this->for_stmt    = nullptr;
+    this->return_stmt = nullptr;
+    this->block_stmt  = nullptr;
+    this->expr        = nullptr;
 
     this->id      = IF;
     this->if_stmt = if_stmt;
@@ -462,23 +462,23 @@ StmtNode::StmtNode(IfStmtNode *if_stmt, TextArea text_area) {
 
 StmtNode::StmtNode(StmtId id, TextArea text_area) {
     this->text_area   = text_area;
-    this->while_stmt  = NULL;
-    this->for_stmt    = NULL;
-    this->if_stmt     = NULL;
-    this->return_stmt = NULL;
-    this->block_stmt  = NULL;
-    this->expr        = NULL;
+    this->while_stmt  = nullptr;
+    this->for_stmt    = nullptr;
+    this->if_stmt     = nullptr;
+    this->return_stmt = nullptr;
+    this->block_stmt  = nullptr;
+    this->expr        = nullptr;
 
     this->id = id;
 }
 
 StmtNode::StmtNode(ReturnStmtNode *return_stmt, TextArea text_area) {
     this->text_area  = text_area;
-    this->while_stmt = NULL;
-    this->for_stmt   = NULL;
-    this->if_stmt    = NULL;
-    this->block_stmt = NULL;
-    this->expr       = NULL;
+    this->while_stmt = nullptr;
+    this->for_stmt   = nullptr;
+    this->if_stmt    = nullptr;
+    this->block_stmt = nullptr;
+    this->expr       = nullptr;
 
     this->id          = RETURN;
     this->return_stmt = return_stmt;
@@ -486,11 +486,11 @@ StmtNode::StmtNode(ReturnStmtNode *return_stmt, TextArea text_area) {
 
 StmtNode::StmtNode(BlockStmtNode *block_stmt, TextArea text_area) {
     this->text_area   = text_area;
-    this->while_stmt  = NULL;
-    this->for_stmt    = NULL;
-    this->if_stmt     = NULL;
-    this->return_stmt = NULL;
-    this->expr        = NULL;
+    this->while_stmt  = nullptr;
+    this->for_stmt    = nullptr;
+    this->if_stmt     = nullptr;
+    this->return_stmt = nullptr;
+    this->expr        = nullptr;
 
     this->id         = BLOCK;
     this->block_stmt = block_stmt;
@@ -498,11 +498,11 @@ StmtNode::StmtNode(BlockStmtNode *block_stmt, TextArea text_area) {
 
 StmtNode::StmtNode(ExprNode *expr, TextArea text_area) {
     this->text_area   = text_area;
-    this->while_stmt  = NULL;
-    this->for_stmt    = NULL;
-    this->if_stmt     = NULL;
-    this->return_stmt = NULL;
-    this->block_stmt  = NULL;
+    this->while_stmt  = nullptr;
+    this->for_stmt    = nullptr;
+    this->if_stmt     = nullptr;
+    this->return_stmt = nullptr;
+    this->block_stmt  = nullptr;
 
     this->id   = EXPR;
     this->expr = expr;
@@ -510,8 +510,8 @@ StmtNode::StmtNode(ExprNode *expr, TextArea text_area) {
 
 void StmtNode::print(int indent, int step) {
     printPrefix(indent, step, false);
-    if (this == NULL) {
-        printf("NULL\n");
+    if (this == nullptr) {
+        printf("nullptr\n");
         return;
     }
     printf("statement:\n");
@@ -547,8 +547,8 @@ WhileStmtNode::~WhileStmtNode() {
     delete this->cond;
     delete this->body;
 
-    this->cond = NULL;
-    this->body = NULL;
+    this->cond = nullptr;
+    this->body = nullptr;
 }
 
 WhileStmtNode::WhileStmtNode(ExprNode *cond, StmtNode *body, TextArea text_area) {
@@ -559,8 +559,8 @@ WhileStmtNode::WhileStmtNode(ExprNode *cond, StmtNode *body, TextArea text_area)
 
 void WhileStmtNode::print(int indent, int step) {
     printPrefix(indent, step, false);
-    if (this == NULL) {
-        printf("NULL\n");
+    if (this == nullptr) {
+        printf("nullptr\n");
         return;
     }
     printf("while:\n");
@@ -580,10 +580,10 @@ ForStmtNode::~ForStmtNode() {
     delete this->step;
     delete this->body;
 
-    this->init = NULL;
-    this->cond = NULL;
-    this->step = NULL;
-    this->body = NULL;
+    this->init = nullptr;
+    this->cond = nullptr;
+    this->step = nullptr;
+    this->body = nullptr;
 }
 
 ForStmtNode::ForStmtNode(ExprNode *init, ExprNode *cond, ExprNode *step, StmtNode *body, TextArea text_area) {
@@ -596,8 +596,8 @@ ForStmtNode::ForStmtNode(ExprNode *init, ExprNode *cond, ExprNode *step, StmtNod
 
 void ForStmtNode::print(int indent, int step) {
     printPrefix(indent, step, false);
-    if (this == NULL) {
-        printf("NULL\n");
+    if (this == nullptr) {
+        printf("nullptr\n");
         return;
     }
     printf("for:\n");
@@ -624,9 +624,9 @@ IfStmtNode::~IfStmtNode() {
     delete this->body;
     delete this->else_body;
 
-    this->cond      = NULL;
-    this->body      = NULL;
-    this->else_body = NULL;
+    this->cond      = nullptr;
+    this->body      = nullptr;
+    this->else_body = nullptr;
 }
 
 IfStmtNode::IfStmtNode(ExprNode *cond, StmtNode *body, StmtNode *else_body, TextArea text_area) {
@@ -638,8 +638,8 @@ IfStmtNode::IfStmtNode(ExprNode *cond, StmtNode *body, StmtNode *else_body, Text
 
 void IfStmtNode::print(int indent, int step) {
     printPrefix(indent, step, false);
-    if (this == NULL) {
-        printf("NULL\n");
+    if (this == nullptr) {
+        printf("nullptr\n");
         return;
     }
     printf("if:\n");
@@ -660,7 +660,7 @@ void IfStmtNode::print(int indent, int step) {
 ReturnStmtNode::~ReturnStmtNode() {
     delete this->value;
 
-    this->value = NULL;
+    this->value = nullptr;
 }
 
 ReturnStmtNode::ReturnStmtNode(ExprNode *value, TextArea text_area) {
@@ -670,8 +670,8 @@ ReturnStmtNode::ReturnStmtNode(ExprNode *value, TextArea text_area) {
 
 void ReturnStmtNode::print(int indent, int step) {
     printPrefix(indent, step, false);
-    if (this == NULL) {
-        printf("NULL\n");
+    if (this == nullptr) {
+        printf("nullptr\n");
         return;
     }
     printf("return:\n");
@@ -695,8 +695,8 @@ BlockStmtNode::BlockStmtNode(bool is_unscoped, const std::vector<StmtNode *> lis
 
 void BlockStmtNode::print(int indent, int step) {
     printPrefix(indent, step, false);
-    if (this == NULL) {
-        printf("NULL\n");
+    if (this == nullptr) {
+        printf("nullptr\n");
         return;
     }
     printf("%sblock:\n", this->is_unscoped ? "unscoped " : "");
@@ -737,7 +737,7 @@ Parser::Parser(ErrorManager *error_manager) {
 }
 
 Parser::OperatorInfo Parser::getOperatorInfo(Token *token, bool is_pre_op, int special) {
-    passert(token != NULL, "Failed to get operator from a NULL token");
+    passert(token != nullptr, "Failed to get operator from a nullptr token");
     switch (token->id) {
     case Token::PLUS_PLUS_OP :
         return (is_pre_op) ? OperatorInfo {OperatorNode::PRE_PLUS_PLUS, 2, RIGHT_TO_LEFT}
@@ -925,7 +925,7 @@ Parser::ParsingResult Parser::parseExpr() {
     while (this->hasNext()) {
         if (this->consume(Token::FUNCTION_KW)) {
             Token *function_token = &*prev(this->next_token);
-            Token *name           = NULL;
+            Token *name           = nullptr;
             if (this->hasNext() && this->next_token->id == Token::IDENTIFIER) {
                 name = &*this->next_token;
                 this->consume();
@@ -1128,7 +1128,7 @@ Parser::ParsingResult Parser::parseExpr() {
 
                     auto op   = new OperatorNode(op_info.id,
                                                arg.expr,
-                                               NULL,
+                                               nullptr,
                                                operator_token,
                                                TextArea(TextArea(*operator_token), arg.expr->text_area));
                     auto expr = new ExprNode(op, op->text_area);
@@ -1138,7 +1138,7 @@ Parser::ParsingResult Parser::parseExpr() {
                     // A++
                     auto op = new OperatorNode(op_info.id,
                                                expr_stack.back(),
-                                               NULL,
+                                               nullptr,
                                                operator_token,
                                                TextArea(TextArea(*operator_token), expr_stack.back()->text_area));
                     expr_stack.pop_back();
@@ -1196,7 +1196,7 @@ Parser::ParsingResult Parser::parseExpr() {
                     auto op = new OperatorNode(
                     op_info.id,
                     expr_stack.back(),
-                    NULL,
+                    nullptr,
                     operator_token,
                     TextArea(TextArea(*operator_token),
                              TextArea(expr_stack.back()->text_area, TextArea(*prev(this->next_token)))));
@@ -1211,7 +1211,7 @@ Parser::ParsingResult Parser::parseExpr() {
                     auto op = new OperatorNode(
                     op_info.id,
                     expr_stack.back(),
-                    NULL,
+                    nullptr,
                     operator_token,
                     TextArea(TextArea(*operator_token),
                              TextArea(expr_stack.back()->text_area, TextArea(*prev(this->next_token)))));
@@ -1284,7 +1284,7 @@ Parser::ParsingResult Parser::parseExpr() {
 
                     auto op   = new OperatorNode(op_info.id,
                                                arg.expr,
-                                               NULL,
+                                               nullptr,
                                                operator_token,
                                                TextArea(TextArea(*operator_token), arg.expr->text_area));
                     auto expr = new ExprNode(op, op->text_area);
@@ -1339,7 +1339,7 @@ Parser::ParsingResult Parser::parseExpr() {
 
                 auto op   = new OperatorNode(op_info.id,
                                            arg.expr,
-                                           NULL,
+                                           nullptr,
                                            operator_token,
                                            TextArea(TextArea(*operator_token), arg.expr->text_area));
                 auto expr = new ExprNode(op, op->text_area);
@@ -1450,15 +1450,15 @@ Parser::ParsingResult Parser::parseStmt() {
     }
     if (had_semicolons && this->consume(Token::CLOSE_BRACKET)) {
         this->rollback();
-        return ParsingResult((StmtNode *)NULL, this);
+        return ParsingResult((StmtNode *)nullptr, this);
     }
     if (had_semicolons && this->consume(Token::CLOSE_CURLY_BRACKET)) {
         this->rollback();
-        return ParsingResult((StmtNode *)NULL, this);
+        return ParsingResult((StmtNode *)nullptr, this);
     }
     if (had_semicolons && this->consume(Token::CLOSE_SQUARE_BRACKET)) {
         this->rollback();
-        return ParsingResult((StmtNode *)NULL, this);
+        return ParsingResult((StmtNode *)nullptr, this);
     }
 
     if (this->consume(Token::WHILE_KW)) {
@@ -1486,7 +1486,8 @@ Parser::ParsingResult Parser::parseStmt() {
     }
     else if (this->consume(Token::FOR_KW)) {
         Token        *for_token = &*prev(this->next_token);
-        ParsingResult init((ExprNode *)NULL, this), cond((ExprNode *)NULL, this), step((ExprNode *)NULL, this);
+        ParsingResult init((ExprNode *)nullptr, this), cond((ExprNode *)nullptr, this),
+        step((ExprNode *)nullptr, this);
         if (!this->consume(Token::SEMICOLON)) {
             this->saveState();
             init = this->parseExpr();
@@ -1568,7 +1569,7 @@ Parser::ParsingResult Parser::parseStmt() {
 
         if (!this->consume(Token::ELSE_KW)) {
             auto if_stmt
-            = new IfStmtNode(cond.expr, body.stmt, NULL, TextArea(TextArea(*if_token), body.stmt->text_area));
+            = new IfStmtNode(cond.expr, body.stmt, nullptr, TextArea(TextArea(*if_token), body.stmt->text_area));
             auto stmt = new StmtNode(if_stmt, if_stmt->text_area);
             return ParsingResult(stmt, this);
         }
@@ -1599,7 +1600,7 @@ Parser::ParsingResult Parser::parseStmt() {
     else if (this->consume(Token::RETURN_KW)) {
         Token *return_token = &*prev(this->next_token);
         if (this->consume(Token::SEMICOLON)) {
-            auto return_stmt = new ReturnStmtNode(NULL, TextArea(*return_token));
+            auto return_stmt = new ReturnStmtNode(nullptr, TextArea(*return_token));
             auto stmt        = new StmtNode(return_stmt, return_stmt->text_area);
             return ParsingResult(stmt, this);
         }
@@ -1694,7 +1695,7 @@ StmtNode *Parser::parse(const std::vector<Token> &tokens) {
     this->state.cur_associativity = LEFT_TO_RIGHT;
     this->state.cur_priority      = EMPTY_PRIORITY;
     this->state.report_errors     = true;
-    this->state.token             = NULL;
+    this->state.token             = nullptr;
     this->error_manager->setErrorCharPos(-1);
     this->error_manager->setErrorMessage("");
 

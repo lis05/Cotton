@@ -22,9 +22,8 @@
 #pragma once
 
 #include "../front/parser.h"
-#include <cstdint>
-#include <ext/pb_ds/assoc_container.hpp>
-#include <vector>
+#include "../util.h"
+#include "nameid.h"
 
 namespace Cotton {
 
@@ -55,17 +54,17 @@ public:
     int64_t id;
     bool    gc_mark : 1;
 
-    __gnu_pbds::cc_hash_table<int64_t, Object *> methods;
+    HashTable<NameId, Object *> methods;
 
     Type(Runtime *rt);
     ~Type();
 
     // adds a method
-    void    addMethod(int64_t id, Object *method);
-    // returns a valid(non-NULL, instance object) method object, signals and error if it isn't present
-    Object *getMethod(int64_t id, Runtime *rt);
+    void    addMethod(NameId id, Object *method);
+    // returns a valid(non-nullptr, instance object) method object, signals and error if it isn't present
+    Object *getMethod(NameId id, Runtime *rt);
     // returns whether a method is present or not
-    bool    hasMethod(int64_t id);
+    bool    hasMethod(NameId id);
 
     virtual std::vector<Object *> getGCReachable();
     virtual size_t                getInstanceSize() = 0;    // for placement on stack in case of is_simple

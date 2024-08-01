@@ -83,8 +83,8 @@ public:
 class FuncDefNode {
 public:
     TextArea       text_area;
-    Token         *name;      // NULL means not present
-    IdentListNode *params;    // NULL means not present
+    Token         *name;      // nullptr means not present
+    IdentListNode *params;    // nullptr means not present
     StmtNode      *body;
 
     FuncDefNode() = delete;
@@ -158,7 +158,7 @@ public:
         TOTAL_OPERATORS          // not a method
     } id;
 
-    ExprNode *first, *second;    // if second is NULL then it's not present, and the operator is unary
+    ExprNode *first, *second;    // if second is nullptr then it's not present, and the operator is unary
     Token    *op;
 
     OperatorNode() = delete;
@@ -285,7 +285,7 @@ public:
 
     ExprNode *cond;
     StmtNode *body;
-    StmtNode *else_body;    // if NULL then not present
+    StmtNode *else_body;    // if nullptr then not present
 
     IfStmtNode() = delete;
     ~IfStmtNode();
