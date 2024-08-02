@@ -526,6 +526,124 @@ static Object *CF_removeglobal(const std::vector<Object *> &args, Runtime *rt, b
     return rt->protectedNothing();
 }
 
+static Object *CF_sharedlibrary(const std::vector<Object *> &args, Runtime *rt, bool execution_result_matters) {
+    ProfilerCAPTURE();
+    rt->verifyExactArgsAmountFunc(args, 1);
+    auto arg1 = args[0];
+    rt->verifyIsInstanceObject(arg1, rt->builtin_types.string, Runtime::SUB1_CTX);
+
+    auto            path = std::filesystem::path(getStringDataFast(arg1));
+    std::error_code err;
+    if (!path.is_absolute()) {
+        auto file_dir  = std::filesystem::path(*rt->getTextArea(Runtime::AREA_CTX).filename).parent_path();
+        auto path1     = file_dir;
+        path1         /= path;
+
+        if (std::filesystem::exists(path1) && std::filesystem::is_regular_file(path1)) {
+            path = path1;
+        }
+        else {
+            auto COTTON_PATH = getenv("COTTON_SHARED_LIBRARIES_PATH");
+            if (COTTON_PATH == NULL) {
+                path.clear();    // error
+            }
+            else {
+                auto base  = std::filesystem::path(COTTON_PATH);
+                base      /= path;
+                path       = base;
+            }
+        }
+    }
+
+    // one final check
+
+    path = std::filesystem::canonical(std::filesystem::absolute(path, err), err);
+
+    if (err || !std::filesystem::is_regular_file(path) || !std::filesystem::exists(path)) {
+        rt->signalError("The provided library is either invalid or non existent",
+                        rt->getTextArea(Runtime::AREA_CTX));
+    }
+
+    auto id = rt->nmgr->getId("shared_library: " + path.string());
+    if (rt->checkGlobal(id)) {
+        return rt->getGlobal(id);
+    }
+    rt->setGlobal(id, rt->protectedNothing());
+
+    void *lib = dlopen(path.c_str(), RTLD_LAZY | RTLD_DEEPBIND);
+
+    auto llp = reinterpret_cast<LibraryLoadPoint>(dlsym(lib, "library_load_point"));
+    if (llp == nullptr) {
+        rt->signalError("Failed to load library " + path.string(), rt->getContext().area);
+    }
+    auto res = llp(rt);
+
+    rt->verifyIsValidObject(res);
+    rt->setGlobal(id, res);
+    return res;
+}
+
+static Object *CF_load(const std::vector<Object *> &args, Runtime *rt, bool execution_result_matters) {
+    ProfilerCAPTURE();
+    rt->verifyExactArgsAmountFunc(args, 1);
+    auto arg1 = args[0];
+    rt->verifyIsInstanceObject(arg1, rt->builtin_types.string, Runtime::SUB1_CTX);
+
+    auto path  = std::filesystem::path(getStringDataFast(arg1));
+    path      += ".ctn";
+
+    std::error_code err;
+    if (!path.is_absolute()) {
+        auto file_dir  = std::filesystem::path(*rt->getTextArea(Runtime::AREA_CTX).filename).parent_path();
+        auto path1     = file_dir;
+        path1         /= path;
+
+        if (std::filesystem::exists(path1) && std::filesystem::is_regular_file(path1)) {
+            path = path1;
+        }
+        else {
+            auto COTTON_PATH = getenv("COTTON_CTN_MODULES_PATH");
+            if (COTTON_PATH == NULL) {
+                path.clear();    // error
+            }
+            else {
+                auto base  = std::filesystem::path(COTTON_PATH);
+                base      /= path;
+                path       = base;
+            }
+        }
+    }
+
+    // one final check
+
+    path = std::filesystem::canonical(std::filesystem::absolute(path, err), err);
+
+    if (err || !std::filesystem::is_regular_file(path) || !std::filesystem::exists(path)) {
+        rt->signalError("The provided module is either invalid or non existent",
+                        rt->getTextArea(Runtime::AREA_CTX));
+    }
+
+    Lexer  lexer(rt->getErrorManager());
+    Parser parser(rt->getErrorManager());
+
+    auto tokens = lexer.processFile(path.c_str());
+    for (auto &token : tokens) {
+        token.nameid = rt->nmgr->getId(token.data);
+    }
+    auto program = parser.parse(tokens);
+
+    auto id = rt->nmgr->getId("load: " + path.string());
+    rt->setGlobal(id, rt->protectedNothing());
+
+    rt->newScopeFrame();
+    auto res = rt->execute(program, true);
+    rt->popScopeFrame();
+
+    rt->verifyIsValidObject(res);
+    rt->setGlobal(id, res);
+    return res;
+}
+
 // smartrun(file) - runs file if it hasn't been run before; returns the result of running it.
 static Object *CF_smartrun(const std::vector<Object *> &args, Runtime *rt, bool execution_result_matters) {
     ProfilerCAPTURE();
@@ -735,6 +853,12 @@ void installBuiltinFunctions(Runtime *rt) {
                                 rt);
     rt->getScope()->addVariable(rt->nmgr->getId("removeglobal"),
                                 makeFunctionInstanceObject(true, CF_removeglobal, nullptr, rt),
+                                rt);
+    rt->getScope()->addVariable(rt->nmgr->getId("sharedlibrary"),
+                                makeFunctionInstanceObject(true, CF_sharedlibrary, nullptr, rt),
+                                rt);
+    rt->getScope()->addVariable(rt->nmgr->getId("load"),
+                                makeFunctionInstanceObject(true, CF_load, nullptr, rt),
                                 rt);
     rt->getScope()->addVariable(rt->nmgr->getId("smartrun"),
                                 makeFunctionInstanceObject(true, CF_smartrun, nullptr, rt),
