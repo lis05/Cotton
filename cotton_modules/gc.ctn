@@ -1,0 +1,1 @@
+sharedlibrary("libgc.so");
