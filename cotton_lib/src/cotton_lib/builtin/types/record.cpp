@@ -95,6 +95,7 @@ RecordType::RecordType(Runtime *rt)
 Object *RecordType::create(Runtime *rt) {
     ProfilerCAPTURE();
     auto ins = new RecordInstance(rt);
+    ins->nameid = this->nameid;
     for (auto f : this->instance_fields) {
         ins->addField(f, makeNothingInstanceObject(rt), rt);
     }
