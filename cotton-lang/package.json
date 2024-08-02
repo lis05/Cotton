@@ -1,0 +1,34 @@
+{
+  "name": "cotton-lang",
+  "displayName": "Cotton Language",
+  "description": "Syntax highlighting for Cotton language",
+  "version": "0.0.1",
+  "engines": {
+    "vscode": "^1.92.0"
+  },
+  "categories": [
+    "Programming Languages"
+  ],
+  "contributes": {
+    "languages": [
+      {
+        "id": "ctn",
+        "aliases": [
+          "Cotton",
+          "ctn"
+        ],
+        "extensions": [
+          ".ctn"
+        ],
+        "configuration": "./language-configuration.json"
+      }
+    ],
+    "grammars": [
+      {
+        "language": "ctn",
+        "scopeName": "source.ctn",
+        "path": "./syntaxes/ctn.tmLanguage.json"
+      }
+    ]
+  }
+}

@@ -1,0 +1,37 @@
+{
+	"$schema": "https://raw.githubusercontent.com/martinring/tmlanguage/master/tmlanguage.json",
+	"name": "Cotton",
+	"patterns": [
+		{
+			"include": "#keywords"
+		},
+		{
+			"include": "#strings"
+		},
+		{
+			"include": "#operators"
+		}
+	],
+	"repository": {
+		"keywords": {
+			"patterns": [
+				{
+					"name": "keyword.control.ctn",
+					"match": "\\b(function|record|method|while|for|if|continue|break|return|unscoped)\\b"
+				}
+			]
+		},
+		"strings": {
+			"name": "string.quoted.double.ctn",
+			"begin": "\"",
+			"end": "\"",
+			"patterns": [
+				{
+					"name": "constant.character.escape.ctn",
+					"match": "\\\\."
+				}
+			]
+		}
+	},
+	"scopeName": "source.ctn"
+}
