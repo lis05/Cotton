@@ -1124,6 +1124,7 @@ Object *Runtime::execute(WhileStmtNode *node, bool execution_result_matters) {
                 break;
             }
             else if (this->isExecFlagCONTINUE()) {
+                this->popScopeFrame();
                 continue;
             }
             else if (this->isExecFlagRETURN()) {
@@ -1159,8 +1160,17 @@ Object *Runtime::execute(ForStmtNode *node, bool execution_result_matters) {
         this->execute(node->init, false);
     }
     this->newContext();
-
+    bool first_cycle = true;
     while (true) {
+        if (!first_cycle) {
+            if (node->step != nullptr) {
+                this->getContext().area = node->step->text_area;
+                this->execute(node->step, false);
+            }
+        }
+        if (first_cycle) {
+            first_cycle = false;
+        }
         this->getContext().area = node->text_area;
         this->newScopeFrame();
 
@@ -1182,6 +1192,7 @@ Object *Runtime::execute(ForStmtNode *node, bool execution_result_matters) {
                 break;
             }
             else if (this->isExecFlagCONTINUE()) {
+                this->popScopeFrame();
                 continue;
             }
             else if (this->isExecFlagRETURN()) {
@@ -1200,11 +1211,6 @@ Object *Runtime::execute(ForStmtNode *node, bool execution_result_matters) {
                 this->popContext();
                 return (execution_result_matters) ? this->copy(body) : nullptr;
             };
-        }
-
-        if (node->step != nullptr) {
-            this->getContext().area = node->step->text_area;
-            this->execute(node->step, false);
         }
         this->popScopeFrame();
     }
