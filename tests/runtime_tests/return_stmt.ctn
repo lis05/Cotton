@@ -1,0 +1,30 @@
+// Return statement
+/* 
+BEGIN_MATCH_WORDS
+
+1 55 nothing
+
+SUCCESS
+
+END_MATCH_WORDS
+*/
+function depth1() {
+    return 1;
+};
+
+println(depth1());
+
+function sum(sum, n) {
+    if n == 0; return 0;
+    return n + sum(@sum, n-1);
+};
+
+println(sum(@sum, 10)); // 55
+
+println(function() {
+    return;
+}()); // nothing
+
+println("SUCCESS");
+return "abyss";
+println("FAILURE");

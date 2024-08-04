@@ -1,0 +1,53 @@
+// Continue statement
+/* 
+BEGIN_MATCH_WORDS
+
+0 1 2 3 4 6 7 8 9
+
+0 0
+0 1
+0 2
+0 3
+1 0
+1 1
+1 2
+2 0
+2 1
+3 0
+
+SUCCESS
+
+END_MATCH_WORDS
+*/
+
+
+for i = 0; i < 10; i++; {
+    if i == 5; continue;
+    println(i);
+}
+
+for i = 0; i < 10; i++; {
+    continue;
+    println("abyss");
+}
+
+for i = 0; i < 5; i++; {
+    for j = 0; j < 5; j++; {
+        if i + j > 3; continue;
+        println(i, j);
+    }
+}
+
+// this must not cause the outer scope to continue
+function () {
+    continue;
+    println("FAILURE");
+}();
+
+{
+    println("SUCCESS");
+    continue;
+    println("NUH UH");
+}
+
+println("FAILURE");

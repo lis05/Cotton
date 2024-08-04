@@ -1,0 +1,16 @@
+// While statement
+/* 
+BEGIN_MATCH_WORDS
+
+0 1 2 3 4
+
+SUCCESS
+
+END_MATCH_WORDS
+*/
+
+i = 0;
+while i < 5; println(i++);
+
+println("SUCCESS");
+

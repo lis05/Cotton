@@ -1,0 +1,9 @@
+Cotton is made of: statements and expressions.
+
+Statements are: while, for, if, continue, break, return, block, and expression statements
+
+Expressions are: function definition, record definition, operator, atom, and parentheses expression
+
+important thing is to test custom types + string + array
+
+Tests should test each of those.
