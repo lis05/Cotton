@@ -130,8 +130,8 @@ static Object *FunctionEqAdapter(Object *self, Object *arg, Runtime *rt, bool ex
         if (!rt->isInstanceObject(arg, rt->builtin_types.function)) {
             return rt->protectedBoolean(false);
         }
-        auto f1 = icast(self, FunctionInstance);
-        auto f2 = icast(arg, FunctionInstance);
+        auto f1 = icast(self->instance, FunctionInstance);
+        auto f2 = icast(arg->instance, FunctionInstance);
         if (f1->is_internal && f2->is_internal) {
             return rt->protectedBoolean(f1->internal_ptr == f2->internal_ptr);
         }
