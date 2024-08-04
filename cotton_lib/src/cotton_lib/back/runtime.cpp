@@ -1253,6 +1253,13 @@ Object *Runtime::execute(ReturnStmtNode *node, bool execution_result_matters) {
     this->newContext();
     this->getContext().area = node->text_area;
 
+    if (node->value == NULL) {
+        this->clearExecFlags();
+        this->setExecFlagRETURN();
+        this->popContext();
+        return this->protectedNothing();
+    }
+
     auto res = this->execute(node->value, execution_result_matters);
     if (this->isExecFlagDIRECT_PASS()) {
         this->clearExecFlags();
