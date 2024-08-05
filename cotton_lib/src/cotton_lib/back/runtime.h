@@ -49,6 +49,7 @@ namespace Builtin {
     class CharacterType;
     class StringType;
     class ArrayType;
+    class ArrayIteratorType;
 }    // namespace Builtin
 
 /// @brief Class that is responsible for actual execution of the Cotton language.
@@ -99,14 +100,15 @@ public:
     /// @brief Class storing all builtin types.
     class {
     public:
-        Builtin::FunctionType  *function;
-        Builtin::NothingType   *nothing;
-        Builtin::BooleanType   *boolean;
-        Builtin::IntegerType   *integer;
-        Builtin::RealType      *real;
-        Builtin::CharacterType *character;
-        Builtin::StringType    *string;
-        Builtin::ArrayType     *array;
+        Builtin::FunctionType      *function;
+        Builtin::NothingType       *nothing;
+        Builtin::BooleanType       *boolean;
+        Builtin::IntegerType       *integer;
+        Builtin::RealType          *real;
+        Builtin::CharacterType     *character;
+        Builtin::StringType        *string;
+        Builtin::ArrayType         *array;
+        Builtin::ArrayIteratorType *array_iterator;
     } builtin_types;
 
 private:
@@ -245,6 +247,7 @@ public:
     Object *execute(StmtNode *node, bool execution_result_matters);
     Object *execute(WhileStmtNode *node, bool execution_result_matters);
     Object *execute(ForStmtNode *node, bool execution_result_matters);
+    Object *execute(ForInStmtNode *node, bool execution_result_matters);
     Object *execute(IfStmtNode *node, bool execution_result_matters);
     Object *execute(ReturnStmtNode *node, bool execution_result_matters);
     Object *execute(BlockStmtNode *node, bool execution_result_matters);
@@ -315,7 +318,7 @@ public:
     /**
      * @brief Runs method with the given id. Signals an error if no such method exists.
      *
-     * @param id Id of the method. A method with this id must exist.
+     * @param id Id of the method.
      * @param obj Object on which the method will be run. Must be valid.
      * @param args Arguments of the method. Each of the arguments must be valid.
      * @param execution_result_matters if `false`, the returned object is not guaranteed to be valid. However,
@@ -470,15 +473,15 @@ public:
 
     /**
      * @brief Returns the current error manager.
-     * 
-     * @return ErrorManager* 
+     *
+     * @return ErrorManager*
      */
     ErrorManager *getErrorManager();
 
     /**
      * @brief Returns the current scope.
-     * 
-     * @return Scope* 
+     *
+     * @return Scope*
      */
     Scope *getScope();
 
@@ -585,6 +588,36 @@ namespace MagicMethods {
      * @return NameId of the method.
      */
     NameId mm__read__(Runtime *rt);
+    /**
+     * @brief Returns the nameid of the method called __get_iterator__.
+     *
+     * @param rt The runtime. Must be valid.
+     * @return NameId of the method.
+     */
+    NameId mm__get_iterator__(Runtime *rt);
+    /**
+     * @brief Returns the nameid of the method called __deref_iterator__.
+     *
+     * @param rt The runtime. Must be valid.
+     * @return NameId of the method.
+     */
+    NameId mm__deref_iterator__(Runtime *rt);
+
+    /**
+     * @brief Returns the nameid of the method called __next_iterator__.
+     *
+     * @param rt The runtime. Must be valid.
+     * @return NameId of the method.
+     */
+    NameId mm__next_iterator__(Runtime *rt);
+
+    /**
+     * @brief Returns the nameid of the method called __is_last_iterator.
+     *
+     * @param rt The runtime. Must be valid.
+     * @return NameId of the method.
+     */
+    NameId mm__is_last_iterator__(Runtime *rt);
 }    // namespace MagicMethods
 
 /// @brief Every library must implement this. It is run when the library gets loaded.

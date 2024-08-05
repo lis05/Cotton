@@ -98,7 +98,7 @@ BOOLEAN:
     "true" | "false"
 
 S:
-    WHILE | FOR | IF | CONTINUE | BREAK | RETURN | BLOCK | 
+    WHILE | FOR | FOR-IN | IF | CONTINUE | BREAK | RETURN | BLOCK | 
     E ";" 
 
 WHILE:
@@ -106,6 +106,9 @@ WHILE:
 
 FOR:
     "for" ?E ";" ?E ";" ?E ";" S
+
+FOR-IN:
+    "for" IDENTIFIER "in" E S
 
 IF:
     "if" E S ?("else" S)

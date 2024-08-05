@@ -1,0 +1,39 @@
+// Block statement
+/* 
+BEGIN_MATCH_WORDS
+
+1 1 1 1 false true
+
+SUCCESS
+
+END_MATCH_WORDS
+*/
+
+{}
+unscoped {}
+
+x = 0;
+{
+    x = 1;
+    println(x); // 1
+}
+println(x); // 1
+
+x = 0;
+unscoped {
+    x = 1;
+    println(x); // 1
+}
+println(x); // 1
+
+{
+    y = 0;
+}
+println(isinscope("y")); // false
+
+unscoped {
+    y = 0;
+}
+println(isinscope("y")); // true
+
+println("SUCCESS");

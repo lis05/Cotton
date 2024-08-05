@@ -25,6 +25,7 @@
 
 namespace Cotton::Builtin {
 
+
 class ArrayInstance: public Instance {
 public:
     std::vector<Object *> data;
@@ -50,8 +51,36 @@ public:
     std::string userRepr(Runtime *rt);
 };
 
-void installArrayMethods(Type *type, Runtime *rt);
+class ArrayIteratorInstance: public Instance {
+public:
+    Object *array;
+    int64_t        position;
 
+    ArrayIteratorInstance(Runtime *rt);
+    ~ArrayIteratorInstance();
+
+    Instance             *copy(Runtime *rt);
+    size_t                getSize();
+    std::string           userRepr(Runtime *rt);
+    std::vector<Object *> getGCReachable();
+    void                  spreadSingleUse();
+    void                  spreadMultiUse();
+};
+
+class ArrayIteratorType: public Type {
+public:
+    size_t getInstanceSize();
+    ArrayIteratorType(Runtime *rt);
+    ~ArrayIteratorType() = default;
+    Object     *create(Runtime *rt);
+    Object     *copy(Object *obj, Runtime *rt);
+    std::string userRepr(Runtime *rt);
+};
+
+void    installArrayIteratorMethods(Type *type, Runtime *rt);
+Object *makeArrayIteratorInstanceObject(Object *array, int64_t position, Runtime *rt);
+
+void    installArrayMethods(Type *type, Runtime *rt);
 Object *makeArrayInstanceObject(const std::vector<Object *> &data, Runtime *rt);
 
 std::vector<Object *> &getArrayData(Object *obj, Runtime *rt);

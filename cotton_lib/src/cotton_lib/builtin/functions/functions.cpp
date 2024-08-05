@@ -482,6 +482,16 @@ static Object *CF_assert(const std::vector<Object *> &args, Runtime *rt, bool ex
     }
 }
 
+// isinscope(str) - returns whether variable with name str can be accessed from the current scope
+static Object *CF_isinscope(const std::vector<Object *> &args, Runtime *rt, bool execution_result_matters) {
+    ProfilerCAPTURE();
+    rt->verifyExactArgsAmountFunc(args, 1);
+    auto arg = args[0];
+    rt->verifyIsInstanceObject(arg, rt->builtin_types.string, Runtime::SUB1_CTX);
+
+    return rt->protectedBoolean(rt->getScope()->queryVariable(rt->nmgr->getId(getStringDataFast(arg)), rt));
+}
+
 // checkglobal(str) - returns whether global variable with name str was defined
 static Object *CF_checkglobal(const std::vector<Object *> &args, Runtime *rt, bool execution_result_matters) {
     ProfilerCAPTURE();
@@ -841,6 +851,9 @@ void installBuiltinFunctions(Runtime *rt) {
                                 rt);
     rt->getScope()->addVariable(rt->nmgr->getId("assert"),
                                 makeFunctionInstanceObject(true, CF_assert, nullptr, rt),
+                                rt);
+    rt->getScope()->addVariable(rt->nmgr->getId("isinscope"),
+                                makeFunctionInstanceObject(true, CF_isinscope, nullptr, rt),
                                 rt);
     rt->getScope()->addVariable(rt->nmgr->getId("checkglobal"),
                                 makeFunctionInstanceObject(true, CF_checkglobal, nullptr, rt),

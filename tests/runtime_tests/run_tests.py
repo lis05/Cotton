@@ -39,12 +39,16 @@ for file in tests:
         print(f"❌ {desc} - FAILED: produced %s words, expected %s" % (len(proc_output), len(expected_output)))
         failed = failed + 1
         continue
-
+    flag = 0
     for i in range(len(expected_output)):
         if expected_output[i] != proc_output[i]:
             print(f"❌ {desc} - FAILED: words mismatch at position %s: produced %s, expected %s" % (i, proc_output[i], expected_output[i]))
             failed = failed + 1
-            continue
+            flag = 1
+            break
+    if flag == 1: 
+        continue
+    
     print(f"✅ {desc} - SUCCESS")
     succeeded = succeeded + 1
 

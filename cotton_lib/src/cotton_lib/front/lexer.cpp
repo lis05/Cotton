@@ -227,6 +227,9 @@ void Token::identify(ErrorManager *error_manager) {
     else if (this->data == "for") {
         this->id = FOR_KW;
     }
+    else if (this->data == "in") {
+        this->id = IN_KW;
+    }
     else if (this->data == "if") {
         this->id = IF_KW;
     }
@@ -334,6 +337,7 @@ std::ostream &operator<<(std::ostream &out, const Token &token) {
     case Token::NOTHING_LIT          : out << "nothing"; break;
     case Token::WHILE_KW             : out << "while"; break;
     case Token::FOR_KW               : out << "for"; break;
+    case Token::IN_KW                : out << "in"; break;
     case Token::IF_KW                : out << "if"; break;
     case Token::ELSE_KW              : out << "else"; break;
     case Token::CONTINUE_KW          : out << "continue"; break;

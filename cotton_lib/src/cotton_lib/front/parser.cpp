@@ -410,6 +410,7 @@ StmtNode::~StmtNode() {
     switch (this->id) {
     case WHILE  : delete this->while_stmt; break;
     case FOR    : delete this->for_stmt; break;
+    case FOR_IN : delete this->for_in_stmt; break;
     case IF     : delete this->if_stmt; break;
     case RETURN : delete this->return_stmt; break;
     case BLOCK  : delete this->block_stmt; break;
@@ -422,6 +423,7 @@ StmtNode::~StmtNode() {
     this->return_stmt = nullptr;
     this->block_stmt  = nullptr;
     this->expr        = nullptr;
+    this->for_in_stmt = nullptr;
 }
 
 StmtNode::StmtNode(WhileStmtNode *while_stmt, TextArea text_area) {
@@ -431,6 +433,7 @@ StmtNode::StmtNode(WhileStmtNode *while_stmt, TextArea text_area) {
     this->return_stmt = nullptr;
     this->block_stmt  = nullptr;
     this->expr        = nullptr;
+    this->for_in_stmt = nullptr;
 
     this->id         = WHILE;
     this->while_stmt = while_stmt;
@@ -443,9 +446,23 @@ StmtNode::StmtNode(ForStmtNode *for_stmt, TextArea text_area) {
     this->return_stmt = nullptr;
     this->block_stmt  = nullptr;
     this->expr        = nullptr;
+    this->for_in_stmt = nullptr;
 
     this->id       = FOR;
     this->for_stmt = for_stmt;
+}
+
+StmtNode::StmtNode(ForInStmtNode *for_in_stmt, TextArea text_area) {
+    this->text_area   = text_area;
+    this->while_stmt  = nullptr;
+    this->if_stmt     = nullptr;
+    this->for_stmt    = nullptr;
+    this->return_stmt = nullptr;
+    this->block_stmt  = nullptr;
+    this->expr        = nullptr;
+
+    this->id          = FOR_IN;
+    this->for_in_stmt = for_in_stmt;
 }
 
 StmtNode::StmtNode(IfStmtNode *if_stmt, TextArea text_area) {
@@ -455,6 +472,7 @@ StmtNode::StmtNode(IfStmtNode *if_stmt, TextArea text_area) {
     this->return_stmt = nullptr;
     this->block_stmt  = nullptr;
     this->expr        = nullptr;
+    this->for_in_stmt = nullptr;
 
     this->id      = IF;
     this->if_stmt = if_stmt;
@@ -468,17 +486,19 @@ StmtNode::StmtNode(StmtId id, TextArea text_area) {
     this->return_stmt = nullptr;
     this->block_stmt  = nullptr;
     this->expr        = nullptr;
+    this->for_in_stmt = nullptr;
 
     this->id = id;
 }
 
 StmtNode::StmtNode(ReturnStmtNode *return_stmt, TextArea text_area) {
-    this->text_area  = text_area;
-    this->while_stmt = nullptr;
-    this->for_stmt   = nullptr;
-    this->if_stmt    = nullptr;
-    this->block_stmt = nullptr;
-    this->expr       = nullptr;
+    this->text_area   = text_area;
+    this->while_stmt  = nullptr;
+    this->for_stmt    = nullptr;
+    this->if_stmt     = nullptr;
+    this->block_stmt  = nullptr;
+    this->expr        = nullptr;
+    this->for_in_stmt = nullptr;
 
     this->id          = RETURN;
     this->return_stmt = return_stmt;
@@ -491,6 +511,7 @@ StmtNode::StmtNode(BlockStmtNode *block_stmt, TextArea text_area) {
     this->if_stmt     = nullptr;
     this->return_stmt = nullptr;
     this->expr        = nullptr;
+    this->for_in_stmt = nullptr;
 
     this->id         = BLOCK;
     this->block_stmt = block_stmt;
@@ -503,6 +524,7 @@ StmtNode::StmtNode(ExprNode *expr, TextArea text_area) {
     this->if_stmt     = nullptr;
     this->return_stmt = nullptr;
     this->block_stmt  = nullptr;
+    this->for_in_stmt = nullptr;
 
     this->id   = EXPR;
     this->expr = expr;
@@ -520,6 +542,9 @@ void StmtNode::print(int indent, int step) {
     }
     else if (this->id == StmtNode::FOR) {
         this->for_stmt->print(indent + 1, step);
+    }
+    else if (this->id == StmtNode::FOR_IN) {
+        this->for_in_stmt->print(indent + 1, step);
     }
     else if (this->id == StmtNode::IF) {
         this->if_stmt->print(indent + 1, step);
@@ -613,6 +638,45 @@ void ForStmtNode::print(int indent, int step) {
     printPrefix(indent, step);
     printf("step:\n");
     this->step->print(indent + 1, step);
+
+    printPrefix(indent, step);
+    printf("body:\n");
+    this->body->print(indent + 1, step);
+}
+
+ForInStmtNode::~ForInStmtNode() {
+    delete this->iterable;
+    delete this->body;
+    this->placeholder = nullptr;
+}
+
+ForInStmtNode::ForInStmtNode(Token *placehoder, ExprNode *iterable, StmtNode *body, TextArea text_area) {
+    this->placeholder = placehoder;
+    this->iterable    = iterable;
+    this->body        = body;
+    this->text_area   = text_area;
+}
+
+void ForInStmtNode::print(int indent, int step) {
+    printPrefix(indent, step, false);
+    if (this == nullptr) {
+        printf("nullptr\n");
+        return;
+    }
+    printf("for \n");
+
+    printPrefix(indent, step);
+    printf("placeholder: ");
+    if (this->placeholder == nullptr) {
+        printf("nullptr token\n");
+    }
+    else {
+        printf("%s\n", this->placeholder->data.c_str());
+    }
+
+    printPrefix(indent, step);
+    printf("iterable:\n");
+    this->iterable->print(indent + 1, step);
 
     printPrefix(indent, step);
     printf("body:\n");
@@ -1485,7 +1549,41 @@ Parser::ParsingResult Parser::parseStmt() {
         return ParsingResult(stmt, this);
     }
     else if (this->consume(Token::FOR_KW)) {
-        Token        *for_token = &*prev(this->next_token);
+        Token *for_token  = &*prev(this->next_token);
+        // checking for-in
+        auto   prev_point = this->next_token;
+        if (this->hasNext() && this->checkNext() == Token::IDENTIFIER) {
+            auto *placeholder = &*this->next_token;
+            this->consume();
+
+            if (this->consume(Token::IN_KW)) {
+                // for-in
+                this->saveState();
+                auto iterable = this->parseExpr();
+                this->restoreState();
+
+                if (!iterable.verify(this, ParsingResult::EXPR, "Expected for-in iterable")) {
+                    return ParsingResult("", this);
+                }
+
+                this->saveState();
+                auto body = this->parseStmt();
+                this->restoreState();
+
+                if (!body.verify(this, ParsingResult::STMT, "Expected for-in loop body")) {
+                    return ParsingResult("", this);
+                }
+
+                auto for_in_stmt = new ForInStmtNode(placeholder,
+                                                     iterable.expr,
+                                                     body.stmt,
+                                                     TextArea(TextArea(*for_token), body.stmt->text_area));
+                auto stmt        = new StmtNode(for_in_stmt, for_in_stmt->text_area);
+                return ParsingResult(stmt, this);
+            }
+            // not for-in
+            this->next_token = prev_point;
+        }
         ParsingResult init((ExprNode *)nullptr, this), cond((ExprNode *)nullptr, this),
         step((ExprNode *)nullptr, this);
         if (!this->consume(Token::SEMICOLON)) {
@@ -1810,6 +1908,13 @@ Parser::ParsingResult::ParsingResult(ForStmtNode *for_stmt, Parser *p) {
     this->id       = FOR_STMT;
     this->for_stmt = for_stmt;
     this->state    = p->state;
+}
+
+Parser::ParsingResult::ParsingResult(ForInStmtNode *for_in_stmt, Parser *p) {
+    this->success     = true;
+    this->id          = FOR_IN_STMT;
+    this->for_in_stmt = for_in_stmt;
+    this->state       = p->state;
 }
 
 Parser::ParsingResult::ParsingResult(IfStmtNode *if_stmt, Parser *p) {

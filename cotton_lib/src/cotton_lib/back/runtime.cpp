@@ -21,14 +21,15 @@ Runtime::Runtime(GCStrategy *gc_strategy, ErrorManager *error_manager, NamesMana
     this->error_manager = error_manager;
     this->newContext();
 
-    this->builtin_types.function  = new Builtin::FunctionType(this);
-    this->builtin_types.nothing   = new Builtin::NothingType(this);
-    this->builtin_types.boolean   = new Builtin::BooleanType(this);
-    this->builtin_types.integer   = new Builtin::IntegerType(this);
-    this->builtin_types.real      = new Builtin::RealType(this);
-    this->builtin_types.character = new Builtin::CharacterType(this);
-    this->builtin_types.string    = new Builtin::StringType(this);
-    this->builtin_types.array     = new Builtin::ArrayType(this);
+    this->builtin_types.function       = new Builtin::FunctionType(this);
+    this->builtin_types.nothing        = new Builtin::NothingType(this);
+    this->builtin_types.boolean        = new Builtin::BooleanType(this);
+    this->builtin_types.integer        = new Builtin::IntegerType(this);
+    this->builtin_types.real           = new Builtin::RealType(this);
+    this->builtin_types.character      = new Builtin::CharacterType(this);
+    this->builtin_types.string         = new Builtin::StringType(this);
+    this->builtin_types.array          = new Builtin::ArrayType(this);
+    this->builtin_types.array_iterator = new Builtin::ArrayIteratorType(this);
 
     auto nothing_obj        = this->make(this->builtin_types.nothing, Runtime::TYPE_OBJECT);
     nothing_obj->can_modify = false;
@@ -70,6 +71,11 @@ Runtime::Runtime(GCStrategy *gc_strategy, ErrorManager *error_manager, NamesMana
     this->scope->addVariable(this->nmgr->getId("Array"), array_obj, this);
     this->registerTypeObject(this->builtin_types.array, array_obj);
 
+    auto array_iterator_obj        = this->make(this->builtin_types.array_iterator, Runtime::TYPE_OBJECT);
+    array_iterator_obj->can_modify = false;
+    this->scope->addVariable(this->nmgr->getId("ArrayIterator"), array_obj, this);
+    this->registerTypeObject(this->builtin_types.array_iterator, array_obj);
+
     Builtin::installBooleanMethods(this->builtin_types.boolean, this);
     Builtin::installCharacterMethods(this->builtin_types.character, this);
     Builtin::installFunctionMethods(this->builtin_types.function, this);
@@ -78,6 +84,7 @@ Runtime::Runtime(GCStrategy *gc_strategy, ErrorManager *error_manager, NamesMana
     Builtin::installNothingMethods(this->builtin_types.nothing, this);
     Builtin::installStringMethods(this->builtin_types.string, this);
     Builtin::installArrayMethods(this->builtin_types.array, this);
+    Builtin::installArrayIteratorMethods(this->builtin_types.array_iterator, this);
 
     Builtin::installBuiltinFunctions(this);
 
@@ -969,7 +976,6 @@ Object *Runtime::execute(AtomNode *node, bool execution_result_matters) {
             this->clearExecFlags();
             this->popContext();
             return node->lit_obj = it->second;
-            ;
         }
         auto lit = Builtin::makeRealInstanceObject(node->real_value, this);
         this->gc->hold(lit);
@@ -1067,6 +1073,9 @@ Object *Runtime::execute(StmtNode *node, bool execution_result_matters) {
     }
     case StmtNode::FOR : {
         return this->execute(node->for_stmt, execution_result_matters);
+    }
+    case StmtNode::FOR_IN : {
+        return this->execute(node->for_in_stmt, execution_result_matters);
     }
     case StmtNode::IF : {
         return this->execute(node->if_stmt, execution_result_matters);
@@ -1217,6 +1226,93 @@ Object *Runtime::execute(ForStmtNode *node, bool execution_result_matters) {
     this->clearExecFlags();
     this->popContext();
     this->popScopeFrame();
+    return this->protected_nothing;
+}
+
+Object *Runtime::execute(ForInStmtNode *node, bool execution_result_matters) {
+    ProfilerCAPTURE();
+    if (node == nullptr) {
+        this->signalError("Failed to execute unknown AST node", this->getContext().area);
+    }
+
+    this->newScopeFrame();
+    auto iterable = this->execute(node->iterable, true);
+    this->gc->hold(iterable);
+
+    this->newContext();
+    this->getContext().area = node->iterable->text_area;
+    this->getContext().sub_areas.push_back(node->iterable->text_area);
+    this->getContext().sub_areas.push_back(node->iterable->text_area);
+    auto iterator = this->runMethod(MagicMethods::mm__get_iterator__(this), iterable, {iterable}, true);
+    this->gc->hold(iterator);
+
+    this->getContext().area         = TextArea(*node->placeholder);
+    this->getContext().sub_areas[0] = TextArea(*node->placeholder);
+    this->getContext().sub_areas[1] = TextArea(*node->placeholder);
+
+    bool first_cycle = true;
+    while (true) {
+        if (!first_cycle) {
+            auto res = this->runMethod(MagicMethods::mm__is_last_iterator__(this), iterator, {iterator}, true);
+            this->verifyIsInstanceObject(res, this->builtin_types.boolean, Runtime::AREA_CTX);
+            if (getBooleanValueFast(res)) {
+                break;    // womp womp
+            }
+
+            auto new_iterator
+            = this->runMethod(MagicMethods::mm__next_iterator__(this), iterator, {iterator}, true);
+            this->gc->release(iterator);
+            this->gc->hold(new_iterator);
+            iterator = new_iterator;
+        }
+        if (first_cycle) {
+            first_cycle = false;
+        }
+        auto item = this->runMethod(MagicMethods::mm__deref_iterator__(this), iterator, {iterator}, true);
+        this->scope->addVariable(node->placeholder->nameid, item, this);
+
+        this->getContext().area = node->text_area;
+        this->newScopeFrame();
+
+        if (node->body != nullptr) {
+            this->getContext().area = node->body->text_area;
+            auto body               = this->execute(node->body, execution_result_matters);
+            if (this->isExecFlagBREAK()) {
+                this->popScopeFrame();
+                break;
+            }
+            else if (this->isExecFlagCONTINUE()) {
+                this->popScopeFrame();
+                continue;
+            }
+            else if (this->isExecFlagRETURN()) {
+                if (this->isExecFlagDIRECT_PASS()) {
+                    this->clearExecFlags();
+                    this->setExecFlagRETURN();
+                    this->popScopeFrame();
+                    this->popScopeFrame();
+                    this->popContext();
+                    this->gc->release(iterator);
+                    this->gc->release(iterable);
+                    return body;
+                }
+                this->clearExecFlags();
+                this->setExecFlagRETURN();
+                this->popScopeFrame();
+                this->popScopeFrame();
+                this->popContext();
+                this->gc->release(iterator);
+                this->gc->release(iterable);
+                return (execution_result_matters) ? this->copy(body) : nullptr;
+            };
+        }
+        this->popScopeFrame();
+    }
+    this->clearExecFlags();
+    this->popContext();
+    this->popScopeFrame();
+    this->gc->release(iterator);
+    this->gc->release(iterable);
     return this->protected_nothing;
 }
 
@@ -1538,6 +1634,26 @@ namespace MagicMethods {
     NameId mm__read__(Runtime *rt) {
         ProfilerCAPTURE();
         return rt->nmgr->getId("__read__");
+    }
+
+    NameId mm__get_iterator__(Runtime *rt) {
+        ProfilerCAPTURE();
+        return rt->nmgr->getId("__get_iterator__");
+    }
+
+    NameId mm__deref_iterator__(Runtime *rt) {
+        ProfilerCAPTURE();
+        return rt->nmgr->getId("__deref_iterator__");
+    }
+
+    NameId mm__next_iterator__(Runtime *rt) {
+        ProfilerCAPTURE();
+        return rt->nmgr->getId("__next_iterator__");
+    }
+
+    NameId mm__is_last_iterator__(Runtime *rt) {
+        ProfilerCAPTURE();
+        return rt->nmgr->getId("__is_last_iterator__");
     }
 }    // namespace MagicMethods
 

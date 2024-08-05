@@ -1,0 +1,59 @@
+// Function
+/*
+BEGIN_MATCH_WORDS
+
+{2, 1, 0}
+{3, 2, 1}
+
+SUCCESS
+
+END_MATCH_WORDS
+*/
+assert(function(){1;}() == 1); // the last value in a block gets returned automatically
+assert(function(){}() == nothing);
+assert(function(){} != function(){});
+f = function(){};
+assert(f == f);
+
+// functions in cotton dont see themselves
+// therefore infinite functions like this are not possible
+/*
+f = function(){return f;};
+f()()()()()()()()()...
+*/
+
+assert(function(){1;2;3;}() == 3);
+assert(function(){1;return 2;3;}() == 2);
+
+rec = function(rec, n){
+    if n == 0; return 0;
+    return rec(@rec, n - 1) + n;
+};
+
+assert(rec(@rec, 100) == 100 * 101 / 2);
+
+// want some functional programming?
+inc = function(elem) {
+    ++elem;
+};
+map = function(f, arr) {
+    for i = 0; i < arr.size(); i++; {
+        f(@arr[i]);
+    };
+    return arr;
+};
+
+array = make(Array).resize(3);
+array[0] = 1 + (array[1] = 1 + (array[2] = 0)); // 2 1 0
+
+println(array);
+assert(array[0] == 2 and array[1] == 1 and array[2] == 0);
+map(@inc, @array); // are you happy now?
+println(array);
+assert(array[0] == 3 and array[1] == 2 and array[2] == 1);
+
+// copying a function creates a new function with the same pointer to the code
+// that the original function has. therefore, they are equal.
+assert(copy(map) == map); 
+
+println("SUCCESS");
