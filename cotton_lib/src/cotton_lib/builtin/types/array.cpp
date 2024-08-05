@@ -113,12 +113,12 @@ static Object *ArrayEqAdapter(Object *self, Object *arg, Runtime *rt, bool execu
         return rt->protectedBoolean(false);
     }
 
-    if (!rt->isOfType(arg, rt->builtin_types.string)) {
+    if (!rt->isOfType(arg, rt->builtin_types.array)) {
         return rt->protectedBoolean(false);
     }
 
-    if (rt->isInstanceObject(self, rt->builtin_types.integer)) {
-        if (!rt->isInstanceObject(arg, rt->builtin_types.integer)) {
+    if (rt->isInstanceObject(self, rt->builtin_types.array)) {
+        if (!rt->isInstanceObject(arg, rt->builtin_types.array)) {
             return rt->protectedBoolean(false);
         }
         auto a1 = getArrayDataFast(self);
@@ -139,8 +139,8 @@ static Object *ArrayEqAdapter(Object *self, Object *arg, Runtime *rt, bool execu
         }
         return rt->protectedBoolean(true);
     }
-    else if (rt->isTypeObject(self, rt->builtin_types.integer)) {
-        if (!rt->isTypeObject(arg, rt->builtin_types.integer)) {
+    else if (rt->isTypeObject(self, rt->builtin_types.array)) {
+        if (!rt->isTypeObject(arg, rt->builtin_types.array)) {
             return rt->protectedBoolean(false);
         }
         return rt->protectedBoolean(true);
@@ -188,6 +188,10 @@ static Object *arrayResizeMethod(const std::vector<Object *> &args, Runtime *rt,
         getArrayDataFast(self)[i] = makeNothingInstanceObject(rt);
     }
 
+    if (!self->single_use) {
+        self->spreadMultiUse();
+    }
+
     return self;
 }
 
@@ -225,7 +229,7 @@ static Object *array_mm__repr__(const std::vector<Object *> &args, Runtime *rt, 
 }
 
 static Object *
-array_mm__get_iterator__(const std::vector<Object *> &args, Runtime *rt, bool execution_result_matters) {
+arrayBeginIteratorMethod(const std::vector<Object *> &args, Runtime *rt, bool execution_result_matters) {
     ProfilerCAPTURE();
     rt->verifyExactArgsAmountMethod(args, 0);
     auto self = args[0];
@@ -239,66 +243,27 @@ array_mm__get_iterator__(const std::vector<Object *> &args, Runtime *rt, bool ex
 }
 
 static Object *
-array_iterator_mm__next_iterator__(const std::vector<Object *> &args, Runtime *rt, bool execution_result_matters) {
+arrayEndIteratorMethod(const std::vector<Object *> &args, Runtime *rt, bool execution_result_matters) {
     ProfilerCAPTURE();
     rt->verifyExactArgsAmountMethod(args, 0);
     auto self = args[0];
-    rt->verifyIsInstanceObject(self, rt->builtin_types.array_iterator, Runtime::SUB1_CTX);
+    rt->verifyIsInstanceObject(self, rt->builtin_types.array, Runtime::SUB1_CTX);
 
-    auto res = rt->copy(self);
-    icast(res->instance, ArrayIteratorInstance)->position++;
-    return res;
-}
+    if (!execution_result_matters) {
+        return self;
+    }
 
-static Object *array_iterator_mm__is_last_iterator__(const std::vector<Object *> &args,
-                                                     Runtime                     *rt,
-                                                     bool                         execution_result_matters) {
-    ProfilerCAPTURE();
-    rt->verifyExactArgsAmountMethod(args, 0);
-    auto self = args[0];
-    rt->verifyIsInstanceObject(self, rt->builtin_types.array_iterator, Runtime::SUB1_CTX);
-
-    auto i = icast(self->instance, ArrayIteratorInstance);
-
-    return rt->protectedBoolean(i->position + 1 >= getArrayDataFast(i->array).size());
-}
-
-static Object *array_iterator_mm__deref_iterator__(const std::vector<Object *> &args,
-                                                   Runtime                     *rt,
-                                                   bool                         execution_result_matters) {
-    ProfilerCAPTURE();
-    rt->verifyExactArgsAmountMethod(args, 0);
-    auto self = args[0];
-    rt->verifyIsInstanceObject(self, rt->builtin_types.array_iterator, Runtime::SUB1_CTX);
-
-    auto i = icast(self->instance, ArrayIteratorInstance);
-
-    return getArrayDataFast(i->array)[i->position];
-}
-
-void installArrayIteratorMethods(Type *type, Runtime *rt) {
-    type->addMethod(MagicMethods::mm__deref_iterator__(rt),
-                    Builtin::makeFunctionInstanceObject(true, array_iterator_mm__deref_iterator__, nullptr, rt));
-    type->addMethod(MagicMethods::mm__next_iterator__(rt),
-                    Builtin::makeFunctionInstanceObject(true, array_iterator_mm__next_iterator__, nullptr, rt));
-    type->addMethod(MagicMethods::mm__is_last_iterator__(rt),
-                    Builtin::makeFunctionInstanceObject(true, array_iterator_mm__is_last_iterator__, nullptr, rt));
-}
-
-Object *makeArrayIteratorInstanceObject(Object *array, int64_t position, Runtime *rt) {
-    rt->verifyIsInstanceObject(array, rt->builtin_types.array);
-    auto res = rt->make(rt->builtin_types.array_iterator, Runtime::INSTANCE_OBJECT);
-    icast(res->instance, ArrayIteratorInstance)->array    = array;
-    icast(res->instance, ArrayIteratorInstance)->position = position;
-    return res;
+    return makeArrayIteratorInstanceObject(self, getArrayDataFast(self).size(), rt);
 }
 
 void installArrayMethods(Type *type, Runtime *rt) {
     ProfilerCAPTURE();
     type->addMethod(MagicMethods::mm__repr__(rt),
                     Builtin::makeFunctionInstanceObject(true, array_mm__repr__, nullptr, rt));
-    type->addMethod(MagicMethods::mm__get_iterator__(rt),
-                    Builtin::makeFunctionInstanceObject(true, array_mm__get_iterator__, nullptr, rt));
+    type->addMethod(rt->nmgr->getId("begin_iterator"),
+                    Builtin::makeFunctionInstanceObject(true, arrayBeginIteratorMethod, nullptr, rt));
+    type->addMethod(rt->nmgr->getId("end_iterator"),
+                    Builtin::makeFunctionInstanceObject(true, arrayEndIteratorMethod, nullptr, rt));
 
     type->addMethod(rt->nmgr->getId("size"), makeFunctionInstanceObject(true, arraySizeMethod, nullptr, rt));
     type->addMethod(rt->nmgr->getId("resize"), makeFunctionInstanceObject(true, arrayResizeMethod, nullptr, rt));
@@ -354,6 +319,104 @@ Object *makeArrayInstanceObject(const std::vector<Object *> &data, Runtime *rt) 
     ProfilerCAPTURE();
     auto res              = rt->make(rt->builtin_types.array, Runtime::INSTANCE_OBJECT);
     getArrayDataFast(res) = data;
+    return res;
+}
+
+static Object *
+array_iterator_mm__repr__(const std::vector<Object *> &args, Runtime *rt, bool execution_result_matters) {
+    ProfilerCAPTURE();
+    rt->verifyExactArgsAmountMethod(args, 0);
+    auto self = args[0];
+    rt->verifyIsOfType(self, rt->builtin_types.array_iterator, Runtime::SUB1_CTX);
+
+    if (!execution_result_matters) {
+        return self;
+    }
+
+    if (rt->isTypeObject(self, nullptr)) {
+        return makeStringInstanceObject("ArrayIterator", rt);
+    }
+
+    auto i = icast(self->instance, ArrayIteratorInstance);
+
+    return makeStringInstanceObject("ArrayIterator(pos = " + std::to_string(i->position) + ")", rt);
+}
+
+static Object *
+arrayIteratorEqualMethod(const std::vector<Object *> &args, Runtime *rt, bool execution_result_matters) {
+    ProfilerCAPTURE();
+    rt->verifyExactArgsAmountMethod(args, 1);
+    auto self = args[0];
+    auto arg  = args[1];
+    rt->verifyIsInstanceObject(self, rt->builtin_types.array_iterator, Runtime::SUB1_CTX);
+    rt->verifyIsValidObject(arg, Runtime::SUB1_CTX);
+
+    if (!execution_result_matters) {
+        return rt->protectedBoolean(false);
+    }
+
+    if (!rt->isOfType(arg, rt->builtin_types.array_iterator)) {
+        return rt->protectedBoolean(false);
+    }
+
+    if (rt->isInstanceObject(self, rt->builtin_types.array_iterator)) {
+        if (!rt->isInstanceObject(arg, rt->builtin_types.array_iterator)) {
+            return rt->protectedBoolean(false);
+        }
+        auto i1 = icast(self->instance, ArrayIteratorInstance);
+        auto i2 = icast(arg->instance, ArrayIteratorInstance);
+        return rt->protectedBoolean(i1->array == i2->array && i1->position == i2->position);
+    }
+    else if (rt->isTypeObject(self, rt->builtin_types.array)) {
+        if (!rt->isTypeObject(arg, rt->builtin_types.array)) {
+            return rt->protectedBoolean(false);
+        }
+        return rt->protectedBoolean(true);
+    }
+
+    return rt->protectedBoolean(false);
+}
+
+static Object *
+arrayIteratorNextIteratorMethod(const std::vector<Object *> &args, Runtime *rt, bool execution_result_matters) {
+    ProfilerCAPTURE();
+    rt->verifyExactArgsAmountMethod(args, 0);
+    auto self = args[0];
+    rt->verifyIsInstanceObject(self, rt->builtin_types.array_iterator, Runtime::SUB1_CTX);
+
+    auto res = rt->copy(self);
+    icast(res->instance, ArrayIteratorInstance)->position++;
+    return res;
+}
+
+static Object *
+arrayIteratorGetIteratorMethod(const std::vector<Object *> &args, Runtime *rt, bool execution_result_matters) {
+    ProfilerCAPTURE();
+    rt->verifyExactArgsAmountMethod(args, 0);
+    auto self = args[0];
+    rt->verifyIsInstanceObject(self, rt->builtin_types.array_iterator, Runtime::SUB1_CTX);
+
+    auto i = icast(self->instance, ArrayIteratorInstance);
+
+    return getArrayDataFast(i->array)[i->position];
+}
+
+void installArrayIteratorMethods(Type *type, Runtime *rt) {
+    type->addMethod(rt->nmgr->getId("equal"),
+                    Builtin::makeFunctionInstanceObject(true, arrayIteratorEqualMethod, nullptr, rt));
+    type->addMethod(rt->nmgr->getId("get_item"),
+                    Builtin::makeFunctionInstanceObject(true, arrayIteratorGetIteratorMethod, nullptr, rt));
+    type->addMethod(rt->nmgr->getId("next_iterator"),
+                    Builtin::makeFunctionInstanceObject(true, arrayIteratorNextIteratorMethod, nullptr, rt));
+    type->addMethod(rt->nmgr->getId("__repr__"),
+                    Builtin::makeFunctionInstanceObject(true, array_iterator_mm__repr__, nullptr, rt));
+}
+
+Object *makeArrayIteratorInstanceObject(Object *array, int64_t position, Runtime *rt) {
+    rt->verifyIsInstanceObject(array, rt->builtin_types.array);
+    auto res = rt->make(rt->builtin_types.array_iterator, Runtime::INSTANCE_OBJECT);
+    icast(res->instance, ArrayIteratorInstance)->array    = array;
+    icast(res->instance, ArrayIteratorInstance)->position = position;
     return res;
 }
 

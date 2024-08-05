@@ -37,7 +37,7 @@ static Object *CF_make(const std::vector<Object *> &args, Runtime *rt, bool exec
     auto res = rt->make(arg->type, Runtime::INSTANCE_OBJECT);
 
     if (rt->isValidObject(res) && res->type->hasMethod(MagicMethods::mm__make__(rt))) {
-        rt->runMethod(MagicMethods::mm__make__(rt), res, {res}, false);
+        return rt->runMethod(MagicMethods::mm__make__(rt), res, {res}, true);
     }
     return res;
 }
@@ -369,7 +369,11 @@ static Object *CF_typeof(const std::vector<Object *> &args, Runtime *rt, bool ex
     auto arg = args[0];
     rt->verifyIsValidObject(arg, Runtime::SUB1_CTX);
 
-    return rt->getTypeObject(arg->type);
+    auto res = rt->getTypeObject(arg->type);
+    if (res != rt->protectedNothing()) {
+        return res;
+    }
+    return rt->make(arg->type, Runtime::TYPE_OBJECT);
 }
 
 // isinsobj(obj, type) - tells whether obj is an instance object of the given type (or any type if nothing is
@@ -410,10 +414,10 @@ static Object *CF_istypeobj(const std::vector<Object *> &args, Runtime *rt, bool
             return rt->protectedNothing();
         }
 
-        return rt->protectedBoolean(rt->isInstanceObject(arg, type->type));
+        return rt->protectedBoolean(rt->isTypeObject(arg, type->type));
     }
 
-    return rt->protectedBoolean(rt->isInstanceObject(arg, nullptr));
+    return rt->protectedBoolean(rt->isTypeObject(arg, nullptr));
 }
 
 // repr(obj) - gives a string representation of obj

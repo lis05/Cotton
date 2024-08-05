@@ -594,30 +594,6 @@ namespace MagicMethods {
      * @param rt The runtime. Must be valid.
      * @return NameId of the method.
      */
-    NameId mm__get_iterator__(Runtime *rt);
-    /**
-     * @brief Returns the nameid of the method called __deref_iterator__.
-     *
-     * @param rt The runtime. Must be valid.
-     * @return NameId of the method.
-     */
-    NameId mm__deref_iterator__(Runtime *rt);
-
-    /**
-     * @brief Returns the nameid of the method called __next_iterator__.
-     *
-     * @param rt The runtime. Must be valid.
-     * @return NameId of the method.
-     */
-    NameId mm__next_iterator__(Runtime *rt);
-
-    /**
-     * @brief Returns the nameid of the method called __is_last_iterator.
-     *
-     * @param rt The runtime. Must be valid.
-     * @return NameId of the method.
-     */
-    NameId mm__is_last_iterator__(Runtime *rt);
 }    // namespace MagicMethods
 
 /// @brief Every library must implement this. It is run when the library gets loaded.

@@ -552,7 +552,7 @@ Object *Runtime::execute(TypeDefNode *node, bool execution_result_matters) {
     }
 
     auto res = this->make(type, Runtime::TYPE_OBJECT);
-    this->scope->addVariable(type->nameid, res, this);
+    this->scope->master->addVariable(type->nameid, res, this);
     this->popContext();
 
     this->clearExecFlags();
@@ -1243,32 +1243,34 @@ Object *Runtime::execute(ForInStmtNode *node, bool execution_result_matters) {
     this->getContext().area = node->iterable->text_area;
     this->getContext().sub_areas.push_back(node->iterable->text_area);
     this->getContext().sub_areas.push_back(node->iterable->text_area);
-    auto iterator = this->runMethod(MagicMethods::mm__get_iterator__(this), iterable, {iterable}, true);
+    auto iterator     = this->runMethod(this->nmgr->getId("begin_iterator"), iterable, {iterable}, true);
+    auto end_iterator = this->runMethod(this->nmgr->getId("end_iterator"), iterable, {iterable}, true);
     this->gc->hold(iterator);
-
-    this->getContext().area         = TextArea(*node->placeholder);
-    this->getContext().sub_areas[0] = TextArea(*node->placeholder);
-    this->getContext().sub_areas[1] = TextArea(*node->placeholder);
+    this->gc->hold(end_iterator);
 
     bool first_cycle = true;
     while (true) {
+        this->getContext().area         = TextArea(*node->placeholder);
+        this->getContext().sub_areas[0] = TextArea(*node->placeholder);
+        this->getContext().sub_areas[1] = TextArea(*node->placeholder);
         if (!first_cycle) {
-            auto res = this->runMethod(MagicMethods::mm__is_last_iterator__(this), iterator, {iterator}, true);
-            this->verifyIsInstanceObject(res, this->builtin_types.boolean, Runtime::AREA_CTX);
-            if (getBooleanValueFast(res)) {
-                break;    // womp womp
-            }
-
-            auto new_iterator
-            = this->runMethod(MagicMethods::mm__next_iterator__(this), iterator, {iterator}, true);
+            auto new_iterator = this->runMethod(this->nmgr->getId("next_iterator"), iterator, {iterator}, true);
             this->gc->release(iterator);
+            this->gc->release(end_iterator);
             this->gc->hold(new_iterator);
             iterator = new_iterator;
         }
         if (first_cycle) {
             first_cycle = false;
         }
-        auto item = this->runMethod(MagicMethods::mm__deref_iterator__(this), iterator, {iterator}, true);
+        {
+            auto res = this->runMethod(this->nmgr->getId("equal"), iterator, {iterator, end_iterator}, true);
+            this->verifyIsInstanceObject(res, this->builtin_types.boolean, Runtime::AREA_CTX);
+            if (getBooleanValueFast(res)) {
+                break;    // womp womp
+            }
+        }
+        auto item = this->runMethod(this->nmgr->getId("get_item"), iterator, {iterator}, true);
         this->scope->addVariable(node->placeholder->nameid, item, this);
 
         this->getContext().area = node->text_area;
@@ -1293,6 +1295,7 @@ Object *Runtime::execute(ForInStmtNode *node, bool execution_result_matters) {
                     this->popScopeFrame();
                     this->popContext();
                     this->gc->release(iterator);
+                    this->gc->release(end_iterator);
                     this->gc->release(iterable);
                     return body;
                 }
@@ -1302,6 +1305,7 @@ Object *Runtime::execute(ForInStmtNode *node, bool execution_result_matters) {
                 this->popScopeFrame();
                 this->popContext();
                 this->gc->release(iterator);
+                this->gc->release(end_iterator);
                 this->gc->release(iterable);
                 return (execution_result_matters) ? this->copy(body) : nullptr;
             };
@@ -1312,6 +1316,7 @@ Object *Runtime::execute(ForInStmtNode *node, bool execution_result_matters) {
     this->popContext();
     this->popScopeFrame();
     this->gc->release(iterator);
+    this->gc->release(end_iterator);
     this->gc->release(iterable);
     return this->protected_nothing;
 }

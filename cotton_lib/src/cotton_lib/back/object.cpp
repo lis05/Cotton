@@ -61,11 +61,10 @@ void Object::assignTo(Object *obj, Runtime *rt) {
     if (!this->can_modify) {
         rt->signalError("Cannot assign to " + this->userRepr(rt), rt->getContext().area);
     }
-    auto id          = this->id;
-    auto single_use  = this->single_use;
-    *this            = *obj;
-    this->single_use = single_use;
-    this->id         = id;
+    auto id  = this->id;
+    *this    = *obj;
+    this->id = id;
+    this->spreadMultiUse();
 }
 
 void Object::assignToCopyOf(Object *obj, Runtime *rt) {
@@ -73,11 +72,10 @@ void Object::assignToCopyOf(Object *obj, Runtime *rt) {
     if (!this->can_modify) {
         rt->signalError("Cannot assign to " + this->userRepr(rt), rt->getContext().area);
     }
-    auto id          = this->id;
-    auto single_use  = this->single_use;
-    *this            = *rt->copy(obj);
-    this->single_use = single_use;
-    this->id         = id;
+    auto id  = this->id;
+    *this    = *rt->copy(obj);
+    this->id = id;
+    this->spreadMultiUse();
 }
 
 void Object::spreadSingleUse() {

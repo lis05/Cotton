@@ -1133,6 +1133,9 @@ Parser::ParsingResult Parser::parseExpr() {
                     return ParsingResult("Expected a close curly bracket", this);
                 }
             }
+            else {
+                last_bracket = &*prev(this->next_token);
+            }
 
             ta            = TextArea(TextArea(*type_token), TextArea(*last_bracket));
             auto type_def = new TypeDefNode(name, fields, methods, ta);
