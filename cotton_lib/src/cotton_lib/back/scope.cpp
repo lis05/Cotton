@@ -20,6 +20,18 @@ Scope::~Scope() {
     this->arguments.clear();
 }
 
+Scope *Scope::getPrev() {
+    return this->prev;
+}
+
+std::vector<Object *> &Scope::getArguments() {
+    return this->arguments;
+}
+
+bool Scope::canAccessPrev() {
+    return this->can_access_prev;
+}
+
 void Scope::addVariable(NameId id, Object *obj, Runtime *rt) {
     ProfilerCAPTURE();
     this->variables[id] = obj;
