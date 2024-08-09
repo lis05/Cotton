@@ -94,7 +94,7 @@ FunctionCallAdapter(Object *self, const std::vector<Object *> &args, Runtime *rt
         rt->newScopeFrame(false);
         // rt->getScope()->arguments.push_back(self); // is it needed?
         for (auto arg : args) {
-            rt->getScope()->arguments.push_back(arg);
+            rt->getScope()->getArguments().push_back(arg);
         }
         if (f->cotton_ptr->params != nullptr) {
             int i = 0;
