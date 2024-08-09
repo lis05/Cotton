@@ -1,0 +1,28 @@
+// make()
+/*
+BEGIN_MATCH_WORDS
+false
+a
+0
+0.000000
+a
+{}
+nothing
+function
+END_MATCH_WORDS
+*/
+
+println(make(Boolean));
+println(make(Character) + 'a');
+println(make(Integer));
+println(make(Real));
+println(make(String) + "a");
+println(make(Array));
+println(make(Nothing));
+println(make(Function));
+
+type T1 {};
+type T2 {};
+
+assert(isinsobj(make(T1), T1));
+assert(isinsobj(make(T2), T2));
