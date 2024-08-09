@@ -305,14 +305,14 @@ static Object *CF_argc(const std::vector<Object *> &args, Runtime *rt, bool exec
         return nullptr;
     }
 
-    auto s = rt->getScope()->prev;
-    while (s != nullptr && s->can_access_prev) {
-        s = s->prev;
+    auto s = rt->getScope()->getPrev();
+    while (s != nullptr && s->canAccessPrev()) {
+        s = s->getPrev();
     }
     if (s == nullptr) {
         return Builtin::makeIntegerInstanceObject(0, rt);
     }
-    return Builtin::makeIntegerInstanceObject(s->arguments.size(), rt);
+    return Builtin::makeIntegerInstanceObject(s->getArguments().size(), rt);
 }
 
 // argv() - returns an array made of arguments passed to the current functions
@@ -324,14 +324,14 @@ static Object *CF_argv(const std::vector<Object *> &args, Runtime *rt, bool exec
         return nullptr;
     }
 
-    auto s = rt->getScope()->prev;
-    while (s != nullptr && s->can_access_prev) {
-        s = s->prev;
+    auto s = rt->getScope()->getPrev();
+    while (s != nullptr && s->canAccessPrev()) {
+        s = s->getPrev();
     }
     if (s == nullptr) {
         return Builtin::makeArrayInstanceObject({}, rt);
     }
-    return Builtin::makeArrayInstanceObject(s->arguments, rt);
+    return Builtin::makeArrayInstanceObject(s->getArguments(), rt);
 }
 
 // argg(index) - returns a function arguments at position index
@@ -347,21 +347,32 @@ static Object *CF_argg(const std::vector<Object *> &args, Runtime *rt, bool exec
 
     int64_t i = getIntegerValue(arg, rt);
 
-    auto s = rt->getScope()->prev;
-    while (s != nullptr && s->can_access_prev) {
-        s = s->prev;
+    auto s = rt->getScope()->getPrev();
+    while (s != nullptr && s->canAccessPrev()) {
+        s = s->getPrev();
     }
-    if (s == nullptr || i >= s->arguments.size()) {
+    if (s == nullptr || i >= s->getArguments().size()) {
         return rt->protectedNothing();
     }
-    if (i < s->arguments.size()) {
-        return s->arguments[i];
+    if (i < s->getArguments().size()) {
+        return s->getArguments()[i];
     }
     else {
         rt->signalError("Argument index is out of range:" + arg->userRepr(rt), rt->getContext().sub_areas[1]);
     }
 }
 
+// is(obj1, obj2) - returns whether obj1 is obj2 
+static Object *CF_is(const std::vector<Object *> &args, Runtime *rt, bool execution_result_matters) {
+    ProfilerCAPTURE();
+    rt->verifyExactArgsAmountFunc(args, 2);
+    auto arg1 = args[0];
+    auto arg2 = args[1];
+    rt->verifyIsValidObject(arg1, Runtime::SUB1_CTX);
+    rt->verifyIsValidObject(arg2, Runtime::SUB1_CTX);
+
+    return rt->protectedBoolean(arg1->instance == arg2->instance && arg1->type == arg2->type);
+}
 // typeof(obj) - returns a type object with type of obj
 static Object *CF_typeof(const std::vector<Object *> &args, Runtime *rt, bool execution_result_matters) {
     ProfilerCAPTURE();
@@ -834,6 +845,9 @@ void installBuiltinFunctions(Runtime *rt) {
                                 rt);
     rt->getScope()->addVariable(rt->nmgr->getId("argg"),
                                 makeFunctionInstanceObject(true, CF_argg, nullptr, rt),
+                                rt);
+    rt->getScope()->addVariable(rt->nmgr->getId("is"),
+                                makeFunctionInstanceObject(true, CF_is, nullptr, rt),
                                 rt);
     rt->getScope()->addVariable(rt->nmgr->getId("typeof"),
                                 makeFunctionInstanceObject(true, CF_typeof, nullptr, rt),
