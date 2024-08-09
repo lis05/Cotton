@@ -3,7 +3,7 @@
 import glob
 import subprocess
 
-tests = glob.glob("*.ctn")
+tests = [f for f in glob.glob("**", recursive=True) if f.endswith(".ctn")]
 succeeded = 0
 failed = 0
 
