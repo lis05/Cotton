@@ -106,14 +106,14 @@ static Object *StringEqAdapter(Object *self, Object *arg, Runtime *rt, bool exec
         return rt->protectedBoolean(false);
     }
 
-    if (rt->isInstanceObject(self, rt->builtin_types.integer)) {
-        if (!rt->isInstanceObject(arg, rt->builtin_types.integer)) {
+    if (rt->isInstanceObject(self, rt->builtin_types.string)) {
+        if (!rt->isInstanceObject(arg, rt->builtin_types.string)) {
             return rt->protectedBoolean(false);
         }
         return rt->protectedBoolean(getStringDataFast(self) == getStringDataFast(arg));
     }
-    else if (rt->isTypeObject(self, rt->builtin_types.integer)) {
-        if (!rt->isTypeObject(arg, rt->builtin_types.integer)) {
+    else if (rt->isTypeObject(self, rt->builtin_types.string)) {
+        if (!rt->isTypeObject(arg, rt->builtin_types.string)) {
             return rt->protectedBoolean(false);
         }
         return rt->protectedBoolean(true);
