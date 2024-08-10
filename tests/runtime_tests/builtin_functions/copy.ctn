@@ -3,25 +3,35 @@
 BEGIN_MATCH_WORDS
 false
 a
-0
-0.000000
-a
+1
+1.100000
+hello
 {}
 nothing
 function
+END_MATCH_WORDS
 */
 
-println(copy(false));
-println(copy('a'));
-println(copy(1));
-println(copy(1.1));
-println(copy("hello"));
-println(copy(make(Array)));
-println(copy(nothing));
-println(copy(make(function)));
+println(copy(@false));
+println(copy(@'a'));
+println(copy(@1));
+println(copy(@1.1));
+println(copy(@"hello"));
+println(copy(@make(@Array)));
+println(copy(@nothing));
+println(copy(@make(@Function)));
+
+assert(is(copy(@Boolean), @Boolean));
+assert(is(copy(@Character), @Character));
+assert(is(copy(@Integer), @Integer));
+assert(is(copy(@Real), @Real));
+assert(is(copy(@String), @String));
+assert(is(copy(@Array), @Array));
+assert(is(copy(@Nothing), @Nothing));
+assert(is(copy(@Function), @Function));
 
 type T1 {};
-type T2 {};
+assert(is(@copy(@T1), @T1));
 
-assert(isinsobj(make(T1), T1));
-assert(isinsobj(make(T2), T2));
+t1 = make(@T1);
+assert(is(@copy(@t1), @t1));  // copy of the record is the same record
