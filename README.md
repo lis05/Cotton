@@ -113,7 +113,7 @@ Cotton interpreter supports a few flags which can be passed alongside with the p
 - `--print_result` will print the object returned by the program.
 
 
-### Modules <a name="modules"></a>
+## Modules <a name="modules"></a>
 Currently only two modules are supported.
 The first module is `gc`. It gives some access to garbage collector, and can be used to disable, enable,, and ping the gargabe collector. 
 
@@ -121,4 +121,95 @@ The second module is `helloworld`. It returns a string `"hello world"`.
  
 Hopefully I will add more modules in the future.
 
-TODO the last few sections
+## Source <a name="source"></a>
+The source is divided into several directories.
+
+- `cotton_in/` contains the interpreter code.
+
+- `cotton_lib/` contains the code of the cotton library, which is responsible for tokenization, parsing, and execution of the code.
+
+- `cotton_modules/` contains the code for the few builtin modules that Cotton has.
+
+- `cotton-lang/` contains a vs code extension that provides extremely simply syntax highlighting for Cotton.
+
+- `tests/` contains the test suit for Cotton.
+
+Now, the `cotton_lib/` has a few subdirectories and files.
+
+- `src/back/` contains files that implement the runtime of the language, i.e. the back end.
+
+    - `api.h` contains the entire API of the back end.
+    - `gc.h` contains headers for the garbage collector and gc strategies.
+    - `instance.h` contains the instance abstract class, which represents data of objects.
+    - `nameid.h` contains the system that assigns numbers to strings, and is used almost everywhere where strings are.
+    - `object.h` contains the object class, which represent everything in Cotton.
+    - `runtime.h` contains the Cotton runtime, which is basically a system that is responsible for executing Cotton code.
+    - `scope.h` contains headers for scopes, which are used to get access to variables.
+    - `type.h` contains the type abstract class, which are present in every object and represent its type.
+- `src/builtin/` contains code for the builtin types and functions available in Cotton.
+    - `functions/` contains the API header and code for the builtin functions like `make()` and `isoftype()`.
+    - `types/` contains implementations of builtin types like `Integer` and `String`. The `record.h` is used when defining types in Cotton using the `type` construct.
+- `src/front/` contains implementation of the front part of the language, namely the lexer and the parser.
+- `src/errors.h` has API of the errors, which are used literally everywhere.
+- `src/profiler.h` has simple declarations of a simple profiler which can be enabled with a certain compilation flag.
+- other files are not that very much important to describe here.
+
+
+## For other learners <a name="forotherlearners"></a>
+Cotton is first of all a learning project which helped me realize how programming languages are made. I tried to describe how Cottonl libary works in  `cotton_lib_guide/`. If you want to ask any questions related to Cotton, I will be glad to answer them. Feel free to contact me via any existant method.
+
+## Interesting moments <a name="interestingmoments"></a>
+Cotton is pretty standard in terms of syntax and everything. However, during the initial designing faze I came up with a few things that I've never seen before, and I'd like to describe them here
+
+You know how compiled programming languages have different passing modes for variables? Like in C++, the following two codes are different:
+
+```C++
+void foo(std::vector<int> array) ...
+```
+and
+```C++
+void foo(std::vector<int> &array) ...
+```
+
+The first function will accept a copy of the passed array, and the second one will accept the passed array without creating any copies of it.
+
+Obviously, passing an item by reference (as in the second example) is much faster, since no copy is created. 
+
+In python, for example, you can't specify the mode in which you want to pass an argument to a function. Simple types are passed by value (copied), and complex types are passed by reference (not copied). 
+
+I didn't like that you couldn't simply pass an integer and modify it. The same thing is in Java by the way, where simple types are only passed by value.
+
+Therefore, I made an operator `@`. The purpose of this operator is to specify that a value must not be copied ONCE. 
+
+It means that doing `foo(a)` will accept a copy of `a`, while `foo(@a)` will accept the original value a.
+
+What's more is that returning a value can also be done via the `@` operator. 
+```js
+method get(self) {
+    return @self.x;
+};
+```
+
+Imagive a class instance `obj` with a method `get` as presented above. If we wanted to increment its field `x`, we could do `obj.get()++`, and it would be exactly the same as doing `obj.x++` because of the `@` operator.
+
+Another usage of `@` is at making variable references. For example:
+```js
+x = 5;
+y = x;
+y++; println(x); // prints 5
+```
+
+However,
+```js
+x = 5;
+y = @x;
+y++; println(x); // prints 6
+```
+
+This happens because assigning `y` to `@x` will make a new object with the same instance and type that `x` has. Therefore, `y` will be a different object, but will reference the exact same instance as does `x`.
+
+...
+
+This idea could be expanded further. What if a certain operator was used to actually make a copy of the object? Therefore, passing by value to a function would need that operator, but passing by reference wouldn't.
+
+What if there were operators both for passing by value and by reference? Sounds pretty interesting.
