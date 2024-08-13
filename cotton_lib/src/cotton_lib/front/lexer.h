@@ -77,7 +77,6 @@ public:
         NOTHING_LIT,
         WHILE_KW,
         FOR_KW,
-        IN_KW,
         IF_KW,
         ELSE_KW,
         CONTINUE_KW,

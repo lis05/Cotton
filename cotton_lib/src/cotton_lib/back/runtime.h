@@ -49,7 +49,6 @@ namespace Builtin {
     class CharacterType;
     class StringType;
     class ArrayType;
-    class ArrayIteratorType;
 }    // namespace Builtin
 
 /// @brief Class that is responsible for actual execution of the Cotton language.
@@ -108,7 +107,6 @@ public:
         Builtin::CharacterType     *character;
         Builtin::StringType        *string;
         Builtin::ArrayType         *array;
-        Builtin::ArrayIteratorType *array_iterator;
     } builtin_types;
 
 private:
@@ -247,7 +245,6 @@ public:
     Object *execute(StmtNode *node, bool execution_result_matters);
     Object *execute(WhileStmtNode *node, bool execution_result_matters);
     Object *execute(ForStmtNode *node, bool execution_result_matters);
-    Object *execute(ForInStmtNode *node, bool execution_result_matters);
     Object *execute(IfStmtNode *node, bool execution_result_matters);
     Object *execute(ReturnStmtNode *node, bool execution_result_matters);
     Object *execute(BlockStmtNode *node, bool execution_result_matters);

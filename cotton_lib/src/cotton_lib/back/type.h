@@ -38,22 +38,25 @@ typedef Object *(*NaryOperatorAdapter)(Object                      *self,
                                        Runtime                     *rt,
                                        bool                         execution_result_matters);
 
+/// @brief Class representing a type in Cotton.
 class Type {
 private:
     static int64_t total_types;
 
 public:
+    /// @brief id of the type
+    int64_t id;
+    
+    /// @brief current garbage collector mark of this type
+    bool    gc_mark : 1;
+
     UnaryOperatorAdapter postinc_op, postdec_op, preinc_op, predec_op, positive_op, negative_op, not_op,
     inverse_op;
 
     BinaryOperatorAdapter mult_op, div_op, rem_op, rshift_op, lshift_op, add_op, sub_op, lt_op, leq_op, gt_op,
     geq_op, eq_op, neq_op, bitand_op, bitxor_op, bitor_op, and_op, or_op;
 
-    NaryOperatorAdapter call_op, index_op;
-
-    int64_t id;
-    bool    gc_mark : 1;
-
+    NaryOperatorAdapter         call_op, index_op;
     HashTable<NameId, Object *> methods;
 
     Type(Runtime *rt);

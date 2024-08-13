@@ -40,7 +40,6 @@ class IdentListNode;
 class StmtNode;
 class WhileStmtNode;
 class ForStmtNode;
-class ForInStmtNode;
 class IfStmtNode;
 class ReturnStmtNode;
 class BlockStmtNode;
@@ -226,12 +225,11 @@ class StmtNode {
 public:
     TextArea text_area;
 
-    enum StmtId { WHILE, FOR, FOR_IN, IF, CONTINUE, BREAK, RETURN, BLOCK, EXPR } id;
+    enum StmtId { WHILE, FOR, IF, CONTINUE, BREAK, RETURN, BLOCK, EXPR } id;
 
     union {
         WhileStmtNode  *while_stmt;
         ForStmtNode    *for_stmt;
-        ForInStmtNode  *for_in_stmt;
         IfStmtNode     *if_stmt;
         ReturnStmtNode *return_stmt;
         BlockStmtNode  *block_stmt;
@@ -243,7 +241,6 @@ public:
 
     StmtNode(WhileStmtNode *while_stmt, TextArea text_area);
     StmtNode(ForStmtNode *for_stmt, TextArea text_area);
-    StmtNode(ForInStmtNode *for_in_stmt, TextArea text_area);
     StmtNode(IfStmtNode *if_stmt, TextArea text_area);
     StmtNode(StmtId id, TextArea text_area);    // for continue and brake only
     StmtNode(ReturnStmtNode *return_stmt, TextArea text_area);
@@ -278,22 +275,6 @@ public:
     ~ForStmtNode();
 
     ForStmtNode(ExprNode *init, ExprNode *cond, ExprNode *step, StmtNode *body, TextArea text_area);
-
-    void print(int indent = 0, int step = 2);
-};
-
-class ForInStmtNode {
-public:
-    TextArea text_area;
-
-    Token    *placeholder;
-    ExprNode *iterable;
-    StmtNode *body;
-
-    ForInStmtNode() = delete;
-    ~ForInStmtNode();
-
-    ForInStmtNode(Token *placehoder, ExprNode *iterable, StmtNode *body, TextArea text_area);
 
     void print(int indent = 0, int step = 2);
 };
@@ -412,7 +393,6 @@ public:
             STMT,
             WHILE_STMT,
             FOR_STMT,
-            FOR_IN_STMT,
             IF_STMT,
             CONTINUE_STMT,
             BREAK_STMT,
@@ -432,7 +412,6 @@ public:
             StmtNode       *stmt;
             WhileStmtNode  *while_stmt;
             ForStmtNode    *for_stmt;
-            ForInStmtNode  *for_in_stmt;
             IfStmtNode     *if_stmt;
             ReturnStmtNode *return_stmt;
             BlockStmtNode  *block_stmt;
@@ -450,7 +429,6 @@ public:
         ParsingResult(StmtNode *stmt, Parser *p);
         ParsingResult(WhileStmtNode *while_stmt, Parser *p);
         ParsingResult(ForStmtNode *for_stmt, Parser *p);
-        ParsingResult(ForInStmtNode *for_in_stmt, Parser *p);
         ParsingResult(IfStmtNode *if_stmt, Parser *p);
         ParsingResult(ReturnStmtNode *return_stmt, Parser *p);
         ParsingResult(BlockStmtNode *block_stmt, Parser *p);
