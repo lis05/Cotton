@@ -213,3 +213,44 @@ This happens because assigning `y` to `@x` will make a new object with the same 
 This idea could be expanded further. What if a certain operator was used to actually make a copy of the object? Therefore, passing by value to a function would need that operator, but passing by reference wouldn't.
 
 What if there were operators both for passing by value and by reference? Sounds pretty interesting.
+
+## Personal thoughts <a name="personalthoughts"></a>
+First of all, I want to write how Cotton became a reality:
+
+So, during my first university semester, we had one course called "intro to the computer science". In approximately november 2023, we had a very interesting subject mentioned on that course.
+
+The subject was about a stack based machine that was used to evaluate expressions. Later, we learned that such a machine could be used to execute programs with loops, ifs, and simple functions. That's when an idea had occured in my mind. "Hell, why don't I try to actually implement that machine?"
+
+I spent an entire day implementing it. It was weird, but in the end, it worked, and i was able to print "hello world" using it, as well as to write some simple loops like fibonacci numbers.
+
+That was when I realized that making a programming language was no longer impossible for me. It was hard, extremely hard, but possible. 
+
+... (a few weeks later) ...
+
+The winter exams had ended, and I had a few weeks of holidays. A fun thought visited my mind.
+
+"hey, I don't know how to parse syntax of a complex programming language like C....... what if I didn't have to parse something as complex? What if my language had.... let's say.... keywords before each instruction? that was I would be able to parse every single instruction correctly, and I could actually make it work".
+
+That was how my second project about programming languages was begun. I had an idea of making all instructions in the language of form (keyword arg1 arg2 arg3). For example, (add 1 5), (call print "hello world"), (set x (add x 1)). It was relatively easy to parse such a syntax. 
+
+I liked the idea of a language being very simple (like Lua). I also had a lot of brackets in my language. So, I decided to call it Brua2 (BRackets + lUA = BRUA). Why 2? I don't remember actually. I think it was because it was my second project related to programming languages. Or maybe there was Brua already.
+
+Fun thing about Brua2 was that I realized that there already was a programming language with a similar idea of using brackets, namely Lisp. 
+
+I finished Brua2 in about 2-3 weeks. It was working, but it was done very unprofessionally, and I felt as if I could do more.
+
+That's when I decided to experiment with parsers. I didn't know how formal grammars worked, but I had a general understanding of it. So, I tried implementing such a parser, with syntax very similar to the syntax of Cotton. 
+
+It was a success. The parser worked, and it did so quite well. Better than I expected actually. That motivated me to continue developing that "project", so I began writing some very simply runtime. (Un)fortunatelly, I didn't have much time for that, since the semester had already started.
+
+But the idea of writing a more complex programming language never left me. It was growing strong, and I began thinking about it almost immidiatelly after the semester started. I spent a lot of time thinking, designing, imagining, and simply developing a sketch of my new programming language.
+
+At the beginning, it looked more like an improved version of Brua2: better syntax, better runtime. But it was still awful. So I kept thinking.
+
+When the semster ended, I began actually writing some .idea files for my language. I decided to call it Cotton because it was supposed to be as easy and lightweight as is cotton in real life. (unfortunatelly, at the time I didn't know that a lot of projects already had that name).
+
+I've spent hundreds of human hours working on Cotton. Designing it, writing code, testing it, rewriting it again and again. I've changed so many things so many times that I can't even count them anymore. 
+
+So, summing it all up. Cotton was worth all the work I've put into it. It is a huge project that made me learn a lot of stuff about computer science and software engineering. My code became much clearer. I learned a few usefull tools along the way too. Basically, I became a better programmer.
+
+
