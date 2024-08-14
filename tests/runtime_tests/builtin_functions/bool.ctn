@@ -14,6 +14,14 @@ assert(bool(T1) == false);
 assert(bool(make(T1)) == true);
 
 // wanna see some shirt-cirtuit expression?
+
+// and is easy, just do more if-s
 f1 = function(){return false;};
 f2 = function(){assert(false);};
 if f1() if f2(); assert(true); // if f1() and f2() will assert false
+
+// or cannot be done the same way, so just split it into to
+f1 = function(){return true;};
+f2 = function(){assert(false);};
+if f1(); assert(true);
+else if f2(); assert(false);
