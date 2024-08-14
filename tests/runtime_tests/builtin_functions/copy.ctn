@@ -35,3 +35,12 @@ assert(is(@copy(@T1), @T1));
 
 t1 = make(@T1);
 assert(is(@copy(@t1), @t1));  // copy of the record is the same record
+
+type T2 {
+method __copy__(self) {
+    return "T2 copy";
+}
+};
+
+t2 = make(@T2);
+assert(copy(t2) == "T2 copy");
