@@ -195,6 +195,63 @@ static Object *arrayResizeMethod(const std::vector<Object *> &args, Runtime *rt,
     return self;
 }
 
+static Object *arrayAppendMethod(const std::vector<Object *> &args, Runtime *rt, bool execution_result_matters) {
+    rt->verifyMinArgsAmountMethod(args, 1);
+    auto  self = args[0];
+    auto &data = getArrayDataFast(self);
+    for (int64_t i = 1; i < args.size(); i++) {
+        rt->verifyIsValidObject(args[i], (Runtime::ContextId)i);
+        data.push_back(args[i]);
+    }
+    return self;
+}
+
+static Object *arrayPopMethod(const std::vector<Object *> &args, Runtime *rt, bool execution_result_matters) {
+    rt->verifyExactArgsAmountMethod(args, 0);
+    auto  self = args[0];
+    auto &data = getArrayDataFast(self);
+    if (data.empty()) {
+        return self;
+    }
+    data.pop_back();
+    return self;
+}
+
+static Object *arrayFirstMethod(const std::vector<Object *> &args, Runtime *rt, bool execution_result_matters) {
+    rt->verifyExactArgsAmountMethod(args, 0);
+    auto  self = args[0];
+    auto &data = getArrayDataFast(self);
+    if (data.empty()) {
+        return rt->protectedNothing();
+    }
+    return data[0];
+}
+
+static Object *arrayLastMethod(const std::vector<Object *> &args, Runtime *rt, bool execution_result_matters) {
+    rt->verifyExactArgsAmountMethod(args, 0);
+    auto  self = args[0];
+    auto &data = getArrayDataFast(self);
+    if (data.empty()) {
+        return rt->protectedNothing();
+    }
+    return data.back();
+}
+
+static Object *arrayEmptyMethod(const std::vector<Object *> &args, Runtime *rt, bool execution_result_matters) {
+    rt->verifyExactArgsAmountMethod(args, 0);
+    auto  self = args[0];
+    auto &data = getArrayDataFast(self);
+    return rt->protectedBoolean(data.empty());
+}
+
+static Object *arrayClearMethod(const std::vector<Object *> &args, Runtime *rt, bool execution_result_matters) {
+    rt->verifyExactArgsAmountMethod(args, 0);
+    auto  self = args[0];
+    auto &data = getArrayDataFast(self);
+    data.clear();
+    return self;
+}
+
 static Object *array_mm__repr__(const std::vector<Object *> &args, Runtime *rt, bool execution_result_matters) {
     ProfilerCAPTURE();
     rt->verifyExactArgsAmountMethod(args, 0);
@@ -235,6 +292,12 @@ void installArrayMethods(Type *type, Runtime *rt) {
 
     type->addMethod(rt->nmgr->getId("size"), makeFunctionInstanceObject(true, arraySizeMethod, nullptr, rt));
     type->addMethod(rt->nmgr->getId("resize"), makeFunctionInstanceObject(true, arrayResizeMethod, nullptr, rt));
+    type->addMethod(rt->nmgr->getId("append"), makeFunctionInstanceObject(true, arrayAppendMethod, nullptr, rt));
+    type->addMethod(rt->nmgr->getId("pop"), makeFunctionInstanceObject(true, arrayPopMethod, nullptr, rt));
+    type->addMethod(rt->nmgr->getId("first"), makeFunctionInstanceObject(true, arrayFirstMethod, nullptr, rt));
+    type->addMethod(rt->nmgr->getId("last"), makeFunctionInstanceObject(true, arrayLastMethod, nullptr, rt));
+    type->addMethod(rt->nmgr->getId("empty"), makeFunctionInstanceObject(true, arrayEmptyMethod, nullptr, rt));
+    type->addMethod(rt->nmgr->getId("clear"), makeFunctionInstanceObject(true, arrayClearMethod, nullptr, rt));
 }
 
 ArrayType::ArrayType(Runtime *rt)
