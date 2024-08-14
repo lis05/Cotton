@@ -1,0 +1,19 @@
+// bool()
+assert(bool(true) == true and bool(false) == false);
+assert(bool(0) == false and bool(-1) == true and bool(1) == true);
+assert(bool(0.0) == false and bool(-1.1) == true and bool(1.1) == true);
+assert(bool('a') == true);
+
+type T1 {
+    method __bool__(self) {
+        if istypeobj(self) return false;
+        return true;
+    }
+};
+assert(bool(T1) == false);
+assert(bool(make(T1)) == true);
+
+// wanna see some shirt-cirtuit expression?
+f1 = function(){return false;};
+f2 = function(){assert(false);};
+if f1() if f2(); assert(true); // if f1() and f2() will assert false
