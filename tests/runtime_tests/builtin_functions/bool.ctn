@@ -25,3 +25,5 @@ f1 = function(){return true;};
 f2 = function(){assert(false);};
 if f1(); assert(true);
 else if f2(); assert(false);
+
+

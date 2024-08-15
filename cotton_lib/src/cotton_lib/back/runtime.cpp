@@ -516,7 +516,7 @@ Object *Runtime::execute(FuncDefNode *node, bool execution_result_matters) {
     // highlight(this, node->function_token);
     auto func               = Builtin::makeFunctionInstanceObject(false, nullptr, node, this);
     if (node->name != nullptr) {
-        this->scope->addVariable(node->name->nameid, func, this);
+        this->scope->master->addVariable(node->name->nameid, func, this);
     }
     this->popContext();
     this->clearExecFlags();
