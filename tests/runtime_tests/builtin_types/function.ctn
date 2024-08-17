@@ -56,4 +56,17 @@ assert(array[0] == 3 and array[1] == 2 and array[2] == 1);
 // that the original function has. therefore, they are equal.
 assert(copy(map) == map); 
 
+// now some double recursion
+function sum0(n) {
+    if n == 0; return 0;
+    return n + sum1(n-1);
+};
+function sum1(n) {
+    return n + sum0(n-1);
+};
+assert(sum1(15) == 15 * 16 / 2);
+
+// when defined with a name, function will be added to the master scope
+
+
 println("SUCCESS");

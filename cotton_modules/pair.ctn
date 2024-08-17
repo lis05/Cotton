@@ -1,0 +1,36 @@
+type PairType {
+    first; second;
+    method flip(self) {
+        swap(@self.first, @self.second);
+        return self;
+    }
+
+    method __repr__(self) {
+        if istypeobj(self) return "Pair";
+        return "{" + repr(self.first) + ", " + repr(self.second) + "}";
+    }
+    method __string__(self) {
+        if istypeobj(self) return "Pair";
+        return "{" + repr(self.first) + ", " + repr(self.second) + "}";
+    }
+    method __copy__(self) {
+        res = make(typeof(self));
+        res.first = self.first;
+        res.second = self.second;
+        return res;
+    }
+};
+
+type ModulePair {
+    Pair;
+    method make(self, first, second) {
+        res = make(self.Pair);
+        res.first = first;
+        res.second = second;
+        return res;
+    }
+};
+
+module = make(ModulePair);
+module.Pair = PairType;
+return module;

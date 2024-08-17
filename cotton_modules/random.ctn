@@ -1,0 +1,18 @@
+type ModuleRandom {
+    __mt19997_64;
+    method next(self, low, high) {
+        if low == nothing {
+            return self.__mt19997_64.randint64(-9223372036854775807, 9223372036854775807);
+        }
+        else {
+            if high == nothing; high = 0;
+            if low > high; swap(@low, @high);
+            return self.__mt19997_64.randint64(low, high);
+        }
+    }
+};
+
+
+module = make(ModuleRandom);
+module.__mt19997_64 = sharedlibrary("librandom.so");
+return module;
