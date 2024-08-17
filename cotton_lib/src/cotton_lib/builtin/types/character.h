@@ -53,5 +53,5 @@ void installCharacterMethods(Type *type, Runtime *rt);
 
 uint8_t &getCharacterValue(Object *obj, Runtime *rt);
 uint8_t &getCharacterValue(Object *obj, Runtime *rt, Runtime::ContextId ctx_id);
-#define getCharacterValueFast(obj) (icast(obj->instance, CharacterInstance)->value)
+#define getCharacterValueFast(obj) (icast(obj->instance, Cotton::Builtin::CharacterInstance)->value)
 }    // namespace Cotton::Builtin

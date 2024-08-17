@@ -309,13 +309,13 @@ std::string StringType::userRepr(Runtime *rt) {
 std::string &getStringData(Object *obj, Runtime *rt) {
     ProfilerCAPTURE();
     rt->verifyIsInstanceObject(obj, rt->builtin_types.string);
-    return icast(obj->instance, StringInstance)->data;
+    return icast(obj->instance, Cotton::Builtin::StringInstance)->data;
 }
 
 std::string &getStringData(Object *obj, Runtime *rt, Runtime::ContextId ctx_id) {
     ProfilerCAPTURE();
     rt->verifyIsInstanceObject(obj, rt->builtin_types.string, Runtime::SUB0_CTX);
-    return icast(obj->instance, StringInstance)->data;
+    return icast(obj->instance, Cotton::Builtin::StringInstance)->data;
 }
 
 Object *makeStringInstanceObject(const std::string &value, Runtime *rt) {

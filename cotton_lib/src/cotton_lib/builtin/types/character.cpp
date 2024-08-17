@@ -427,13 +427,13 @@ std::string CharacterType::userRepr(Runtime *rt) {
 uint8_t &getCharacterValue(Object *obj, Runtime *rt) {
     ProfilerCAPTURE();
     rt->verifyIsInstanceObject(obj, rt->builtin_types.character);
-    return icast(obj->instance, CharacterInstance)->value;
+    return icast(obj->instance, Cotton::Builtin::CharacterInstance)->value;
 }
 
 uint8_t &getCharacterValue(Object *obj, Runtime *rt, Runtime::ContextId ctx_id) {
     ProfilerCAPTURE();
     rt->verifyIsInstanceObject(obj, rt->builtin_types.character, Runtime::SUB0_CTX);
-    return icast(obj->instance, CharacterInstance)->value;
+    return icast(obj->instance, Cotton::Builtin::CharacterInstance)->value;
 }
 
 Object *makeCharacterInstanceObject(uint8_t value, Runtime *rt) {

@@ -53,5 +53,5 @@ Object *makeIntegerInstanceObject(int64_t value, Runtime *rt);
 
 int64_t &getIntegerValue(Object *obj, Runtime *rt);
 int64_t &getIntegerValue(Object *obj, Runtime *rt, Runtime::ContextId ctx_id);
-#define getIntegerValueFast(obj) (icast(obj->instance, IntegerInstance)->value)
+#define getIntegerValueFast(obj) (icast(obj->instance, Cotton::Builtin::IntegerInstance)->value)
 }    // namespace Cotton::Builtin

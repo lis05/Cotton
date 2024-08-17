@@ -53,5 +53,5 @@ Object *makeRealInstanceObject(double value, Runtime *rt);
 
 double &getRealValue(Object *obj, Runtime *rt);
 double &getRealValue(Object *obj, Runtime *rt, Runtime::ContextId ctx_id);
-#define getRealValueFast(obj) (icast(obj->instance, RealInstance)->value)
+#define getRealValueFast(obj) (icast(obj->instance, Cotton::Builtin::RealInstance)->value)
 }    // namespace Cotton::Builtin

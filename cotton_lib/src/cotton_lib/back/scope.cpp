@@ -24,6 +24,10 @@ Scope *Scope::getPrev() {
     return this->prev;
 }
 
+Scope *Scope::getMaster() {
+    return this->master;
+}
+
 std::vector<Object *> &Scope::getArguments() {
     return this->arguments;
 }
@@ -60,6 +64,10 @@ Object *Scope::getVariable(NameId id, Runtime *rt) {
     }
 
     rt->signalError("Failed to find variable " + rt->nmgr->getString(id), rt->getContext().area);
+}
+
+void Scope::removeVariable(NameId id, Runtime *rt) {
+    this->variables.erase(id);
 }
 
 bool Scope::queryVariable(NameId id, Runtime *rt) {

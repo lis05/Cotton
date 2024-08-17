@@ -374,13 +374,13 @@ std::string RealType::userRepr(Runtime *rt) {
 double &getRealValue(Object *obj, Runtime *rt) {
     ProfilerCAPTURE();
     rt->verifyIsInstanceObject(obj, rt->builtin_types.real);
-    return icast(obj->instance, RealInstance)->value;
+    return icast(obj->instance, Cotton::Builtin::RealInstance)->value;
 }
 
 double &getRealValue(Object *obj, Runtime *rt, Runtime::ContextId ctx_id) {
     ProfilerCAPTURE();
     rt->verifyIsInstanceObject(obj, rt->builtin_types.real, Runtime::SUB0_CTX);
-    return icast(obj->instance, RealInstance)->value;
+    return icast(obj->instance, Cotton::Builtin::RealInstance)->value;
 }
 
 Object *makeRealInstanceObject(double value, Runtime *rt) {

@@ -53,5 +53,5 @@ Object *makeStringInstanceObject(const std::string &str, Runtime *rt);
 
 std::string &getStringData(Object *obj, Runtime *rt);
 std::string &getStringData(Object *obj, Runtime *rt, Runtime::ContextId ctx_id);
-#define getStringDataFast(obj) (icast(obj->instance, StringInstance)->data)
+#define getStringDataFast(obj) (icast(obj->instance, Cotton::Builtin::StringInstance)->data)
 }    // namespace Cotton::Builtin

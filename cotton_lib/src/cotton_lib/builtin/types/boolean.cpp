@@ -286,13 +286,13 @@ std::string BooleanType::userRepr(Runtime *rt) {
 bool &getBooleanValue(Object *obj, Runtime *rt) {
     ProfilerCAPTURE();
     rt->verifyIsInstanceObject(obj, rt->builtin_types.boolean);
-    return icast(obj->instance, BooleanInstance)->value;
+    return icast(obj->instance, Cotton::Builtin::BooleanInstance)->value;
 }
 
 bool &getBooleanValue(Object *obj, Runtime *rt, Runtime::ContextId ctx_id) {
     ProfilerCAPTURE();
     rt->verifyIsInstanceObject(obj, rt->builtin_types.boolean, Runtime::SUB0_CTX);
-    return icast(obj->instance, BooleanInstance)->value;
+    return icast(obj->instance, Cotton::Builtin::BooleanInstance)->value;
 }
 
 Object *makeBooleanInstanceObject(bool value, Runtime *rt) {

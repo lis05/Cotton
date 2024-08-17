@@ -55,5 +55,5 @@ Object *makeArrayInstanceObject(const std::vector<Object *> &data, Runtime *rt);
 
 std::vector<Object *> &getArrayData(Object *obj, Runtime *rt);
 std::vector<Object *> &getArrayData(Object *obj, Runtime *rt, Runtime::ContextId ctx_id);
-#define getArrayDataFast(obj) (icast(obj->instance, ArrayInstance)->data)
+#define getArrayDataFast(obj) (icast(obj->instance, Cotton::Builtin::ArrayInstance)->data)
 }    // namespace Cotton::Builtin

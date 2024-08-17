@@ -523,13 +523,13 @@ std::string IntegerType::userRepr(Runtime *rt) {
 int64_t &getIntegerValue(Object *obj, Runtime *rt) {
     ProfilerCAPTURE();
     rt->verifyIsInstanceObject(obj, rt->builtin_types.integer);
-    return icast(obj->instance, IntegerInstance)->value;
+    return icast(obj->instance, Cotton::Builtin::IntegerInstance)->value;
 }
 
 int64_t &getIntegerValue(Object *obj, Runtime *rt, Runtime::ContextId ctx_id) {
     ProfilerCAPTURE();
     rt->verifyIsInstanceObject(obj, rt->builtin_types.integer, Runtime::SUB0_CTX);
-    return icast(obj->instance, IntegerInstance)->value;
+    return icast(obj->instance, Cotton::Builtin::IntegerInstance)->value;
 }
 
 Object *makeIntegerInstanceObject(int64_t value, Runtime *rt) {

@@ -55,6 +55,9 @@ public:
     /// @brief Returns previous scope
     Scope *getPrev();
 
+    /// @brief Returns master scope
+    Scope *getMaster();
+
     /// @brief Returns a list of function arguments.
     std::vector<Object *> &getArguments();
 
@@ -97,5 +100,13 @@ public:
      * @return Object*
      */
     Object *getVariable(NameId id, Runtime *rt);
+
+    /**
+     * @brief Removes variable with the given nameid from the current scope.
+     * 
+     * @param id Nameid of the variable.
+     * @param rt The runtime. Must be valid.
+     */
+    void removeVariable(NameId id, Runtime *rt);
 };
 }    // namespace Cotton

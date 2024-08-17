@@ -362,7 +362,7 @@ static Object *CF_argg(const std::vector<Object *> &args, Runtime *rt, bool exec
     }
 }
 
-// is(obj1, obj2) - returns whether obj1 is obj2 
+// is(obj1, obj2) - returns whether obj1 is obj2
 static Object *CF_is(const std::vector<Object *> &args, Runtime *rt, bool execution_result_matters) {
     ProfilerCAPTURE();
     rt->verifyExactArgsAmountFunc(args, 2);
@@ -373,6 +373,7 @@ static Object *CF_is(const std::vector<Object *> &args, Runtime *rt, bool execut
 
     return rt->protectedBoolean(arg1->instance == arg2->instance && arg1->type == arg2->type);
 }
+
 // typeof(obj) - returns a type object with type of obj
 static Object *CF_typeof(const std::vector<Object *> &args, Runtime *rt, bool execution_result_matters) {
     ProfilerCAPTURE();
@@ -648,20 +649,22 @@ static Object *CF_load(const std::vector<Object *> &args, Runtime *rt, bool exec
                         rt->getTextArea(Runtime::AREA_CTX));
     }
 
-    Lexer  lexer(rt->getErrorManager());
-    Parser parser(rt->getErrorManager());
-
-    auto tokens = lexer.processFile(path.c_str());
+    Lexer   lexer(rt->getErrorManager());
+    Parser *parser = new Parser(rt->getErrorManager());
+    auto    tokens = lexer.processFile(path.string());
     for (auto &token : tokens) {
         token.nameid = rt->nmgr->getId(token.data);
     }
-    auto program = parser.parse(tokens);
+    auto program = parser->parse(tokens);
 
     auto id = rt->nmgr->getId("load: " + path.string());
     rt->setGlobal(id, rt->protectedNothing());
 
-    rt->newScopeFrame();
-    auto res = rt->execute(program, true);
+    rt->newScopeFrame(false);
+    rt->newContext();
+    rt->getContext().area = program->text_area;
+    auto res              = rt->execute(program, true);
+    rt->popContext();
     rt->popScopeFrame();
 
     rt->verifyIsValidObject(res);
@@ -777,6 +780,49 @@ static Object *CF_loadlibrary(const std::vector<Object *> &args, Runtime *rt, bo
     return res;
 }
 
+// swap(a, b) - swaps a and b
+static Object *CF_swap(const std::vector<Object *> &args, Runtime *rt, bool execution_result_matters) {
+    ProfilerCAPTURE();
+    rt->verifyExactArgsAmountFunc(args, 2);
+    auto first  = args[0];
+    auto second = args[1];
+
+    std::swap(first->instance, second->instance);
+    std::swap(first->type, second->type);
+
+    return rt->protectedNothing();
+}
+
+// hide(str) - removes first found variable with name str
+static Object *CF_hide(const std::vector<Object *> &args, Runtime *rt, bool execution_result_matters) {
+    ProfilerCAPTURE();
+    rt->verifyExactArgsAmountFunc(args, 1);
+    auto str = args[0];
+    rt->verifyIsInstanceObject(str, rt->builtin_types.string, Runtime::SUB1_CTX);
+
+    NameId id = rt->nmgr->getId(getStringDataFast(str));
+
+    auto scope = rt->getScope();
+    while (scope != NULL) {
+        if (scope->queryVariable(id, rt)) {
+            scope->removeVariable(id, rt);
+            return rt->protectedBoolean(true);
+        }
+
+        if (scope->canAccessPrev()) {
+            scope = scope->getPrev();
+        }
+        else if (scope != scope->getMaster()) {
+            scope = scope->getMaster();
+        }
+        else {
+            break;
+        }
+    }
+
+    return rt->protectedBoolean(false);
+}
+
 void installBuiltinFunctions(Runtime *rt) {
     ProfilerCAPTURE();
     rt->getScope()->addVariable(rt->nmgr->getId("make"),
@@ -846,9 +892,7 @@ void installBuiltinFunctions(Runtime *rt) {
     rt->getScope()->addVariable(rt->nmgr->getId("argg"),
                                 makeFunctionInstanceObject(true, CF_argg, nullptr, rt),
                                 rt);
-    rt->getScope()->addVariable(rt->nmgr->getId("is"),
-                                makeFunctionInstanceObject(true, CF_is, nullptr, rt),
-                                rt);
+    rt->getScope()->addVariable(rt->nmgr->getId("is"), makeFunctionInstanceObject(true, CF_is, nullptr, rt), rt);
     rt->getScope()->addVariable(rt->nmgr->getId("typeof"),
                                 makeFunctionInstanceObject(true, CF_typeof, nullptr, rt),
                                 rt);
@@ -891,14 +935,20 @@ void installBuiltinFunctions(Runtime *rt) {
     rt->getScope()->addVariable(rt->nmgr->getId("load"),
                                 makeFunctionInstanceObject(true, CF_load, nullptr, rt),
                                 rt);
-    rt->getScope()->addVariable(rt->nmgr->getId("smartrun"),
-                                makeFunctionInstanceObject(true, CF_smartrun, nullptr, rt),
+    // rt->getScope()->addVariable(rt->nmgr->getId("smartrun"),
+    //                             makeFunctionInstanceObject(true, CF_smartrun, nullptr, rt),
+    //                             rt);
+    // rt->getScope()->addVariable(rt->nmgr->getId("dumbrun"),
+    //                             makeFunctionInstanceObject(true, CF_dumbrun, nullptr, rt),
+    //                             rt);
+    // rt->getScope()->addVariable(rt->nmgr->getId("loadlibrary"),
+    //                            makeFunctionInstanceObject(true, CF_loadlibrary, nullptr, rt),
+    //                            rt);
+    rt->getScope()->addVariable(rt->nmgr->getId("swap"),
+                                makeFunctionInstanceObject(true, CF_swap, nullptr, rt),
                                 rt);
-    rt->getScope()->addVariable(rt->nmgr->getId("dumbrun"),
-                                makeFunctionInstanceObject(true, CF_dumbrun, nullptr, rt),
-                                rt);
-    rt->getScope()->addVariable(rt->nmgr->getId("loadlibrary"),
-                                makeFunctionInstanceObject(true, CF_loadlibrary, nullptr, rt),
+    rt->getScope()->addVariable(rt->nmgr->getId("hide"),
+                                makeFunctionInstanceObject(true, CF_hide, nullptr, rt),
                                 rt);
 }
 }    // namespace Cotton::Builtin

@@ -80,6 +80,7 @@ FunctionCallAdapter(Object *self, const std::vector<Object *> &args, Runtime *rt
             rt->signalError("Failed to execute nullptr internal function: " + self->userRepr(rt),
                             rt->getContext().area);
         }
+
         auto res = f->internal_ptr(args, rt, execution_result_matters);
         if (execution_result_matters && res == nullptr) {
             rt->signalError("Execution of internal function " + self->userRepr(rt) + " has failed",
@@ -107,7 +108,10 @@ FunctionCallAdapter(Object *self, const std::vector<Object *> &args, Runtime *rt
                 i++;
             }
         }
+        rt->newContext();
+        rt->getContext().area = f->cotton_ptr->body->text_area;
         auto res = rt->execute(f->cotton_ptr->body, execution_result_matters);
+        rt->popContext();
         rt->popScopeFrame();
         if (execution_result_matters && res == nullptr) {
             rt->signalError("Execution of function " + self->userRepr(rt) + " has failed",

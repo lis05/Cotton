@@ -337,13 +337,13 @@ std::string ArrayType::userRepr(Runtime *rt) {
 std::vector<Object *> &getArrayData(Object *obj, Runtime *rt) {
     ProfilerCAPTURE();
     rt->verifyIsInstanceObject(obj, rt->builtin_types.array);
-    return icast(obj->instance, ArrayInstance)->data;
+    return icast(obj->instance, Cotton::Builtin::ArrayInstance)->data;
 }
 
 std::vector<Object *> &getArrayData(Object *obj, Runtime *rt, Runtime::ContextId ctx_id) {
     ProfilerCAPTURE();
     rt->verifyIsInstanceObject(obj, rt->builtin_types.array, Runtime::SUB0_CTX);
-    return icast(obj->instance, ArrayInstance)->data;
+    return icast(obj->instance, Cotton::Builtin::ArrayInstance)->data;
 }
 
 Object *makeArrayInstanceObject(const std::vector<Object *> &data, Runtime *rt) {
