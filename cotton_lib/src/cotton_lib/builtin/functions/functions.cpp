@@ -123,13 +123,13 @@ static Object *CF_printraw(const std::vector<Object *> &args, Runtime *rt, bool 
             continue;
         }
 
-        rt->verifyHasMethod(arg, MagicMethods::mm__repr__(rt), (Runtime::ContextId)index);
+        rt->verifyHasMethod(arg, MagicMethods::mm__string__(rt), (Runtime::ContextId)index);
 
         auto &ta = rt->getContext().sub_areas[index];
         rt->newContext();
         rt->getContext().area      = ta;
         rt->getContext().sub_areas = {ta, ta};
-        auto res                   = rt->runMethod(MagicMethods::mm__repr__(rt), arg, {arg}, true);
+        auto res                   = rt->runMethod(MagicMethods::mm__string__(rt), arg, {arg}, true);
         CF_printraw({res}, rt, false);
         rt->popContext();
     }
@@ -162,7 +162,81 @@ static Object *CF_print(const std::vector<Object *> &args, Runtime *rt, bool exe
 // printf(fmt, ...) - prints arguments with a given format
 static Object *CF_printf(const std::vector<Object *> &args, Runtime *rt, bool execution_result_matters) {
     ProfilerCAPTURE();
-    // TODO
+    rt->verifyMinArgsAmountFunc(args, 1);
+    auto fmt = args[0];
+    rt->verifyIsInstanceObject(fmt, rt->builtin_types.string);
+    auto fmtstr = getStringDataFast(fmt);
+
+    std::string res;
+    auto        it = fmtstr.begin();
+    while (it != fmtstr.end()) {
+        if (*it == '@') {
+            if (next(it) == fmtstr.end()) {
+                res += *it;
+                it++;
+                break;
+            }
+            else {
+                if (*next(it) == '@') {
+                    res += "@";
+                    it++;
+                    it++;
+                    continue;
+                }
+                else {
+                    if (*next(it) == '{') {
+                        it++;
+                        it++;
+                        int64_t pos = 0;
+                        while (true) {
+                            if (it == fmtstr.end()) {
+                                rt->signalError("Invalid string format: expected a valid @{..} construct",
+                                                rt->getTextArea(Runtime::AREA_CTX));
+                            }
+                            else if ('0' <= *it && *it <= '9') {
+                                pos *= 10;
+                                pos += *it - '0';
+                                it++;
+                            }
+                            else if (*it == '}') {
+                                it++;
+                                break;
+                            }
+                            else {
+                                rt->signalError("Invalid string format: expected a valid @{..} construct",
+                                                rt->getTextArea(Runtime::AREA_CTX));
+                            }
+                        }
+                        if (pos < 0 || args.size() <= pos + 1) {
+                            rt->signalError("Invalid format string: not enough arguments", rt->getTextArea(Runtime::AREA_CTX));
+                        }
+                        auto &arg = args[pos + 1];
+                        auto  ctx = rt->getContext();    // making ctx a reference breaks everything. strange.
+                        rt->newContext();
+                        rt->getContext().area      = ctx.sub_areas[pos + 1];
+                        rt->getContext().sub_areas = {ctx.sub_areas[pos + 1], ctx.sub_areas[pos + 1]};
+                        std::cout << res;
+                        res = "";
+                        CF_printraw({arg}, rt, false);
+                        rt->popContext();
+                    }
+                    else {
+                        res += *it;
+                        it++;
+                        continue;
+                    }
+                }
+            }
+        }
+        else {
+            res += *it;
+            it++;
+            continue;
+        }
+    }
+    std::cout << res;
+    res = "";
+    return rt->protectedNothing();
 }
 
 // println(...) - prints arguments with adding spaces in between them, as well as adding the trailing newline
@@ -306,7 +380,7 @@ static Object *CF_argc(const std::vector<Object *> &args, Runtime *rt, bool exec
     }
 
     auto s = rt->getScope()->getPrev();
-    while (s != nullptr && s->canAccessPrev()) {
+    while (s != nullptr && !s->isFunctionCall()) {
         s = s->getPrev();
     }
     if (s == nullptr) {
@@ -325,7 +399,7 @@ static Object *CF_argv(const std::vector<Object *> &args, Runtime *rt, bool exec
     }
 
     auto s = rt->getScope()->getPrev();
-    while (s != nullptr && s->canAccessPrev()) {
+    while (s != nullptr && !s->isFunctionCall()) {
         s = s->getPrev();
     }
     if (s == nullptr) {
@@ -348,7 +422,7 @@ static Object *CF_argg(const std::vector<Object *> &args, Runtime *rt, bool exec
     int64_t i = getIntegerValue(arg, rt);
 
     auto s = rt->getScope()->getPrev();
-    while (s != nullptr && s->canAccessPrev()) {
+    while (s != nullptr && !s->isFunctionCall()) {
         s = s->getPrev();
     }
     if (s == nullptr || i >= s->getArguments().size()) {
@@ -586,8 +660,7 @@ static Object *CF_sharedlibrary(const std::vector<Object *> &args, Runtime *rt, 
     path = std::filesystem::canonical(std::filesystem::absolute(path, err), err);
 
     if (err || !std::filesystem::is_regular_file(path) || !std::filesystem::exists(path)) {
-        rt->signalError("The provided library is either invalid or non existent",
-                        rt->getTextArea(Runtime::AREA_CTX));
+        rt->signalError("The provided library is either invalid or non existent", rt->getTextArea(Runtime::AREA_CTX));
     }
 
     auto id = rt->nmgr->getId("shared_library: " + path.string());
@@ -645,8 +718,7 @@ static Object *CF_load(const std::vector<Object *> &args, Runtime *rt, bool exec
     path = std::filesystem::canonical(std::filesystem::absolute(path, err), err);
 
     if (err || !std::filesystem::is_regular_file(path) || !std::filesystem::exists(path)) {
-        rt->signalError("The provided module is either invalid or non existent",
-                        rt->getTextArea(Runtime::AREA_CTX));
+        rt->signalError("The provided module is either invalid or non existent", rt->getTextArea(Runtime::AREA_CTX));
     }
 
     Lexer   lexer(rt->getErrorManager());
@@ -823,118 +895,86 @@ static Object *CF_hide(const std::vector<Object *> &args, Runtime *rt, bool exec
     return rt->protectedBoolean(false);
 }
 
+// unlockscope() - removes limitation of not being able to access the previous scope of the current function
+static Object *CF_unlockscope(const std::vector<Object *> &args, Runtime *rt, bool execution_result_matters) {
+    ProfilerCAPTURE();
+    rt->verifyExactArgsAmountFunc(args, 0);
+
+    auto scope = rt->getScope();
+
+    while (scope != nullptr && !scope->isFunctionCall()) {
+        scope = scope->getPrev();
+    }
+
+    if (scope == nullptr) {
+        return rt->protectedNothing();
+    }
+
+    scope->setCanAccessPrev(true);
+
+    return rt->protectedNothing();
+}
+
+// lockscope() - adds limitation of not being able to access the previous scope of the current function
+static Object *CF_lockscope(const std::vector<Object *> &args, Runtime *rt, bool execution_result_matters) {
+    ProfilerCAPTURE();
+    rt->verifyExactArgsAmountFunc(args, 0);
+
+    auto scope = rt->getScope();
+
+    while (scope != nullptr && !scope->isFunctionCall()) {
+        scope = scope->getPrev();
+    }
+
+    if (scope == nullptr) {
+        return rt->protectedNothing();
+    }
+
+    scope->setCanAccessPrev(false);
+
+    return rt->protectedNothing();
+}
+
 void installBuiltinFunctions(Runtime *rt) {
     ProfilerCAPTURE();
-    rt->getScope()->addVariable(rt->nmgr->getId("make"),
-                                makeFunctionInstanceObject(true, CF_make, nullptr, rt),
-                                rt);
-    rt->getScope()->addVariable(rt->nmgr->getId("copy"),
-                                makeFunctionInstanceObject(true, CF_copy, nullptr, rt),
-                                rt);
-    rt->getScope()->addVariable(rt->nmgr->getId("bool"),
-                                makeFunctionInstanceObject(true, CF_bool, nullptr, rt),
-                                rt);
-    rt->getScope()->addVariable(rt->nmgr->getId("char"),
-                                makeFunctionInstanceObject(true, CF_char, nullptr, rt),
-                                rt);
+    rt->getScope()->addVariable(rt->nmgr->getId("make"), makeFunctionInstanceObject(true, CF_make, nullptr, rt), rt);
+    rt->getScope()->addVariable(rt->nmgr->getId("copy"), makeFunctionInstanceObject(true, CF_copy, nullptr, rt), rt);
+    rt->getScope()->addVariable(rt->nmgr->getId("bool"), makeFunctionInstanceObject(true, CF_bool, nullptr, rt), rt);
+    rt->getScope()->addVariable(rt->nmgr->getId("char"), makeFunctionInstanceObject(true, CF_char, nullptr, rt), rt);
     rt->getScope()->addVariable(rt->nmgr->getId("int"), makeFunctionInstanceObject(true, CF_int, nullptr, rt), rt);
-    rt->getScope()->addVariable(rt->nmgr->getId("real"),
-                                makeFunctionInstanceObject(true, CF_real, nullptr, rt),
-                                rt);
-    rt->getScope()->addVariable(rt->nmgr->getId("string"),
-                                makeFunctionInstanceObject(true, CF_string, nullptr, rt),
-                                rt);
-    rt->getScope()->addVariable(rt->nmgr->getId("printraw"),
-                                makeFunctionInstanceObject(true, CF_printraw, nullptr, rt),
-                                rt);
-    rt->getScope()->addVariable(rt->nmgr->getId("print"),
-                                makeFunctionInstanceObject(true, CF_print, nullptr, rt),
-                                rt);
-    rt->getScope()->addVariable(rt->nmgr->getId("printf"),
-                                makeFunctionInstanceObject(true, CF_printf, nullptr, rt),
-                                rt);
-    rt->getScope()->addVariable(rt->nmgr->getId("println"),
-                                makeFunctionInstanceObject(true, CF_println, nullptr, rt),
-                                rt);
-    rt->getScope()->addVariable(rt->nmgr->getId("readraw"),
-                                makeFunctionInstanceObject(true, CF_readraw, nullptr, rt),
-                                rt);
-    rt->getScope()->addVariable(rt->nmgr->getId("read"),
-                                makeFunctionInstanceObject(true, CF_read, nullptr, rt),
-                                rt);
-    rt->getScope()->addVariable(rt->nmgr->getId("readln"),
-                                makeFunctionInstanceObject(true, CF_readln, nullptr, rt),
-                                rt);
-    rt->getScope()->addVariable(rt->nmgr->getId("exit"),
-                                makeFunctionInstanceObject(true, CF_exit, nullptr, rt),
-                                rt);
-    rt->getScope()->addVariable(rt->nmgr->getId("fork"),
-                                makeFunctionInstanceObject(true, CF_fork, nullptr, rt),
-                                rt);
-    rt->getScope()->addVariable(rt->nmgr->getId("system"),
-                                makeFunctionInstanceObject(true, CF_system, nullptr, rt),
-                                rt);
-    rt->getScope()->addVariable(rt->nmgr->getId("sleep"),
-                                makeFunctionInstanceObject(true, CF_sleep, nullptr, rt),
-                                rt);
-    rt->getScope()->addVariable(rt->nmgr->getId("error"),
-                                makeFunctionInstanceObject(true, CF_error, nullptr, rt),
-                                rt);
-    rt->getScope()->addVariable(rt->nmgr->getId("cotton"),
-                                makeFunctionInstanceObject(true, CF_cotton, nullptr, rt),
-                                rt);
-    rt->getScope()->addVariable(rt->nmgr->getId("argc"),
-                                makeFunctionInstanceObject(true, CF_argc, nullptr, rt),
-                                rt);
-    rt->getScope()->addVariable(rt->nmgr->getId("argv"),
-                                makeFunctionInstanceObject(true, CF_argv, nullptr, rt),
-                                rt);
-    rt->getScope()->addVariable(rt->nmgr->getId("argg"),
-                                makeFunctionInstanceObject(true, CF_argg, nullptr, rt),
-                                rt);
+    rt->getScope()->addVariable(rt->nmgr->getId("real"), makeFunctionInstanceObject(true, CF_real, nullptr, rt), rt);
+    rt->getScope()->addVariable(rt->nmgr->getId("string"), makeFunctionInstanceObject(true, CF_string, nullptr, rt), rt);
+    rt->getScope()->addVariable(rt->nmgr->getId("printraw"), makeFunctionInstanceObject(true, CF_printraw, nullptr, rt), rt);
+    rt->getScope()->addVariable(rt->nmgr->getId("print"), makeFunctionInstanceObject(true, CF_print, nullptr, rt), rt);
+    rt->getScope()->addVariable(rt->nmgr->getId("printf"), makeFunctionInstanceObject(true, CF_printf, nullptr, rt), rt);
+    rt->getScope()->addVariable(rt->nmgr->getId("println"), makeFunctionInstanceObject(true, CF_println, nullptr, rt), rt);
+    rt->getScope()->addVariable(rt->nmgr->getId("readraw"), makeFunctionInstanceObject(true, CF_readraw, nullptr, rt), rt);
+    rt->getScope()->addVariable(rt->nmgr->getId("read"), makeFunctionInstanceObject(true, CF_read, nullptr, rt), rt);
+    rt->getScope()->addVariable(rt->nmgr->getId("readln"), makeFunctionInstanceObject(true, CF_readln, nullptr, rt), rt);
+    rt->getScope()->addVariable(rt->nmgr->getId("exit"), makeFunctionInstanceObject(true, CF_exit, nullptr, rt), rt);
+    rt->getScope()->addVariable(rt->nmgr->getId("fork"), makeFunctionInstanceObject(true, CF_fork, nullptr, rt), rt);
+    rt->getScope()->addVariable(rt->nmgr->getId("system"), makeFunctionInstanceObject(true, CF_system, nullptr, rt), rt);
+    rt->getScope()->addVariable(rt->nmgr->getId("sleep"), makeFunctionInstanceObject(true, CF_sleep, nullptr, rt), rt);
+    rt->getScope()->addVariable(rt->nmgr->getId("error"), makeFunctionInstanceObject(true, CF_error, nullptr, rt), rt);
+    rt->getScope()->addVariable(rt->nmgr->getId("cotton"), makeFunctionInstanceObject(true, CF_cotton, nullptr, rt), rt);
+    rt->getScope()->addVariable(rt->nmgr->getId("argc"), makeFunctionInstanceObject(true, CF_argc, nullptr, rt), rt);
+    rt->getScope()->addVariable(rt->nmgr->getId("argv"), makeFunctionInstanceObject(true, CF_argv, nullptr, rt), rt);
+    rt->getScope()->addVariable(rt->nmgr->getId("argg"), makeFunctionInstanceObject(true, CF_argg, nullptr, rt), rt);
     rt->getScope()->addVariable(rt->nmgr->getId("is"), makeFunctionInstanceObject(true, CF_is, nullptr, rt), rt);
-    rt->getScope()->addVariable(rt->nmgr->getId("typeof"),
-                                makeFunctionInstanceObject(true, CF_typeof, nullptr, rt),
-                                rt);
-    rt->getScope()->addVariable(rt->nmgr->getId("isinsobj"),
-                                makeFunctionInstanceObject(true, CF_isinsobj, nullptr, rt),
-                                rt);
-    rt->getScope()->addVariable(rt->nmgr->getId("istypeobj"),
-                                makeFunctionInstanceObject(true, CF_istypeobj, nullptr, rt),
-                                rt);
-    rt->getScope()->addVariable(rt->nmgr->getId("repr"),
-                                makeFunctionInstanceObject(true, CF_repr, nullptr, rt),
-                                rt);
-    rt->getScope()->addVariable(rt->nmgr->getId("hasfield"),
-                                makeFunctionInstanceObject(true, CF_hasfield, nullptr, rt),
-                                rt);
-    rt->getScope()->addVariable(rt->nmgr->getId("hasmethod"),
-                                makeFunctionInstanceObject(true, CF_hasmethod, nullptr, rt),
-                                rt);
-    rt->getScope()->addVariable(rt->nmgr->getId("assert"),
-                                makeFunctionInstanceObject(true, CF_assert, nullptr, rt),
-                                rt);
-    rt->getScope()->addVariable(rt->nmgr->getId("isinscope"),
-                                makeFunctionInstanceObject(true, CF_isinscope, nullptr, rt),
-                                rt);
-    rt->getScope()->addVariable(rt->nmgr->getId("checkglobal"),
-                                makeFunctionInstanceObject(true, CF_checkglobal, nullptr, rt),
-                                rt);
-    rt->getScope()->addVariable(rt->nmgr->getId("getglobal"),
-                                makeFunctionInstanceObject(true, CF_getglobal, nullptr, rt),
-                                rt);
-    rt->getScope()->addVariable(rt->nmgr->getId("setglobal"),
-                                makeFunctionInstanceObject(true, CF_setglobal, nullptr, rt),
-                                rt);
-    rt->getScope()->addVariable(rt->nmgr->getId("removeglobal"),
-                                makeFunctionInstanceObject(true, CF_removeglobal, nullptr, rt),
-                                rt);
-    rt->getScope()->addVariable(rt->nmgr->getId("sharedlibrary"),
-                                makeFunctionInstanceObject(true, CF_sharedlibrary, nullptr, rt),
-                                rt);
-    rt->getScope()->addVariable(rt->nmgr->getId("load"),
-                                makeFunctionInstanceObject(true, CF_load, nullptr, rt),
-                                rt);
+    rt->getScope()->addVariable(rt->nmgr->getId("typeof"), makeFunctionInstanceObject(true, CF_typeof, nullptr, rt), rt);
+    rt->getScope()->addVariable(rt->nmgr->getId("isinsobj"), makeFunctionInstanceObject(true, CF_isinsobj, nullptr, rt), rt);
+    rt->getScope()->addVariable(rt->nmgr->getId("istypeobj"), makeFunctionInstanceObject(true, CF_istypeobj, nullptr, rt), rt);
+    rt->getScope()->addVariable(rt->nmgr->getId("repr"), makeFunctionInstanceObject(true, CF_repr, nullptr, rt), rt);
+    rt->getScope()->addVariable(rt->nmgr->getId("hasfield"), makeFunctionInstanceObject(true, CF_hasfield, nullptr, rt), rt);
+    rt->getScope()->addVariable(rt->nmgr->getId("hasmethod"), makeFunctionInstanceObject(true, CF_hasmethod, nullptr, rt), rt);
+    rt->getScope()->addVariable(rt->nmgr->getId("assert"), makeFunctionInstanceObject(true, CF_assert, nullptr, rt), rt);
+    rt->getScope()->addVariable(rt->nmgr->getId("isinscope"), makeFunctionInstanceObject(true, CF_isinscope, nullptr, rt), rt);
+    rt->getScope()->addVariable(rt->nmgr->getId("checkglobal"), makeFunctionInstanceObject(true, CF_checkglobal, nullptr, rt), rt);
+    rt->getScope()->addVariable(rt->nmgr->getId("getglobal"), makeFunctionInstanceObject(true, CF_getglobal, nullptr, rt), rt);
+    rt->getScope()->addVariable(rt->nmgr->getId("setglobal"), makeFunctionInstanceObject(true, CF_setglobal, nullptr, rt), rt);
+    rt->getScope()->addVariable(rt->nmgr->getId("removeglobal"), makeFunctionInstanceObject(true, CF_removeglobal, nullptr, rt), rt);
+    rt->getScope()->addVariable(rt->nmgr->getId("sharedlibrary"), makeFunctionInstanceObject(true, CF_sharedlibrary, nullptr, rt), rt);
+    rt->getScope()->addVariable(rt->nmgr->getId("load"), makeFunctionInstanceObject(true, CF_load, nullptr, rt), rt);
     // rt->getScope()->addVariable(rt->nmgr->getId("smartrun"),
     //                             makeFunctionInstanceObject(true, CF_smartrun, nullptr, rt),
     //                             rt);
@@ -944,11 +984,9 @@ void installBuiltinFunctions(Runtime *rt) {
     // rt->getScope()->addVariable(rt->nmgr->getId("loadlibrary"),
     //                            makeFunctionInstanceObject(true, CF_loadlibrary, nullptr, rt),
     //                            rt);
-    rt->getScope()->addVariable(rt->nmgr->getId("swap"),
-                                makeFunctionInstanceObject(true, CF_swap, nullptr, rt),
-                                rt);
-    rt->getScope()->addVariable(rt->nmgr->getId("hide"),
-                                makeFunctionInstanceObject(true, CF_hide, nullptr, rt),
-                                rt);
+    rt->getScope()->addVariable(rt->nmgr->getId("swap"), makeFunctionInstanceObject(true, CF_swap, nullptr, rt), rt);
+    rt->getScope()->addVariable(rt->nmgr->getId("hide"), makeFunctionInstanceObject(true, CF_hide, nullptr, rt), rt);
+    rt->getScope()->addVariable(rt->nmgr->getId("unlockscope"), makeFunctionInstanceObject(true, CF_unlockscope, nullptr, rt), rt);
+    rt->getScope()->addVariable(rt->nmgr->getId("lockscope"), makeFunctionInstanceObject(true, CF_lockscope, nullptr, rt), rt);
 }
 }    // namespace Cotton::Builtin

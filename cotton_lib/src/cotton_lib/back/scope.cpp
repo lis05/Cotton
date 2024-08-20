@@ -6,9 +6,10 @@
 namespace Cotton {
 Scope::Scope(Scope *prev, Scope *master, bool can_access_prev) {
     ProfilerCAPTURE();
-    this->prev            = prev;
-    this->master          = master;
-    this->can_access_prev = can_access_prev;
+    this->prev             = prev;
+    this->master           = master;
+    this->can_access_prev  = can_access_prev;
+    this->is_function_call = false;
 }
 
 Scope::~Scope() {
@@ -34,6 +35,18 @@ std::vector<Object *> &Scope::getArguments() {
 
 bool Scope::canAccessPrev() {
     return this->can_access_prev;
+}
+
+bool Scope::isFunctionCall() {
+    return this->is_function_call;
+}
+
+void Scope::setCanAccessPrev(bool value) {
+    this->can_access_prev = value;
+}
+
+void Scope::setIsFunctionCall(bool value) {
+    this->is_function_call = value;
 }
 
 void Scope::addVariable(NameId id, Object *obj, Runtime *rt) {

@@ -39,6 +39,7 @@ private:
     HashTable<NameId, Object *> variables;
     std::vector<Object *>       arguments;
     bool                        can_access_prev;
+    bool                        is_function_call;
 
 public:
     /**
@@ -63,6 +64,15 @@ public:
 
     /// @brief returns `can_access_prev` of the current scope
     bool canAccessPrev();
+
+    /// @brief returns `is_function_call` of the current scope
+    bool isFunctionCall();
+
+    /// @brief sets `can_acess_prev` of the current scope to `value`
+    void setCanAccessPrev(bool value);
+
+    /// @brief sets `is_function_call` of the current scope to `value`
+    void setIsFunctionCall(bool value);
 
     /**
      * @brief Adds a new variable under the given nameid to the scope.
@@ -103,7 +113,7 @@ public:
 
     /**
      * @brief Removes variable with the given nameid from the current scope.
-     * 
+     *
      * @param id Nameid of the variable.
      * @param rt The runtime. Must be valid.
      */

@@ -88,8 +88,7 @@ size_t ArrayType::getInstanceSize() {
     return sizeof(ArrayInstance);
 }
 
-static Object *
-ArrayIndexAdapter(Object *self, const std::vector<Object *> &args, Runtime *rt, bool execution_result_matters) {
+static Object *ArrayIndexAdapter(Object *self, const std::vector<Object *> &args, Runtime *rt, bool execution_result_matters) {
     ProfilerCAPTURE();
 
     rt->verifyIsInstanceObject(self, rt->builtin_types.array, Runtime::SUB0_CTX);
@@ -98,8 +97,7 @@ ArrayIndexAdapter(Object *self, const std::vector<Object *> &args, Runtime *rt, 
     rt->verifyIsInstanceObject(arg, rt->builtin_types.integer, Runtime::SUB1_CTX);
 
     if (!(0 <= getIntegerValueFast(arg) && getIntegerValueFast(arg) < getArrayDataFast(self).size())) {
-        rt->signalError("Index " + arg->userRepr(rt) + " is out of array " + self->userRepr(rt) + " range",
-                        rt->getContext().sub_areas[1]);
+        rt->signalError("Index " + arg->userRepr(rt) + " is out of array " + self->userRepr(rt) + " range", rt->getContext().sub_areas[1]);
     }
     return getArrayDataFast(self)[getIntegerValueFast(arg)];
 }
@@ -179,8 +177,7 @@ static Object *arrayResizeMethod(const std::vector<Object *> &args, Runtime *rt,
     int64_t oldn = getArrayDataFast(self).size();
     int64_t newn = getIntegerValueFast(new_size);
     if (newn <= 0) {
-        rt->signalError("New array size must be positive: " + new_size->userRepr(rt),
-                        rt->getContext().sub_areas[1]);
+        rt->signalError("New array size must be positive: " + new_size->userRepr(rt), rt->getContext().sub_areas[1]);
     }
     getArrayDataFast(self).resize(newn);
 
@@ -197,7 +194,8 @@ static Object *arrayResizeMethod(const std::vector<Object *> &args, Runtime *rt,
 
 static Object *arrayAppendMethod(const std::vector<Object *> &args, Runtime *rt, bool execution_result_matters) {
     rt->verifyMinArgsAmountMethod(args, 1);
-    auto  self = args[0];
+    auto self = args[0];
+    rt->verifyIsInstanceObject(self, rt->builtin_types.array, Runtime::SUB1_CTX);
     auto &data = getArrayDataFast(self);
     for (int64_t i = 1; i < args.size(); i++) {
         rt->verifyIsValidObject(args[i], (Runtime::ContextId)i);
@@ -206,9 +204,27 @@ static Object *arrayAppendMethod(const std::vector<Object *> &args, Runtime *rt,
     return self;
 }
 
-static Object *arrayPopMethod(const std::vector<Object *> &args, Runtime *rt, bool execution_result_matters) {
+static Object *arrayPrependMethod(const std::vector<Object *> &args, Runtime *rt, bool execution_result_matters) {
+    rt->verifyMinArgsAmountMethod(args, 1);
+    auto self = args[0];
+    rt->verifyIsInstanceObject(self, rt->builtin_types.array, Runtime::SUB1_CTX);
+    auto                 &data = getArrayDataFast(self);
+    std::vector<Object *> pref;
+    for (int64_t i = 1; i < args.size(); i++) {
+        rt->verifyIsValidObject(args[i], (Runtime::ContextId)i);
+        pref.push_back(args[i]);
+    }
+    for (auto &item : data) {
+        pref.push_back(item);
+    }
+    data = pref;
+    return self;
+}
+
+static Object *arrayPoplastMethod(const std::vector<Object *> &args, Runtime *rt, bool execution_result_matters) {
     rt->verifyExactArgsAmountMethod(args, 0);
-    auto  self = args[0];
+    auto self = args[0];
+    rt->verifyIsInstanceObject(self, rt->builtin_types.array, Runtime::SUB1_CTX);
     auto &data = getArrayDataFast(self);
     if (data.empty()) {
         return self;
@@ -217,9 +233,22 @@ static Object *arrayPopMethod(const std::vector<Object *> &args, Runtime *rt, bo
     return self;
 }
 
+static Object *arrayPopfirstMethod(const std::vector<Object *> &args, Runtime *rt, bool execution_result_matters) {
+    rt->verifyExactArgsAmountMethod(args, 0);
+    auto self = args[0];
+    rt->verifyIsInstanceObject(self, rt->builtin_types.array, Runtime::SUB1_CTX);
+    auto &data = getArrayDataFast(self);
+    if (data.empty()) {
+        return self;
+    }
+    data.erase(data.begin());
+    return self;
+}
+
 static Object *arrayFirstMethod(const std::vector<Object *> &args, Runtime *rt, bool execution_result_matters) {
     rt->verifyExactArgsAmountMethod(args, 0);
-    auto  self = args[0];
+    auto self = args[0];
+    rt->verifyIsInstanceObject(self, rt->builtin_types.array, Runtime::SUB1_CTX);
     auto &data = getArrayDataFast(self);
     if (data.empty()) {
         return rt->protectedNothing();
@@ -229,7 +258,8 @@ static Object *arrayFirstMethod(const std::vector<Object *> &args, Runtime *rt, 
 
 static Object *arrayLastMethod(const std::vector<Object *> &args, Runtime *rt, bool execution_result_matters) {
     rt->verifyExactArgsAmountMethod(args, 0);
-    auto  self = args[0];
+    auto self = args[0];
+    rt->verifyIsInstanceObject(self, rt->builtin_types.array, Runtime::SUB1_CTX);
     auto &data = getArrayDataFast(self);
     if (data.empty()) {
         return rt->protectedNothing();
@@ -239,17 +269,118 @@ static Object *arrayLastMethod(const std::vector<Object *> &args, Runtime *rt, b
 
 static Object *arrayEmptyMethod(const std::vector<Object *> &args, Runtime *rt, bool execution_result_matters) {
     rt->verifyExactArgsAmountMethod(args, 0);
-    auto  self = args[0];
+    auto self = args[0];
+    rt->verifyIsInstanceObject(self, rt->builtin_types.array, Runtime::SUB1_CTX);
     auto &data = getArrayDataFast(self);
     return rt->protectedBoolean(data.empty());
 }
 
 static Object *arrayClearMethod(const std::vector<Object *> &args, Runtime *rt, bool execution_result_matters) {
     rt->verifyExactArgsAmountMethod(args, 0);
-    auto  self = args[0];
+    auto self = args[0];
+    rt->verifyIsInstanceObject(self, rt->builtin_types.array, Runtime::SUB1_CTX);
     auto &data = getArrayDataFast(self);
     data.clear();
     return self;
+}
+
+static Object *arrayCopyMethod(const std::vector<Object *> &args, Runtime *rt, bool execution_result_matters) {
+    rt->verifyExactArgsAmountMethod(args, 0);
+    auto self = args[0];
+
+    rt->verifyIsInstanceObject(self, rt->builtin_types.array, Runtime::SUB1_CTX);
+    return rt->copy(self);
+}
+
+static Object *arrayFilterMethod(const std::vector<Object *> &args, Runtime *rt, bool execution_result_matters) {
+    rt->verifyExactArgsAmountMethod(args, 1);
+    auto self = args[0];
+    auto arg  = args[1];
+    rt->verifyIsInstanceObject(self, rt->builtin_types.array, Runtime::SUB1_CTX);
+    rt->verifyIsInstanceObject(arg, rt->builtin_types.function, Runtime::SUB2_CTX);
+
+    std::vector<Object *> new_data;
+    auto                  ctx = rt->getContext();
+    rt->newContext();
+    rt->getContext().area      = ctx.area;
+    rt->getContext().sub_areas = {ctx.area, ctx.area};
+    for (auto &obj : getArrayDataFast(self)) {
+        auto res = rt->runOperator(OperatorNode::CALL, arg, std::vector<Object *> {obj}, true);
+        if (getBooleanValue(res, rt)) {
+            new_data.push_back(obj);
+        }
+    }
+    rt->popContext();
+
+    getArrayDataFast(self) = new_data;
+    return self;
+}
+
+static Object *arrayApplyMethod(const std::vector<Object *> &args, Runtime *rt, bool execution_result_matters) {
+    rt->verifyExactArgsAmountMethod(args, 1);
+    auto self = args[0];
+    auto arg  = args[1];
+    rt->verifyIsInstanceObject(self, rt->builtin_types.array, Runtime::SUB1_CTX);
+    rt->verifyIsInstanceObject(arg, rt->builtin_types.function, Runtime::SUB2_CTX);
+
+    auto ctx = rt->getContext();
+    rt->newContext();
+    rt->getContext().area      = ctx.area;
+    rt->getContext().sub_areas = {ctx.area, ctx.area};
+    for (auto &obj : getArrayDataFast(self)) {
+        rt->runOperator(OperatorNode::CALL, arg, std::vector<Object *> {obj}, true);
+    }
+    rt->popContext();
+
+    return self;
+}
+
+static Object *arrayReverseMethod(const std::vector<Object *> &args, Runtime *rt, bool execution_result_matters) {
+    rt->verifyExactArgsAmountMethod(args, 0);
+    auto self = args[0];
+    rt->verifyIsInstanceObject(self, rt->builtin_types.array, Runtime::SUB1_CTX);
+
+    std::reverse(getArrayDataFast(self).begin(), getArrayDataFast(self).end());
+    return self;
+}
+
+static Object *arraySortMethod(const std::vector<Object *> &args, Runtime *rt, bool execution_result_matters) {
+    rt->verifyExactArgsAmountMethod(args, 1);
+    auto self = args[0];
+    auto arg  = args[1];
+    rt->verifyIsInstanceObject(self, rt->builtin_types.array, Runtime::SUB1_CTX);
+    rt->verifyIsInstanceObject(arg, rt->builtin_types.function, Runtime::SUB2_CTX);
+
+    auto ctx = rt->getContext();
+    rt->newContext();
+    rt->getContext().area      = ctx.area;
+    rt->getContext().sub_areas = {ctx.area, ctx.area};
+    std::sort(getArrayDataFast(self).begin(), getArrayDataFast(self).end(), [rt, arg](const auto &a, const auto &b) {
+        auto res = rt->runOperator(OperatorNode::CALL, arg, std::vector<Object *> {a, b}, true);
+        return getBooleanValue(res, rt);
+    });
+    rt->popContext();
+    return self;
+}
+
+static Object *arrayCombineMethod(const std::vector<Object *> &args, Runtime *rt, bool execution_result_matters) {
+    rt->verifyExactArgsAmountMethod(args, 2);
+    auto self = args[0];
+    auto arg  = args[1];
+    auto init = args[2];
+    rt->verifyIsInstanceObject(self, rt->builtin_types.array, Runtime::SUB1_CTX);
+    rt->verifyIsInstanceObject(arg, rt->builtin_types.function, Runtime::SUB2_CTX);
+    rt->verifyIsValidObject(init, Runtime::SUB3_CTX);
+
+    auto ctx = rt->getContext();
+    rt->newContext();
+    rt->getContext().area      = ctx.area;
+    rt->getContext().sub_areas = {ctx.area, ctx.area};
+    for (auto obj : getArrayDataFast(self)) {
+        init = rt->runOperator(OperatorNode::CALL, arg, {init, obj}, true);
+    }
+    rt->popContext();
+    return init;
 }
 
 static Object *array_mm__repr__(const std::vector<Object *> &args, Runtime *rt, bool execution_result_matters) {
@@ -287,17 +418,25 @@ static Object *array_mm__repr__(const std::vector<Object *> &args, Runtime *rt, 
 
 void installArrayMethods(Type *type, Runtime *rt) {
     ProfilerCAPTURE();
-    type->addMethod(MagicMethods::mm__repr__(rt),
-                    Builtin::makeFunctionInstanceObject(true, array_mm__repr__, nullptr, rt));
+    type->addMethod(MagicMethods::mm__repr__(rt), Builtin::makeFunctionInstanceObject(true, array_mm__repr__, nullptr, rt));
+    type->addMethod(MagicMethods::mm__string__(rt), Builtin::makeFunctionInstanceObject(true, array_mm__repr__, nullptr, rt));
 
     type->addMethod(rt->nmgr->getId("size"), makeFunctionInstanceObject(true, arraySizeMethod, nullptr, rt));
     type->addMethod(rt->nmgr->getId("resize"), makeFunctionInstanceObject(true, arrayResizeMethod, nullptr, rt));
     type->addMethod(rt->nmgr->getId("append"), makeFunctionInstanceObject(true, arrayAppendMethod, nullptr, rt));
-    type->addMethod(rt->nmgr->getId("pop"), makeFunctionInstanceObject(true, arrayPopMethod, nullptr, rt));
+    type->addMethod(rt->nmgr->getId("prepend"), makeFunctionInstanceObject(true, arrayPrependMethod, nullptr, rt));
+    type->addMethod(rt->nmgr->getId("poplast"), makeFunctionInstanceObject(true, arrayPoplastMethod, nullptr, rt));
+    type->addMethod(rt->nmgr->getId("popfirst"), makeFunctionInstanceObject(true, arrayPopfirstMethod, nullptr, rt));
     type->addMethod(rt->nmgr->getId("first"), makeFunctionInstanceObject(true, arrayFirstMethod, nullptr, rt));
     type->addMethod(rt->nmgr->getId("last"), makeFunctionInstanceObject(true, arrayLastMethod, nullptr, rt));
     type->addMethod(rt->nmgr->getId("empty"), makeFunctionInstanceObject(true, arrayEmptyMethod, nullptr, rt));
     type->addMethod(rt->nmgr->getId("clear"), makeFunctionInstanceObject(true, arrayClearMethod, nullptr, rt));
+    type->addMethod(rt->nmgr->getId("copy"), makeFunctionInstanceObject(true, arrayCopyMethod, nullptr, rt));
+    type->addMethod(rt->nmgr->getId("filter"), makeFunctionInstanceObject(true, arrayFilterMethod, nullptr, rt));
+    type->addMethod(rt->nmgr->getId("apply"), makeFunctionInstanceObject(true, arrayApplyMethod, nullptr, rt));
+    type->addMethod(rt->nmgr->getId("reverse"), makeFunctionInstanceObject(true, arrayReverseMethod, nullptr, rt));
+    type->addMethod(rt->nmgr->getId("sort"), makeFunctionInstanceObject(true, arraySortMethod, nullptr, rt));
+    type->addMethod(rt->nmgr->getId("combine"), makeFunctionInstanceObject(true, arrayCombineMethod, nullptr, rt));
 }
 
 ArrayType::ArrayType(Runtime *rt)

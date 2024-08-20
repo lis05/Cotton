@@ -342,7 +342,7 @@ static Object *mm__repr__(const std::vector<Object *> &args, Runtime *rt, bool e
         return makeStringInstanceObject("Character", rt);
     }
 
-    return makeStringInstanceObject(std::string() + (char)getCharacterValueFast(self), rt);
+    return makeStringInstanceObject(std::string("\'") + (char)getCharacterValueFast(self) + "\'", rt);
 }
 
 static Object *mm__read__(const std::vector<Object *> &args, Runtime *rt, bool execution_result_matters) {
