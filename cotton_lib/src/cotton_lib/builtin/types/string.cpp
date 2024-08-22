@@ -310,7 +310,7 @@ static Object *stringArrayMethod(const std::vector<Object *> &args, Runtime *rt,
     return makeArrayInstanceObject(data, rt);
 }
 
-static Object *mm__bool__(const std::vector<Object *> &args, Runtime *rt, bool execution_result_matters) {
+static Object *string_mm__bool__(const std::vector<Object *> &args, Runtime *rt, bool execution_result_matters) {
     ProfilerCAPTURE();
     rt->verifyExactArgsAmountMethod(args, 0);
     auto self = args[0];
@@ -329,7 +329,7 @@ static Object *mm__bool__(const std::vector<Object *> &args, Runtime *rt, bool e
     rt->signalError("Unsupported conversion: " + getStringDataFast(self), rt->getContext().area);
 }
 
-static Object *mm__int__(const std::vector<Object *> &args, Runtime *rt, bool execution_result_matters) {
+static Object *string_mm__int__(const std::vector<Object *> &args, Runtime *rt, bool execution_result_matters) {
     ProfilerCAPTURE();
     rt->verifyExactArgsAmountMethod(args, 0);
     auto self = args[0];
@@ -342,7 +342,7 @@ static Object *mm__int__(const std::vector<Object *> &args, Runtime *rt, bool ex
     return makeIntegerInstanceObject(atoll(getStringDataFast(self).c_str()), rt);
 }
 
-static Object *mm__real__(const std::vector<Object *> &args, Runtime *rt, bool execution_result_matters) {
+static Object *string_mm__real__(const std::vector<Object *> &args, Runtime *rt, bool execution_result_matters) {
     ProfilerCAPTURE();
     rt->verifyExactArgsAmountMethod(args, 0);
     auto self = args[0];
@@ -355,7 +355,7 @@ static Object *mm__real__(const std::vector<Object *> &args, Runtime *rt, bool e
     return makeRealInstanceObject(atof(getStringDataFast(self).c_str()), rt);
 }
 
-static Object *mm__string__(const std::vector<Object *> &args, Runtime *rt, bool execution_result_matters) {
+static Object *string_mm__string__(const std::vector<Object *> &args, Runtime *rt, bool execution_result_matters) {
     ProfilerCAPTURE();
     rt->verifyExactArgsAmountMethod(args, 0);
     auto self = args[0];
@@ -368,7 +368,7 @@ static Object *mm__string__(const std::vector<Object *> &args, Runtime *rt, bool
     return makeStringInstanceObject(getStringDataFast(self), rt);
 }
 
-static Object *mm__repr__(const std::vector<Object *> &args, Runtime *rt, bool execution_result_matters) {
+static Object *string_mm__repr__(const std::vector<Object *> &args, Runtime *rt, bool execution_result_matters) {
     ProfilerCAPTURE();
     rt->verifyExactArgsAmountMethod(args, 0);
     auto self = args[0];
@@ -385,7 +385,7 @@ static Object *mm__repr__(const std::vector<Object *> &args, Runtime *rt, bool e
     return makeStringInstanceObject("\"" + getStringDataFast(self) + "\"", rt);
 }
 
-static Object *mm__read__(const std::vector<Object *> &args, Runtime *rt, bool execution_result_matters) {
+static Object *string_mm__read__(const std::vector<Object *> &args, Runtime *rt, bool execution_result_matters) {
     ProfilerCAPTURE();
     rt->verifyExactArgsAmountMethod(args, 0);
     auto self = args[0];
@@ -403,12 +403,12 @@ static Object *mm__read__(const std::vector<Object *> &args, Runtime *rt, bool e
 
 void installStringMethods(Type *type, Runtime *rt) {
     ProfilerCAPTURE();
-    type->addMethod(MagicMethods::mm__bool__(rt), Builtin::makeFunctionInstanceObject(true, mm__bool__, nullptr, rt));
-    type->addMethod(MagicMethods::mm__int__(rt), Builtin::makeFunctionInstanceObject(true, mm__int__, nullptr, rt));
-    type->addMethod(MagicMethods::mm__real__(rt), Builtin::makeFunctionInstanceObject(true, mm__real__, nullptr, rt));
-    type->addMethod(MagicMethods::mm__string__(rt), Builtin::makeFunctionInstanceObject(true, mm__string__, nullptr, rt));
-    type->addMethod(MagicMethods::mm__repr__(rt), Builtin::makeFunctionInstanceObject(true, mm__repr__, nullptr, rt));
-    type->addMethod(MagicMethods::mm__read__(rt), Builtin::makeFunctionInstanceObject(true, mm__read__, nullptr, rt));
+    type->addMethod(MagicMethods::mm__bool__(rt), Builtin::makeFunctionInstanceObject(true, string_mm__bool__, nullptr, rt));
+    type->addMethod(MagicMethods::mm__int__(rt), Builtin::makeFunctionInstanceObject(true, string_mm__int__, nullptr, rt));
+    type->addMethod(MagicMethods::mm__real__(rt), Builtin::makeFunctionInstanceObject(true, string_mm__real__, nullptr, rt));
+    type->addMethod(MagicMethods::mm__string__(rt), Builtin::makeFunctionInstanceObject(true, string_mm__string__, nullptr, rt));
+    type->addMethod(MagicMethods::mm__repr__(rt), Builtin::makeFunctionInstanceObject(true, string_mm__repr__, nullptr, rt));
+    type->addMethod(MagicMethods::mm__read__(rt), Builtin::makeFunctionInstanceObject(true, string_mm__read__, nullptr, rt));
 
     type->addMethod(rt->nmgr->getId("size"), makeFunctionInstanceObject(true, stringSizeMethod, nullptr, rt));
     type->addMethod(rt->nmgr->getId("set"), makeFunctionInstanceObject(true, stringSetMethod, nullptr, rt));

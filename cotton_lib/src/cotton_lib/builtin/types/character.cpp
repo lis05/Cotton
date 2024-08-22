@@ -259,7 +259,7 @@ static Object *CharacterNeqAdapter(Object *self, Object *arg, Runtime *rt, bool 
     return rt->protectedBoolean(!getBooleanValueFast(res));
 }
 
-static Object *mm__bool__(const std::vector<Object *> &args, Runtime *rt, bool execution_result_matters) {
+static Object *character_mm__bool__(const std::vector<Object *> &args, Runtime *rt, bool execution_result_matters) {
     ProfilerCAPTURE();
     rt->verifyExactArgsAmountMethod(args, 0);
     auto self = args[0];
@@ -272,7 +272,7 @@ static Object *mm__bool__(const std::vector<Object *> &args, Runtime *rt, bool e
     return makeBooleanInstanceObject(getCharacterValueFast(self) != '0', rt);
 }
 
-static Object *mm__char__(const std::vector<Object *> &args, Runtime *rt, bool execution_result_matters) {
+static Object *character_mm__char__(const std::vector<Object *> &args, Runtime *rt, bool execution_result_matters) {
     ProfilerCAPTURE();
     rt->verifyExactArgsAmountMethod(args, 0);
     auto self = args[0];
@@ -285,7 +285,7 @@ static Object *mm__char__(const std::vector<Object *> &args, Runtime *rt, bool e
     return makeCharacterInstanceObject(getCharacterValueFast(self), rt);
 }
 
-static Object *mm__int__(const std::vector<Object *> &args, Runtime *rt, bool execution_result_matters) {
+static Object *character_mm__int__(const std::vector<Object *> &args, Runtime *rt, bool execution_result_matters) {
     ProfilerCAPTURE();
     rt->verifyExactArgsAmountMethod(args, 0);
     auto self = args[0];
@@ -298,7 +298,7 @@ static Object *mm__int__(const std::vector<Object *> &args, Runtime *rt, bool ex
     return makeIntegerInstanceObject(getCharacterValueFast(self), rt);
 }
 
-static Object *mm__real__(const std::vector<Object *> &args, Runtime *rt, bool execution_result_matters) {
+static Object *character_mm__real__(const std::vector<Object *> &args, Runtime *rt, bool execution_result_matters) {
     ProfilerCAPTURE();
     rt->verifyExactArgsAmountMethod(args, 0);
     auto self = args[0];
@@ -311,7 +311,7 @@ static Object *mm__real__(const std::vector<Object *> &args, Runtime *rt, bool e
     return makeRealInstanceObject(getCharacterValueFast(self), rt);
 }
 
-static Object *mm__string__(const std::vector<Object *> &args, Runtime *rt, bool execution_result_matters) {
+static Object *character_mm__string__(const std::vector<Object *> &args, Runtime *rt, bool execution_result_matters) {
     ProfilerCAPTURE();
     rt->verifyExactArgsAmountMethod(args, 0);
     auto self = args[0];
@@ -328,7 +328,7 @@ static Object *mm__string__(const std::vector<Object *> &args, Runtime *rt, bool
     return makeStringInstanceObject(std::string() + (char)getCharacterValueFast(self), rt);
 }
 
-static Object *mm__repr__(const std::vector<Object *> &args, Runtime *rt, bool execution_result_matters) {
+static Object *character_mm__repr__(const std::vector<Object *> &args, Runtime *rt, bool execution_result_matters) {
     ProfilerCAPTURE();
     rt->verifyExactArgsAmountMethod(args, 0);
     auto self = args[0];
@@ -345,7 +345,7 @@ static Object *mm__repr__(const std::vector<Object *> &args, Runtime *rt, bool e
     return makeStringInstanceObject(std::string("\'") + (char)getCharacterValueFast(self) + "\'", rt);
 }
 
-static Object *mm__read__(const std::vector<Object *> &args, Runtime *rt, bool execution_result_matters) {
+static Object *character_mm__read__(const std::vector<Object *> &args, Runtime *rt, bool execution_result_matters) {
     ProfilerCAPTURE();
     rt->verifyExactArgsAmountMethod(args, 0);
     auto self = args[0];
@@ -364,19 +364,19 @@ static Object *mm__read__(const std::vector<Object *> &args, Runtime *rt, bool e
 void installCharacterMethods(Type *type, Runtime *rt) {
     ProfilerCAPTURE();
     type->addMethod(MagicMethods::mm__bool__(rt),
-                    Builtin::makeFunctionInstanceObject(true, mm__bool__, nullptr, rt));
+                    Builtin::makeFunctionInstanceObject(true, character_mm__bool__, nullptr, rt));
     type->addMethod(MagicMethods::mm__char__(rt),
-                    Builtin::makeFunctionInstanceObject(true, mm__char__, nullptr, rt));
+                    Builtin::makeFunctionInstanceObject(true, character_mm__char__, nullptr, rt));
     type->addMethod(MagicMethods::mm__int__(rt),
-                    Builtin::makeFunctionInstanceObject(true, mm__int__, nullptr, rt));
+                    Builtin::makeFunctionInstanceObject(true, character_mm__int__, nullptr, rt));
     type->addMethod(MagicMethods::mm__real__(rt),
-                    Builtin::makeFunctionInstanceObject(true, mm__real__, nullptr, rt));
+                    Builtin::makeFunctionInstanceObject(true, character_mm__real__, nullptr, rt));
     type->addMethod(MagicMethods::mm__string__(rt),
-                    Builtin::makeFunctionInstanceObject(true, mm__string__, nullptr, rt));
+                    Builtin::makeFunctionInstanceObject(true, character_mm__string__, nullptr, rt));
     type->addMethod(MagicMethods::mm__repr__(rt),
-                    Builtin::makeFunctionInstanceObject(true, mm__repr__, nullptr, rt));
+                    Builtin::makeFunctionInstanceObject(true, character_mm__repr__, nullptr, rt));
     type->addMethod(MagicMethods::mm__read__(rt),
-                    Builtin::makeFunctionInstanceObject(true, mm__read__, nullptr, rt));
+                    Builtin::makeFunctionInstanceObject(true, character_mm__read__, nullptr, rt));
 }
 
 CharacterType::CharacterType(Runtime *rt)

@@ -644,7 +644,7 @@ static Object *CF_sharedlibrary(const std::vector<Object *> &args, Runtime *rt, 
         }
         else {
             auto COTTON_PATH = getenv("COTTON_SHARED_LIBRARIES_PATH");
-            if (COTTON_PATH == NULL) {
+            if (COTTON_PATH == nullptr) {
                 path.clear();    // error
             }
             else {
@@ -702,7 +702,7 @@ static Object *CF_load(const std::vector<Object *> &args, Runtime *rt, bool exec
         }
         else {
             auto COTTON_PATH = getenv("COTTON_CTN_MODULES_PATH");
-            if (COTTON_PATH == NULL) {
+            if (COTTON_PATH == nullptr) {
                 path.clear();    // error
             }
             else {
@@ -875,7 +875,7 @@ static Object *CF_hide(const std::vector<Object *> &args, Runtime *rt, bool exec
     NameId id = rt->nmgr->getId(getStringDataFast(str));
 
     auto scope = rt->getScope();
-    while (scope != NULL) {
+    while (scope != nullptr) {
         if (scope->queryVariable(id, rt)) {
             scope->removeVariable(id, rt);
             return rt->protectedBoolean(true);
@@ -935,6 +935,16 @@ static Object *CF_lockscope(const std::vector<Object *> &args, Runtime *rt, bool
     return rt->protectedNothing();
 }
 
+// cfastio() - enables fast C io
+static Object *CF_cfastio(const std::vector<Object *> &args, Runtime *rt, bool execution_result_matters) {
+    ProfilerCAPTURE();
+    rt->verifyExactArgsAmountFunc(args, 0);
+    std::ios_base::sync_with_stdio(0);
+    std::cin.tie(0);
+    std::cout.tie(0);
+    return rt->protectedNothing();
+}
+
 void installBuiltinFunctions(Runtime *rt) {
     ProfilerCAPTURE();
     rt->getScope()->addVariable(rt->nmgr->getId("make"), makeFunctionInstanceObject(true, CF_make, nullptr, rt), rt);
@@ -988,5 +998,6 @@ void installBuiltinFunctions(Runtime *rt) {
     rt->getScope()->addVariable(rt->nmgr->getId("hide"), makeFunctionInstanceObject(true, CF_hide, nullptr, rt), rt);
     rt->getScope()->addVariable(rt->nmgr->getId("unlockscope"), makeFunctionInstanceObject(true, CF_unlockscope, nullptr, rt), rt);
     rt->getScope()->addVariable(rt->nmgr->getId("lockscope"), makeFunctionInstanceObject(true, CF_lockscope, nullptr, rt), rt);
+    rt->getScope()->addVariable(rt->nmgr->getId("cfastio"), makeFunctionInstanceObject(true, CF_cfastio, nullptr, rt), rt);
 }
 }    // namespace Cotton::Builtin

@@ -3,3 +3,6 @@
 /tests/program.ctn
 /tests/subprogram.ctn
 /docs
+/test
+/glued.cpp
+/glued.o

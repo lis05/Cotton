@@ -161,7 +161,7 @@ static Object *FunctionNeqAdapter(Object *self, Object *arg, Runtime *rt, bool e
     return rt->protectedBoolean(!getBooleanValueFast(res));
 }
 
-static Object *mm__repr__(const std::vector<Object *> &args, Runtime *rt, bool execution_result_matters) {
+static Object *function_mm__repr__(const std::vector<Object *> &args, Runtime *rt, bool execution_result_matters) {
     ProfilerCAPTURE();
     rt->verifyExactArgsAmountMethod(args, 0);
     auto self = args[0];
@@ -180,7 +180,7 @@ static Object *mm__repr__(const std::vector<Object *> &args, Runtime *rt, bool e
 
 void installFunctionMethods(Type *type, Runtime *rt) {
     type->addMethod(MagicMethods::mm__repr__(rt),
-                    Builtin::makeFunctionInstanceObject(true, mm__repr__, nullptr, rt));
+                    Builtin::makeFunctionInstanceObject(true, function_mm__repr__, nullptr, rt));
 }
 
 FunctionType::FunctionType(Runtime *rt)

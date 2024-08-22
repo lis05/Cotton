@@ -86,13 +86,13 @@ Runtime::Runtime(GCStrategy *gc_strategy, ErrorManager *error_manager, NamesMana
     this->gc->hold(this->protected_nothing);
     this->protected_nothing->spreadMultiUse();
 
-    this->protected_true = this->make(this->builtin_types.boolean, Runtime::INSTANCE_OBJECT);
+    this->protected_true                                 = this->make(this->builtin_types.boolean, Runtime::INSTANCE_OBJECT);
     Builtin::getBooleanValue(this->protected_true, this) = true;
     this->protected_true->can_modify                     = false;
     this->gc->hold(this->protected_true);
     this->protected_true->spreadMultiUse();
 
-    this->protected_false = this->make(this->builtin_types.boolean, Runtime::INSTANCE_OBJECT);
+    this->protected_false                                 = this->make(this->builtin_types.boolean, Runtime::INSTANCE_OBJECT);
     Builtin::getBooleanValue(this->protected_false, this) = false;
     this->protected_false->can_modify                     = false;
     this->gc->hold(this->protected_false);
@@ -251,8 +251,7 @@ Object *Runtime::runOperator(OperatorNode::OperatorId id, Object *obj, bool exec
     }
 }
 
-Object *
-Runtime::runOperator(OperatorNode::OperatorId id, Object *obj, Object *arg, bool execution_result_matters) {
+Object *Runtime::runOperator(OperatorNode::OperatorId id, Object *obj, Object *arg, bool execution_result_matters) {
     ProfilerCAPTURE();
     this->verifyIsValidObject(obj, Runtime::SUB0_CTX);
     this->verifyIsValidObject(arg, Runtime::SUB1_CTX);
@@ -263,164 +262,140 @@ Runtime::runOperator(OperatorNode::OperatorId id, Object *obj, Object *arg, bool
     case OperatorNode::MULT :
         op = obj->type->mult_op;
         if (op == nullptr) {
-            this->signalError("Left argument " + obj->userRepr(this) + " doesn't support that operator",
-                              this->getContext().area);
+            this->signalError("Left argument " + obj->userRepr(this) + " doesn't support that operator", this->getContext().area);
         }
         return op(obj, arg, this, execution_result_matters);
     case OperatorNode::DIV :
         op = obj->type->div_op;
         if (op == nullptr) {
-            this->signalError("Left argument " + obj->userRepr(this) + " doesn't support that operator",
-                              this->getContext().area);
+            this->signalError("Left argument " + obj->userRepr(this) + " doesn't support that operator", this->getContext().area);
         }
 
         return op(obj, arg, this, execution_result_matters);
     case OperatorNode::REM :
         op = obj->type->rem_op;
         if (op == nullptr) {
-            this->signalError("Left argument " + obj->userRepr(this) + " doesn't support that operator",
-                              this->getContext().area);
+            this->signalError("Left argument " + obj->userRepr(this) + " doesn't support that operator", this->getContext().area);
         }
 
         return op(obj, arg, this, execution_result_matters);
     case OperatorNode::RIGHT_SHIFT :
         op = obj->type->rshift_op;
         if (op == nullptr) {
-            this->signalError("Left argument " + obj->userRepr(this) + " doesn't support that operator",
-                              this->getContext().area);
+            this->signalError("Left argument " + obj->userRepr(this) + " doesn't support that operator", this->getContext().area);
         }
 
         return op(obj, arg, this, execution_result_matters);
     case OperatorNode::LEFT_SHIFT :
         op = obj->type->lshift_op;
         if (op == nullptr) {
-            this->signalError("Left argument " + obj->userRepr(this) + " doesn't support that operator",
-                              this->getContext().area);
+            this->signalError("Left argument " + obj->userRepr(this) + " doesn't support that operator", this->getContext().area);
         }
 
         return op(obj, arg, this, execution_result_matters);
     case OperatorNode::PLUS :
         op = obj->type->add_op;
         if (op == nullptr) {
-            this->signalError("Left argument " + obj->userRepr(this) + " doesn't support that operator",
-                              this->getContext().area);
+            this->signalError("Left argument " + obj->userRepr(this) + " doesn't support that operator", this->getContext().area);
         }
 
         return op(obj, arg, this, execution_result_matters);
     case OperatorNode::MINUS :
         op = obj->type->sub_op;
         if (op == nullptr) {
-            this->signalError("Left argument " + obj->userRepr(this) + " doesn't support that operator",
-                              this->getContext().area);
+            this->signalError("Left argument " + obj->userRepr(this) + " doesn't support that operator", this->getContext().area);
         }
 
         return op(obj, arg, this, execution_result_matters);
     case OperatorNode::LESS :
         op = obj->type->lt_op;
         if (op == nullptr) {
-            this->signalError("Left argument " + obj->userRepr(this) + " doesn't support that operator",
-                              this->getContext().area);
+            this->signalError("Left argument " + obj->userRepr(this) + " doesn't support that operator", this->getContext().area);
         }
 
         return op(obj, arg, this, execution_result_matters);
     case OperatorNode::LESS_EQUAL :
         op = obj->type->leq_op;
         if (op == nullptr) {
-            this->signalError("Left argument " + obj->userRepr(this) + " doesn't support that operator",
-                              this->getContext().area);
+            this->signalError("Left argument " + obj->userRepr(this) + " doesn't support that operator", this->getContext().area);
         }
 
         return op(obj, arg, this, execution_result_matters);
     case OperatorNode::GREATER :
         op = obj->type->gt_op;
         if (op == nullptr) {
-            this->signalError("Left argument " + obj->userRepr(this) + " doesn't support that operator",
-                              this->getContext().area);
+            this->signalError("Left argument " + obj->userRepr(this) + " doesn't support that operator", this->getContext().area);
         }
 
         return op(obj, arg, this, execution_result_matters);
     case OperatorNode::GREATER_EQUAL :
         op = obj->type->geq_op;
         if (op == nullptr) {
-            this->signalError("Left argument " + obj->userRepr(this) + " doesn't support that operator",
-                              this->getContext().area);
+            this->signalError("Left argument " + obj->userRepr(this) + " doesn't support that operator", this->getContext().area);
         }
 
         return op(obj, arg, this, execution_result_matters);
     case OperatorNode::EQUAL :
         op = obj->type->eq_op;
         if (op == nullptr) {
-            this->signalError("Left argument " + obj->userRepr(this) + " doesn't support that operator",
-                              this->getContext().area);
+            this->signalError("Left argument " + obj->userRepr(this) + " doesn't support that operator", this->getContext().area);
         }
 
         return op(obj, arg, this, execution_result_matters);
     case OperatorNode::NOT_EQUAL :
         op = obj->type->neq_op;
         if (op == nullptr) {
-            this->signalError("Left argument " + obj->userRepr(this) + " doesn't support that operator",
-                              this->getContext().area);
+            this->signalError("Left argument " + obj->userRepr(this) + " doesn't support that operator", this->getContext().area);
         }
 
         return op(obj, arg, this, execution_result_matters);
     case OperatorNode::BITAND :
         op = obj->type->bitand_op;
         if (op == nullptr) {
-            this->signalError("Left argument " + obj->userRepr(this) + " doesn't support that operator",
-                              this->getContext().area);
+            this->signalError("Left argument " + obj->userRepr(this) + " doesn't support that operator", this->getContext().area);
         }
 
         return op(obj, arg, this, execution_result_matters);
     case OperatorNode::BITXOR :
         op = obj->type->bitxor_op;
         if (op == nullptr) {
-            this->signalError("Left argument " + obj->userRepr(this) + " doesn't support that operator",
-                              this->getContext().area);
+            this->signalError("Left argument " + obj->userRepr(this) + " doesn't support that operator", this->getContext().area);
         }
 
         return op(obj, arg, this, execution_result_matters);
     case OperatorNode::BITOR :
         op = obj->type->bitor_op;
         if (op == nullptr) {
-            this->signalError("Left argument " + obj->userRepr(this) + " doesn't support that operator",
-                              this->getContext().area);
+            this->signalError("Left argument " + obj->userRepr(this) + " doesn't support that operator", this->getContext().area);
         }
 
         return op(obj, arg, this, execution_result_matters);
     case OperatorNode::AND :
         op = obj->type->and_op;
         if (op == nullptr) {
-            this->signalError("Left argument " + obj->userRepr(this) + " doesn't support that operator",
-                              this->getContext().area);
+            this->signalError("Left argument " + obj->userRepr(this) + " doesn't support that operator", this->getContext().area);
         }
 
         return op(obj, arg, this, execution_result_matters);
     case OperatorNode::OR :
         op = obj->type->or_op;
         if (op == nullptr) {
-            this->signalError("Left argument " + obj->userRepr(this) + " doesn't support that operator",
-                              this->getContext().area);
+            this->signalError("Left argument " + obj->userRepr(this) + " doesn't support that operator", this->getContext().area);
         }
 
         return op(obj, arg, this, execution_result_matters);
-    default :
-        this->signalError("Left argument " + obj->userRepr(this) + " doesn't support that operator",
-                          this->getContext().area);
+    default : this->signalError("Left argument " + obj->userRepr(this) + " doesn't support that operator", this->getContext().area);
     }
 }
 
-Object *Runtime::runOperator(OperatorNode::OperatorId     id,
-                             Object                      *obj,
-                             const std::vector<Object *> &args,
-                             bool                         execution_result_matters) {
+Object *Runtime::runOperator(OperatorNode::OperatorId id, Object *obj, const std::vector<Object *> &args, bool execution_result_matters) {
     ProfilerCAPTURE();
     this->verifyIsValidObject(obj, Runtime::SUB1_CTX);
 
     if (id == OperatorNode::CALL) {
         auto op = obj->type->call_op;
         if (op == nullptr) {
-            this->signalError("Left argument " + obj->userRepr(this) + " doesn't support that operator",
-                              this->getContext().area);
+            this->signalError("Left argument " + obj->userRepr(this) + " doesn't support that operator", this->getContext().area);
         }
 
         return op(obj, args, this, execution_result_matters);
@@ -428,20 +403,17 @@ Object *Runtime::runOperator(OperatorNode::OperatorId     id,
     else if (id == OperatorNode::INDEX) {
         auto op = obj->type->index_op;
         if (op == nullptr) {
-            this->signalError("Left argument " + obj->userRepr(this) + " doesn't support that operator",
-                              this->getContext().area);
+            this->signalError("Left argument " + obj->userRepr(this) + " doesn't support that operator", this->getContext().area);
         }
 
         return op(obj, args, this, execution_result_matters);
     }
     else {
-        this->signalError("Left argument " + obj->userRepr(this) + " doesn't support that operator",
-                          this->getContext().area);
+        this->signalError("Left argument " + obj->userRepr(this) + " doesn't support that operator", this->getContext().area);
     }
 }
 
-Object *
-Runtime::runMethod(NameId id, Object *obj, const std::vector<Object *> &args, bool execution_result_matters) {
+Object *Runtime::runMethod(NameId id, Object *obj, const std::vector<Object *> &args, bool execution_result_matters) {
     ProfilerCAPTURE();
     auto method = obj->type->getMethod(id, this);
     return this->runOperator(OperatorNode::CALL, method, args, execution_result_matters);
@@ -614,9 +586,7 @@ Object *Runtime::execute(OperatorNode *node, bool execution_result_matters) {
     if (node->id == OperatorNode::ASSIGN) {
         if (node->first->id == ExprNode::ATOM && node->first->atom->id == AtomNode::IDENTIFIER) {
             if (!this->scope->queryVariable(node->first->atom->ident->nameid, this)) {
-                this->scope->addVariable(node->first->atom->ident->nameid,
-                                         Builtin::makeNothingInstanceObject(this),
-                                         this);
+                this->scope->addVariable(node->first->atom->ident->nameid, Builtin::makeNothingInstanceObject(this), this);
             }
         }
     }
@@ -639,17 +609,13 @@ Object *Runtime::execute(OperatorNode *node, bool execution_result_matters) {
         return res;
     }
     else if (node->id == OperatorNode::CALL || node->id == OperatorNode::INDEX) {
-        if (node->id == OperatorNode::CALL && node->first->id == ExprNode::OPERATOR
-            && node->first->op->id == OperatorNode::DOT)
-        {
+        if (node->id == OperatorNode::CALL && node->first->id == ExprNode::OPERATOR && node->first->op->id == OperatorNode::DOT) {
             auto caller = this->execute(node->first->op->first, true);
             this->gc->hold(caller);
             Object *selected = nullptr;
 
             auto dot = node->first->op;
-            if (dot->second == nullptr || dot->second->id != ExprNode::ATOM
-                || dot->second->atom->id != AtomNode::IDENTIFIER)
-            {
+            if (dot->second == nullptr || dot->second->id != ExprNode::ATOM || dot->second->atom->id != AtomNode::IDENTIFIER) {
                 this->signalError("Selector is illegal", dot->second->text_area);
             }
             NameId selector = dot->second->atom->ident->nameid;
@@ -725,9 +691,7 @@ Object *Runtime::execute(OperatorNode *node, bool execution_result_matters) {
 
     switch (node->id) {
     case OperatorNode::DOT : {
-        if (node->second == nullptr || node->second->id != ExprNode::ATOM
-            || node->second->atom->id != AtomNode::IDENTIFIER)
-        {
+        if (node->second == nullptr || node->second->id != ExprNode::ATOM || node->second->atom->id != AtomNode::IDENTIFIER) {
             this->signalError("Selector is illegal", node->second->text_area);
         }
         NameId selector = node->second->atom->ident->nameid;
@@ -1252,7 +1216,7 @@ Object *Runtime::execute(ReturnStmtNode *node, bool execution_result_matters) {
     this->newContext();
     this->getContext().area = node->text_area;
 
-    if (node->value == NULL) {
+    if (node->value == nullptr) {
         this->clearExecFlags();
         this->setExecFlagRETURN();
         this->popContext();
@@ -1353,8 +1317,7 @@ void Runtime::verifyIsTypeObject(Object *obj, Type *type, Runtime::ContextId ctx
             this->signalError("Not a type object: " + obj->userRepr(this), this->getTextArea(ctx_id));
         }
         else {
-            this->signalError("Not a type object of type " + type->userRepr(this) + ": " + obj->userRepr(this),
-                              this->getTextArea(ctx_id));
+            this->signalError("Not a type object of type " + type->userRepr(this) + ": " + obj->userRepr(this), this->getTextArea(ctx_id));
         }
     }
 }
@@ -1367,8 +1330,7 @@ void Runtime::verifyIsInstanceObject(Object *obj, Type *type, Runtime::ContextId
             this->signalError("Not an instance object: " + obj->userRepr(this), this->getTextArea(ctx_id));
         }
         else {
-            this->signalError("Not an instance object of type " + type->userRepr(this) + ": "
-                              + obj->userRepr(this),
+            this->signalError("Not an instance object of type " + type->userRepr(this) + ": " + obj->userRepr(this),
                               this->getTextArea(ctx_id));
         }
     }
@@ -1378,55 +1340,42 @@ void Runtime::verifyIsOfType(Object *obj, Type *type, Runtime::ContextId ctx_id)
     ProfilerCAPTURE();
 
     if (!this->isOfType(obj, type)) {
-        this->signalError(obj->userRepr(this) + " is not of type " + type->userRepr(this),
-                          this->getTextArea(ctx_id));
+        this->signalError(obj->userRepr(this) + " is not of type " + type->userRepr(this), this->getTextArea(ctx_id));
     }
 }
 
-void Runtime::verifyMinArgsAmountFunc(const std::vector<Object *> &args,
-                                      int64_t                      amount,
-                                      Runtime::ContextId           ctx_id) {
+void Runtime::verifyMinArgsAmountFunc(const std::vector<Object *> &args, int64_t amount, Runtime::ContextId ctx_id) {
     ProfilerCAPTURE();
 
     if (args.size() < amount) {
-        this->signalError("Expected at least " + std::to_string(amount) + " arguments, got "
-                          + std::to_string(args.size()),
+        this->signalError("Expected at least " + std::to_string(amount) + " arguments, got " + std::to_string(args.size()),
                           this->getTextArea(ctx_id));
     }
 }
 
-void Runtime::verifyExactArgsAmountFunc(const std::vector<Object *> &args,
-                                        int64_t                      amount,
-                                        Runtime::ContextId           ctx_id) {
+void Runtime::verifyExactArgsAmountFunc(const std::vector<Object *> &args, int64_t amount, Runtime::ContextId ctx_id) {
     ProfilerCAPTURE();
 
     if (args.size() != amount) {
-        this->signalError("Expected exactly " + std::to_string(amount) + " arguments, got "
-                          + std::to_string(args.size()),
+        this->signalError("Expected exactly " + std::to_string(amount) + " arguments, got " + std::to_string(args.size()),
                           this->getTextArea(ctx_id));
     }
 }
 
-void Runtime::verifyMinArgsAmountMethod(const std::vector<Object *> &args,
-                                        int64_t                      amount,
-                                        Runtime::ContextId           ctx_id) {
+void Runtime::verifyMinArgsAmountMethod(const std::vector<Object *> &args, int64_t amount, Runtime::ContextId ctx_id) {
     ProfilerCAPTURE();
 
     if (args.size() < amount + 1) {
-        this->signalError("Expected at least " + std::to_string(amount) + " arguments, got "
-                          + std::to_string((int64_t)args.size() - 1),
+        this->signalError("Expected at least " + std::to_string(amount) + " arguments, got " + std::to_string((int64_t)args.size() - 1),
                           this->getTextArea(ctx_id));
     }
 }
 
-void Runtime::verifyExactArgsAmountMethod(const std::vector<Object *> &args,
-                                          int64_t                      amount,
-                                          Runtime::ContextId           ctx_id) {
+void Runtime::verifyExactArgsAmountMethod(const std::vector<Object *> &args, int64_t amount, Runtime::ContextId ctx_id) {
     ProfilerCAPTURE();
 
     if (args.size() != amount + 1) {
-        this->signalError("Expected exactly " + std::to_string(amount) + " arguments, got "
-                          + std::to_string((int64_t)args.size() - 1),
+        this->signalError("Expected exactly " + std::to_string(amount) + " arguments, got " + std::to_string((int64_t)args.size() - 1),
                           this->getTextArea(ctx_id));
     }
 }
@@ -1436,8 +1385,7 @@ void Runtime::verifyHasMethod(Object *obj, NameId id, Runtime::ContextId ctx_id)
 
     this->verifyIsValidObject(obj, ctx_id);
     if (!obj->type->hasMethod(id)) {
-        this->signalError(obj->userRepr(this) + " doesn't have method " + this->nmgr->getString(id),
-                          this->getTextArea(ctx_id));
+        this->signalError(obj->userRepr(this) + " doesn't have method " + this->nmgr->getString(id), this->getTextArea(ctx_id));
     }
 }
 
