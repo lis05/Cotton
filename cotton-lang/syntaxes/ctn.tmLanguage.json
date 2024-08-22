@@ -17,7 +17,7 @@
 			"patterns": [
 				{
 					"name": "keyword.control.ctn",
-					"match": "\\b(function|type|method|while|for|in|if|else|continue|break|return|unscoped|and|or)\\b"
+					"match": "\\b(function|type|method|while|for|in|if|else|continue|break|return|unscoped|and|or|not)\\b"
 				}
 			]
 		},

@@ -142,7 +142,7 @@ void Token::identify(ErrorManager *error_manager) {
     else if (this->data == "-") {
         this->id = MINUS_OP;
     }
-    else if (this->data == "!") {
+    else if (this->data == "not") {
         this->id = NOT_OP;
     }
     else if (this->data == "~") {
@@ -306,7 +306,7 @@ std::ostream &operator<<(std::ostream &out, const Token &token) {
     case Token::AT_OP                : out << "@"; break;
     case Token::PLUS_OP              : out << "+"; break;
     case Token::MINUS_OP             : out << "-"; break;
-    case Token::NOT_OP               : out << "!"; break;
+    case Token::NOT_OP               : out << "not"; break;
     case Token::INVERSE_OP           : out << "~"; break;
     case Token::MULT_OP              : out << "*"; break;
     case Token::DIV_OP               : out << "/"; break;
@@ -526,8 +526,8 @@ std::vector<Token> Lexer::faze2FormConnectedTokens(const std::string &input) {
 
 // no dot
 static std::vector<std::string> sortedSplitters
-= {"(",  ")",  "{", "}",  "@", ";",  "++", "--", "[", "]", "+=", "-=", "!=", "~", "*=", "/=", "%=", ">>",
-   "<<", "<=", "<", ">=", ">", "==", "!",  "&",  "^", "|", "=",  "+",  "-",  "*", "/",  "%",  ","};
+= {"(",  ")",  "{",  "}", "@",  ";", "++", "--", "[", "]", "+=", "-=", "!=", "~", "*=", "/=", "%=",
+   ">>", "<<", "<=", "<", ">=", ">", "==", "&",  "^", "|", "=",  "+",  "-",  "*", "/",  "%",  ","};
 
 static void splitByOperator(const Token                 &token,
                             std::string::const_iterator &split_end,
