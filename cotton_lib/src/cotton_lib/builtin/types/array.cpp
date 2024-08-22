@@ -377,10 +377,309 @@ static Object *arrayCombineMethod(const std::vector<Object *> &args, Runtime *rt
     rt->getContext().area      = ctx.area;
     rt->getContext().sub_areas = {ctx.area, ctx.area};
     for (auto obj : getArrayDataFast(self)) {
-        init = rt->runOperator(OperatorNode::CALL, arg, {init, obj}, true);
+        init = rt->runOperator(OperatorNode::CALL, arg, std::vector<Object *> {init, obj}, true);
     }
     rt->popContext();
     return init;
+}
+
+static Object *arrayFindfirstfMethod(const std::vector<Object *> &args, Runtime *rt, bool execution_result_matters) {
+    rt->verifyExactArgsAmountMethod(args, 1);
+    auto self = args[0];
+    auto arg  = args[1];
+    rt->verifyIsInstanceObject(self, rt->builtin_types.array, Runtime::SUB1_CTX);
+    rt->verifyIsInstanceObject(arg, rt->builtin_types.function, Runtime::SUB2_CTX);
+
+    auto ctx = rt->getContext();
+    rt->newContext();
+    rt->getContext().area      = ctx.area;
+    rt->getContext().sub_areas = {ctx.area, ctx.area};
+    for (auto obj : getArrayDataFast(self)) {
+        auto res = rt->runOperator(OperatorNode::CALL, arg, std::vector<Object *> {obj}, true);
+        if (getBooleanValue(res, rt)) {
+            rt->popContext();
+            return obj;
+        }
+    }
+    rt->popContext();
+    return rt->protectedNothing();
+}
+
+static Object *arrayFindlastfMethod(const std::vector<Object *> &args, Runtime *rt, bool execution_result_matters) {
+    rt->verifyExactArgsAmountMethod(args, 1);
+    auto self = args[0];
+    auto arg  = args[1];
+    rt->verifyIsInstanceObject(self, rt->builtin_types.array, Runtime::SUB1_CTX);
+    rt->verifyIsInstanceObject(arg, rt->builtin_types.function, Runtime::SUB2_CTX);
+
+    auto ctx = rt->getContext();
+    rt->newContext();
+    rt->getContext().area      = ctx.area;
+    rt->getContext().sub_areas = {ctx.area, ctx.area};
+    for (auto it = getArrayDataFast(self).rbegin(); it != getArrayDataFast(self).rend(); it++) {
+        auto res = rt->runOperator(OperatorNode::CALL, arg, std::vector<Object *> {*it}, true);
+        if (getBooleanValue(res, rt)) {
+            rt->popContext();
+            return *it;
+        }
+    }
+    rt->popContext();
+    return rt->protectedNothing();
+}
+
+static Object *arrayLocatefirstfMethod(const std::vector<Object *> &args, Runtime *rt, bool execution_result_matters) {
+    rt->verifyExactArgsAmountMethod(args, 1);
+    auto self = args[0];
+    auto arg  = args[1];
+    rt->verifyIsInstanceObject(self, rt->builtin_types.array, Runtime::SUB1_CTX);
+    rt->verifyIsInstanceObject(arg, rt->builtin_types.function, Runtime::SUB2_CTX);
+
+    auto ctx = rt->getContext();
+    rt->newContext();
+    rt->getContext().area      = ctx.area;
+    rt->getContext().sub_areas = {ctx.area, ctx.area};
+    int64_t pos                = 0;
+    for (auto obj : getArrayDataFast(self)) {
+        auto res = rt->runOperator(OperatorNode::CALL, arg, std::vector<Object *> {obj}, true);
+        if (getBooleanValue(res, rt)) {
+            rt->popContext();
+            return makeIntegerInstanceObject(pos, rt);
+        }
+        pos++;
+    }
+    rt->popContext();
+    return makeIntegerInstanceObject(getArrayDataFast(self).size(), rt);
+}
+
+static Object *arrayLocatelastfMethod(const std::vector<Object *> &args, Runtime *rt, bool execution_result_matters) {
+    rt->verifyExactArgsAmountMethod(args, 1);
+    auto self = args[0];
+    auto arg  = args[1];
+    rt->verifyIsInstanceObject(self, rt->builtin_types.array, Runtime::SUB1_CTX);
+    rt->verifyIsInstanceObject(arg, rt->builtin_types.function, Runtime::SUB2_CTX);
+
+    auto ctx = rt->getContext();
+    rt->newContext();
+    rt->getContext().area      = ctx.area;
+    rt->getContext().sub_areas = {ctx.area, ctx.area};
+    int64_t pos                = getArrayDataFast(self).size() - 1;
+    for (auto it = getArrayDataFast(self).rbegin(); it != getArrayDataFast(self).rend(); it++) {
+        auto res = rt->runOperator(OperatorNode::CALL, arg, std::vector<Object *> {*it}, true);
+        if (getBooleanValue(res, rt)) {
+            rt->popContext();
+            return makeIntegerInstanceObject(pos, rt);
+        }
+        pos--;
+    }
+    rt->popContext();
+    return makeIntegerInstanceObject(getArrayDataFast(self).size(), rt);
+}
+
+
+static Object *arrayFindfirstMethod(const std::vector<Object *> &args, Runtime *rt, bool execution_result_matters) {
+    rt->verifyExactArgsAmountMethod(args, 1);
+    auto self = args[0];
+    auto arg  = args[1];
+    rt->verifyIsInstanceObject(self, rt->builtin_types.array, Runtime::SUB1_CTX);
+    rt->verifyIsValidObject(arg, Runtime::SUB2_CTX);
+    // verify has operator
+
+    auto ctx = rt->getContext();
+    rt->newContext();
+    rt->getContext().area      = ctx.area;
+    rt->getContext().sub_areas = {ctx.area, ctx.area};
+    for (auto obj : getArrayDataFast(self)) {
+        auto res = rt->runOperator(OperatorNode::EQUAL, arg, obj, true);
+        if (getBooleanValue(res, rt)) {
+            rt->popContext();
+            return obj;
+        }
+    }
+    rt->popContext();
+    return rt->protectedNothing();
+}
+
+static Object *arrayFindlastMethod(const std::vector<Object *> &args, Runtime *rt, bool execution_result_matters) {
+    rt->verifyExactArgsAmountMethod(args, 1);
+    auto self = args[0];
+    auto arg  = args[1];
+    rt->verifyIsInstanceObject(self, rt->builtin_types.array, Runtime::SUB1_CTX);
+    rt->verifyIsValidObject(arg, Runtime::SUB2_CTX);
+    // verify has operator
+
+    auto ctx = rt->getContext();
+    rt->newContext();
+    rt->getContext().area      = ctx.area;
+    rt->getContext().sub_areas = {ctx.area, ctx.area};
+    for (auto it = getArrayDataFast(self).rbegin(); it != getArrayDataFast(self).rend(); it++) {
+        auto res = rt->runOperator(OperatorNode::EQUAL, arg, *it, true);
+        if (getBooleanValue(res, rt)) {
+            rt->popContext();
+            return *it;
+        }
+    }
+    rt->popContext();
+    return rt->protectedNothing();
+}
+
+static Object *arrayLocatefirstMethod(const std::vector<Object *> &args, Runtime *rt, bool execution_result_matters) {
+    rt->verifyExactArgsAmountMethod(args, 1);
+    auto self = args[0];
+    auto arg  = args[1];
+    rt->verifyIsInstanceObject(self, rt->builtin_types.array, Runtime::SUB1_CTX);
+    rt->verifyIsValidObject(arg, Runtime::SUB2_CTX);
+    // verify has operator
+
+    auto ctx = rt->getContext();
+    rt->newContext();
+    rt->getContext().area      = ctx.area;
+    rt->getContext().sub_areas = {ctx.area, ctx.area};
+    int64_t pos                = 0;
+    for (auto obj : getArrayDataFast(self)) {
+        auto res = rt->runOperator(OperatorNode::EQUAL, arg, obj, true);
+        if (getBooleanValue(res, rt)) {
+            rt->popContext();
+            return makeIntegerInstanceObject(pos, rt);
+        }
+        pos++;
+    }
+    rt->popContext();
+    return makeIntegerInstanceObject(getArrayDataFast(self).size(), rt);
+}
+
+static Object *arrayLocatelastMethod(const std::vector<Object *> &args, Runtime *rt, bool execution_result_matters) {
+    rt->verifyExactArgsAmountMethod(args, 1);
+    auto self = args[0];
+    auto arg  = args[1];
+    rt->verifyIsInstanceObject(self, rt->builtin_types.array, Runtime::SUB1_CTX);
+    rt->verifyIsValidObject(arg, Runtime::SUB2_CTX);
+    // verify has operator
+
+    auto ctx = rt->getContext();
+    rt->newContext();
+    rt->getContext().area      = ctx.area;
+    rt->getContext().sub_areas = {ctx.area, ctx.area};
+    int64_t pos                = getArrayDataFast(self).size() - 1;
+    for (auto it = getArrayDataFast(self).rbegin(); it != getArrayDataFast(self).rend(); it++) {
+        auto res = rt->runOperator(OperatorNode::EQUAL, arg, *it, true);
+        if (getBooleanValue(res, rt)) {
+            rt->popContext();
+            return makeIntegerInstanceObject(pos, rt);
+        }
+        pos--;
+    }
+    rt->popContext();
+    return makeIntegerInstanceObject(getArrayDataFast(self).size(), rt);
+}
+
+static Object *arrayAllMethod(const std::vector<Object *> &args, Runtime *rt, bool execution_result_matters) {
+    rt->verifyExactArgsAmountMethod(args, 1);
+    auto self = args[0];
+    auto arg  = args[1];
+    rt->verifyIsInstanceObject(self, rt->builtin_types.array, Runtime::SUB1_CTX);
+    rt->verifyIsInstanceObject(arg, rt->builtin_types.function, Runtime::SUB2_CTX);
+
+    auto ctx = rt->getContext();
+    rt->newContext();
+    rt->getContext().area      = ctx.area;
+    rt->getContext().sub_areas = {ctx.area, ctx.area};
+    for (auto obj : getArrayDataFast(self)) {
+        auto res = rt->runOperator(OperatorNode::CALL, arg, std::vector<Object *> {obj}, true);
+        if (!getBooleanValue(res, rt)) {
+            rt->popContext();
+            return rt->protectedBoolean(false);
+        }
+    }
+    rt->popContext();
+    return rt->protectedBoolean(true);
+}
+
+static Object *arrayAnyMethod(const std::vector<Object *> &args, Runtime *rt, bool execution_result_matters) {
+    rt->verifyExactArgsAmountMethod(args, 1);
+    auto self = args[0];
+    auto arg  = args[1];
+    rt->verifyIsInstanceObject(self, rt->builtin_types.array, Runtime::SUB1_CTX);
+    rt->verifyIsInstanceObject(arg, rt->builtin_types.function, Runtime::SUB2_CTX);
+
+    auto ctx = rt->getContext();
+    rt->newContext();
+    rt->getContext().area      = ctx.area;
+    rt->getContext().sub_areas = {ctx.area, ctx.area};
+    for (auto obj : getArrayDataFast(self)) {
+        auto res = rt->runOperator(OperatorNode::CALL, arg, std::vector<Object *> {obj}, true);
+        if (getBooleanValue(res, rt)) {
+            rt->popContext();
+            return rt->protectedBoolean(true);
+        }
+    }
+    rt->popContext();
+    return rt->protectedBoolean(false);
+}
+
+static Object *arrayNoneMethod(const std::vector<Object *> &args, Runtime *rt, bool execution_result_matters) {
+    rt->verifyExactArgsAmountMethod(args, 1);
+    auto self = args[0];
+    auto arg  = args[1];
+    rt->verifyIsInstanceObject(self, rt->builtin_types.array, Runtime::SUB1_CTX);
+    rt->verifyIsInstanceObject(arg, rt->builtin_types.function, Runtime::SUB2_CTX);
+
+    auto ctx = rt->getContext();
+    rt->newContext();
+    rt->getContext().area      = ctx.area;
+    rt->getContext().sub_areas = {ctx.area, ctx.area};
+    for (auto obj : getArrayDataFast(self)) {
+        auto res = rt->runOperator(OperatorNode::CALL, arg, std::vector<Object *> {obj}, true);
+        if (getBooleanValue(res, rt)) {
+            rt->popContext();
+            return rt->protectedBoolean(false);
+        }
+    }
+    rt->popContext();
+    return rt->protectedBoolean(true);
+}
+
+static Object *arrayCountfMethod(const std::vector<Object *> &args, Runtime *rt, bool execution_result_matters) {
+    rt->verifyExactArgsAmountMethod(args, 1);
+    auto self = args[0];
+    auto arg  = args[1];
+    rt->verifyIsInstanceObject(self, rt->builtin_types.array, Runtime::SUB1_CTX);
+    rt->verifyIsInstanceObject(arg, rt->builtin_types.function, Runtime::SUB2_CTX);
+
+    auto    ctx = rt->getContext();
+    int64_t ans = 0;
+    rt->newContext();
+    rt->getContext().area      = ctx.area;
+    rt->getContext().sub_areas = {ctx.area, ctx.area};
+    for (auto obj : getArrayDataFast(self)) {
+        auto res = rt->runOperator(OperatorNode::CALL, arg, std::vector<Object *> {obj}, true);
+        if (getBooleanValue(res, rt)) {
+            ans++;
+        }
+    }
+    rt->popContext();
+    return makeIntegerInstanceObject(ans, rt);
+}
+
+static Object *arrayCountMethod(const std::vector<Object *> &args, Runtime *rt, bool execution_result_matters) {
+    rt->verifyExactArgsAmountMethod(args, 1);
+    auto self = args[0];
+    auto arg  = args[1];
+    rt->verifyIsInstanceObject(self, rt->builtin_types.array, Runtime::SUB1_CTX);
+    rt->verifyIsValidObject(arg, Runtime::SUB2_CTX);
+
+    auto    ctx = rt->getContext();
+    int64_t ans = 0;
+    rt->newContext();
+    rt->getContext().area      = ctx.area;
+    rt->getContext().sub_areas = {ctx.area, ctx.area};
+    for (auto obj : getArrayDataFast(self)) {
+        auto res = rt->runOperator(OperatorNode::EQUAL, arg, obj, true);
+        if (getBooleanValue(res, rt)) {
+            ans++;
+        }
+    }
+    rt->popContext();
+    return makeIntegerInstanceObject(ans, rt);
 }
 
 static Object *array_mm__repr__(const std::vector<Object *> &args, Runtime *rt, bool execution_result_matters) {
@@ -437,6 +736,19 @@ void installArrayMethods(Type *type, Runtime *rt) {
     type->addMethod(rt->nmgr->getId("reverse"), makeFunctionInstanceObject(true, arrayReverseMethod, nullptr, rt));
     type->addMethod(rt->nmgr->getId("sort"), makeFunctionInstanceObject(true, arraySortMethod, nullptr, rt));
     type->addMethod(rt->nmgr->getId("combine"), makeFunctionInstanceObject(true, arrayCombineMethod, nullptr, rt));
+    type->addMethod(rt->nmgr->getId("findfirstf"), makeFunctionInstanceObject(true, arrayFindfirstfMethod, nullptr, rt));
+    type->addMethod(rt->nmgr->getId("findlastf"), makeFunctionInstanceObject(true, arrayFindlastfMethod, nullptr, rt));
+    type->addMethod(rt->nmgr->getId("locatefirstf"), makeFunctionInstanceObject(true, arrayLocatefirstfMethod, nullptr, rt));
+    type->addMethod(rt->nmgr->getId("locatelastf"), makeFunctionInstanceObject(true, arrayLocatelastfMethod, nullptr, rt));
+    type->addMethod(rt->nmgr->getId("findfirst"), makeFunctionInstanceObject(true, arrayFindfirstMethod, nullptr, rt));
+    type->addMethod(rt->nmgr->getId("findlast"), makeFunctionInstanceObject(true, arrayFindlastMethod, nullptr, rt));
+    type->addMethod(rt->nmgr->getId("locatefirst"), makeFunctionInstanceObject(true, arrayLocatefirstMethod, nullptr, rt));
+    type->addMethod(rt->nmgr->getId("locatelast"), makeFunctionInstanceObject(true, arrayLocatelastMethod, nullptr, rt));
+    type->addMethod(rt->nmgr->getId("all"), makeFunctionInstanceObject(true, arrayAllMethod, nullptr, rt));
+    type->addMethod(rt->nmgr->getId("any"), makeFunctionInstanceObject(true, arrayAnyMethod, nullptr, rt));
+    type->addMethod(rt->nmgr->getId("none"), makeFunctionInstanceObject(true, arrayNoneMethod, nullptr, rt));
+    type->addMethod(rt->nmgr->getId("countf"), makeFunctionInstanceObject(true, arrayCountfMethod, nullptr, rt));
+    type->addMethod(rt->nmgr->getId("count"), makeFunctionInstanceObject(true, arrayCountMethod, nullptr, rt));
 }
 
 ArrayType::ArrayType(Runtime *rt)
