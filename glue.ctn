@@ -1,61 +1,78 @@
-import glob
+io = load("io");
+glob = load("glob");
 
-res = """#pragma GCC optimize("O3")\n"""
-res += "#include <cstdlib>\n"
-res += "#include <cstddef>\n"
-res += "#include <string>\n"
-res += "#include <vector>\n"
+res = "#pragma GCC optimize(\"O3\")
+#include <cstdlib>
+#include <cstddef>
+#include <string>
+#include <vector>
+namespace Cotton {
+    class Instance;
+    class Type;
+    class Object;
+};
+";
 
-def comp(x):
-    if x.endswith("util.h"): return 0
-    if x.endswith("nameid.h"): return 1
-    if x.endswith("lexer.h"): return 2
+function comp(x) {
+    if x.endswith("util.h") return 0;
+    if x.endswith("nameid.h") return 1;
+    if x.endswith("lexer.h") return 2;
+    if x.endswith("parser.h") return 3;
+    if x.endswith("object.h") return 4;
+    if x.endswith("type.h") return 5;
+    if x.endswith("instance.h") return 6;
+    if x.endswith("runtime.h") return 7;
 
-    return 999999
+    return 999999;
+};
 
-headers = [e for e in glob.glob("cotton_lib/**", recursive=True) if e.endswith(".h")]
-headers.sort(key=comp)
-sources = [e for e in glob.glob("cotton_lib/**", recursive=True) if e.endswith(".cpp")]
+headers = glob
+    .recursive("cotton_lib")
+    .filter(function(x){x.endswith(".h");})
+    .sort(function(x, y){return comp(x) < comp(y);});
 
+sources = glob
+    .recursive("cotton_lib")
+    .filter(function(x){x.endswith(".cpp");});
 
-for file in headers:
-    with open(file, "r") as fd:
-        res += fd.read()
-        res += "\n"
+for i = 0; i < headers.size(); i++; {
+    fd = io.open(headers[i], "r");
+    res.concatwith(fd.read()).concatwith("\n");
+    fd.close();
+}
 
-for file in sources:
-    with open(file, "r") as fd:
-        res += fd.read()
-        res += "\n"
+for i = 0; i < sources.size(); i++; {
+    fd = io.open(sources[i], "r");
+    res.concatwith(fd.read()).concatwith("\n");
+    fd.close();
+}
 
+// removes lines that include project files
+// as well as single line comments and other stuff
+res = res
+    .splitlines()
+    .filter(function(x){
+        return not x.startswith("#include \"");    
+    })
+    .filter(function(x){
+        return not x.startswith("//");    
+    })
+    .filter(function(x){
+        return not x.startswith("#pragma once");    
+    });
 
-res = res.splitlines(keepends=True)
-new_res = []
+// removes spaces
+res = "\n".join(res);
+for i = 0; i < 50; i++; {
+    res.replace("  ", " ");
+}
 
-# removes lines that include project files
-for line in res:
-    if line.startswith("#include \""):
-        continue
-    new_res.append(line.strip() + "\n")
-
-res = new_res.copy()
-
-# removes comments
-import re
-res = "".join(res)
-res = re.sub('//.*?\n|/\*.*?\*/', '', res, flags=re.S)
-
-
-# removes all spaces
-for i in range(0, 50): 
-    res = res.replace("  ", " ")
-    
-res += '''
+res.concatwith("
 /*
  Copyright (c) 2024 Ihor Lukianov (lis05)
 
  Permission is hereby granted, free of charge, to any person obtaining a copy of
- this software and associated documentation files (the "Software"), to deal in
+ this software and associated documentation files (the \"Software\"), to deal in
  the Software without restriction, including without limitation the rights to
  use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of
  the Software, and to permit persons to whom the Software is furnished to do so,
@@ -64,7 +81,7 @@ res += '''
  The above copyright notice and this permission notice shall be included in all
  copies or substantial portions of the Software.
 
- THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ THE SOFTWARE IS PROVIDED \"AS IS\", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS
  FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR
  COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER
@@ -85,7 +102,7 @@ void emergency_error_exit() {
 
 int main(int argc, char *argv[]) {
 
-const char *src = R"(
+const char *src = R\"(
 //!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
 arr = make(Array)
@@ -110,7 +127,7 @@ println(dp[n - 1]);
 
 
 //!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-)";
+)\";
 
     ErrorManager em(emergency_error_exit);
     Lexer        lx(&em);
@@ -130,17 +147,17 @@ println(dp[n - 1]);
     auto res        = rt.execute(program, false);
     delete program;
 }
+");
 
-'''
+// reserves special keywoards so that they dont break
+res
+    .replace("#if", "__I_F_D_I_R_E_C_T_I_V_E__")
+    .replace("#ifdef", "__I_F_D_E_F_D_I_R_E_C_T_I_V_E__")
+    .replace("#ifndef", "__I_F_N_D_E_F_D_I_R_E_C_T_I_V_E__")
+    .replace("#endif", "__E_N_D_I_F_D_I_R_E_C_T_I_V_E__");
 
-# reserves special keywoards so that they dont break
-res = res.replace("#if", "__I_F_D_I_R_E_C_T_I_V_E__")
-res = res.replace("#ifdef", "__I_F_D_E_F_D_I_R_E_C_T_I_V_E__")
-res = res.replace("#ifndef", "__I_F_N_D_E_F_D_I_R_E_C_T_I_V_E__")
-res = res.replace("#endif", "__E_N_D_I_F_D_I_R_E_C_T_I_V_E__")
-
-# replaces all these words with shorter ones
-keywords =  '''
+// replaces all these words with shorter ones
+keywords =  "
 verifyExactArgsAmountFunc
 verifyExactArgsAmountMethod
 verifyMinArgsAmountFunc
@@ -456,37 +473,39 @@ UnaryOperatorAdapter postinc_op postdec_op preinc_op predec_op positive_op negat
  NaryOperatorAdapter call_op index_op
  getMethod
 addOperator
-'''
-head = ""
-letter = 0
-num = 0
+";
 
-list = keywords.split()
-list.sort(key=lambda x: len(x), reverse=True)
+head = "";
+letter = 0;
+num = 0;
 
-for word in list:
-    if not word:
-        continue
-    
-    id = chr(letter + ord('A')) + str(num)
-    if len(word) > len(id):
-        res = res.replace(word, id)
+list = keywords.split();
+list.sort(function(a, b){a.size() > b.size();});
 
-    letter = letter + 1
-    if letter == 26:
-        letter = 0
-        num = num + 1
+for i = 0; i < list.size(); i++; {
+    word = @list[i];
 
-# restores reserved keywords
+    if word.empty() continue;
 
-res = res.replace("__I_F_D_I_R_E_C_T_I_V_E__", "#if")
-res = res.replace("__I_F_D_E_F_D_I_R_E_C_T_I_V_E__", "#ifdef")
-res = res.replace("__I_F_N_D_E_F_D_I_R_E_C_T_I_V_E__", "#ifndef")
-res = res.replace("__E_N_D_I_F_D_I_R_E_C_T_I_V_E__", "#endif")
+    id = string(char(letter) + 'A').concatwith(string(num));
+    if word.size() > id.size(); res.replace(word, id);
 
+    letter++;
+    if letter == 26; {
+        letter = 0;
+        num = num + 1;
+    }
+}
 
+// restores reserved keywords
 
-res = """
+res
+    .replace("__I_F_D_I_R_E_C_T_I_V_E__", "#if")
+    .replace("__I_F_D_E_F_D_I_R_E_C_T_I_V_E__", "#ifdef")
+    .replace("__I_F_N_D_E_F_D_I_R_E_C_T_I_V_E__", "#ifndef")
+    .replace("__E_N_D_I_F_D_I_R_E_C_T_I_V_E__", "#endif");
+
+res = "
 /*
 Attention!
 This code is a compressed (and therefore very obfuscated) version of the Cotton language interpreter
@@ -498,7 +517,10 @@ The purpose of this code is to test how Cotton performs on platforms
 where you can only compile and run a singular file, like AtCoder and Codeforces.
 
 Please do not disqualify this code!
-*/\n""" + res
+*/
+" + res;
 
-with open("glued.cpp", "w") as fd:
-    fd.write(res)
+io
+    .open("glued.cpp", "w")
+    .write(res)
+    .close();
