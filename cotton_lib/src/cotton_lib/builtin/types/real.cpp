@@ -65,8 +65,6 @@ size_t RealType::getInstanceSize() {
 static Object *RealPositiveAdapter(Object *self, Runtime *rt, bool execution_result_matters) {
     ProfilerCAPTURE();
 
-    rt->verifyIsInstanceObject(self, rt->builtin_types.real, Runtime::SUB0_CTX);
-
     if (!execution_result_matters) {
         return nullptr;
     }
@@ -77,8 +75,6 @@ static Object *RealPositiveAdapter(Object *self, Runtime *rt, bool execution_res
 
 static Object *RealNegativeAdapter(Object *self, Runtime *rt, bool execution_result_matters) {
     ProfilerCAPTURE();
-
-    rt->verifyIsInstanceObject(self, rt->builtin_types.real, Runtime::SUB0_CTX);
 
     if (!execution_result_matters) {
         return nullptr;
@@ -92,7 +88,6 @@ static Object *RealNegativeAdapter(Object *self, Runtime *rt, bool execution_res
 static Object *RealMultAdapter(Object *self, Object *arg, Runtime *rt, bool execution_result_matters) {
     ProfilerCAPTURE();
 
-    rt->verifyIsInstanceObject(self, rt->builtin_types.real, Runtime::SUB0_CTX);
     rt->verifyIsInstanceObject(arg, rt->builtin_types.real, Runtime::SUB1_CTX);
 
     if (!execution_result_matters) {
@@ -106,7 +101,6 @@ static Object *RealMultAdapter(Object *self, Object *arg, Runtime *rt, bool exec
 static Object *RealDivAdapter(Object *self, Object *arg, Runtime *rt, bool execution_result_matters) {
     ProfilerCAPTURE();
 
-    rt->verifyIsInstanceObject(self, rt->builtin_types.real, Runtime::SUB0_CTX);
     rt->verifyIsInstanceObject(arg, rt->builtin_types.real, Runtime::SUB1_CTX);
 
     if (!execution_result_matters) {
@@ -120,7 +114,6 @@ static Object *RealDivAdapter(Object *self, Object *arg, Runtime *rt, bool execu
 static Object *RealAddAdapter(Object *self, Object *arg, Runtime *rt, bool execution_result_matters) {
     ProfilerCAPTURE();
 
-    rt->verifyIsInstanceObject(self, rt->builtin_types.real, Runtime::SUB0_CTX);
     rt->verifyIsInstanceObject(arg, rt->builtin_types.real, Runtime::SUB1_CTX);
 
     if (!execution_result_matters) {
@@ -134,7 +127,6 @@ static Object *RealAddAdapter(Object *self, Object *arg, Runtime *rt, bool execu
 static Object *RealSubAdapter(Object *self, Object *arg, Runtime *rt, bool execution_result_matters) {
     ProfilerCAPTURE();
 
-    rt->verifyIsInstanceObject(self, rt->builtin_types.real, Runtime::SUB0_CTX);
     rt->verifyIsInstanceObject(arg, rt->builtin_types.real, Runtime::SUB1_CTX);
 
     if (!execution_result_matters) {
@@ -148,7 +140,6 @@ static Object *RealSubAdapter(Object *self, Object *arg, Runtime *rt, bool execu
 static Object *RealLtAdapter(Object *self, Object *arg, Runtime *rt, bool execution_result_matters) {
     ProfilerCAPTURE();
 
-    rt->verifyIsInstanceObject(self, rt->builtin_types.real, Runtime::SUB0_CTX);
     rt->verifyIsInstanceObject(arg, rt->builtin_types.real, Runtime::SUB1_CTX);
 
     return rt->protectedBoolean(getRealValueFast(self) < getRealValueFast(arg));
@@ -157,7 +148,6 @@ static Object *RealLtAdapter(Object *self, Object *arg, Runtime *rt, bool execut
 static Object *RealLeqAdapter(Object *self, Object *arg, Runtime *rt, bool execution_result_matters) {
     ProfilerCAPTURE();
 
-    rt->verifyIsInstanceObject(self, rt->builtin_types.real, Runtime::SUB0_CTX);
     rt->verifyIsInstanceObject(arg, rt->builtin_types.real, Runtime::SUB1_CTX);
 
     return rt->protectedBoolean(getRealValueFast(self) <= getRealValueFast(arg));
@@ -166,7 +156,6 @@ static Object *RealLeqAdapter(Object *self, Object *arg, Runtime *rt, bool execu
 static Object *RealGtAdapter(Object *self, Object *arg, Runtime *rt, bool execution_result_matters) {
     ProfilerCAPTURE();
 
-    rt->verifyIsInstanceObject(self, rt->builtin_types.real, Runtime::SUB0_CTX);
     rt->verifyIsInstanceObject(arg, rt->builtin_types.real, Runtime::SUB1_CTX);
 
     return rt->protectedBoolean(getRealValueFast(self) > getRealValueFast(arg));
@@ -175,7 +164,6 @@ static Object *RealGtAdapter(Object *self, Object *arg, Runtime *rt, bool execut
 static Object *RealGeqAdapter(Object *self, Object *arg, Runtime *rt, bool execution_result_matters) {
     ProfilerCAPTURE();
 
-    rt->verifyIsInstanceObject(self, rt->builtin_types.real, Runtime::SUB0_CTX);
     rt->verifyIsInstanceObject(arg, rt->builtin_types.real, Runtime::SUB1_CTX);
 
     return rt->protectedBoolean(getRealValueFast(self) >= getRealValueFast(arg));
@@ -216,7 +204,6 @@ static Object *real_mm__bool__(const std::vector<Object *> &args, Runtime *rt, b
     ProfilerCAPTURE();
     rt->verifyExactArgsAmountMethod(args, 0);
     auto self = args[0];
-    rt->verifyIsInstanceObject(self, rt->builtin_types.real, Runtime::SUB1_CTX);
 
     if (!execution_result_matters) {
         return self;
@@ -229,7 +216,6 @@ static Object *real_mm__char__(const std::vector<Object *> &args, Runtime *rt, b
     ProfilerCAPTURE();
     rt->verifyExactArgsAmountMethod(args, 0);
     auto self = args[0];
-    rt->verifyIsInstanceObject(self, rt->builtin_types.real, Runtime::SUB1_CTX);
 
     if (!execution_result_matters) {
         return self;
@@ -242,7 +228,6 @@ static Object *real_mm__int__(const std::vector<Object *> &args, Runtime *rt, bo
     ProfilerCAPTURE();
     rt->verifyExactArgsAmountMethod(args, 0);
     auto self = args[0];
-    rt->verifyIsInstanceObject(self, rt->builtin_types.real, Runtime::SUB1_CTX);
 
     if (!execution_result_matters) {
         return self;
@@ -255,7 +240,6 @@ static Object *real_mm__real__(const std::vector<Object *> &args, Runtime *rt, b
     ProfilerCAPTURE();
     rt->verifyExactArgsAmountMethod(args, 0);
     auto self = args[0];
-    rt->verifyIsInstanceObject(self, rt->builtin_types.real, Runtime::SUB1_CTX);
 
     if (!execution_result_matters) {
         return self;
@@ -268,7 +252,6 @@ static Object *real_mm__string__(const std::vector<Object *> &args, Runtime *rt,
     ProfilerCAPTURE();
     rt->verifyExactArgsAmountMethod(args, 0);
     auto self = args[0];
-    rt->verifyIsInstanceObject(self, rt->builtin_types.real, Runtime::SUB1_CTX);
 
     if (!execution_result_matters) {
         return self;
@@ -312,20 +295,13 @@ static Object *real_mm__read__(const std::vector<Object *> &args, Runtime *rt, b
 
 void installRealMethods(Type *type, Runtime *rt) {
     ProfilerCAPTURE();
-    type->addMethod(MagicMethods::mm__bool__(rt),
-                    Builtin::makeFunctionInstanceObject(true, real_mm__bool__, nullptr, rt));
-    type->addMethod(MagicMethods::mm__char__(rt),
-                    Builtin::makeFunctionInstanceObject(true, real_mm__char__, nullptr, rt));
-    type->addMethod(MagicMethods::mm__int__(rt),
-                    Builtin::makeFunctionInstanceObject(true, real_mm__int__, nullptr, rt));
-    type->addMethod(MagicMethods::mm__real__(rt),
-                    Builtin::makeFunctionInstanceObject(true, real_mm__real__, nullptr, rt));
-    type->addMethod(MagicMethods::mm__string__(rt),
-                    Builtin::makeFunctionInstanceObject(true, real_mm__string__, nullptr, rt));
-    type->addMethod(MagicMethods::mm__repr__(rt),
-                    Builtin::makeFunctionInstanceObject(true, real_mm__repr__, nullptr, rt));
-    type->addMethod(MagicMethods::mm__read__(rt),
-                    Builtin::makeFunctionInstanceObject(true, real_mm__read__, nullptr, rt));
+    type->addMethod(MagicMethods::mm__bool__(rt), Builtin::makeFunctionInstanceObject(true, real_mm__bool__, nullptr, rt));
+    type->addMethod(MagicMethods::mm__char__(rt), Builtin::makeFunctionInstanceObject(true, real_mm__char__, nullptr, rt));
+    type->addMethod(MagicMethods::mm__int__(rt), Builtin::makeFunctionInstanceObject(true, real_mm__int__, nullptr, rt));
+    type->addMethod(MagicMethods::mm__real__(rt), Builtin::makeFunctionInstanceObject(true, real_mm__real__, nullptr, rt));
+    type->addMethod(MagicMethods::mm__string__(rt), Builtin::makeFunctionInstanceObject(true, real_mm__string__, nullptr, rt));
+    type->addMethod(MagicMethods::mm__repr__(rt), Builtin::makeFunctionInstanceObject(true, real_mm__repr__, nullptr, rt));
+    type->addMethod(MagicMethods::mm__read__(rt), Builtin::makeFunctionInstanceObject(true, real_mm__read__, nullptr, rt));
 }
 
 RealType::RealType(Runtime *rt)

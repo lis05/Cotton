@@ -22,30 +22,37 @@ Scope::~Scope() {
 }
 
 Scope *Scope::getPrev() {
+    ProfilerCAPTURE();
     return this->prev;
 }
 
 Scope *Scope::getMaster() {
+    ProfilerCAPTURE();
     return this->master;
 }
 
 std::vector<Object *> &Scope::getArguments() {
+    ProfilerCAPTURE();
     return this->arguments;
 }
 
 bool Scope::canAccessPrev() {
+    ProfilerCAPTURE();
     return this->can_access_prev;
 }
 
 bool Scope::isFunctionCall() {
+    ProfilerCAPTURE();
     return this->is_function_call;
 }
 
 void Scope::setCanAccessPrev(bool value) {
+    ProfilerCAPTURE();
     this->can_access_prev = value;
 }
 
 void Scope::setIsFunctionCall(bool value) {
+    ProfilerCAPTURE();
     this->is_function_call = value;
 }
 
@@ -80,6 +87,7 @@ Object *Scope::getVariable(NameId id, Runtime *rt) {
 }
 
 void Scope::removeVariable(NameId id, Runtime *rt) {
+    ProfilerCAPTURE();
     this->variables.erase(id);
 }
 

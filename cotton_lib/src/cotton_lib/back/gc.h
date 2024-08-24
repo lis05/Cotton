@@ -89,16 +89,16 @@ public:
  */
 class GCDefaultStrategy: public GCStrategy {
 private:
-    const int NUM_TRACKED_INIT = 10'000;    // prev_num_tracked is set to this at initialization
-    const int NUM_TRACKED_MULT = 6;         // cycle runs when prev_num_tracked < num_tracked / 2;
+    const int NUM_TRACKED_INIT = 1'000'000;    // prev_num_tracked is set to this at initialization
+    const int NUM_TRACKED_MULT = 5;            // cycle runs when prev_num_tracked < num_tracked / 2;
     int64_t   num_tracked, prev_num_tracked;
 
-    const int MIN_CYCLE_SIZE      = 80'000;
-    const int SIZEOF_TRACKED_INIT = 80'000;           // prev_num_tracked is set to this at initialization
-    const int SIZEOF_TRACKED_MULT = 6;                // cycle runs when prev_sizeof_tracked < num_tracked / 2;
+    const int MIN_CYCLE_SIZE      = 8'000'000;
+    const int SIZEOF_TRACKED_INIT = 8'000'000;        // prev_num_tracked is set to this at initialization
+    const int SIZEOF_TRACKED_MULT = 5;                // cycle runs when prev_sizeof_tracked < num_tracked / 2;
     int64_t   sizeof_tracked, prev_sizeof_tracked;    // in bytes
 
-    const int OPS_MOD = 100'000;                      // cycle runs when opc_cnt % OPS_MOD == 0
+    const int OPS_MOD = 100'000'000;                  // cycle runs when opc_cnt % OPS_MOD == 0
     int64_t   ops_cnt;                                // number of tracks and untrackes modulo OPS_MOD
 
 public:

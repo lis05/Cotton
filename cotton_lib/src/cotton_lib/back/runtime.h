@@ -99,14 +99,14 @@ public:
     /// @brief Class storing all builtin types.
     class {
     public:
-        Builtin::FunctionType      *function;
-        Builtin::NothingType       *nothing;
-        Builtin::BooleanType       *boolean;
-        Builtin::IntegerType       *integer;
-        Builtin::RealType          *real;
-        Builtin::CharacterType     *character;
-        Builtin::StringType        *string;
-        Builtin::ArrayType         *array;
+        Builtin::FunctionType  *function;
+        Builtin::NothingType   *nothing;
+        Builtin::BooleanType   *boolean;
+        Builtin::IntegerType   *integer;
+        Builtin::RealType      *real;
+        Builtin::CharacterType *character;
+        Builtin::StringType    *string;
+        Builtin::ArrayType     *array;
     } builtin_types;
 
 private:
@@ -307,10 +307,7 @@ public:
      *
      * @return Result of the operator. May not be valid if `execution_result_matters` is `false`.
      */
-    Object *runOperator(OperatorNode::OperatorId     id,
-                        Object                      *obj,
-                        const std::vector<Object *> &args,
-                        bool                         execution_result_matters);
+    Object *runOperator(OperatorNode::OperatorId id, Object *obj, const std::vector<Object *> &args, bool execution_result_matters);
 
     /**
      * @brief Runs method with the given id. Signals an error if no such method exists.
@@ -408,9 +405,7 @@ public:
      * @param amount The minimal amount of arguments.
      * @param ctx_id Id of the context part which will be included in the error message.
      */
-    void verifyMinArgsAmountFunc(const std::vector<Object *> &args,
-                                 int64_t                      amount,
-                                 ContextId                    ctx_id = ContextId::AREA_CTX);
+    void verifyMinArgsAmountFunc(const std::vector<Object *> &args, int64_t amount, ContextId ctx_id = ContextId::AREA_CTX);
 
     /**
      * @brief Signals an error if the provided list of arguments contains different amount of elements than
@@ -421,9 +416,7 @@ public:
      * @param amount The exact amount of arguments.
      * @param ctx_id Id of the context part which will be included in the error message.
      */
-    void verifyExactArgsAmountFunc(const std::vector<Object *> &args,
-                                   int64_t                      amount,
-                                   ContextId                    ctx_id = ContextId::AREA_CTX);
+    void verifyExactArgsAmountFunc(const std::vector<Object *> &args, int64_t amount, ContextId ctx_id = ContextId::AREA_CTX);
     /**
      * @brief Signals an error if the provided list of arguments contains less elements than `amount`. Since the
      * first argument is always present, it is not counted in the total number of arguments. Therefore, this
@@ -435,9 +428,7 @@ public:
      * @param amount The minimal amount of arguments.
      * @param ctx_id Id of the context part which will be included in the error message.
      */
-    void verifyMinArgsAmountMethod(const std::vector<Object *> &args,
-                                   int64_t                      amount,
-                                   ContextId                    ctx_id = ContextId::AREA_CTX);
+    void verifyMinArgsAmountMethod(const std::vector<Object *> &args, int64_t amount, ContextId ctx_id = ContextId::AREA_CTX);
     /**
      * @brief Signals an error if the provided list of arguments contains different number of elements than
      * `amount`. Since the first argument is always present, it is not counted in the total number of arguments.
@@ -448,9 +439,7 @@ public:
      * @param amount The minimal amount of arguments.
      * @param ctx_id Id of the context part which will be included in the error message.
      */
-    void verifyExactArgsAmountMethod(const std::vector<Object *> &args,
-                                     int64_t                      amount,
-                                     ContextId                    ctx_id = ContextId::AREA_CTX);
+    void verifyExactArgsAmountMethod(const std::vector<Object *> &args, int64_t amount, ContextId ctx_id = ContextId::AREA_CTX);
 
     /**
      * @brief Signals an error if the provided object doesn't have method with the given id.
@@ -598,4 +587,9 @@ typedef Object *(*LibraryLoadPoint)(Runtime *rt);
 
 /// @brief casts instance to another instance
 #define icast(ins, type) ((type *)ins)
+
+#define OperatorArgCtx(ARGUMENT_ID_FROM_0) (Cotton::Runtime::ContextId)(ARGUMENT_ID_FROM_0)
+#define FunctionArgCtx(ARGUMENT_ID_FROM_0) (Cotton::Runtime::ContextId)((ARGUMENT_ID_FROM_0) + 1)
+#define MethodArgCtx(ARGUMENT_ID_FROM_0)   (Cotton::Runtime::ContextId)((ARGUMENT_ID_FROM_0) + 1)
+#define MethodCallerCtx                    (Cotton::Runtime::ContextId::SUB0_CTX)
 }    // namespace Cotton

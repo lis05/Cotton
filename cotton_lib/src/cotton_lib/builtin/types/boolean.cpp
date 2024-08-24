@@ -64,7 +64,6 @@ size_t BooleanType::getInstanceSize() {
 
 static Object *BooleanNotAdapter(Object *self, Runtime *rt, bool execution_result_matters) {
     ProfilerCAPTURE();
-    rt->verifyIsInstanceObject(self, rt->builtin_types.boolean, Runtime::SUB0_CTX);
 
     return (!getBooleanValueFast(self)) ? rt->protectedBoolean(true) : rt->protectedBoolean(false);
 }
@@ -102,7 +101,7 @@ static Object *BooleanNeqAdapter(Object *self, Object *arg, Runtime *rt, bool ex
 
 static Object *BooleanAndAdapter(Object *self, Object *arg, Runtime *rt, bool execution_result_matters) {
     ProfilerCAPTURE();
-    rt->verifyIsInstanceObject(self, rt->builtin_types.boolean, Runtime::SUB0_CTX);
+
     rt->verifyIsInstanceObject(arg, rt->builtin_types.boolean, Runtime::SUB1_CTX);
 
     return rt->protectedBoolean(getBooleanValueFast(self) && getBooleanValueFast(arg));
@@ -110,7 +109,7 @@ static Object *BooleanAndAdapter(Object *self, Object *arg, Runtime *rt, bool ex
 
 static Object *BooleanOrAdapter(Object *self, Object *arg, Runtime *rt, bool execution_result_matters) {
     ProfilerCAPTURE();
-    rt->verifyIsInstanceObject(self, rt->builtin_types.boolean, Runtime::SUB0_CTX);
+
     rt->verifyIsInstanceObject(arg, rt->builtin_types.boolean, Runtime::SUB1_CTX);
 
     return rt->protectedBoolean(getBooleanValueFast(self) || getBooleanValueFast(arg));
@@ -120,7 +119,6 @@ static Object *boolean_mm__bool__(const std::vector<Object *> &args, Runtime *rt
     ProfilerCAPTURE();
     rt->verifyExactArgsAmountMethod(args, 0);
     auto self = args[0];
-    rt->verifyIsInstanceObject(self, rt->builtin_types.boolean, Runtime::SUB1_CTX);
 
     if (!execution_result_matters) {
         return self;
@@ -137,7 +135,6 @@ static Object *boolean_mm__char__(const std::vector<Object *> &args, Runtime *rt
     ProfilerCAPTURE();
     rt->verifyExactArgsAmountMethod(args, 0);
     auto self = args[0];
-    rt->verifyIsInstanceObject(self, rt->builtin_types.boolean, Runtime::SUB1_CTX);
 
     if (!execution_result_matters) {
         return self;
@@ -150,7 +147,6 @@ static Object *boolean_mm__int__(const std::vector<Object *> &args, Runtime *rt,
     ProfilerCAPTURE();
     rt->verifyExactArgsAmountMethod(args, 0);
     auto self = args[0];
-    rt->verifyIsInstanceObject(self, rt->builtin_types.boolean, Runtime::SUB1_CTX);
 
     if (!execution_result_matters) {
         return self;
@@ -163,7 +159,6 @@ static Object *boolean_mm__real__(const std::vector<Object *> &args, Runtime *rt
     ProfilerCAPTURE();
     rt->verifyExactArgsAmountMethod(args, 0);
     auto self = args[0];
-    rt->verifyIsInstanceObject(self, rt->builtin_types.boolean, Runtime::SUB1_CTX);
 
     if (!execution_result_matters) {
         return self;
@@ -230,20 +225,13 @@ static Object *boolean_mm__read__(const std::vector<Object *> &args, Runtime *rt
 
 void installBooleanMethods(Type *type, Runtime *rt) {
     ProfilerCAPTURE();
-    type->addMethod(MagicMethods::mm__bool__(rt),
-                    Builtin::makeFunctionInstanceObject(true, boolean_mm__bool__, nullptr, rt));
-    type->addMethod(MagicMethods::mm__char__(rt),
-                    Builtin::makeFunctionInstanceObject(true, boolean_mm__char__, nullptr, rt));
-    type->addMethod(MagicMethods::mm__int__(rt),
-                    Builtin::makeFunctionInstanceObject(true, boolean_mm__int__, nullptr, rt));
-    type->addMethod(MagicMethods::mm__real__(rt),
-                    Builtin::makeFunctionInstanceObject(true, boolean_mm__real__, nullptr, rt));
-    type->addMethod(MagicMethods::mm__string__(rt),
-                    Builtin::makeFunctionInstanceObject(true, boolean_mm__string__, nullptr, rt));
-    type->addMethod(MagicMethods::mm__repr__(rt),
-                    Builtin::makeFunctionInstanceObject(true, boolean_mm__repr__, nullptr, rt));
-    type->addMethod(MagicMethods::mm__read__(rt),
-                    Builtin::makeFunctionInstanceObject(true, boolean_mm__read__, nullptr, rt));
+    type->addMethod(MagicMethods::mm__bool__(rt), Builtin::makeFunctionInstanceObject(true, boolean_mm__bool__, nullptr, rt));
+    type->addMethod(MagicMethods::mm__char__(rt), Builtin::makeFunctionInstanceObject(true, boolean_mm__char__, nullptr, rt));
+    type->addMethod(MagicMethods::mm__int__(rt), Builtin::makeFunctionInstanceObject(true, boolean_mm__int__, nullptr, rt));
+    type->addMethod(MagicMethods::mm__real__(rt), Builtin::makeFunctionInstanceObject(true, boolean_mm__real__, nullptr, rt));
+    type->addMethod(MagicMethods::mm__string__(rt), Builtin::makeFunctionInstanceObject(true, boolean_mm__string__, nullptr, rt));
+    type->addMethod(MagicMethods::mm__repr__(rt), Builtin::makeFunctionInstanceObject(true, boolean_mm__repr__, nullptr, rt));
+    type->addMethod(MagicMethods::mm__read__(rt), Builtin::makeFunctionInstanceObject(true, boolean_mm__read__, nullptr, rt));
 }
 
 BooleanType::BooleanType(Runtime *rt)

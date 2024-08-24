@@ -65,7 +65,6 @@ size_t IntegerType::getInstanceSize() {
 
 static Object *IntegerPostincAdapter(Object *self, Runtime *rt, bool execution_result_matters) {
     ProfilerCAPTURE();
-    rt->verifyIsInstanceObject(self, rt->builtin_types.integer, Runtime::SUB0_CTX);
 
     if (!execution_result_matters) {
         getIntegerValueFast(self)++;
@@ -79,7 +78,6 @@ static Object *IntegerPostincAdapter(Object *self, Runtime *rt, bool execution_r
 
 static Object *IntegerPostdecAdapter(Object *self, Runtime *rt, bool execution_result_matters) {
     ProfilerCAPTURE();
-    rt->verifyIsInstanceObject(self, rt->builtin_types.integer, Runtime::SUB0_CTX);
 
     if (!execution_result_matters) {
         getIntegerValueFast(self)--;
@@ -93,7 +91,6 @@ static Object *IntegerPostdecAdapter(Object *self, Runtime *rt, bool execution_r
 
 static Object *IntegerPreincAdapter(Object *self, Runtime *rt, bool execution_result_matters) {
     ProfilerCAPTURE();
-    rt->verifyIsInstanceObject(self, rt->builtin_types.integer, Runtime::SUB0_CTX);
 
     if (!execution_result_matters) {
         getIntegerValueFast(self)++;
@@ -107,7 +104,6 @@ static Object *IntegerPreincAdapter(Object *self, Runtime *rt, bool execution_re
 
 static Object *IntegerPredecAdapter(Object *self, Runtime *rt, bool execution_result_matters) {
     ProfilerCAPTURE();
-    rt->verifyIsInstanceObject(self, rt->builtin_types.integer, Runtime::SUB0_CTX);
 
     if (!execution_result_matters) {
         getIntegerValueFast(self)--;
@@ -121,7 +117,6 @@ static Object *IntegerPredecAdapter(Object *self, Runtime *rt, bool execution_re
 
 static Object *IntegerPositiveAdapter(Object *self, Runtime *rt, bool execution_result_matters) {
     ProfilerCAPTURE();
-    rt->verifyIsInstanceObject(self, rt->builtin_types.integer, Runtime::SUB0_CTX);
 
     if (!execution_result_matters) {
         return nullptr;
@@ -133,7 +128,6 @@ static Object *IntegerPositiveAdapter(Object *self, Runtime *rt, bool execution_
 
 static Object *IntegerNegativeAdapter(Object *self, Runtime *rt, bool execution_result_matters) {
     ProfilerCAPTURE();
-    rt->verifyIsInstanceObject(self, rt->builtin_types.integer, Runtime::SUB0_CTX);
 
     if (!execution_result_matters) {
         return nullptr;
@@ -146,7 +140,6 @@ static Object *IntegerNegativeAdapter(Object *self, Runtime *rt, bool execution_
 
 static Object *IntegerInverseAdapter(Object *self, Runtime *rt, bool execution_result_matters) {
     ProfilerCAPTURE();
-    rt->verifyIsInstanceObject(self, rt->builtin_types.integer, Runtime::SUB0_CTX);
 
     if (!execution_result_matters) {
         return nullptr;
@@ -159,7 +152,7 @@ static Object *IntegerInverseAdapter(Object *self, Runtime *rt, bool execution_r
 
 static Object *IntegerMultAdapter(Object *self, Object *arg, Runtime *rt, bool execution_result_matters) {
     ProfilerCAPTURE();
-    rt->verifyIsInstanceObject(self, rt->builtin_types.integer, Runtime::SUB0_CTX);
+
     rt->verifyIsInstanceObject(arg, rt->builtin_types.integer, Runtime::SUB1_CTX);
 
     if (!execution_result_matters) {
@@ -172,7 +165,7 @@ static Object *IntegerMultAdapter(Object *self, Object *arg, Runtime *rt, bool e
 
 static Object *IntegerDivAdapter(Object *self, Object *arg, Runtime *rt, bool execution_result_matters) {
     ProfilerCAPTURE();
-    rt->verifyIsInstanceObject(self, rt->builtin_types.integer, Runtime::SUB0_CTX);
+
     rt->verifyIsInstanceObject(arg, rt->builtin_types.integer, Runtime::SUB1_CTX);
 
     if (!execution_result_matters) {
@@ -185,7 +178,7 @@ static Object *IntegerDivAdapter(Object *self, Object *arg, Runtime *rt, bool ex
 
 static Object *IntegerRemAdapter(Object *self, Object *arg, Runtime *rt, bool execution_result_matters) {
     ProfilerCAPTURE();
-    rt->verifyIsInstanceObject(self, rt->builtin_types.integer, Runtime::SUB0_CTX);
+
     rt->verifyIsInstanceObject(arg, rt->builtin_types.integer, Runtime::SUB1_CTX);
 
     if (!execution_result_matters) {
@@ -198,7 +191,7 @@ static Object *IntegerRemAdapter(Object *self, Object *arg, Runtime *rt, bool ex
 
 static Object *IntegerRshiftAdapter(Object *self, Object *arg, Runtime *rt, bool execution_result_matters) {
     ProfilerCAPTURE();
-    rt->verifyIsInstanceObject(self, rt->builtin_types.integer, Runtime::SUB0_CTX);
+
     rt->verifyIsInstanceObject(arg, rt->builtin_types.integer, Runtime::SUB1_CTX);
 
     if (!execution_result_matters) {
@@ -211,7 +204,7 @@ static Object *IntegerRshiftAdapter(Object *self, Object *arg, Runtime *rt, bool
 
 static Object *IntegerLshiftAdapter(Object *self, Object *arg, Runtime *rt, bool execution_result_matters) {
     ProfilerCAPTURE();
-    rt->verifyIsInstanceObject(self, rt->builtin_types.integer, Runtime::SUB0_CTX);
+
     rt->verifyIsInstanceObject(arg, rt->builtin_types.integer, Runtime::SUB1_CTX);
 
     if (!execution_result_matters) {
@@ -224,7 +217,7 @@ static Object *IntegerLshiftAdapter(Object *self, Object *arg, Runtime *rt, bool
 
 static Object *IntegerAddAdapter(Object *self, Object *arg, Runtime *rt, bool execution_result_matters) {
     ProfilerCAPTURE();
-    rt->verifyIsInstanceObject(self, rt->builtin_types.integer, Runtime::SUB0_CTX);
+
     rt->verifyIsInstanceObject(arg, rt->builtin_types.integer, Runtime::SUB1_CTX);
 
     if (!execution_result_matters) {
@@ -237,7 +230,7 @@ static Object *IntegerAddAdapter(Object *self, Object *arg, Runtime *rt, bool ex
 
 static Object *IntegerSubAdapter(Object *self, Object *arg, Runtime *rt, bool execution_result_matters) {
     ProfilerCAPTURE();
-    rt->verifyIsInstanceObject(self, rt->builtin_types.integer, Runtime::SUB0_CTX);
+
     rt->verifyIsInstanceObject(arg, rt->builtin_types.integer, Runtime::SUB1_CTX);
 
     if (!execution_result_matters) {
@@ -250,7 +243,7 @@ static Object *IntegerSubAdapter(Object *self, Object *arg, Runtime *rt, bool ex
 
 static Object *IntegerLtAdapter(Object *self, Object *arg, Runtime *rt, bool execution_result_matters) {
     ProfilerCAPTURE();
-    rt->verifyIsInstanceObject(self, rt->builtin_types.integer, Runtime::SUB0_CTX);
+
     rt->verifyIsInstanceObject(arg, rt->builtin_types.integer, Runtime::SUB1_CTX);
 
     return rt->protectedBoolean(getIntegerValueFast(self) < getIntegerValueFast(arg));
@@ -258,7 +251,7 @@ static Object *IntegerLtAdapter(Object *self, Object *arg, Runtime *rt, bool exe
 
 static Object *IntegerLeqAdapter(Object *self, Object *arg, Runtime *rt, bool execution_result_matters) {
     ProfilerCAPTURE();
-    rt->verifyIsInstanceObject(self, rt->builtin_types.integer, Runtime::SUB0_CTX);
+
     rt->verifyIsInstanceObject(arg, rt->builtin_types.integer, Runtime::SUB1_CTX);
 
     return rt->protectedBoolean(getIntegerValueFast(self) <= getIntegerValueFast(arg));
@@ -266,7 +259,7 @@ static Object *IntegerLeqAdapter(Object *self, Object *arg, Runtime *rt, bool ex
 
 static Object *IntegerGtAdapter(Object *self, Object *arg, Runtime *rt, bool execution_result_matters) {
     ProfilerCAPTURE();
-    rt->verifyIsInstanceObject(self, rt->builtin_types.integer, Runtime::SUB0_CTX);
+
     rt->verifyIsInstanceObject(arg, rt->builtin_types.integer, Runtime::SUB1_CTX);
 
     return rt->protectedBoolean(getIntegerValueFast(self) > getIntegerValueFast(arg));
@@ -274,7 +267,7 @@ static Object *IntegerGtAdapter(Object *self, Object *arg, Runtime *rt, bool exe
 
 static Object *IntegerGeqAdapter(Object *self, Object *arg, Runtime *rt, bool execution_result_matters) {
     ProfilerCAPTURE();
-    rt->verifyIsInstanceObject(self, rt->builtin_types.integer, Runtime::SUB0_CTX);
+
     rt->verifyIsInstanceObject(arg, rt->builtin_types.integer, Runtime::SUB1_CTX);
 
     return rt->protectedBoolean(getIntegerValueFast(self) >= getIntegerValueFast(arg));
@@ -313,7 +306,7 @@ static Object *IntegerNeqAdapter(Object *self, Object *arg, Runtime *rt, bool ex
 
 static Object *IntegerBitandAdapter(Object *self, Object *arg, Runtime *rt, bool execution_result_matters) {
     ProfilerCAPTURE();
-    rt->verifyIsInstanceObject(self, rt->builtin_types.integer, Runtime::SUB0_CTX);
+
     rt->verifyIsInstanceObject(arg, rt->builtin_types.integer, Runtime::SUB1_CTX);
 
     if (!execution_result_matters) {
@@ -326,7 +319,7 @@ static Object *IntegerBitandAdapter(Object *self, Object *arg, Runtime *rt, bool
 
 static Object *IntegerBitxorAdapter(Object *self, Object *arg, Runtime *rt, bool execution_result_matters) {
     ProfilerCAPTURE();
-    rt->verifyIsInstanceObject(self, rt->builtin_types.integer, Runtime::SUB0_CTX);
+
     rt->verifyIsInstanceObject(arg, rt->builtin_types.integer, Runtime::SUB1_CTX);
 
     if (!execution_result_matters) {
@@ -339,7 +332,7 @@ static Object *IntegerBitxorAdapter(Object *self, Object *arg, Runtime *rt, bool
 
 static Object *IntegerBitorAdapter(Object *self, Object *arg, Runtime *rt, bool execution_result_matters) {
     ProfilerCAPTURE();
-    rt->verifyIsInstanceObject(self, rt->builtin_types.integer, Runtime::SUB0_CTX);
+
     rt->verifyIsInstanceObject(arg, rt->builtin_types.integer, Runtime::SUB1_CTX);
 
     if (!execution_result_matters) {
@@ -354,7 +347,6 @@ static Object *integer_mm__bool__(const std::vector<Object *> &args, Runtime *rt
     ProfilerCAPTURE();
     rt->verifyExactArgsAmountMethod(args, 0);
     auto self = args[0];
-    rt->verifyIsInstanceObject(self, rt->builtin_types.integer, Runtime::SUB1_CTX);
 
     if (!execution_result_matters) {
         return self;
@@ -367,7 +359,6 @@ static Object *integer_mm__char__(const std::vector<Object *> &args, Runtime *rt
     ProfilerCAPTURE();
     rt->verifyExactArgsAmountMethod(args, 0);
     auto self = args[0];
-    rt->verifyIsInstanceObject(self, rt->builtin_types.integer, Runtime::SUB1_CTX);
 
     if (!execution_result_matters) {
         return self;
@@ -380,7 +371,6 @@ static Object *integer_mm__int__(const std::vector<Object *> &args, Runtime *rt,
     ProfilerCAPTURE();
     rt->verifyExactArgsAmountMethod(args, 0);
     auto self = args[0];
-    rt->verifyIsInstanceObject(self, rt->builtin_types.integer, Runtime::SUB1_CTX);
 
     if (!execution_result_matters) {
         return self;
@@ -393,7 +383,6 @@ static Object *integer_mm__real__(const std::vector<Object *> &args, Runtime *rt
     ProfilerCAPTURE();
     rt->verifyExactArgsAmountMethod(args, 0);
     auto self = args[0];
-    rt->verifyIsInstanceObject(self, rt->builtin_types.integer, Runtime::SUB1_CTX);
 
     if (!execution_result_matters) {
         return self;
@@ -406,7 +395,6 @@ static Object *integer_mm__string__(const std::vector<Object *> &args, Runtime *
     ProfilerCAPTURE();
     rt->verifyExactArgsAmountMethod(args, 0);
     auto self = args[0];
-    rt->verifyIsInstanceObject(self, rt->builtin_types.integer, Runtime::SUB1_CTX);
 
     if (!execution_result_matters) {
         return self;
@@ -450,20 +438,13 @@ static Object *integer_mm__read__(const std::vector<Object *> &args, Runtime *rt
 
 void installIntegerMethods(Type *type, Runtime *rt) {
     ProfilerCAPTURE();
-    type->addMethod(MagicMethods::mm__bool__(rt),
-                    Builtin::makeFunctionInstanceObject(true, integer_mm__bool__, nullptr, rt));
-    type->addMethod(MagicMethods::mm__char__(rt),
-                    Builtin::makeFunctionInstanceObject(true, integer_mm__char__, nullptr, rt));
-    type->addMethod(MagicMethods::mm__int__(rt),
-                    Builtin::makeFunctionInstanceObject(true, integer_mm__int__, nullptr, rt));
-    type->addMethod(MagicMethods::mm__real__(rt),
-                    Builtin::makeFunctionInstanceObject(true, integer_mm__real__, nullptr, rt));
-    type->addMethod(MagicMethods::mm__string__(rt),
-                    Builtin::makeFunctionInstanceObject(true, integer_mm__string__, nullptr, rt));
-    type->addMethod(MagicMethods::mm__repr__(rt),
-                    Builtin::makeFunctionInstanceObject(true, integer_mm__repr__, nullptr, rt));
-    type->addMethod(MagicMethods::mm__read__(rt),
-                    Builtin::makeFunctionInstanceObject(true, integer_mm__read__, nullptr, rt));
+    type->addMethod(MagicMethods::mm__bool__(rt), Builtin::makeFunctionInstanceObject(true, integer_mm__bool__, nullptr, rt));
+    type->addMethod(MagicMethods::mm__char__(rt), Builtin::makeFunctionInstanceObject(true, integer_mm__char__, nullptr, rt));
+    type->addMethod(MagicMethods::mm__int__(rt), Builtin::makeFunctionInstanceObject(true, integer_mm__int__, nullptr, rt));
+    type->addMethod(MagicMethods::mm__real__(rt), Builtin::makeFunctionInstanceObject(true, integer_mm__real__, nullptr, rt));
+    type->addMethod(MagicMethods::mm__string__(rt), Builtin::makeFunctionInstanceObject(true, integer_mm__string__, nullptr, rt));
+    type->addMethod(MagicMethods::mm__repr__(rt), Builtin::makeFunctionInstanceObject(true, integer_mm__repr__, nullptr, rt));
+    type->addMethod(MagicMethods::mm__read__(rt), Builtin::makeFunctionInstanceObject(true, integer_mm__read__, nullptr, rt));
 }
 
 IntegerType::IntegerType(Runtime *rt)

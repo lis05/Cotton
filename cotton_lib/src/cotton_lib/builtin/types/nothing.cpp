@@ -102,6 +102,8 @@ void installNothingMethods(Type *type, Runtime *rt) {
     ProfilerCAPTURE();
     type->addMethod(MagicMethods::mm__repr__(rt),
                     Builtin::makeFunctionInstanceObject(true, nothing_mm__repr__, nullptr, rt));
+    type->addMethod(MagicMethods::mm__string__(rt),
+                    Builtin::makeFunctionInstanceObject(true, nothing_mm__repr__, nullptr, rt));
 }
 
 NothingType::NothingType(Runtime *rt)

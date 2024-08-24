@@ -100,6 +100,7 @@ Runtime::Runtime(GCStrategy *gc_strategy, ErrorManager *error_manager, NamesMana
 }
 
 bool Runtime::checkGlobal(NameId id) {
+    ProfilerCAPTURE();
     auto it = this->globals.find(id);
     return it != this->globals.end();
 }
@@ -138,6 +139,7 @@ Object *Runtime::getTypeObject(Type *type) {
 }
 
 Object *Runtime::protectedNothing() {
+    ProfilerCAPTURE();
     return this->protected_nothing;
 }
 
@@ -1295,6 +1297,7 @@ bool Runtime::isOfType(Object *obj, Type *type) {
 }
 
 TextArea &Runtime::getTextArea(ContextId ctx_id) {
+    ProfilerCAPTURE();
     if (ctx_id == Runtime::AREA_CTX) {
         return this->getContext().area;
     }
@@ -1390,54 +1393,67 @@ void Runtime::verifyHasMethod(Object *obj, NameId id, Runtime::ContextId ctx_id)
 }
 
 GC *Runtime::getGC() {
+    ProfilerCAPTURE();
     return this->gc;
 }
 
 ErrorManager *Runtime::getErrorManager() {
+    ProfilerCAPTURE();
     return this->error_manager;
 }
 
 Scope *Runtime::getScope() {
+    ProfilerCAPTURE();
     return this->scope;
 }
 
 void Runtime::clearExecFlags() {
+    ProfilerCAPTURE();
     this->execution_flags = ExecutionFlags::NONE;
 }
 
 void Runtime::setExecFlagCONTINUE() {
+    ProfilerCAPTURE();
     this->execution_flags |= ExecutionFlags::CONTINUE;
 }
 
 void Runtime::setExecFlagBREAK() {
+    ProfilerCAPTURE();
     this->execution_flags |= ExecutionFlags::BREAK;
 }
 
 void Runtime::setExecFlagRETURN() {
+    ProfilerCAPTURE();
     this->execution_flags |= ExecutionFlags::RETURN;
 }
 
 void Runtime::setExecFlagDIRECT_PASS() {
+    ProfilerCAPTURE();
     this->execution_flags |= ExecutionFlags::DIRECT_PASS;
 }
 
 bool Runtime::isExecFlagNONE() {
+    ProfilerCAPTURE();
     return this->execution_flags == ExecutionFlags::NONE;
 }
 
 bool Runtime::isExecFlagCONTINUE() {
+    ProfilerCAPTURE();
     return this->execution_flags & ExecutionFlags::CONTINUE;
 }
 
 bool Runtime::isExecFlagBREAK() {
+    ProfilerCAPTURE();
     return this->execution_flags & ExecutionFlags::BREAK;
 }
 
 bool Runtime::isExecFlagRETURN() {
+    ProfilerCAPTURE();
     return this->execution_flags & ExecutionFlags::RETURN;
 }
 
 bool Runtime::isExecFlagDIRECT_PASS() {
+    ProfilerCAPTURE();
     return this->execution_flags & ExecutionFlags::DIRECT_PASS;
 }
 

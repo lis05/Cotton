@@ -70,21 +70,18 @@ size_t FunctionType::getInstanceSize() {
     return sizeof(FunctionInstance);
 }
 
-static Object *
-FunctionCallAdapter(Object *self, const std::vector<Object *> &args, Runtime *rt, bool execution_result_matters) {
+static Object *FunctionCallAdapter(Object *self, const std::vector<Object *> &args, Runtime *rt, bool execution_result_matters) {
     ProfilerCAPTURE();
-    rt->verifyIsInstanceObject(self, rt->builtin_types.function, Runtime::SUB0_CTX);
+
     auto f = icast(self->instance, FunctionInstance);
     if (f->is_internal) {
         if (f->internal_ptr == nullptr) {
-            rt->signalError("Failed to execute nullptr internal function: " + self->userRepr(rt),
-                            rt->getContext().area);
+            rt->signalError("Failed to execute nullptr internal function: " + self->userRepr(rt), rt->getContext().area);
         }
-        
+
         auto res = f->internal_ptr(args, rt, execution_result_matters);
         if (execution_result_matters && res == nullptr) {
-            rt->signalError("Execution of internal function " + self->userRepr(rt) + " has failed",
-                            rt->getContext().area);
+            rt->signalError("Execution of internal function " + self->userRepr(rt) + " has failed", rt->getContext().area);
         }
         return res;
     }
@@ -111,12 +108,11 @@ FunctionCallAdapter(Object *self, const std::vector<Object *> &args, Runtime *rt
         }
         rt->newContext();
         rt->getContext().area = f->cotton_ptr->body->text_area;
-        auto res = rt->execute(f->cotton_ptr->body, execution_result_matters);
+        auto res              = rt->execute(f->cotton_ptr->body, execution_result_matters);
         rt->popContext();
         rt->popScopeFrame();
         if (execution_result_matters && res == nullptr) {
-            rt->signalError("Execution of function " + self->userRepr(rt) + " has failed",
-                            rt->getContext().sub_areas[0]);
+            rt->signalError("Execution of function " + self->userRepr(rt) + " has failed", rt->getContext().sub_areas[0]);
         }
         return res;
     }
@@ -179,8 +175,9 @@ static Object *function_mm__repr__(const std::vector<Object *> &args, Runtime *r
 }
 
 void installFunctionMethods(Type *type, Runtime *rt) {
-    type->addMethod(MagicMethods::mm__repr__(rt),
-                    Builtin::makeFunctionInstanceObject(true, function_mm__repr__, nullptr, rt));
+    ProfilerCAPTURE();
+    type->addMethod(MagicMethods::mm__repr__(rt), Builtin::makeFunctionInstanceObject(true, function_mm__repr__, nullptr, rt));
+    type->addMethod(MagicMethods::mm__string__(rt), Builtin::makeFunctionInstanceObject(true, function_mm__repr__, nullptr, rt));
 }
 
 FunctionType::FunctionType(Runtime *rt)
@@ -218,8 +215,7 @@ std::string FunctionType::userRepr(Runtime *rt) {
     return "FunctionType";
 }
 
-Object *
-makeFunctionInstanceObject(bool is_internal, InternalFunction internal_ptr, FuncDefNode *cotton_ptr, Runtime *rt) {
+Object *makeFunctionInstanceObject(bool is_internal, InternalFunction internal_ptr, FuncDefNode *cotton_ptr, Runtime *rt) {
     ProfilerCAPTURE();
     auto res = rt->make(rt->builtin_types.function, rt->INSTANCE_OBJECT);
     icast(res->instance, FunctionInstance)->init(is_internal, internal_ptr, cotton_ptr);

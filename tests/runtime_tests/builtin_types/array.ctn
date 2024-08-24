@@ -1,0 +1,75 @@
+// array
+
+// size
+assert(make(Array).size() == 0);
+assert(make(Array).append(1,2,3).size() == 3);
+assert(make(Array).append(1,2,3).poplast().size() == 2);
+
+// resize
+arr = make(Array);
+assert(arr.size() == 0);
+arr.resize(5);
+assert(arr.size() == 5);
+arr.resize(3);
+assert(arr.size() == 3);
+hide("arr");
+
+// append
+arr = make(Array);
+assert(arr == make(Array));
+assert(arr.append(1, 2, 3) == make(Array).append(1, 2, 3));
+assert(arr.append(4, 5) == make(Array).append(1, 2, 3, 4, 5));
+hide("arr");
+
+// prepend
+arr = make(Array);
+assert(arr == make(Array));
+assert(arr.prepend(1, 2, 3) == make(Array).append(1, 2, 3));
+assert(arr.prepend(4, 5) == make(Array).append(4, 5, 1, 2, 3));
+hide("arr");
+
+// poplast
+arr = make(Array).append(1, 2, 3, 4, 5);
+assert(arr == make(Array).append(1, 2, 3, 4, 5));
+assert(arr.poplast() == make(Array).append(1, 2, 3, 4));
+assert(arr.poplast() == make(Array).append(1, 2, 3));
+assert(arr.poplast() == make(Array).append(1, 2));
+assert(arr.poplast() == make(Array).append(1));
+assert(arr.poplast() == make(Array));
+assert(arr.poplast() == make(Array));
+hide("arr");
+
+// popfirst
+arr = make(Array).append(1, 2, 3, 4, 5);
+assert(arr == make(Array).append(1, 2, 3, 4, 5));
+assert(arr.popfirst() == make(Array).append(2, 3, 4, 5));
+assert(arr.popfirst() == make(Array).append(3, 4, 5));
+assert(arr.popfirst() == make(Array).append(4, 5));
+assert(arr.popfirst() == make(Array).append(5));
+assert(arr.popfirst() == make(Array));
+assert(arr.popfirst() == make(Array));
+hide("arr");
+
+// first
+assert(make(Array).append(1, 2, 3, 4, 5).first() == 1);
+
+// last
+assert(make(Array).append(1, 2, 3, 4, 5).last() == 5);
+
+// empty
+assert(make(Array).empty());
+assert(not make(Array).append(1, 2, 3).empty());
+
+// clear
+assert(make(Array).append(1, 2, 3).clear().empty());
+
+// copy
+arr = make(Array).append(1, 2, 3, 4, 5);
+cpy = arr.copy();
+arr[0] = 15;
+cpy[0] = 31;
+assert(arr == make(Array).append(15, 2, 3, 4, 5));
+assert(cpy == make(Array).append(31, 2, 3, 4, 5));
+assert(arr != cpy);
+hide("arr");
+hide("cpy");
