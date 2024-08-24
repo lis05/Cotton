@@ -91,10 +91,9 @@ size_t ArrayType::getInstanceSize() {
 static Object *ArrayIndexAdapter(Object *self, const std::vector<Object *> &args, Runtime *rt, bool execution_result_matters) {
     ProfilerCAPTURE();
 
-    rt->verifyIsInstanceObject(self, rt->builtin_types.array, Runtime::SUB0_CTX);
     rt->verifyExactArgsAmountFunc(args, 1);
     auto &arg = args[0];
-    rt->verifyIsInstanceObject(arg, rt->builtin_types.integer, Runtime::SUB1_CTX);
+    rt->verifyIsInstanceObject(arg, rt->builtin_types.integer, OperatorArgCtx(1));
 
     if (!(0 <= getIntegerValueFast(arg) && getIntegerValueFast(arg) < getArrayDataFast(self).size())) {
         rt->signalError("Index " + arg->userRepr(rt) + " is out of array " + self->userRepr(rt) + " range", rt->getContext().sub_areas[1]);
@@ -104,8 +103,7 @@ static Object *ArrayIndexAdapter(Object *self, const std::vector<Object *> &args
 
 static Object *ArrayEqAdapter(Object *self, Object *arg, Runtime *rt, bool execution_result_matters) {
     ProfilerCAPTURE();
-    rt->verifyIsOfType(self, rt->builtin_types.array, Runtime::SUB0_CTX);
-    rt->verifyIsValidObject(arg, Runtime::SUB1_CTX);
+    rt->verifyIsValidObject(arg, OperatorArgCtx(1));
 
     if (!execution_result_matters) {
         return rt->protectedBoolean(false);
@@ -120,7 +118,7 @@ static Object *ArrayEqAdapter(Object *self, Object *arg, Runtime *rt, bool execu
             return rt->protectedBoolean(false);
         }
         auto a1 = getArrayDataFast(self);
-        auto a2 = getArrayDataFast(self);
+        auto a2 = getArrayDataFast(arg);
         if (a1.size() != a2.size()) {
             return rt->protectedBoolean(false);
         }
@@ -131,7 +129,7 @@ static Object *ArrayEqAdapter(Object *self, Object *arg, Runtime *rt, bool execu
             rt->getContext().sub_areas = {ta, ta};
             auto res                   = rt->runOperator(OperatorNode::EQUAL, a1[i], a2[i], true);
             rt->popContext();
-            if (!getBooleanValueFast(res)) {
+            if (!getBooleanValue(res, rt)) {
                 return rt->protectedBoolean(false);
             }
         }
@@ -157,7 +155,6 @@ static Object *arraySizeMethod(const std::vector<Object *> &args, Runtime *rt, b
     ProfilerCAPTURE();
     rt->verifyExactArgsAmountMethod(args, 0);
     auto self = args[0];
-    rt->verifyIsInstanceObject(self, rt->builtin_types.array, Runtime::SUB0_CTX);
 
     if (!execution_result_matters) {
         return nullptr;
@@ -171,8 +168,8 @@ static Object *arrayResizeMethod(const std::vector<Object *> &args, Runtime *rt,
     rt->verifyExactArgsAmountMethod(args, 1);
     auto self     = args[0];
     auto new_size = args[1];
-    rt->verifyIsInstanceObject(self, rt->builtin_types.array, Runtime::SUB0_CTX);
-    rt->verifyIsInstanceObject(new_size, rt->builtin_types.integer, Runtime::SUB1_CTX);
+
+    rt->verifyIsInstanceObject(new_size, rt->builtin_types.integer, MethodArgCtx(0));
 
     int64_t oldn = getArrayDataFast(self).size();
     int64_t newn = getIntegerValueFast(new_size);
@@ -193,25 +190,27 @@ static Object *arrayResizeMethod(const std::vector<Object *> &args, Runtime *rt,
 }
 
 static Object *arrayAppendMethod(const std::vector<Object *> &args, Runtime *rt, bool execution_result_matters) {
+    ProfilerCAPTURE();
     rt->verifyMinArgsAmountMethod(args, 1);
     auto self = args[0];
-    rt->verifyIsInstanceObject(self, rt->builtin_types.array, Runtime::SUB1_CTX);
+
     auto &data = getArrayDataFast(self);
     for (int64_t i = 1; i < args.size(); i++) {
-        rt->verifyIsValidObject(args[i], (Runtime::ContextId)i);
+        rt->verifyIsValidObject(args[i], MethodArgCtx(i));
         data.push_back(args[i]);
     }
     return self;
 }
 
 static Object *arrayPrependMethod(const std::vector<Object *> &args, Runtime *rt, bool execution_result_matters) {
+    ProfilerCAPTURE();
     rt->verifyMinArgsAmountMethod(args, 1);
     auto self = args[0];
-    rt->verifyIsInstanceObject(self, rt->builtin_types.array, Runtime::SUB1_CTX);
+
     auto                 &data = getArrayDataFast(self);
     std::vector<Object *> pref;
     for (int64_t i = 1; i < args.size(); i++) {
-        rt->verifyIsValidObject(args[i], (Runtime::ContextId)i);
+        rt->verifyIsValidObject(args[i], MethodArgCtx(i));
         pref.push_back(args[i]);
     }
     for (auto &item : data) {
@@ -222,9 +221,10 @@ static Object *arrayPrependMethod(const std::vector<Object *> &args, Runtime *rt
 }
 
 static Object *arrayPoplastMethod(const std::vector<Object *> &args, Runtime *rt, bool execution_result_matters) {
+    ProfilerCAPTURE();
     rt->verifyExactArgsAmountMethod(args, 0);
     auto self = args[0];
-    rt->verifyIsInstanceObject(self, rt->builtin_types.array, Runtime::SUB1_CTX);
+
     auto &data = getArrayDataFast(self);
     if (data.empty()) {
         return self;
@@ -234,9 +234,10 @@ static Object *arrayPoplastMethod(const std::vector<Object *> &args, Runtime *rt
 }
 
 static Object *arrayPopfirstMethod(const std::vector<Object *> &args, Runtime *rt, bool execution_result_matters) {
+    ProfilerCAPTURE();
     rt->verifyExactArgsAmountMethod(args, 0);
     auto self = args[0];
-    rt->verifyIsInstanceObject(self, rt->builtin_types.array, Runtime::SUB1_CTX);
+
     auto &data = getArrayDataFast(self);
     if (data.empty()) {
         return self;
@@ -246,9 +247,10 @@ static Object *arrayPopfirstMethod(const std::vector<Object *> &args, Runtime *r
 }
 
 static Object *arrayFirstMethod(const std::vector<Object *> &args, Runtime *rt, bool execution_result_matters) {
+    ProfilerCAPTURE();
     rt->verifyExactArgsAmountMethod(args, 0);
     auto self = args[0];
-    rt->verifyIsInstanceObject(self, rt->builtin_types.array, Runtime::SUB1_CTX);
+
     auto &data = getArrayDataFast(self);
     if (data.empty()) {
         return rt->protectedNothing();
@@ -257,9 +259,10 @@ static Object *arrayFirstMethod(const std::vector<Object *> &args, Runtime *rt, 
 }
 
 static Object *arrayLastMethod(const std::vector<Object *> &args, Runtime *rt, bool execution_result_matters) {
+    ProfilerCAPTURE();
     rt->verifyExactArgsAmountMethod(args, 0);
     auto self = args[0];
-    rt->verifyIsInstanceObject(self, rt->builtin_types.array, Runtime::SUB1_CTX);
+
     auto &data = getArrayDataFast(self);
     if (data.empty()) {
         return rt->protectedNothing();
@@ -268,36 +271,39 @@ static Object *arrayLastMethod(const std::vector<Object *> &args, Runtime *rt, b
 }
 
 static Object *arrayEmptyMethod(const std::vector<Object *> &args, Runtime *rt, bool execution_result_matters) {
+    ProfilerCAPTURE();
     rt->verifyExactArgsAmountMethod(args, 0);
     auto self = args[0];
-    rt->verifyIsInstanceObject(self, rt->builtin_types.array, Runtime::SUB1_CTX);
+
     auto &data = getArrayDataFast(self);
     return rt->protectedBoolean(data.empty());
 }
 
 static Object *arrayClearMethod(const std::vector<Object *> &args, Runtime *rt, bool execution_result_matters) {
+    ProfilerCAPTURE();
     rt->verifyExactArgsAmountMethod(args, 0);
     auto self = args[0];
-    rt->verifyIsInstanceObject(self, rt->builtin_types.array, Runtime::SUB1_CTX);
+
     auto &data = getArrayDataFast(self);
     data.clear();
     return self;
 }
 
 static Object *arrayCopyMethod(const std::vector<Object *> &args, Runtime *rt, bool execution_result_matters) {
+    ProfilerCAPTURE();
     rt->verifyExactArgsAmountMethod(args, 0);
     auto self = args[0];
 
-    rt->verifyIsInstanceObject(self, rt->builtin_types.array, Runtime::SUB1_CTX);
     return rt->copy(self);
 }
 
 static Object *arrayFilterMethod(const std::vector<Object *> &args, Runtime *rt, bool execution_result_matters) {
+    ProfilerCAPTURE();
     rt->verifyExactArgsAmountMethod(args, 1);
     auto self = args[0];
     auto arg  = args[1];
-    rt->verifyIsInstanceObject(self, rt->builtin_types.array, Runtime::SUB1_CTX);
-    rt->verifyIsInstanceObject(arg, rt->builtin_types.function, Runtime::SUB2_CTX);
+
+    rt->verifyIsInstanceObject(arg, rt->builtin_types.function, MethodArgCtx(0));
 
     std::vector<Object *> new_data;
     auto                  ctx = rt->getContext();
@@ -317,11 +323,12 @@ static Object *arrayFilterMethod(const std::vector<Object *> &args, Runtime *rt,
 }
 
 static Object *arrayApplyMethod(const std::vector<Object *> &args, Runtime *rt, bool execution_result_matters) {
+    ProfilerCAPTURE();
     rt->verifyExactArgsAmountMethod(args, 1);
     auto self = args[0];
     auto arg  = args[1];
-    rt->verifyIsInstanceObject(self, rt->builtin_types.array, Runtime::SUB1_CTX);
-    rt->verifyIsInstanceObject(arg, rt->builtin_types.function, Runtime::SUB2_CTX);
+
+    rt->verifyIsInstanceObject(arg, rt->builtin_types.function, MethodArgCtx(0));
 
     auto ctx = rt->getContext();
     rt->newContext();
@@ -336,20 +343,21 @@ static Object *arrayApplyMethod(const std::vector<Object *> &args, Runtime *rt, 
 }
 
 static Object *arrayReverseMethod(const std::vector<Object *> &args, Runtime *rt, bool execution_result_matters) {
+    ProfilerCAPTURE();
     rt->verifyExactArgsAmountMethod(args, 0);
     auto self = args[0];
-    rt->verifyIsInstanceObject(self, rt->builtin_types.array, Runtime::SUB1_CTX);
 
     std::reverse(getArrayDataFast(self).begin(), getArrayDataFast(self).end());
     return self;
 }
 
 static Object *arraySortMethod(const std::vector<Object *> &args, Runtime *rt, bool execution_result_matters) {
+    ProfilerCAPTURE();
     rt->verifyExactArgsAmountMethod(args, 1);
     auto self = args[0];
     auto arg  = args[1];
-    rt->verifyIsInstanceObject(self, rt->builtin_types.array, Runtime::SUB1_CTX);
-    rt->verifyIsInstanceObject(arg, rt->builtin_types.function, Runtime::SUB2_CTX);
+
+    rt->verifyIsInstanceObject(arg, rt->builtin_types.function, MethodArgCtx(0));
 
     auto ctx = rt->getContext();
     rt->newContext();
@@ -364,13 +372,14 @@ static Object *arraySortMethod(const std::vector<Object *> &args, Runtime *rt, b
 }
 
 static Object *arrayCombineMethod(const std::vector<Object *> &args, Runtime *rt, bool execution_result_matters) {
+    ProfilerCAPTURE();
     rt->verifyExactArgsAmountMethod(args, 2);
     auto self = args[0];
     auto arg  = args[1];
     auto init = args[2];
-    rt->verifyIsInstanceObject(self, rt->builtin_types.array, Runtime::SUB1_CTX);
-    rt->verifyIsInstanceObject(arg, rt->builtin_types.function, Runtime::SUB2_CTX);
-    rt->verifyIsValidObject(init, Runtime::SUB3_CTX);
+
+    rt->verifyIsInstanceObject(arg, rt->builtin_types.function, MethodArgCtx(0));
+    rt->verifyIsValidObject(init, MethodArgCtx(1));
 
     auto ctx = rt->getContext();
     rt->newContext();
@@ -384,11 +393,12 @@ static Object *arrayCombineMethod(const std::vector<Object *> &args, Runtime *rt
 }
 
 static Object *arrayFindfirstfMethod(const std::vector<Object *> &args, Runtime *rt, bool execution_result_matters) {
+    ProfilerCAPTURE();
     rt->verifyExactArgsAmountMethod(args, 1);
     auto self = args[0];
     auto arg  = args[1];
-    rt->verifyIsInstanceObject(self, rt->builtin_types.array, Runtime::SUB1_CTX);
-    rt->verifyIsInstanceObject(arg, rt->builtin_types.function, Runtime::SUB2_CTX);
+
+    rt->verifyIsInstanceObject(arg, rt->builtin_types.function, MethodArgCtx(0));
 
     auto ctx = rt->getContext();
     rt->newContext();
@@ -406,11 +416,12 @@ static Object *arrayFindfirstfMethod(const std::vector<Object *> &args, Runtime 
 }
 
 static Object *arrayFindlastfMethod(const std::vector<Object *> &args, Runtime *rt, bool execution_result_matters) {
+    ProfilerCAPTURE();
     rt->verifyExactArgsAmountMethod(args, 1);
     auto self = args[0];
     auto arg  = args[1];
-    rt->verifyIsInstanceObject(self, rt->builtin_types.array, Runtime::SUB1_CTX);
-    rt->verifyIsInstanceObject(arg, rt->builtin_types.function, Runtime::SUB2_CTX);
+
+    rt->verifyIsInstanceObject(arg, rt->builtin_types.function, MethodArgCtx(0));
 
     auto ctx = rt->getContext();
     rt->newContext();
@@ -428,11 +439,12 @@ static Object *arrayFindlastfMethod(const std::vector<Object *> &args, Runtime *
 }
 
 static Object *arrayLocatefirstfMethod(const std::vector<Object *> &args, Runtime *rt, bool execution_result_matters) {
+    ProfilerCAPTURE();
     rt->verifyExactArgsAmountMethod(args, 1);
     auto self = args[0];
     auto arg  = args[1];
-    rt->verifyIsInstanceObject(self, rt->builtin_types.array, Runtime::SUB1_CTX);
-    rt->verifyIsInstanceObject(arg, rt->builtin_types.function, Runtime::SUB2_CTX);
+
+    rt->verifyIsInstanceObject(arg, rt->builtin_types.function, MethodArgCtx(0));
 
     auto ctx = rt->getContext();
     rt->newContext();
@@ -452,11 +464,12 @@ static Object *arrayLocatefirstfMethod(const std::vector<Object *> &args, Runtim
 }
 
 static Object *arrayLocatelastfMethod(const std::vector<Object *> &args, Runtime *rt, bool execution_result_matters) {
+    ProfilerCAPTURE();
     rt->verifyExactArgsAmountMethod(args, 1);
     auto self = args[0];
     auto arg  = args[1];
-    rt->verifyIsInstanceObject(self, rt->builtin_types.array, Runtime::SUB1_CTX);
-    rt->verifyIsInstanceObject(arg, rt->builtin_types.function, Runtime::SUB2_CTX);
+
+    rt->verifyIsInstanceObject(arg, rt->builtin_types.function, MethodArgCtx(0));
 
     auto ctx = rt->getContext();
     rt->newContext();
@@ -475,13 +488,13 @@ static Object *arrayLocatelastfMethod(const std::vector<Object *> &args, Runtime
     return makeIntegerInstanceObject(getArrayDataFast(self).size(), rt);
 }
 
-
 static Object *arrayFindfirstMethod(const std::vector<Object *> &args, Runtime *rt, bool execution_result_matters) {
+    ProfilerCAPTURE();
     rt->verifyExactArgsAmountMethod(args, 1);
     auto self = args[0];
     auto arg  = args[1];
-    rt->verifyIsInstanceObject(self, rt->builtin_types.array, Runtime::SUB1_CTX);
-    rt->verifyIsValidObject(arg, Runtime::SUB2_CTX);
+
+    rt->verifyIsValidObject(arg, MethodArgCtx(0));
     // verify has operator
 
     auto ctx = rt->getContext();
@@ -500,11 +513,12 @@ static Object *arrayFindfirstMethod(const std::vector<Object *> &args, Runtime *
 }
 
 static Object *arrayFindlastMethod(const std::vector<Object *> &args, Runtime *rt, bool execution_result_matters) {
+    ProfilerCAPTURE();
     rt->verifyExactArgsAmountMethod(args, 1);
     auto self = args[0];
     auto arg  = args[1];
-    rt->verifyIsInstanceObject(self, rt->builtin_types.array, Runtime::SUB1_CTX);
-    rt->verifyIsValidObject(arg, Runtime::SUB2_CTX);
+
+    rt->verifyIsValidObject(arg, MethodArgCtx(0));
     // verify has operator
 
     auto ctx = rt->getContext();
@@ -523,11 +537,12 @@ static Object *arrayFindlastMethod(const std::vector<Object *> &args, Runtime *r
 }
 
 static Object *arrayLocatefirstMethod(const std::vector<Object *> &args, Runtime *rt, bool execution_result_matters) {
+    ProfilerCAPTURE();
     rt->verifyExactArgsAmountMethod(args, 1);
     auto self = args[0];
     auto arg  = args[1];
-    rt->verifyIsInstanceObject(self, rt->builtin_types.array, Runtime::SUB1_CTX);
-    rt->verifyIsValidObject(arg, Runtime::SUB2_CTX);
+
+    rt->verifyIsValidObject(arg, MethodArgCtx(0));
     // verify has operator
 
     auto ctx = rt->getContext();
@@ -548,11 +563,12 @@ static Object *arrayLocatefirstMethod(const std::vector<Object *> &args, Runtime
 }
 
 static Object *arrayLocatelastMethod(const std::vector<Object *> &args, Runtime *rt, bool execution_result_matters) {
+    ProfilerCAPTURE();
     rt->verifyExactArgsAmountMethod(args, 1);
     auto self = args[0];
     auto arg  = args[1];
-    rt->verifyIsInstanceObject(self, rt->builtin_types.array, Runtime::SUB1_CTX);
-    rt->verifyIsValidObject(arg, Runtime::SUB2_CTX);
+
+    rt->verifyIsValidObject(arg, MethodArgCtx(0));
     // verify has operator
 
     auto ctx = rt->getContext();
@@ -573,11 +589,12 @@ static Object *arrayLocatelastMethod(const std::vector<Object *> &args, Runtime 
 }
 
 static Object *arrayAllMethod(const std::vector<Object *> &args, Runtime *rt, bool execution_result_matters) {
+    ProfilerCAPTURE();
     rt->verifyExactArgsAmountMethod(args, 1);
     auto self = args[0];
     auto arg  = args[1];
-    rt->verifyIsInstanceObject(self, rt->builtin_types.array, Runtime::SUB1_CTX);
-    rt->verifyIsInstanceObject(arg, rt->builtin_types.function, Runtime::SUB2_CTX);
+
+    rt->verifyIsInstanceObject(arg, rt->builtin_types.function, MethodArgCtx(0));
 
     auto ctx = rt->getContext();
     rt->newContext();
@@ -595,11 +612,12 @@ static Object *arrayAllMethod(const std::vector<Object *> &args, Runtime *rt, bo
 }
 
 static Object *arrayAnyMethod(const std::vector<Object *> &args, Runtime *rt, bool execution_result_matters) {
+    ProfilerCAPTURE();
     rt->verifyExactArgsAmountMethod(args, 1);
     auto self = args[0];
     auto arg  = args[1];
-    rt->verifyIsInstanceObject(self, rt->builtin_types.array, Runtime::SUB1_CTX);
-    rt->verifyIsInstanceObject(arg, rt->builtin_types.function, Runtime::SUB2_CTX);
+
+    rt->verifyIsInstanceObject(arg, rt->builtin_types.function, MethodArgCtx(0));
 
     auto ctx = rt->getContext();
     rt->newContext();
@@ -617,11 +635,12 @@ static Object *arrayAnyMethod(const std::vector<Object *> &args, Runtime *rt, bo
 }
 
 static Object *arrayNoneMethod(const std::vector<Object *> &args, Runtime *rt, bool execution_result_matters) {
+    ProfilerCAPTURE();
     rt->verifyExactArgsAmountMethod(args, 1);
     auto self = args[0];
     auto arg  = args[1];
-    rt->verifyIsInstanceObject(self, rt->builtin_types.array, Runtime::SUB1_CTX);
-    rt->verifyIsInstanceObject(arg, rt->builtin_types.function, Runtime::SUB2_CTX);
+
+    rt->verifyIsInstanceObject(arg, rt->builtin_types.function, MethodArgCtx(0));
 
     auto ctx = rt->getContext();
     rt->newContext();
@@ -639,11 +658,12 @@ static Object *arrayNoneMethod(const std::vector<Object *> &args, Runtime *rt, b
 }
 
 static Object *arrayCountfMethod(const std::vector<Object *> &args, Runtime *rt, bool execution_result_matters) {
+    ProfilerCAPTURE();
     rt->verifyExactArgsAmountMethod(args, 1);
     auto self = args[0];
     auto arg  = args[1];
-    rt->verifyIsInstanceObject(self, rt->builtin_types.array, Runtime::SUB1_CTX);
-    rt->verifyIsInstanceObject(arg, rt->builtin_types.function, Runtime::SUB2_CTX);
+
+    rt->verifyIsInstanceObject(arg, rt->builtin_types.function, MethodArgCtx(0));
 
     auto    ctx = rt->getContext();
     int64_t ans = 0;
@@ -661,11 +681,12 @@ static Object *arrayCountfMethod(const std::vector<Object *> &args, Runtime *rt,
 }
 
 static Object *arrayCountMethod(const std::vector<Object *> &args, Runtime *rt, bool execution_result_matters) {
+    ProfilerCAPTURE();
     rt->verifyExactArgsAmountMethod(args, 1);
     auto self = args[0];
     auto arg  = args[1];
-    rt->verifyIsInstanceObject(self, rt->builtin_types.array, Runtime::SUB1_CTX);
-    rt->verifyIsValidObject(arg, Runtime::SUB2_CTX);
+
+    rt->verifyIsValidObject(arg, MethodArgCtx(0));
 
     auto    ctx = rt->getContext();
     int64_t ans = 0;
@@ -682,11 +703,42 @@ static Object *arrayCountMethod(const std::vector<Object *> &args, Runtime *rt, 
     return makeIntegerInstanceObject(ans, rt);
 }
 
+static Object *arraySliceMethod(const std::vector<Object *> &args, Runtime *rt, bool execution_result_matters) {
+    ProfilerCAPTURE();
+    rt->verifyExactArgsAmountMethod(args, 2);
+    auto self  = args[0];
+    auto begin = args[1];
+    auto end   = args[2];
+
+    rt->verifyIsInstanceObject(begin, rt->builtin_types.integer, MethodArgCtx(0));
+    rt->verifyIsInstanceObject(end, rt->builtin_types.integer, MethodArgCtx(1));
+
+    int64_t p1   = getIntegerValueFast(begin);
+    int64_t p2   = getIntegerValueFast(end);
+    auto   &data = getArrayDataFast(self);
+
+    if (p1 < 0) {
+        p1 = 0;
+    }
+    if (p2 > data.size()) {
+        p2 = data.size();
+    }
+    if (p1 >= p2) {
+        return makeArrayInstanceObject(std::vector<Object *> {}, rt);
+    }
+
+    std::vector<Object *> subarr;
+    for (int64_t i = p1; i < p2; i++) {
+        subarr.push_back(data[i]);
+    }
+
+    return makeArrayInstanceObject(subarr, rt);
+}
+
 static Object *array_mm__repr__(const std::vector<Object *> &args, Runtime *rt, bool execution_result_matters) {
     ProfilerCAPTURE();
     rt->verifyExactArgsAmountMethod(args, 0);
     auto self = args[0];
-    rt->verifyIsOfType(self, rt->builtin_types.array, Runtime::SUB1_CTX);
 
     if (!execution_result_matters) {
         return self;
@@ -700,13 +752,13 @@ static Object *array_mm__repr__(const std::vector<Object *> &args, Runtime *rt, 
     std::string res = "{";
     if (arr.size() != 0) {
         auto o = rt->runMethod(MagicMethods::mm__repr__(rt), arr[0], {arr[0]}, true);
-        rt->verifyIsInstanceObject(o, rt->builtin_types.string, Runtime::SUB1_CTX);
+        rt->verifyIsInstanceObject(o, rt->builtin_types.string, Runtime::AREA_CTX);
         res += getStringDataFast(o);
     }
 
     for (int64_t i = 1; i < arr.size(); i++) {
         auto o = rt->runMethod(MagicMethods::mm__repr__(rt), arr[i], {arr[i]}, true);
-        rt->verifyIsInstanceObject(o, rt->builtin_types.string, Runtime::SUB1_CTX);
+        rt->verifyIsInstanceObject(o, rt->builtin_types.string, Runtime::AREA_CTX);
         res += ", " + getStringDataFast(o);
     }
 
@@ -749,6 +801,7 @@ void installArrayMethods(Type *type, Runtime *rt) {
     type->addMethod(rt->nmgr->getId("none"), makeFunctionInstanceObject(true, arrayNoneMethod, nullptr, rt));
     type->addMethod(rt->nmgr->getId("countf"), makeFunctionInstanceObject(true, arrayCountfMethod, nullptr, rt));
     type->addMethod(rt->nmgr->getId("count"), makeFunctionInstanceObject(true, arrayCountMethod, nullptr, rt));
+    type->addMethod(rt->nmgr->getId("slice"), makeFunctionInstanceObject(true, arraySliceMethod, nullptr, rt));
 }
 
 ArrayType::ArrayType(Runtime *rt)

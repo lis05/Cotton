@@ -66,10 +66,9 @@ size_t StringType::getInstanceSize() {
 static Object *StringIndexAdapter(Object *self, const std::vector<Object *> &args, Runtime *rt, bool execution_result_matters) {
     ProfilerCAPTURE();
 
-    rt->verifyIsInstanceObject(self, rt->builtin_types.string, Runtime::SUB0_CTX);
     rt->verifyExactArgsAmountFunc(args, 1);
     auto &arg = args[0];
-    rt->verifyIsInstanceObject(arg, rt->builtin_types.integer, Runtime::SUB1_CTX);
+    rt->verifyIsInstanceObject(arg, rt->builtin_types.integer, OperatorArgCtx(1));
     if (!(0 <= getIntegerValueFast(arg) && getIntegerValueFast(arg) < getStringDataFast(self).size())) {
         rt->signalError("Index " + arg->userRepr(rt) + " is out of string " + self->userRepr(rt) + " range", rt->getContext().sub_areas[1]);
     }
@@ -82,8 +81,7 @@ static Object *StringIndexAdapter(Object *self, const std::vector<Object *> &arg
 static Object *StringAddAdapter(Object *self, Object *arg, Runtime *rt, bool execution_result_matters) {
     ProfilerCAPTURE();
 
-    rt->verifyIsInstanceObject(self, rt->builtin_types.string, Runtime::SUB0_CTX);
-    rt->verifyIsInstanceObject(arg, rt->builtin_types.string, Runtime::SUB1_CTX);
+    rt->verifyIsInstanceObject(arg, rt->builtin_types.string, OperatorArgCtx(1));
 
     if (!execution_result_matters) {
         return nullptr;
@@ -97,8 +95,7 @@ static Object *StringAddAdapter(Object *self, Object *arg, Runtime *rt, bool exe
 
 static Object *StringEqAdapter(Object *self, Object *arg, Runtime *rt, bool execution_result_matters) {
     ProfilerCAPTURE();
-    rt->verifyIsOfType(self, rt->builtin_types.string, Runtime::SUB0_CTX);
-    rt->verifyIsValidObject(arg, Runtime::SUB1_CTX);
+    rt->verifyIsValidObject(arg, OperatorArgCtx(1));
 
     if (!rt->isOfType(arg, rt->builtin_types.string)) {
         return rt->protectedBoolean(false);
@@ -130,7 +127,6 @@ static Object *stringSizeMethod(const std::vector<Object *> &args, Runtime *rt, 
     ProfilerCAPTURE();
     rt->verifyExactArgsAmountMethod(args, 0);
     auto self = args[0];
-    rt->verifyIsInstanceObject(self, rt->builtin_types.string, Runtime::SUB1_CTX);
 
     if (!execution_result_matters) {
         return nullptr;
@@ -146,9 +142,8 @@ static Object *stringSetMethod(const std::vector<Object *> &args, Runtime *rt, b
     auto index = args[1];
     auto value = args[2];
 
-    rt->verifyIsInstanceObject(self, rt->builtin_types.string, Runtime::SUB1_CTX);
-    rt->verifyIsInstanceObject(index, rt->builtin_types.integer, Runtime::SUB2_CTX);
-    rt->verifyIsInstanceObject(value, rt->builtin_types.character, Runtime::SUB3_CTX);
+    rt->verifyIsInstanceObject(index, rt->builtin_types.integer, MethodArgCtx(0));
+    rt->verifyIsInstanceObject(value, rt->builtin_types.character, MethodArgCtx(1));
 
     int64_t ind  = getIntegerValueFast(index);
     auto   &data = getStringDataFast(self);
@@ -164,7 +159,6 @@ static Object *stringClearMethod(const std::vector<Object *> &args, Runtime *rt,
     rt->verifyExactArgsAmountMethod(args, 0);
     auto self = args[0];
 
-    rt->verifyIsInstanceObject(self, rt->builtin_types.string, Runtime::SUB1_CTX);
     getStringDataFast(self).clear();
     return self;
 }
@@ -174,7 +168,6 @@ static Object *stringEmptyMethod(const std::vector<Object *> &args, Runtime *rt,
     rt->verifyExactArgsAmountMethod(args, 0);
     auto self = args[0];
 
-    rt->verifyIsInstanceObject(self, rt->builtin_types.string, Runtime::SUB1_CTX);
     return rt->protectedBoolean(getStringDataFast(self).empty());
 }
 
@@ -183,7 +176,6 @@ static Object *stringReverseMethod(const std::vector<Object *> &args, Runtime *r
     rt->verifyExactArgsAmountMethod(args, 0);
     auto self = args[0];
 
-    rt->verifyIsInstanceObject(self, rt->builtin_types.string, Runtime::SUB1_CTX);
     std::reverse(getStringDataFast(self).begin(), getStringDataFast(self).end());
     return self;
 }
@@ -194,8 +186,7 @@ static Object *stringPrependMethod(const std::vector<Object *> &args, Runtime *r
     auto self = args[0];
     auto arg  = args[1];
 
-    rt->verifyIsInstanceObject(self, rt->builtin_types.string, Runtime::SUB1_CTX);
-    rt->verifyIsInstanceObject(arg, rt->builtin_types.string, Runtime::SUB2_CTX);
+    rt->verifyIsInstanceObject(arg, rt->builtin_types.string, MethodArgCtx(0));
 
     getStringDataFast(self) = getStringDataFast(arg) + getStringDataFast(self);
 
@@ -208,8 +199,7 @@ static Object *stringAppendMethod(const std::vector<Object *> &args, Runtime *rt
     auto self = args[0];
     auto arg  = args[1];
 
-    rt->verifyIsInstanceObject(self, rt->builtin_types.string, Runtime::SUB1_CTX);
-    rt->verifyIsInstanceObject(arg, rt->builtin_types.string, Runtime::SUB2_CTX);
+    rt->verifyIsInstanceObject(arg, rt->builtin_types.string, MethodArgCtx(0));
 
     getStringDataFast(self) += getStringDataFast(arg);
 
@@ -222,8 +212,7 @@ static Object *stringDelprefMethod(const std::vector<Object *> &args, Runtime *r
     auto self = args[0];
     auto arg  = args[1];
 
-    rt->verifyIsInstanceObject(self, rt->builtin_types.string, Runtime::SUB1_CTX);
-    rt->verifyIsInstanceObject(arg, rt->builtin_types.string, Runtime::SUB2_CTX);
+    rt->verifyIsInstanceObject(arg, rt->builtin_types.string, MethodArgCtx(0));
 
     auto &str  = getStringDataFast(self);
     auto &pref = getStringDataFast(arg);
@@ -241,8 +230,7 @@ static Object *stringDelsufMethod(const std::vector<Object *> &args, Runtime *rt
     auto self = args[0];
     auto arg  = args[1];
 
-    rt->verifyIsInstanceObject(self, rt->builtin_types.string, Runtime::SUB1_CTX);
-    rt->verifyIsInstanceObject(arg, rt->builtin_types.string, Runtime::SUB2_CTX);
+    rt->verifyIsInstanceObject(arg, rt->builtin_types.string, MethodArgCtx(0));
 
     auto &str  = getStringDataFast(self);
     auto &pref = getStringDataFast(arg);
@@ -259,8 +247,6 @@ static Object *stringCopyMethod(const std::vector<Object *> &args, Runtime *rt, 
     rt->verifyExactArgsAmountMethod(args, 0);
     auto self = args[0];
 
-    rt->verifyIsInstanceObject(self, rt->builtin_types.string, Runtime::SUB1_CTX);
-
     auto &str = getStringDataFast(self);
 
     return makeStringInstanceObject(str, rt);
@@ -273,9 +259,8 @@ static Object *stringSubstrMethod(const std::vector<Object *> &args, Runtime *rt
     auto begin = args[1];
     auto end   = args[2];
 
-    rt->verifyIsInstanceObject(self, rt->builtin_types.string, Runtime::SUB1_CTX);
-    rt->verifyIsInstanceObject(begin, rt->builtin_types.integer, Runtime::SUB2_CTX);
-    rt->verifyIsInstanceObject(end, rt->builtin_types.integer, Runtime::SUB3_CTX);
+    rt->verifyIsInstanceObject(begin, rt->builtin_types.integer, MethodArgCtx(0));
+    rt->verifyIsInstanceObject(end, rt->builtin_types.integer, MethodArgCtx(1));
 
     int64_t p1  = getIntegerValueFast(begin);
     int64_t p2  = getIntegerValueFast(end);
@@ -301,8 +286,6 @@ static Object *stringArrayMethod(const std::vector<Object *> &args, Runtime *rt,
     rt->verifyExactArgsAmountMethod(args, 0);
     auto self = args[0];
 
-    rt->verifyIsInstanceObject(self, rt->builtin_types.string, Runtime::SUB1_CTX);
-
     std::vector<Object *> data;
     for (auto c : getStringDataFast(self)) {
         data.push_back(makeCharacterInstanceObject(c, rt));
@@ -310,11 +293,221 @@ static Object *stringArrayMethod(const std::vector<Object *> &args, Runtime *rt,
     return makeArrayInstanceObject(data, rt);
 }
 
+static Object *stringSplitMethod(const std::vector<Object *> &args, Runtime *rt, bool execution_result_matters) {
+    ProfilerCAPTURE();
+    rt->verifyMinArgsAmountMethod(args, 0);
+    auto self = args[0];
+
+    auto &str = getStringDataFast(self);
+
+    if (args.size() >= 2) {
+        auto arg = args[1];
+        rt->verifyIsInstanceObject(arg, rt->builtin_types.string, MethodArgCtx(0));
+        auto &splitter = getStringDataFast(arg);
+
+        std::vector<std::string> res;
+        size_t                   prev_pos = 0;
+
+        while (true) {
+            size_t pos = str.find(splitter, prev_pos);
+            if (pos == str.npos) {
+                res.push_back(str.substr(prev_pos));
+                break;
+            }
+
+            res.push_back(str.substr(prev_pos, pos - prev_pos));
+            prev_pos = pos + splitter.size();
+        }
+
+        std::vector<Object *> arr;
+        for (auto &str : res) {
+            arr.push_back(makeStringInstanceObject(str, rt));
+        }
+        return makeArrayInstanceObject(arr, rt);
+    }
+    std::vector<std::string> res;
+    size_t                   prev_pos = 0;
+    for (size_t i = 0; i < str.size(); i++) {
+        if (isspace(str[i])) {
+            res.push_back(str.substr(prev_pos, i - prev_pos));
+            prev_pos = i + 1;
+        }
+    }
+    res.push_back(str.substr(prev_pos));
+
+    std::vector<Object *> arr;
+    for (auto &str : res) {
+        arr.push_back(makeStringInstanceObject(str, rt));
+    }
+    return makeArrayInstanceObject(arr, rt);
+}
+
+static Object *stringSplitfMethod(const std::vector<Object *> &args, Runtime *rt, bool execution_result_matters) {
+    ProfilerCAPTURE();
+    rt->verifyExactArgsAmountMethod(args, 1);
+    auto self = args[0];
+    auto arg  = args[1];
+
+    rt->verifyIsInstanceObject(arg, rt->builtin_types.function, MethodArgCtx(0));
+
+    auto &str = getStringDataFast(self);
+
+    std::vector<std::string> res;
+    size_t                   prev_pos = 0;
+    auto                     ctx      = rt->getContext();
+    rt->newContext();
+    rt->getContext().area      = ctx.area;
+    rt->getContext().sub_areas = {ctx.area, ctx.area};
+    for (size_t i = 0; i < str.size(); i++) {
+        auto r = rt->runOperator(OperatorNode::CALL, arg, std::vector<Object *> {makeCharacterInstanceObject(str[i], rt)}, true);
+        if (getBooleanValue(r, rt)) {
+            res.push_back(str.substr(prev_pos, i - prev_pos));
+            prev_pos = i + 1;
+        }
+    }
+    rt->popContext();
+    res.push_back(str.substr(prev_pos));
+
+    std::vector<Object *> arr;
+    for (auto &str : res) {
+        arr.push_back(makeStringInstanceObject(str, rt));
+    }
+    return makeArrayInstanceObject(arr, rt);
+}
+
+static Object *stringStartswithMethod(const std::vector<Object *> &args, Runtime *rt, bool execution_result_matters) {
+    ProfilerCAPTURE();
+    rt->verifyExactArgsAmountMethod(args, 1);
+    auto self = args[0];
+    auto arg  = args[1];
+
+    rt->verifyIsInstanceObject(arg, rt->builtin_types.string, MethodArgCtx(0));
+
+    auto &str    = getStringDataFast(self);
+    auto &target = getStringDataFast(arg);
+
+    return rt->protectedBoolean(str.substr(0, target.size()) == target);
+}
+
+static Object *stringEndswithMethod(const std::vector<Object *> &args, Runtime *rt, bool execution_result_matters) {
+    ProfilerCAPTURE();
+    rt->verifyExactArgsAmountMethod(args, 1);
+    auto self = args[0];
+    auto arg  = args[1];
+
+    rt->verifyIsInstanceObject(arg, rt->builtin_types.string, MethodArgCtx(0));
+
+    auto &str    = getStringDataFast(self);
+    auto &target = getStringDataFast(arg);
+
+    return rt->protectedBoolean(str.substr(std::max((int64_t)0, (int64_t)str.size() - int64_t(target.size()))) == target);
+}
+
+static Object *stringSplitlinesMethod(const std::vector<Object *> &args, Runtime *rt, bool execution_result_matters) {
+    ProfilerCAPTURE();
+    rt->verifyExactArgsAmountMethod(args, 0);
+    auto self = args[0];
+
+    auto &str = getStringDataFast(self);
+
+    std::vector<std::string> res;
+    size_t                   prev_pos = 0;
+    for (size_t i = 0; i < str.size(); i++) {
+        if (str[i] == '\n') {
+            res.push_back(str.substr(prev_pos, i - prev_pos));
+            prev_pos = i + 1;
+        }
+    }
+    res.push_back(str.substr(prev_pos));
+
+    std::vector<Object *> arr;
+    for (auto &str : res) {
+        arr.push_back(makeStringInstanceObject(str, rt));
+    }
+    return makeArrayInstanceObject(arr, rt);
+}
+
+static Object *stringJoinMethod(const std::vector<Object *> &args, Runtime *rt, bool execution_result_matters) {
+    ProfilerCAPTURE();
+    rt->verifyExactArgsAmountMethod(args, 1);
+    auto self = args[0];
+    auto arg  = args[1];
+
+    rt->verifyIsInstanceObject(arg, rt->builtin_types.array, MethodArgCtx(0));
+
+    auto &str = getStringDataFast(self);
+    auto &arr = getArrayDataFast(arg);
+
+    std::string res;
+    bool        flag = false;
+    for (auto item : arr) {
+        if (flag) {
+            res += str;
+        }
+        if (rt->isInstanceObject(item, rt->builtin_types.string)) {
+            res  += getStringDataFast(item);
+            flag  = true;
+        }
+        else {
+            rt->verifyHasMethod(item, MagicMethods::mm__string__(rt), Runtime::AREA_CTX);
+            auto s  = rt->runMethod(MagicMethods::mm__string__(rt), item, std::vector<Object *> {item}, true);
+            res    += getStringData(s, rt);
+        }
+    }
+
+    return makeStringInstanceObject(res, rt);
+}
+
+static Object *stringReplaceMethod(const std::vector<Object *> &args, Runtime *rt, bool execution_result_matters) {
+    ProfilerCAPTURE();
+    rt->verifyExactArgsAmountMethod(args, 2);
+    auto self = args[0];
+    auto arg1 = args[1];
+    auto arg2 = args[2];
+
+    rt->verifyIsInstanceObject(arg1, rt->builtin_types.string, MethodArgCtx(0));
+    rt->verifyIsInstanceObject(arg2, rt->builtin_types.string, MethodArgCtx(1));
+
+    auto &str  = getStringDataFast(self);
+    auto &what = getStringDataFast(arg1);
+    auto &with = getStringDataFast(arg2);
+
+    std::string res;
+    size_t      prev_pos = 0;
+
+    while (true) {
+        size_t pos = str.find(what, prev_pos);
+        if (pos == str.npos) {
+            res += str.substr(prev_pos);
+            break;
+        }
+
+        res      += str.substr(prev_pos, pos - prev_pos);
+        res      += with;
+        prev_pos  = pos + what.size();
+    }
+
+    str = res;
+    return self;
+}
+
+static Object *stringConcatwithMethod(const std::vector<Object *> &args, Runtime *rt, bool execution_result_matters) {
+    ProfilerCAPTURE();
+    rt->verifyExactArgsAmountMethod(args, 1);
+    auto self = args[0];
+    auto arg  = args[1];
+    rt->verifyIsInstanceObject(arg, rt->builtin_types.string, MethodArgCtx(0));
+
+    auto &str    = getStringDataFast(self);
+    auto &other  = getStringDataFast(arg);
+    str         += other;
+    return self;
+}
+
 static Object *string_mm__bool__(const std::vector<Object *> &args, Runtime *rt, bool execution_result_matters) {
     ProfilerCAPTURE();
     rt->verifyExactArgsAmountMethod(args, 0);
     auto self = args[0];
-    rt->verifyIsInstanceObject(self, rt->builtin_types.string, Runtime::SUB1_CTX);
 
     if (!execution_result_matters) {
         return self;
@@ -333,7 +526,6 @@ static Object *string_mm__int__(const std::vector<Object *> &args, Runtime *rt, 
     ProfilerCAPTURE();
     rt->verifyExactArgsAmountMethod(args, 0);
     auto self = args[0];
-    rt->verifyIsInstanceObject(self, rt->builtin_types.string, Runtime::SUB1_CTX);
 
     if (!execution_result_matters) {
         return self;
@@ -346,7 +538,6 @@ static Object *string_mm__real__(const std::vector<Object *> &args, Runtime *rt,
     ProfilerCAPTURE();
     rt->verifyExactArgsAmountMethod(args, 0);
     auto self = args[0];
-    rt->verifyIsInstanceObject(self, rt->builtin_types.string, Runtime::SUB1_CTX);
 
     if (!execution_result_matters) {
         return self;
@@ -359,7 +550,6 @@ static Object *string_mm__string__(const std::vector<Object *> &args, Runtime *r
     ProfilerCAPTURE();
     rt->verifyExactArgsAmountMethod(args, 0);
     auto self = args[0];
-    rt->verifyIsInstanceObject(self, rt->builtin_types.string, Runtime::SUB1_CTX);
 
     if (!execution_result_matters) {
         return self;
@@ -372,7 +562,7 @@ static Object *string_mm__repr__(const std::vector<Object *> &args, Runtime *rt,
     ProfilerCAPTURE();
     rt->verifyExactArgsAmountMethod(args, 0);
     auto self = args[0];
-    rt->verifyIsOfType(self, rt->builtin_types.string, Runtime::SUB1_CTX);
+    rt->verifyIsOfType(self, rt->builtin_types.string, MethodArgCtx(0));
 
     if (!execution_result_matters) {
         return self;
@@ -389,7 +579,7 @@ static Object *string_mm__read__(const std::vector<Object *> &args, Runtime *rt,
     ProfilerCAPTURE();
     rt->verifyExactArgsAmountMethod(args, 0);
     auto self = args[0];
-    rt->verifyIsOfType(self, rt->builtin_types.string, Runtime::SUB1_CTX);
+    rt->verifyIsOfType(self, rt->builtin_types.string, MethodArgCtx(0));
 
     std::string v;
     std::cin >> v;
@@ -422,6 +612,14 @@ void installStringMethods(Type *type, Runtime *rt) {
     type->addMethod(rt->nmgr->getId("copy"), makeFunctionInstanceObject(true, stringCopyMethod, nullptr, rt));
     type->addMethod(rt->nmgr->getId("substr"), makeFunctionInstanceObject(true, stringSubstrMethod, nullptr, rt));
     type->addMethod(rt->nmgr->getId("array"), makeFunctionInstanceObject(true, stringArrayMethod, nullptr, rt));
+    type->addMethod(rt->nmgr->getId("split"), makeFunctionInstanceObject(true, stringSplitMethod, nullptr, rt));
+    type->addMethod(rt->nmgr->getId("splitf"), makeFunctionInstanceObject(true, stringSplitfMethod, nullptr, rt));
+    type->addMethod(rt->nmgr->getId("startswith"), makeFunctionInstanceObject(true, stringStartswithMethod, nullptr, rt));
+    type->addMethod(rt->nmgr->getId("endswith"), makeFunctionInstanceObject(true, stringEndswithMethod, nullptr, rt));
+    type->addMethod(rt->nmgr->getId("splitlines"), makeFunctionInstanceObject(true, stringSplitlinesMethod, nullptr, rt));
+    type->addMethod(rt->nmgr->getId("join"), makeFunctionInstanceObject(true, stringJoinMethod, nullptr, rt));
+    type->addMethod(rt->nmgr->getId("replace"), makeFunctionInstanceObject(true, stringReplaceMethod, nullptr, rt));
+    type->addMethod(rt->nmgr->getId("concatwith"), makeFunctionInstanceObject(true, stringConcatwithMethod, nullptr, rt));
 }
 
 StringType::StringType(Runtime *rt)
