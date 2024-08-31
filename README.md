@@ -55,7 +55,7 @@ The syntax is not very difficult, and a few good things like creating function o
 ## Installation<a name="installation"></a>
 To make Cotton work, you have to build it first. 
 
-Go to the root directory of the project. If you're building for the purpose of testing Cotton by writing some Cotton programs, uncomment the line with O3 and march=native optimizations.
+Go to the root directory of the project. If you're building for the purpose of testing Cotton by writing some Cotton programs, uncomment the line with `O3` and `march=native` optimizations in the `CMakeLists.txt`.
 
 Create the build directory and cd into it: 
 ```bash 

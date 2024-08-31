@@ -1,4 +1,6 @@
 # Cotton Programming Guide
+The guide is intended to be read from top to bottom.
+
 ## Table of contents
 
 - [Prerequirements](#0)
@@ -19,10 +21,12 @@
 - [Builtin functions](#15)
 - [Builtin modules](#16)
 
-  
-
 ## Prerequirements <a name="0"></a>
-In order to be able to understand this guide, your IQ has to be  above 10. Having some previous experience with Python or C++ is recommended but is not necessary.
+In order to be able to understand this guide, your IQ has to be above 10. Having some previous experience with Python or C++ is recommended but is not necessary.
+The ability to read at least 95% of the words written without skipping them is also welcomed.
 
 ## Quick installation <a name="1"></a>
-In order to be able to understand this guide, your IQ has to be  above 10. Having some previous experience with Python or C++ is recommended but is not necessary.
+Clone the project from the github into some directory. Next, go to that directory (via `cd`), and simply run `bash install.sh`
+
+ 
+
