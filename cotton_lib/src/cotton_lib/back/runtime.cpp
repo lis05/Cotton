@@ -1,4 +1,3 @@
-#include "runtime.h"
 #include "../builtin/api.h"
 #include "../errors.h"
 #include "../front/parser.h"
@@ -6,6 +5,7 @@
 #include "gc.h"
 #include "instance.h"
 #include "nameid.h"
+#include "runtime.h"
 #include "scope.h"
 #include "type.h"
 
@@ -107,6 +107,7 @@ bool Runtime::checkGlobal(NameId id) {
 
 Object *Runtime::getGlobal(NameId id) {
     ProfilerCAPTURE();
+
     auto it = this->globals.find(id);
     if (it == this->globals.end()) {
         this->signalError("Global not found: " + this->nmgr->getString(id), this->getContext().area);
