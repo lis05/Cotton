@@ -1,32 +1,33 @@
-# Cotton Programming Guide
-The guide is intended to be read from top to bottom.
+# Cotton programming guide
 
-## Table of contents
+In Cotton, everything is an Object that stores an Instance and a Type.
 
-- [Prerequirements](#0)
-- [Quick installation](#1)
-- [Hello world](#2)
-- [Cotton interpreter](#3)
-- [Important concepts](#4)
-- [Simple builtin types](#5)
-- [Variables](#6)
-- [Literals](#7)
-- [Operators](#8)
-- [Control flow statements](#9)
-- [Functions](#10)
-- [Custom types](#11)
-- [Modules](#12)
-- [String](#13)
-- [Array](#14)
-- [Builtin functions](#15)
-- [Builtin modules](#16)
+- Instances hold the actual data (like numbers, strings, arrays).
+- Types contain methods that can be used on the instance.
 
-## Prerequirements <a name="0"></a>
-In order to be able to understand this guide, your IQ has to be above 10. Having some previous experience with Python or C++ is recommended but is not necessary.
-The ability to read at least 95% of the words written without skipping them is also welcomed.
+You can think of an object as of a "shell" that references the actual data. Therefore, multiple objects can refenrece the same data.
 
-## Quick installation <a name="1"></a>
-Clone the project from the github into some directory. Next, go to that directory (via `cd`), and simply run `bash install.sh`
+---
 
- 
+In Cotton, all statements are required to be followed by a semicolon.
 
+Literals in Cotton are objects that cannot be assigned a different value. However, they can be modified, resulting in funny examples:
+```js
+// prints 2 == 3
+if ++2 == 3; println("2 == 3");
+```
+
+---
+
+Making variables requires that you assigned them some value immidiatelly:
+```js
+x = 5;
+y = x + 5;
+```
+Making a variable this way creates a new object which is a direct copy of the righthand argument.
+
+Usually, when an object is copied, its instance is being copied, but its type stays the same, meaning that a new object will be of the exact same type but with a different data. However, this is not true for user-defined data types, and it highly depends on the implementation.
+
+---
+
+Assigning values 
